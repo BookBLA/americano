@@ -8,7 +8,8 @@ group = 'com.bookbla'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    sourceCompatibility = '11'
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 configurations {
@@ -47,7 +48,6 @@ dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j'
     runtimeOnly 'com.h2database:h2'
 
-    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     testAnnotationProcessor 'org.projectlombok:lombok'
