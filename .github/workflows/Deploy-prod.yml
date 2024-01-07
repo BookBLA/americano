@@ -5,10 +5,10 @@
 #### CD
 # ${{ secrets.DOCKER_ID }} : 도커허브 id
 # ${{ secrets.DOCKER_PASSWORD }} : 도커허브 pw
-# ${{ secrets.REMOTE_HOST_DEV }} : 배포 서버 HOSTNAME
-# ${{ secrets.REMOTE_PORT_DEV }} : 배포 서버 PORT
-# ${{ secrets.REMOTE_USERNAME_DEV }} : 배포 서버 USERNAME
-# ${{ secrets.REMOTE_SSH_KEY_DEV }} : 배포 서버 연결을 위한 SSH KEY
+# ${{ secrets.REMOTE_HOST_PROD }} : 배포 서버 HOSTNAME
+# ${{ secrets.REMOTE_PORT_PROD }} : 배포 서버 PORT
+# ${{ secrets.REMOTE_USERNAME_PROD }} : 배포 서버 USERNAME
+# ${{ secrets.REMOTE_SSH_KEY_PROD }} : 배포 서버 연결을 위한 SSH KEY
 
 name: Backend CI & CD
 
@@ -16,14 +16,14 @@ name: Backend CI & CD
 on:
   pull_request:
     # 특정 브랜치만
-    branches: [dev]
+    branches: [mater]
 #    # pr이 생성 되었을 때, 담당 유저가 등록되었을 때, PR에 코드가 머지되었을 때, 라벨이 달렸을 때 동작
 #    types: [opened, assigned, synchronize, labeled, reopened]
   push:
-    branches: [dev]
+    branches: [master]
 
 env:
-  CONTAINER_NAME: americano_dev
+  CONTAINER_NAME: americano_prod
 
 jobs:
   ###### 본문 내용과 관련 없는 Job, 빌드 테스트
@@ -44,7 +44,7 @@ jobs:
         run: ls -al && pwd
 
       - name: Make an Application.yml
-        run: echo "${{ secrets.AMERICANO_DEV }}" > ./src/main/resources/application-dev.yml
+        run: echo "${{ secrets.AMERICANO_PROD }}" > ./src/main/resources/application-prod.yml
 
       - name: Install JDK 11
         uses: actions/setup-java@v3
@@ -65,11 +65,10 @@ jobs:
       - name: Grant execute permission for gradle
         run: chmod +x ./gradlew
 
-      # develop 브랜치일 경우 local 환경 빌드
       - name: Build (With Test)
-        run: ./gradlew clean build --no-daemon -Dspring.profiles.active=dev
+        run: ./gradlew clean build --no-daemon -Dspring.profiles.active=prod
 
-      # master 브랜치에 push 할 경우 CD job에 jar file 업로드
+      # push 할 경우 CD job 에 jar file 업로드
       - name: (Push & Main) Archive production artifacts
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v3
@@ -132,21 +131,21 @@ jobs:
       - name: Transfer Deploy Script use SCP
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.REMOTE_HOST_DEV }}
-          port: ${{ secrets.REMOTE_PORT_DEV }}
-          username: ${{ secrets.REMOTE_USERNAME_DEV }}
-          key: ${{ secrets.REMOTE_SSH_KEY_DEV }}
+          host: ${{ secrets.REMOTE_HOST_PROD }}
+          port: ${{ secrets.REMOTE_PORT_PROD }}
+          username: ${{ secrets.REMOTE_USERNAME_PROD }}
+          key: ${{ secrets.REMOTE_SSH_KEY_PROD }}
           source: deploy.sh
-          target: /home/${{ secrets.REMOTE_USERNAME_DEV }}/deploy
+          target: /home/${{ secrets.REMOTE_USERNAME_PROD }}/deploy
 
       # SSH Connect
       - name: Execute Server Init Script
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.REMOTE_HOST_DEV }}
-          port: ${{ secrets.REMOTE_PORT_DEV }}
-          username: ${{ secrets.REMOTE_USERNAME_DEV }}
-          key: ${{ secrets.REMOTE_SSH_KEY_DEV }}
+          host: ${{ secrets.REMOTE_HOST_PROD }}
+          port: ${{ secrets.REMOTE_PORT_PROD }}
+          username: ${{ secrets.REMOTE_USERNAME_PROD }}
+          key: ${{ secrets.REMOTE_SSH_KEY_PROD }}
           script_stop: true
           script: |
-            chmod +x /home/${{ secrets.REMOTE_USERNAME_DEV }}/deploy/deploy.sh && sh /home/${{ secrets.REMOTE_USERNAME_DEV }}/deploy/deploy.sh
+            chmod +x /home/${{ secrets.REMOTE_USERNAME_PROD }}/deploy/deploy.sh && sh /home/${{ secrets.REMOTE_USERNAME_PROD }}/deploy/deploy.sh
