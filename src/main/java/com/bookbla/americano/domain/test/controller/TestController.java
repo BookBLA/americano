@@ -5,6 +5,7 @@ import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.domain.test.controller.dto.request.TestRequestDTO;
 import com.bookbla.americano.domain.test.controller.dto.response.TestResponseDTO;
 import com.bookbla.americano.domain.test.service.TestService;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ public class TestController {
     }
 
     @PostMapping("")
-    public TestResponseDTO testSave(@RequestBody TestRequestDTO requestDTO) {
+    public TestResponseDTO testSave(@RequestBody @Valid TestRequestDTO requestDTO) {
         return testService.test(requestDTO);
     }
 
