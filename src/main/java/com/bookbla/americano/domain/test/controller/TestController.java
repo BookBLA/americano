@@ -7,6 +7,8 @@ import com.bookbla.americano.domain.test.service.TestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/test")
 @RequiredArgsConstructor
@@ -14,9 +16,9 @@ public class TestController {
 
     private final TestService testService;
 
-    @GetMapping("")
-    public String test() {
-        return "test contorller";
+    @GetMapping("/{contents}")
+    public List<TestResponseDTO> test(@RequestParam("contents") String contents) {
+        return testService.getListByContents(contents);
     }
 
     @PostMapping("")

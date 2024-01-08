@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class TestServiceImpl implements TestService {
@@ -22,5 +25,13 @@ public class TestServiceImpl implements TestService {
         TestEntity testEntity = TestRequestDTO.toEntity(requestDTO);
 
         return TestResponseDTO.fromEntity(testRepository.save(testEntity));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TestResponseDTO> getListByContents(String contents) {
+        return testRepository.findByContents(contents).stream()
+                .map(TestResponseDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 }
