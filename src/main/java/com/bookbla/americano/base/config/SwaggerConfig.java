@@ -17,8 +17,8 @@ import org.springframework.context.annotation.Configuration;
         info = @Info(
                 title = "BookBLA API Document",
                 description = "북블라 API 문서",
-                version = "v1"))
-
+                version = "v1")
+)
 @Configuration
 public class SwaggerConfig {
 

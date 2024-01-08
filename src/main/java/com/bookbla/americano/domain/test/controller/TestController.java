@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.test.controller;
 
-import com.bookbla.americano.base.exceptions.BizException;
+import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.domain.test.controller.dto.request.TestRequestDTO;
 import com.bookbla.americano.domain.test.controller.dto.response.TestResponseDTO;
 import com.bookbla.americano.domain.test.service.TestService;
@@ -28,6 +29,6 @@ public class TestController {
 
     @GetMapping("/error")
     public void testError() {
-        throw new BizException("error test");
+        throw new BaseException(BaseExceptionType.TEST_FAIL);
     }
 }
