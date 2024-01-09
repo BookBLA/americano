@@ -19,7 +19,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(BaseException.class)
     ResponseEntity<ExceptionResponse> handleException(HttpServletRequest request, BaseException e) {
         ExceptionType type = e.exceptionType();
-        log.info("잘못된 요청이 들어왔습니다. URI: {},  내용: {}", request.getRequestURI(), type.getStackTrace());
+        log.warn("잘못된 요청이 들어왔습니다. URI: {},  내용: {}", request.getRequestURI(), type.getStackTrace());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ExceptionResponse(type));
     }
