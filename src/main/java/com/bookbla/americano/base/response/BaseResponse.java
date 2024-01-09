@@ -1,4 +1,4 @@
-package com.bookbla.americano.base.reponse;
+package com.bookbla.americano.base.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

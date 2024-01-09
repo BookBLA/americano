@@ -1,7 +1,7 @@
 package com.bookbla.americano.base.handler;
 
 
-import com.bookbla.americano.base.reponse.BaseResponse;
+import com.bookbla.americano.base.response.BaseResponse;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
