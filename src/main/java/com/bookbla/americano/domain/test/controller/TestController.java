@@ -5,9 +5,12 @@ import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.domain.test.controller.dto.request.TestRequestDTO;
 import com.bookbla.americano.domain.test.controller.dto.response.TestResponseDTO;
 import com.bookbla.americano.domain.test.service.TestService;
+
+import java.net.URI;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,13 +26,15 @@ public class TestController {
     private final TestService testService;
 
     @GetMapping("/{contents}")
-    public List<TestResponseDTO> test(@RequestParam("contents") String contents) {
-        return testService.getListByContents(contents);
+    public ResponseEntity<List<TestResponseDTO>> test(@RequestParam("contents") String contents) {
+        List<TestResponseDTO> listByContents = testService.getListByContents(contents);
+        return ResponseEntity.ok(listByContents);
     }
 
     @PostMapping("")
-    public TestResponseDTO testSave(@RequestBody @Valid TestRequestDTO requestDTO) {
-        return testService.test(requestDTO);
+    public ResponseEntity<TestResponseDTO> testSave(@RequestBody @Valid TestRequestDTO requestDTO) {
+        TestResponseDTO testResponseDTO = testService.test(requestDTO);
+        return ResponseEntity.created(URI.create("/test/" + testResponseDTO.getId())).build();
     }
 
     @GetMapping("/error")
