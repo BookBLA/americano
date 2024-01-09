@@ -9,7 +9,7 @@ import lombok.Getter;
 @JsonPropertyOrder({"isSuccess", "code", "message", "stackTrace"})
 public class ExceptionResponse {
 
-    @JsonProperty
+    @JsonProperty("isSuccess")
     private final boolean isSuccess;
     private final int code;
     private final String message;
