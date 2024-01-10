@@ -1,7 +1,5 @@
 package com.bookbla.americano.base.handler;
 
-
-import com.bookbla.americano.base.HealthCheckController;
 import com.bookbla.americano.base.response.BaseResponse;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +43,6 @@ public class BaseResponseHandler implements ResponseBodyAdvice<Object> {
         if (resolve == null) {
             return body;
         }
-
         if (resolve.is2xxSuccessful()) {
             return new BaseResponse<>(body);
         }
