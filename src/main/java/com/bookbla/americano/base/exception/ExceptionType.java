@@ -2,7 +2,7 @@ package com.bookbla.americano.base.exception;
 
 public interface ExceptionType {
 
-    int getErrorCode();
+    String getErrorCode();
 
     String getMessage();
 

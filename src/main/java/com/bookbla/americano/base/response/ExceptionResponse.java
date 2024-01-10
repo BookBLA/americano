@@ -11,13 +11,13 @@ public class ExceptionResponse {
 
     @JsonProperty("isSuccess")
     private final boolean isSuccess;
-    private final int code;
+    private final String errorCode;
     private final String message;
     private final String stackTrace;
 
     public ExceptionResponse(ExceptionType exceptionType) {
         this.isSuccess = false;
-        this.code = exceptionType.getErrorCode();
+        this.errorCode = exceptionType.getErrorCode();
         this.message = exceptionType.getMessage();
         this.stackTrace = exceptionType.getStackTrace();
     }
