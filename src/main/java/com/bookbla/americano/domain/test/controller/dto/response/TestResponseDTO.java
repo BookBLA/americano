@@ -9,6 +9,7 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class TestResponseDTO {
+
     private final Long id;
     private final String contents;
 

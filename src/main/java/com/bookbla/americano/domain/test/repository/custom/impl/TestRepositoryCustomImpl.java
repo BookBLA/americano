@@ -1,13 +1,12 @@
 package com.bookbla.americano.domain.test.repository.custom.impl;
 
+import static com.bookbla.americano.domain.test.repository.entity.QTestEntity.testEntity;
+
 import com.bookbla.americano.domain.test.repository.custom.TestRepositoryCustom;
 import com.bookbla.americano.domain.test.repository.entity.TestEntity;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-
 import java.util.List;
-
-import static com.bookbla.americano.domain.test.repository.entity.QTestEntity.testEntity;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class TestRepositoryCustomImpl implements TestRepositoryCustom {
