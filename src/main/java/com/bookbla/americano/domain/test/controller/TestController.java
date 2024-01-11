@@ -5,7 +5,6 @@ import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.domain.test.controller.dto.request.TestRequestDTO;
 import com.bookbla.americano.domain.test.controller.dto.response.TestResponseDTO;
 import com.bookbla.americano.domain.test.service.TestService;
-
 import java.net.URI;
 import java.util.List;
 import javax.validation.Valid;
@@ -34,7 +33,8 @@ public class TestController {
     @PostMapping("")
     public ResponseEntity<TestResponseDTO> testSave(@RequestBody @Valid TestRequestDTO requestDTO) {
         TestResponseDTO testResponseDTO = testService.test(requestDTO);
-        return ResponseEntity.created(URI.create("/test/" + testResponseDTO.getId())).build();
+        return ResponseEntity.created(URI.create("/test/" + testResponseDTO.getId()))
+                .body(testResponseDTO);
     }
 
     @GetMapping("/error")
