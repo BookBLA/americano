@@ -1,6 +1,5 @@
 package com.bookbla.americano.base.handler;
 
-
 import com.bookbla.americano.base.response.BaseResponse;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 @Slf4j
 @RequiredArgsConstructor
-@RestControllerAdvice
+@RestControllerAdvice("com.bookbla.americano")
 public class BaseResponseHandler implements ResponseBodyAdvice<Object> {
 
     @Override
@@ -44,7 +43,6 @@ public class BaseResponseHandler implements ResponseBodyAdvice<Object> {
         if (resolve == null) {
             return body;
         }
-
         if (resolve.is2xxSuccessful()) {
             return new BaseResponse<>(body);
         }
