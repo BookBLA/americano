@@ -43,6 +43,7 @@ public class BaseResponseHandler implements ResponseBodyAdvice<Object> {
         if (resolve == null) {
             return body;
         }
+
         if (resolve.is2xxSuccessful()) {
             return new BaseResponse<>(body);
         }
