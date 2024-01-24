@@ -8,13 +8,13 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class TestResponseDTO {
+public class TestResponseDto {
 
     private final Long id;
     private final String contents;
 
-    public static TestResponseDTO fromEntity(TestEntity entity) {
-        return TestResponseDTO.builder()
+    public static TestResponseDto fromEntity(TestEntity entity) {
+        return TestResponseDto.builder()
                 .id(entity.getId())
                 .contents(entity.getContents())
                 .build();

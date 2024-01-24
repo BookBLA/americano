@@ -1,7 +1,7 @@
 package com.bookbla.americano.domain.test.service.impl;
 
-import com.bookbla.americano.domain.test.controller.dto.request.TestRequestDTO;
-import com.bookbla.americano.domain.test.controller.dto.response.TestResponseDTO;
+import com.bookbla.americano.domain.test.controller.dto.request.TestRequestDto;
+import com.bookbla.americano.domain.test.controller.dto.response.TestResponseDto;
 import com.bookbla.americano.domain.test.repository.TestRepository;
 import com.bookbla.americano.domain.test.repository.entity.TestEntity;
 import com.bookbla.americano.domain.test.service.TestService;
@@ -19,16 +19,16 @@ public class TestServiceImpl implements TestService {
 
     @Override
     @Transactional
-    public TestResponseDTO test(TestRequestDTO requestDTO) {
-        TestEntity testEntity = requestDTO.toEntity();
-        return TestResponseDTO.fromEntity(testRepository.save(testEntity));
+    public TestResponseDto create(TestRequestDto testRequestDto) {
+        TestEntity testEntity = testRequestDto.toEntity();
+        return TestResponseDto.fromEntity(testRepository.save(testEntity));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<TestResponseDTO> getListByContents(String contents) {
+    public List<TestResponseDto> findTestsByContents(String contents) {
         return testRepository.findByContents(contents).stream()
-                .map(TestResponseDTO::fromEntity)
+                .map(TestResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
 }
