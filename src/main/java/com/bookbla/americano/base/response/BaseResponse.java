@@ -9,16 +9,18 @@ import lombok.Getter;
 @JsonPropertyOrder({"isSuccess", "code", "result"})
 public class BaseResponse<T> {
 
+    private static final String DEFAULT_SUCCESS_RESPONSE_CODE = "2000";
+
     @JsonProperty("isSuccess")
     private final boolean isSuccess;
-    private final int code;
+    private final String code;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private final T result;
 
     public BaseResponse(T result) {
         this.isSuccess = true;
-        this.code = 200;
+        this.code = DEFAULT_SUCCESS_RESPONSE_CODE;
         this.result = result;
     }
 }
