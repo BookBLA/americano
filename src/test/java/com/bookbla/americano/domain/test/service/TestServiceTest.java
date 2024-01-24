@@ -29,17 +29,15 @@ class TestServiceTest {
     @Test
     void 테스트를_생성할_수_있다() {
         //given
-        TestRequestDto requestDTO = TestRequestDto.builder()
-                .contents("test")
-                .build();
+        TestRequestDto testRequestDto = new TestRequestDto("test");
 
         //when
-        TestResponseDto expected = testService.create(requestDTO);
+        TestResponseDto actual = testService.create(testRequestDto);
 
         //then
         assertAll(
-                () -> assertThat(expected.getId()).isNotNull(),
-                () -> assertThat(expected.getContents()).isEqualTo("test")
+                () -> assertThat(actual.getId()).isNotNull(),
+                () -> assertThat(actual.getContents()).isEqualTo("test")
         );
     }
 
@@ -50,13 +48,13 @@ class TestServiceTest {
         testService.create(new TestRequestDto("못찾을 놈"));
 
         //when
-        List<TestResponseDto> expected = testService.findTestsByContents("찾을 놈");
+        List<TestResponseDto> actual = testService.findTestsByContents("찾을 놈");
 
         //then
         assertAll(
-                () -> assertThat(expected.size()).isOne(),
-                () -> assertThat(expected).extracting("contents").contains("찾을 놈"),
-                () -> assertThat(expected).extracting("contents").doesNotContain("못찾을 놈")
+                () -> assertThat(actual.size()).isOne(),
+                () -> assertThat(actual).extracting("contents").contains("찾을 놈"),
+                () -> assertThat(actual).extracting("contents").doesNotContain("못찾을 놈")
         );
     }
 
@@ -64,5 +62,4 @@ class TestServiceTest {
     void deleteAll() {
         testRepository.deleteAll();
     }
-
 }
