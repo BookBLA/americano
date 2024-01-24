@@ -6,19 +6,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 
 @Getter
-@JsonPropertyOrder({"isSuccess", "code", "message", "stackTrace"})
+@JsonPropertyOrder({"isSuccess", "code", "message"})
 public class ExceptionResponse {
 
     @JsonProperty("isSuccess")
     private final boolean isSuccess;
     private final String errorCode;
     private final String message;
-    private final String stackTrace;
 
     public ExceptionResponse(ExceptionType exceptionType) {
         this.isSuccess = false;
         this.errorCode = exceptionType.getErrorCode();
         this.message = exceptionType.getMessage();
-        this.stackTrace = exceptionType.getStackTrace();
     }
 }

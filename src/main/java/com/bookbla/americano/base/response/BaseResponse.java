@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 
 @Getter
-@JsonPropertyOrder({"isSuccess", "code", "message", "result"})
+@JsonPropertyOrder({"isSuccess", "code", "result"})
 public class BaseResponse<T> {
 
     @JsonProperty("isSuccess")
