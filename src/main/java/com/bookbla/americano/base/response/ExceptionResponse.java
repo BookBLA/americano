@@ -10,13 +10,20 @@ import lombok.Getter;
 public class ExceptionResponse {
 
     @JsonProperty("isSuccess")
-    private final boolean isSuccess;
+    private final boolean isSuccess = false;
     private final String errorCode;
     private final String message;
 
+    private ExceptionResponse(String errorCode, String message) {
+        this.message = message;
+        this.errorCode = errorCode;
+    }
+
     public ExceptionResponse(ExceptionType exceptionType) {
-        this.isSuccess = false;
-        this.errorCode = exceptionType.getErrorCode();
-        this.message = exceptionType.getMessage();
+        this(exceptionType.getErrorCode(), exceptionType.getMessage());
+    }
+
+    public ExceptionResponse(ExceptionType exceptionType, String message) {
+        this(exceptionType.getErrorCode(), message);
     }
 }
