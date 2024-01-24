@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.test.controller.dto.request;
 
 import com.bookbla.americano.domain.test.repository.entity.TestEntity;
 import javax.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Builder
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class TestRequestDTO {
 
