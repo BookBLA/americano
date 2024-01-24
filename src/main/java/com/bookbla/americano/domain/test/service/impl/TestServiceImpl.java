@@ -20,9 +20,7 @@ public class TestServiceImpl implements TestService {
     @Override
     @Transactional
     public TestResponseDTO test(TestRequestDTO requestDTO) {
-
-        TestEntity testEntity = TestRequestDTO.toEntity(requestDTO);
-
+        TestEntity testEntity = requestDTO.toEntity();
         return TestResponseDTO.fromEntity(testRepository.save(testEntity));
     }
 

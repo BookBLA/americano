@@ -16,9 +16,9 @@ public class TestRequestDTO {
     @NotNull(message = "내용이 입력되지 않았습니다")
     private String contents;
 
-    public static TestEntity toEntity(TestRequestDTO requestDTO) {
+    public TestEntity toEntity() {
         return TestEntity.builder()
-                .contents(requestDTO.getContents())
+                .contents(contents)
                 .build();
     }
 }
