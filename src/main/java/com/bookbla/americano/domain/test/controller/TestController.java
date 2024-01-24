@@ -24,8 +24,8 @@ public class TestController {
 
     private final TestService testService;
 
-    @GetMapping("/{contents}")
-    public ResponseEntity<List<TestResponseDto>> readTest(@RequestParam("contents") String contents) {
+    @GetMapping
+    public ResponseEntity<List<TestResponseDto>> readTest(@RequestParam String contents) {
         List<TestResponseDto> testResponses = testService.findTestsByContents(contents);
         return ResponseEntity.ok(testResponses);
     }
