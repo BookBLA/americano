@@ -13,7 +13,7 @@ public class TestResponseDto {
     private final Long id;
     private final String contents;
 
-    public static TestResponseDto fromEntity(TestEntity entity) {
+    public static TestResponseDto from(TestEntity entity) {
         return TestResponseDto.builder()
                 .id(entity.getId())
                 .contents(entity.getContents())

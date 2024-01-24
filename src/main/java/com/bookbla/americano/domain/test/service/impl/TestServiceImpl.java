@@ -21,14 +21,14 @@ public class TestServiceImpl implements TestService {
     @Transactional
     public TestResponseDto create(TestRequestDto testRequestDto) {
         TestEntity testEntity = testRequestDto.toEntity();
-        return TestResponseDto.fromEntity(testRepository.save(testEntity));
+        return TestResponseDto.from(testRepository.save(testEntity));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<TestResponseDto> findTestsByContents(String contents) {
         return testRepository.findByContents(contents).stream()
-                .map(TestResponseDto::fromEntity)
+                .map(TestResponseDto::from)
                 .collect(Collectors.toList());
     }
 }
