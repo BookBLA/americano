@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/test")
+@RequestMapping("/tests")
 @RequiredArgsConstructor
 public class TestController {
 
@@ -34,7 +34,7 @@ public class TestController {
     @PostMapping
     public ResponseEntity<TestCreateResponse> createTest(@RequestBody @Valid TestCreateRequest testCreateRequest) {
         TestCreateResponse testCreateResponse = testService.create(testCreateRequest);
-        return ResponseEntity.created(URI.create("/test/" + testCreateResponse.getId()))
+        return ResponseEntity.created(URI.create("/tests/" + testCreateResponse.getId()))
                 .body(testCreateResponse);
     }
 

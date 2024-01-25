@@ -38,13 +38,13 @@ class TestControllerTest {
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(new TestCreateRequest("test_contents"))
-                .when().post("/api/test");
+                .when().post("/api/tests");
 
         // expected (when + then)
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/api/test?contents=test_contents")
+                .when().get("/api/tests?contents=test_contents")
                 .then().log().all()
                 .body("isSuccess", Matchers.equalTo(true))
                 .body("code", Matchers.equalTo("2000"));
@@ -57,7 +57,7 @@ class TestControllerTest {
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(new TestCreateRequest("나는 내용이에요"))
-                .when().post("/api/test")
+                .when().post("/api/tests")
                 .then().log().all()
                 .body("isSuccess", Matchers.equalTo(true))
                 .body("code", Matchers.equalTo("2000"))
@@ -70,7 +70,7 @@ class TestControllerTest {
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/api/test/error")
+                .when().get("/api/tests/error")
                 .then().log().all()
                 .extract();
 
