@@ -3,10 +3,10 @@ package com.bookbla.americano.domain.test.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import com.bookbla.americano.domain.test.controller.dto.request.TestRequestDto;
-import com.bookbla.americano.domain.test.controller.dto.response.TestResponseDto;
+import com.bookbla.americano.domain.test.controller.dto.request.TestCreateRequest;
+import com.bookbla.americano.domain.test.controller.dto.response.TestCreateResponse;
+import com.bookbla.americano.domain.test.controller.dto.response.TestReadResponse;
 import com.bookbla.americano.domain.test.repository.TestRepository;
-import com.bookbla.americano.domain.test.service.TestService;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -29,26 +29,23 @@ class TestServiceTest {
     @Test
     void 테스트를_생성할_수_있다() {
         //given
-        TestRequestDto testRequestDto = new TestRequestDto("test");
+        TestCreateRequest testCreateRequest = new TestCreateRequest("test");
 
         //when
-        TestResponseDto actual = testService.create(testRequestDto);
+        TestCreateResponse actual = testService.create(testCreateRequest);
 
         //then
-        assertAll(
-                () -> assertThat(actual.getId()).isNotNull(),
-                () -> assertThat(actual.getContents()).isEqualTo("test")
-        );
+        assertThat(actual.getId()).isNotNull();
     }
 
     @Test
     void 내용으로_테스트를_찾을_수_있다() {
         //given
-        testService.create(new TestRequestDto("찾을 놈"));
-        testService.create(new TestRequestDto("못찾을 놈"));
+        testService.create(new TestCreateRequest("찾을 놈"));
+        testService.create(new TestCreateRequest("못찾을 놈"));
 
         //when
-        List<TestResponseDto> actual = testService.findTestsByContents("찾을 놈");
+        List<TestReadResponse> actual = testService.findTestsByContents("찾을 놈");
 
         //then
         assertAll(

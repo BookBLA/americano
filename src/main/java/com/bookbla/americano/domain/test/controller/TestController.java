@@ -2,8 +2,9 @@ package com.bookbla.americano.domain.test.controller;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
-import com.bookbla.americano.domain.test.controller.dto.request.TestRequestDto;
-import com.bookbla.americano.domain.test.controller.dto.response.TestResponseDto;
+import com.bookbla.americano.domain.test.controller.dto.request.TestCreateRequest;
+import com.bookbla.americano.domain.test.controller.dto.response.TestCreateResponse;
+import com.bookbla.americano.domain.test.controller.dto.response.TestReadResponse;
 import com.bookbla.americano.domain.test.service.TestService;
 import java.net.URI;
 import java.util.List;
@@ -25,16 +26,16 @@ public class TestController {
     private final TestService testService;
 
     @GetMapping
-    public ResponseEntity<List<TestResponseDto>> readTest(@RequestParam String contents) {
-        List<TestResponseDto> testResponses = testService.findTestsByContents(contents);
-        return ResponseEntity.ok(testResponses);
+    public ResponseEntity<List<TestReadResponse>> readTest(@RequestParam String contents) {
+        List<TestReadResponse> readTestResponses = testService.findTestsByContents(contents);
+        return ResponseEntity.ok(readTestResponses);
     }
 
     @PostMapping
-    public ResponseEntity<TestResponseDto> createTest(@RequestBody @Valid TestRequestDto testRequestDto) {
-        TestResponseDto testResponseDto = testService.create(testRequestDto);
-        return ResponseEntity.created(URI.create("/test/" + testResponseDto.getId()))
-                .body(testResponseDto);
+    public ResponseEntity<TestCreateResponse> createTest(@RequestBody @Valid TestCreateRequest testCreateRequest) {
+        TestCreateResponse testCreateResponse = testService.create(testCreateRequest);
+        return ResponseEntity.created(URI.create("/test/" + testCreateResponse.getId()))
+                .body(testCreateResponse);
     }
 
     @GetMapping("/error")

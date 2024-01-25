@@ -3,7 +3,7 @@ package com.bookbla.americano.domain.test.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
-import com.bookbla.americano.domain.test.controller.dto.request.TestRequestDto;
+import com.bookbla.americano.domain.test.controller.dto.request.TestCreateRequest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -37,7 +37,7 @@ class TestControllerTest {
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(new TestRequestDto("test_contents"))
+                .body(new TestCreateRequest("test_contents"))
                 .when().post("/api/test");
 
         // expected (when + then)
@@ -56,7 +56,7 @@ class TestControllerTest {
         RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(new TestRequestDto("나는 내용이에요"))
+                .body(new TestCreateRequest("나는 내용이에요"))
                 .when().post("/api/test")
                 .then().log().all()
                 .body("isSuccess", Matchers.equalTo(true))
