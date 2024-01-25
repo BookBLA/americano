@@ -61,7 +61,7 @@ class TestControllerTest {
                 .then().log().all()
                 .body("isSuccess", Matchers.equalTo(true))
                 .body("code", Matchers.equalTo("2000"))
-                .body("result.contents", Matchers.equalTo("나는 내용이에요"));
+                .body("result.id", Matchers.equalTo(1));
     }
 
     @Test
