@@ -33,7 +33,7 @@ public class TestController {
 
     @PostMapping
     public ResponseEntity<TestCreateResponse> createTest(@RequestBody @Valid TestCreateRequest testCreateRequest) {
-        TestCreateResponse testCreateResponse = testService.create(testCreateRequest);
+        TestCreateResponse testCreateResponse = testService.create(testCreateRequest.toDto());
         return ResponseEntity.created(URI.create("/tests/" + testCreateResponse.getId()))
                 .body(testCreateResponse);
     }

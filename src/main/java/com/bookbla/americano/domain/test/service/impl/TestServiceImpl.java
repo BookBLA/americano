@@ -1,11 +1,11 @@
 package com.bookbla.americano.domain.test.service.impl;
 
-import com.bookbla.americano.domain.test.controller.dto.request.TestCreateRequest;
 import com.bookbla.americano.domain.test.controller.dto.response.TestCreateResponse;
 import com.bookbla.americano.domain.test.controller.dto.response.TestReadResponse;
 import com.bookbla.americano.domain.test.repository.TestRepository;
 import com.bookbla.americano.domain.test.repository.entity.TestEntity;
 import com.bookbla.americano.domain.test.service.TestService;
+import com.bookbla.americano.domain.test.service.dto.TestDto;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +20,9 @@ public class TestServiceImpl implements TestService {
 
     @Override
     @Transactional
-    public TestCreateResponse create(TestCreateRequest testCreateRequest) {
-        TestEntity testEntity = testCreateRequest.toEntity();
-        return TestCreateResponse.from(testRepository.save(testEntity));
+    public TestCreateResponse create(TestDto testDto) {
+        TestEntity testEntity = testRepository.save(testDto.toEntity());
+        return TestCreateResponse.from(testEntity);
     }
 
     @Override

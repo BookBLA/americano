@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.test.controller.dto.request;
 
-import com.bookbla.americano.domain.test.repository.entity.TestEntity;
+import com.bookbla.americano.domain.test.service.dto.TestDto;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,10 +15,7 @@ public class TestCreateRequest {
     @NotNull(message = "내용이 입력되지 않았습니다.")
     private String contents;
 
-    public TestEntity toEntity() {
-        return TestEntity.builder()
-                .contents(contents)
-                .build();
+    public TestDto toDto() {
+        return new TestDto(contents);
     }
-
 }
