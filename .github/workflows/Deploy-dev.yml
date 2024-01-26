@@ -65,7 +65,7 @@ jobs:
       - name: Grant execute permission for gradle
         run: chmod +x ./gradlew
 
-      # develop 브랜치일 경우 local 환경 빌드
+      # develop 브랜치일 경우 dev 환경 빌드
       - name: Build (With Test)
         run: ./gradlew clean build --no-daemon -Dspring.profiles.active=dev
 
