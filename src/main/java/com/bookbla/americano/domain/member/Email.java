@@ -1,8 +1,7 @@
 package com.bookbla.americano.domain.member;
 
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.base.exception.ExceptionType;
-import java.util.regex.Matcher;
+import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import java.util.regex.Pattern;
 import javax.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -14,9 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Email {
 
-    private static final String EMAIL_REGEX =
-        "^[a-zA-Z0-9+&-]+(?:\\.[a-zA-Z0-9_+&-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-    private static final Pattern pattern = Pattern.compile(EMAIL_REGEX);
+    private static final Pattern REGEX_EMAIL = Pattern.compile(
+            "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$");
 
     private String value;
 
@@ -26,9 +24,8 @@ public class Email {
     }
 
     private void validate(String value) {
-        if (!pattern.matcher(value).matches()) {
-            throw new BaseException();
+        if (!REGEX_EMAIL.matcher(value).matches()) {
+            throw new BaseException(MemberExceptionType.EMAIL_NOT_VALID);
         }
     }
-
 }

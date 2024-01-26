@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access=AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseInsertEntity {
 
     @Id
@@ -40,6 +40,7 @@ public class Member extends BaseInsertEntity {
 
     private String school;
 
+    @Column(unique = true)
     private String nickname;
 
     private String openKakaoRoomURL;
