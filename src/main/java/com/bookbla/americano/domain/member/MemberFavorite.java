@@ -7,7 +7,6 @@ import com.bookbla.americano.domain.member.enums.DrinkType;
 import com.bookbla.americano.domain.member.enums.JustFriendType;
 import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.SmokeType;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -34,30 +33,24 @@ public class MemberFavorite extends BaseInsertEntity {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "member_id")
     private Member member;
 
-    @Embedded
     @Enumerated(EnumType.STRING)
     private SmokeType smokeType;
 
-    @Embedded
     @Enumerated(EnumType.STRING)
     private DrinkType drinkType;
 
-    @Embedded
     @Enumerated(EnumType.STRING)
     private ContactType contactType;
 
-    @Embedded
     @Enumerated(EnumType.STRING)
     private DateCostType dateCostType;
 
-    @Embedded
     @Enumerated(EnumType.STRING)
     private JustFriendType justFriendType;
 
-    @Embedded
     @Enumerated(EnumType.STRING)
     private Mbti mbti;
 

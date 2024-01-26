@@ -24,21 +24,15 @@ public class MemberAuthentication extends BaseInsertEntity {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "member_id")
     private Member member;
 
     @Embedded
-    private Email email;
+    private Email schoolEmail;
 
-    private String password;
-
-    private String salt; // 보류
-
-    @Embedded
     @Enumerated(EnumType.STRING)
     private MemberType memberType;
 
-    @Embedded
     @Enumerated(EnumType.STRING)
     private MailAuthStatus mailAuthStatus;
 
@@ -48,7 +42,8 @@ public class MemberAuthentication extends BaseInsertEntity {
 
     private String mobileAuthToken;
 
+    private String mobileAuthCode;
+
     private LocalDateTime mobileAuthStartTime;
 
-    private String mobileAuthCode;
 }

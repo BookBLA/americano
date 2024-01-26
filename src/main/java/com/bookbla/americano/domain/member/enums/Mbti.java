@@ -1,11 +1,7 @@
 package com.bookbla.americano.domain.member.enums;
 
-import javax.persistence.Embeddable;
-import lombok.Getter;
-
-@Getter
-@Embeddable
 public enum Mbti {
+
     INTP,
     INTJ,
     INFP,
@@ -14,7 +10,6 @@ public enum Mbti {
     ISTJ,
     ISFP,
     ISFJ,
-
     ENTP,
     ENTJ,
     ENFP,

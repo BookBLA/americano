@@ -5,6 +5,8 @@ import com.bookbla.americano.domain.member.enums.Gender;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -32,7 +34,7 @@ public class Member extends BaseInsertEntity {
     @Column(nullable = false)
     private int age;
 
-    @Embedded
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @Embedded
@@ -40,10 +42,12 @@ public class Member extends BaseInsertEntity {
 
     private String school;
 
+    private String major;
+
     @Column(unique = true)
     private String nickname;
 
-    private String openKakaoRoomURL;
+    private String openKakaoRoomUrl;
 
-    private String profileImageURL;
+    private String profileImageUrl;
 }

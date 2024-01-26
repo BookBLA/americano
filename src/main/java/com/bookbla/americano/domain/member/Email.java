@@ -5,12 +5,14 @@ import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import java.util.regex.Pattern;
 import javax.persistence.Embeddable;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode
 public class Email {
 
     private static final Pattern REGEX_EMAIL = Pattern.compile(
