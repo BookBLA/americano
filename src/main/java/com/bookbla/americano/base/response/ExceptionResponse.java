@@ -1,15 +1,16 @@
 package com.bookbla.americano.base.response;
 
 import com.bookbla.americano.base.exception.ExceptionType;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.AccessLevel;
 import lombok.Getter;
+
 
 @Getter
 @JsonPropertyOrder({"isSuccess", "code", "message"})
 public class ExceptionResponse {
 
-    @JsonProperty("isSuccess")
+    @Getter(AccessLevel.NONE)
     private final boolean isSuccess;
     private final String code;
     private final String message;
@@ -26,5 +27,9 @@ public class ExceptionResponse {
 
     public ExceptionResponse(ExceptionType exceptionType, String message) {
         this(exceptionType.getErrorCode(), message);
+    }
+
+    public boolean getIsSuccess() {
+        return isSuccess;
     }
 }
