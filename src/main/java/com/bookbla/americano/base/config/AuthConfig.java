@@ -12,9 +12,13 @@ public class AuthConfig implements WebMvcConfigurer {
 
     private final AuthInterceptor authInterceptor;
 
+    // 인터셉터 사용 위해 필요
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)
-                .addPathPatterns("/");
+                // 인터셉터가 적용될 부분을 설정 가능
+                .addPathPatterns("/")
+                // 인터셉터 적용되지 않을 부분 설정 가능
+                .excludePathPatterns();
     }
 }

@@ -17,6 +17,8 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    // request가 다음 Layer로 전달하기 전에 미리 핸들링, true 반환시 다음으로 넘어감
+    // https://www.baeldung.com/spring-mvc-handlerinterceptor
     @Override
     public boolean preHandle(
             HttpServletRequest request,
@@ -27,7 +29,9 @@ public class AuthInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        // Bearer토큰 추출
         String token = BearerTokenExtractor.extract(request);
+        // 토큰 검증( 유효하지 않다면 예외 던짐 )
         jwtTokenProvider.validateToken(token);
         return true;
     }
