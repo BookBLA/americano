@@ -1,7 +1,7 @@
 package com.bookbla.americano.domain.auth.domain;
 
+import com.bookbla.americano.base.exception.AuthExceptionType;
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.domain.auth.config.JwtTokenConfig;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -48,11 +48,11 @@ public class JwtTokenProvider {
                     .build()
                     .parseClaimsJws(token);
         } catch (SecurityException | MalformedJwtException e) {
-            throw new BaseException(BaseExceptionType.TEST_FAIL);
+            throw new BaseException(AuthExceptionType.INVALID_TOKEN_SIGNATURE);
         } catch (ExpiredJwtException e) {
-            throw new BaseException(BaseExceptionType.TEST_FAIL);
+            throw new BaseException(AuthExceptionType.EXPIRED_TOKEN);
         } catch (UnsupportedJwtException e) {
-            throw new BaseException(BaseExceptionType.TEST_FAIL);
+            throw new BaseException(AuthExceptionType.INVALID_TOKEN);
         }
     }
 }
