@@ -2,8 +2,9 @@ package com.bookbla.americano.domain.test.controller;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
-import com.bookbla.americano.domain.test.controller.dto.request.TestRequestDTO;
-import com.bookbla.americano.domain.test.controller.dto.response.TestResponseDTO;
+import com.bookbla.americano.domain.test.controller.dto.request.TestCreateRequest;
+import com.bookbla.americano.domain.test.controller.dto.response.TestCreateResponse;
+import com.bookbla.americano.domain.test.controller.dto.response.TestReadResponse;
 import com.bookbla.americano.domain.test.service.TestService;
 import java.net.URI;
 import java.util.List;
@@ -18,23 +19,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/test")
+@RequestMapping("/tests")
 @RequiredArgsConstructor
 public class TestController {
 
     private final TestService testService;
 
-    @GetMapping("/{contents}")
-    public ResponseEntity<List<TestResponseDTO>> test(@RequestParam("contents") String contents) {
-        List<TestResponseDTO> listByContents = testService.getListByContents(contents);
-        return ResponseEntity.ok(listByContents);
+    @GetMapping
+    public ResponseEntity<List<TestReadResponse>> readTest(@RequestParam String contents) {
+        List<TestReadResponse> readTestResponses = testService.findTestsByContents(contents);
+        return ResponseEntity.ok(readTestResponses);
     }
 
-    @PostMapping("")
-    public ResponseEntity<TestResponseDTO> testSave(@RequestBody @Valid TestRequestDTO requestDTO) {
-        TestResponseDTO testResponseDTO = testService.test(requestDTO);
-        return ResponseEntity.created(URI.create("/test/" + testResponseDTO.getId()))
-                .body(testResponseDTO);
+    @PostMapping
+    public ResponseEntity<TestCreateResponse> createTest(@RequestBody @Valid TestCreateRequest testCreateRequest) {
+        TestCreateResponse testCreateResponse = testService.create(testCreateRequest.toDto());
+        return ResponseEntity.created(URI.create("/tests/" + testCreateResponse.getId()))
+                .body(testCreateResponse);
     }
 
     @GetMapping("/error")

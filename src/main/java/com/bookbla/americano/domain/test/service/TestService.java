@@ -1,12 +1,13 @@
 package com.bookbla.americano.domain.test.service;
 
-import com.bookbla.americano.domain.test.controller.dto.request.TestRequestDTO;
-import com.bookbla.americano.domain.test.controller.dto.response.TestResponseDTO;
+import com.bookbla.americano.domain.test.controller.dto.response.TestCreateResponse;
+import com.bookbla.americano.domain.test.controller.dto.response.TestReadResponse;
+import com.bookbla.americano.domain.test.service.dto.TestDto;
 import java.util.List;
 
 public interface TestService {
 
-    TestResponseDTO test(TestRequestDTO requestDTO);
+    TestCreateResponse create(TestDto testDto);
 
-    List<TestResponseDTO> getListByContents(String contents);
+    List<TestReadResponse> findTestsByContents(String contents);
 }
