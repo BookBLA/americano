@@ -19,17 +19,15 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 @Component
-public class TokenProvider implements InitializingBean {
+public class JwtTokenProvider {
 
     private final String tokenSecretKey;
     private final long tokenValidityInMilliseconds;
     private Key tokenKey;
 
-    public TokenProvider(
-            @Value("${jwt.token-secret-key}") String tokenSecretKey,
-            @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds) {
-        this.tokenSecretKey = tokenSecretKey;
-        this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000;
+    public JwtTokenProvider(JwtTokenConfig jwtTokenConfig) {
+        this.tokenSecretKey = jwtTokenConfig.getTokenSecretKey();
+        this.tokenValidityInMilliseconds = jwtTokenConfig.getTokenValidityInMilliseconds() * 1000;
     }
 
     @Override
