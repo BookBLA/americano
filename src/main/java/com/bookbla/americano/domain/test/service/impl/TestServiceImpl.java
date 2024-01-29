@@ -1,10 +1,11 @@
 package com.bookbla.americano.domain.test.service.impl;
 
-import com.bookbla.americano.domain.test.controller.dto.request.TestRequestDTO;
-import com.bookbla.americano.domain.test.controller.dto.response.TestResponseDTO;
+import com.bookbla.americano.domain.test.controller.dto.response.TestCreateResponse;
+import com.bookbla.americano.domain.test.controller.dto.response.TestReadResponse;
 import com.bookbla.americano.domain.test.repository.TestRepository;
 import com.bookbla.americano.domain.test.repository.entity.TestEntity;
 import com.bookbla.americano.domain.test.service.TestService;
+import com.bookbla.americano.domain.test.service.dto.TestDto;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -19,18 +20,16 @@ public class TestServiceImpl implements TestService {
 
     @Override
     @Transactional
-    public TestResponseDTO test(TestRequestDTO requestDTO) {
-
-        TestEntity testEntity = TestRequestDTO.toEntity(requestDTO);
-
-        return TestResponseDTO.fromEntity(testRepository.save(testEntity));
+    public TestCreateResponse create(TestDto testDto) {
+        TestEntity testEntity = testRepository.save(testDto.toEntity());
+        return TestCreateResponse.from(testEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<TestResponseDTO> getListByContents(String contents) {
+    public List<TestReadResponse> findTestsByContents(String contents) {
         return testRepository.findByContents(contents).stream()
-                .map(TestResponseDTO::fromEntity)
+                .map(TestReadResponse::from)
                 .collect(Collectors.toList());
     }
 }
