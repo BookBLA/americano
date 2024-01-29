@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.quiz;
 
+import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.domain.member.Member;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -22,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class BookQuizReply {
+public class BookQuizReply extends BaseInsertEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

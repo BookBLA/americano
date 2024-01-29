@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.member;
 
+import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.domain.book.Book;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberBook {
+public class MemberBook extends BaseInsertEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
