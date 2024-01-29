@@ -2,6 +2,9 @@ package com.bookbla.americano.domain.postcard;
 
 import com.bookbla.americano.domain.memberask.MemberReply;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,7 +32,7 @@ public class Postcard {
     @JoinColumn(name = "member_reply_id")
     private MemberReply memberReply;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "postcard_type_id")
     private PostcardType postcardType;
 
