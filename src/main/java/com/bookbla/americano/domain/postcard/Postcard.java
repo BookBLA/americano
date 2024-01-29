@@ -38,8 +38,9 @@ public class Postcard {
 
     private String answerContent;
 
-    private String imageURL;
+    private String imageUrl;
 
+    @Enumerated(EnumType.STRING)
     private PostcardStatus postcardStatus;
 
 }
