@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "jwt")
 public class JwtTokenConfig {
 
-    private final String tokenSecretKey;
-    private final long tokenValidityInMilliseconds;
+    private final String secret;
+    private final long expireTime;
 
 }

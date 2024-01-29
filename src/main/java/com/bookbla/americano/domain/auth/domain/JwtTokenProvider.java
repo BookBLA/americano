@@ -3,37 +3,30 @@ package com.bookbla.americano.domain.auth.domain;
 import com.bookbla.americano.base.exception.AuthErrorType;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
-import com.bookbla.americano.base.exception.ExceptionType;
-import io.jsonwebtoken.*;
+import com.bookbla.americano.domain.auth.config.JwtTokenConfig;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.stream.Collectors;
+import org.springframework.stereotype.Component;
 
 @Component
 public class JwtTokenProvider {
 
-    private final String tokenSecretKey;
-    private final long tokenValidityInMilliseconds;
-    private Key tokenKey;
+    private final Key secretKey;
+    private final long expireTime;
 
     public JwtTokenProvider(JwtTokenConfig jwtTokenConfig) {
-        this.tokenSecretKey = jwtTokenConfig.getTokenSecretKey();
-        this.tokenValidityInMilliseconds = jwtTokenConfig.getTokenValidityInMilliseconds() * 1000;
+        this.secretKey = generateKey(jwtTokenConfig.getSecret());
+        this.expireTime = jwtTokenConfig.getExpireTime() * 1000;
     }
 
-    @Override
-    public void afterPropertiesSet() {
-        byte[] keyBytes = Decoders.BASE64.decode(tokenSecretKey);
-        this.tokenKey = Keys.hmacShaKeyFor(keyBytes);
+    private Key generateKey(String secret) {
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public boolean validateToken(String token) {
