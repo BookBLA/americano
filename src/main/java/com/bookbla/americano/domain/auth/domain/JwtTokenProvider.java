@@ -32,12 +32,12 @@ public class JwtTokenProvider {
 
     public String createToken(String authentication) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + expireTime);
+        Date expireTime = new Date(now.getTime() + this.expireTime);
 
         return Jwts.builder()
                 .setSubject(authentication)
                 .signWith(secretKey, SignatureAlgorithm.HS512)
-                .setExpiration(validity)
+                .setExpiration(expireTime)
                 .compact();
     }
 
