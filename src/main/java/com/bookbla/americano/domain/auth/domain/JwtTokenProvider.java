@@ -1,6 +1,5 @@
 package com.bookbla.americano.domain.auth.domain;
 
-import com.bookbla.americano.base.exception.AuthErrorType;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.domain.auth.config.JwtTokenConfig;
@@ -29,10 +28,12 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(tokenKey).build().parseClaimsJws(token.substring(0, 7));
-            return true;
+            Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token);
         } catch (SecurityException | MalformedJwtException e) {
             throw new BaseException(BaseExceptionType.TEST_FAIL);
         } catch (ExpiredJwtException e) {
