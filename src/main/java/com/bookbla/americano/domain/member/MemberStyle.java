@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberFavorite extends BaseInsertEntity {
+public class MemberStyle extends BaseInsertEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

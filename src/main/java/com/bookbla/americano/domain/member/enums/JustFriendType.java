@@ -9,9 +9,9 @@ public enum JustFriendType {
 
     NEVER("절대 안 됨"),
     EATING("단둘이 밥 먹기"),
-    ALCOHOL("단둘이 술먹기"),
-    TRAVEL("단둘이 여행가기"),
-    EVERYTHING("상관없음"),
+    ALCOHOL("단둘이 술 먹기"),
+    TRAVEL("단둘이 여행 가기"),
+    EVERYTHING("상관 없음"),
     ;
 
     private final String value;
