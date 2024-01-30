@@ -33,4 +33,15 @@ public class QuizQuestion extends BaseInsertEntity {
 
     private String contents;
 
+    private String firstChoice;
+
+    private String secondChoice;
+
+    private String thirdChoice;
+
+    private String fourthChoice;
+
+    @Enumerated(EnumType.STRING)
+    private AnswerChoice answerChoice;
+
 }
