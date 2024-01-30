@@ -1,7 +1,9 @@
 package com.bookbla.americano.domain.postcard;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.domain.member.Member;
 import com.bookbla.americano.domain.memberask.MemberReply;
+import com.bookbla.americano.domain.quiz.QuizReply;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -29,6 +31,14 @@ public class Postcard extends BaseInsertEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member sendMember;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member reciveMember;
+
     @OneToOne
     @JoinColumn(name = "member_reply_id")
     private MemberReply memberReply;
@@ -37,7 +47,9 @@ public class Postcard extends BaseInsertEntity {
     @JoinColumn(name = "postcard_type_id")
     private PostcardType postcardType;
 
-    private String answerContent;
+    @OneToOne
+    @JoinColumn(name = "quiz_reply_id")
+    private QuizReply quizReply;
 
     private String imageUrl;
 
