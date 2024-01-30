@@ -1,7 +1,6 @@
 package com.bookbla.americano.domain.member;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
-import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -30,8 +29,7 @@ public class Member extends BaseInsertEntity {
 
     private String name;
 
-    @Embedded
-    private Email oauthEmail;
+    private String oauthEmail;
 
     @Enumerated(EnumType.STRING)
     private MemberType memberType;
