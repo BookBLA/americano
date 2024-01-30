@@ -1,24 +1,35 @@
 package com.bookbla.americano.base.response;
 
 import com.bookbla.americano.base.exception.ExceptionType;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.AccessLevel;
 import lombok.Getter;
 
+
 @Getter
-@JsonPropertyOrder({"isSuccess", "code", "message", "stackTrace"})
+@JsonPropertyOrder({"isSuccess", "code", "message"})
 public class ExceptionResponse {
 
-    @JsonProperty("isSuccess")
+    @Getter(AccessLevel.NONE)
     private final boolean isSuccess;
-    private final String errorCode;
+    private final String code;
     private final String message;
-    private final String stackTrace;
+
+    private ExceptionResponse(String code, String message) {
+        this.isSuccess = false;
+        this.code = code;
+        this.message = message;
+    }
 
     public ExceptionResponse(ExceptionType exceptionType) {
-        this.isSuccess = false;
-        this.errorCode = exceptionType.getErrorCode();
-        this.message = exceptionType.getMessage();
-        this.stackTrace = exceptionType.getStackTrace();
+        this(exceptionType.getErrorCode(), exceptionType.getMessage());
+    }
+
+    public ExceptionResponse(ExceptionType exceptionType, String message) {
+        this(exceptionType.getErrorCode(), message);
+    }
+
+    public boolean getIsSuccess() {
+        return isSuccess;
     }
 }
