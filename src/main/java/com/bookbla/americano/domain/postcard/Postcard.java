@@ -32,11 +32,11 @@ public class Postcard extends BaseInsertEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "send_member_id")
     private Member sendMember;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "recive_member_id")
     private Member reciveMember;
 
     @OneToOne
