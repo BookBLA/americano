@@ -35,7 +35,7 @@ public class QuizReply extends BaseInsertEntity {
 
     private String answer;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
