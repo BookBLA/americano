@@ -1,10 +1,11 @@
-package com.bookbla.americano.domain.auth.presntation;
+package com.bookbla.americano.base.jwt;
 
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-
-import javax.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
+import javax.servlet.http.HttpServletRequest;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class BearerTokenExtractor {

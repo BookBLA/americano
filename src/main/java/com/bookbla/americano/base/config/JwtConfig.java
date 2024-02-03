@@ -1,15 +1,17 @@
-package com.bookbla.americano.domain.auth.config;
+package com.bookbla.americano.base.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @Getter
+@Setter
+@Component
 @RequiredArgsConstructor
 @ConfigurationProperties(prefix = "jwt")
-public class JwtTokenConfig {
-
-    private final String secret;
-    private final long expireTime;
-
+public class JwtConfig {
+    private String secret;
+    private long expireTime;
 }

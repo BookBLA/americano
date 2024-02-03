@@ -1,28 +1,25 @@
-package com.bookbla.americano.domain.auth.domain;
+package com.bookbla.americano.base.jwt;
 
+import com.bookbla.americano.base.config.JwtConfig;
 import com.bookbla.americano.base.exception.AuthExceptionType;
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.auth.config.JwtTokenConfig;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import java.security.Key;
-import java.util.Date;
 import org.springframework.stereotype.Component;
 
+import java.security.Key;
+import java.util.Date;
+
 @Component
-public class JwtTokenProvider {
+public class JwtProvider {
 
     private final Key secretKey;
     private final long expireTime;
 
-    public JwtTokenProvider(JwtTokenConfig jwtTokenConfig) {
-        this.secretKey = generateKey(jwtTokenConfig.getSecret());
-        this.expireTime = jwtTokenConfig.getExpireTime() * 1000;
+    public JwtProvider(JwtConfig jwtConfig) {
+        this.secretKey = generateKey(jwtConfig.getSecret());
+        this.expireTime = jwtConfig.getExpireTime() * 1000;
     }
 
     private Key generateKey(String secret) {
