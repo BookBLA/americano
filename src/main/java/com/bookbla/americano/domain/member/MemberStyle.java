@@ -58,4 +58,28 @@ public class MemberStyle extends BaseInsertEntity {
     @Enumerated(EnumType.STRING)
     private Mbti mbti;
 
+    public void updateSmokeType(SmokeType smokeType) {
+        this.smokeType = smokeType;
+    }
+
+    public void updateDrinkType(DrinkType drinkType) {
+        this.drinkType = drinkType;
+    }
+
+    public void updateContactType(ContactType contactType) {
+        this.contactType = contactType;
+    }
+
+    public void updateDateCostType(DateCostType dateCostType) {
+        this.dateCostType = dateCostType;
+    }
+
+    public void updateJustFriendType(JustFriendType justFriendType) {
+        this.justFriendType = justFriendType;
+    }
+
+    public void updateMbti(Mbti mbti) {
+        this.mbti = mbti;
+    }
+
 }
