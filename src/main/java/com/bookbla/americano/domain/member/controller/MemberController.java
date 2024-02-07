@@ -16,9 +16,16 @@ public class MemberController {
 
     private final MemberStyleService memberStyleService;
 
-    @GetMapping
+    @GetMapping("/styles")
     public ResponseEntity<StylesResponse> readStyles() {
         return ResponseEntity.ok(memberStyleService.readStyles());
+    }
+
+    // member 식별자를 어디서 받아올까...
+    @GetMapping("/styles/{memberId}")
+    public ResponseEntity<MemberStyleResponse> readMemberStyle(Long memberId) {
+        MemberStyleResponse memberStyleResponse = memberStyleService.readMemberStyle(memberId);
+        return ResponseEntity.ok(memberStyleResponse);
     }
 
 }
