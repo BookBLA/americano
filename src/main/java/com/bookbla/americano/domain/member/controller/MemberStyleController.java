@@ -13,28 +13,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/members")
-public class MemberController {
+@RequestMapping("/members/styles")
+public class MemberStyleController {
 
     private final MemberStyleService memberStyleService;
 
-    @GetMapping("/styles")
+    @GetMapping
     public ResponseEntity<StylesResponse> readStyles() {
         return ResponseEntity.ok(memberStyleService.readStyles());
     }
 
     // member 식별자를 어디서 받아올까...
-    @GetMapping("/styles/{memberId}")
+    @GetMapping("/{memberId}")
     public ResponseEntity<MemberStyleResponse> readMemberStyle(Long memberId) {
         MemberStyleResponse memberStyleResponse = memberStyleService.readMemberStyle(memberId);
         return ResponseEntity.ok(memberStyleResponse);
     }
 
     // member 식별자를 어디서 받아올까...
-    @PutMapping("/styles")
+    @PutMapping
     public ResponseEntity<Void> updateMemberStyle(Long memberId, MemberStyleUpdateRequest memberStyleUpdateRequest) {
         memberStyleService.updateMemberStyle(memberId, memberStyleUpdateRequest);
         return ResponseEntity.noContent().build();
     }
 
 }
+
