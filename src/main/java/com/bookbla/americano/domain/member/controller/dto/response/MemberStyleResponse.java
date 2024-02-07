@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.member.service.dto;
+package com.bookbla.americano.domain.member.controller.dto.response;
 
 import com.bookbla.americano.domain.member.Member;
 import com.bookbla.americano.domain.member.MemberStyle;

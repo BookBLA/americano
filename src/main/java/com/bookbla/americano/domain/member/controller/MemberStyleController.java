@@ -1,9 +1,9 @@
 package com.bookbla.americano.domain.member.controller;
 
-import com.bookbla.americano.domain.member.controller.dto.StylesResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.StylesResponse;
 import com.bookbla.americano.domain.member.service.MemberStyleService;
-import com.bookbla.americano.domain.member.service.dto.MemberStyleResponse;
-import com.bookbla.americano.domain.member.service.dto.MemberStyleUpdateRequest;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +36,5 @@ public class MemberStyleController {
         memberStyleService.updateMemberStyle(memberId, memberStyleUpdateRequest);
         return ResponseEntity.noContent().build();
     }
-
 }
 

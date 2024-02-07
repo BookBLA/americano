@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.member.controller.dto;
+package com.bookbla.americano.domain.member.controller.dto.response;
 
 import java.util.List;
 import lombok.Getter;

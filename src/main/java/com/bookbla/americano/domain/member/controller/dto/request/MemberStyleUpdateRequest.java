@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.member.service.dto;
+package com.bookbla.americano.domain.member.controller.dto.request;
 
 import com.bookbla.americano.domain.member.enums.ContactType;
 import com.bookbla.americano.domain.member.enums.DateCostType;
