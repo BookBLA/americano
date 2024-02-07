@@ -65,7 +65,7 @@ dependencies {
 
     //test
     testImplementation 'io.rest-assured:rest-assured:4.4.0'
-    testCompileOnly 'org.assertj:assertj-core:3.11.1'
+    testImplementation 'org.assertj:assertj-core:3.11.1'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
