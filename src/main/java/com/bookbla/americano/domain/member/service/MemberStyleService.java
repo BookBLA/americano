@@ -12,8 +12,10 @@ import com.bookbla.americano.domain.member.enums.SmokeType;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberStyleRepository;
 import com.bookbla.americano.domain.member.service.dto.MemberStyleResponse;
+import com.bookbla.americano.domain.member.service.dto.MemberStyleUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +40,24 @@ public class MemberStyleService {
         MemberStyle memberStyle = memberStyleRepository.getByMemberOrThrow(member);
 
         return MemberStyleResponse.of(member, memberStyle);
+    }
+
+    @Transactional
+    public void updateMemberStyle(Long memberId, MemberStyleUpdateRequest memberStyleUpdateRequest) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberStyle memberStyle = memberStyleRepository.getByMemberOrThrow(member);
+
+        update(memberStyle, memberStyleUpdateRequest);
+    }
+
+    private void update(MemberStyle memberStyle, MemberStyleUpdateRequest memberStyleUpdateRequest) {
+        memberStyle.updateMbti(memberStyleUpdateRequest.getMbti());
+        memberStyle.updateDrinkType(memberStyleUpdateRequest.getDrinkType());
+        memberStyle.updateDateCostType(memberStyleUpdateRequest.getDateCostType());
+        memberStyle.updateSmokeType(memberStyleUpdateRequest.getSmokeType());
+        memberStyle.updateContactType(memberStyleUpdateRequest.getContactType());
+        memberStyle.updateDateStyle(memberStyleUpdateRequest.getDateStyle());
+        memberStyle.updateJustFriendType(memberStyleUpdateRequest.getJustFriendType());
     }
 
 }

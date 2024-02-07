@@ -82,4 +82,7 @@ public class MemberStyle extends BaseInsertEntity {
         this.mbti = mbti;
     }
 
+    public void updateDateStyle(DateStyle dateStyle) {
+        this.dateStyle = dateStyle;
+    }
 }
