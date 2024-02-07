@@ -9,14 +9,14 @@ import org.junit.jupiter.api.Test;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
 @SuppressWarnings("NonAsciiCharacters")
-class DateStyleTest {
+class JustFriendTypeTest {
 
     @Test
-    void 데이트_스타일_유형을_문자열_리스트로_받을_수_있다() {
+    void 남사친_여사친_유형을_문자열_리스트로_받을_수_있다() {
         // when
-        List<String> result = DateStyle.getValues();
+        List<String> result = JustFriendType.getValues();
 
         // then
-        assertThat(result).containsExactly("집 데이트", "야외 데이트");
+        assertThat(result).containsExactly("허용 X", "단 둘이 밥 먹기", "단 둘이 술 먹기", "단 둘이 여행 가기", "상관 없음");
     }
 }

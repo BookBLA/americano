@@ -1,5 +1,22 @@
 package com.bookbla.americano.domain.member.enums;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public enum ContactType {
-    SLOW, FAST
+
+    SLOW("느긋이"),
+    FAST("칼답"),
+    ;
+
+    private final String value;
+
+    public static List<String> getValues() {
+        return Arrays.stream(values())
+                .map(it -> it.value)
+                .collect(Collectors.toList());
+    }
 }

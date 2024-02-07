@@ -14,4 +14,9 @@ public enum DateStyle {
 
     private final String value;
 
+    public static List<String> getValues() {
+        return Arrays.stream(values())
+                .map(it -> it.value)
+                .collect(Collectors.toList());
+    }
 }
