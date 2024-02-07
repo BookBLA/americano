@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.member;
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.domain.member.enums.ContactType;
 import com.bookbla.americano.domain.member.enums.DateCostType;
+import com.bookbla.americano.domain.member.enums.DateStyle;
 import com.bookbla.americano.domain.member.enums.DrinkType;
 import com.bookbla.americano.domain.member.enums.JustFriendType;
 import com.bookbla.americano.domain.member.enums.Mbti;
@@ -44,6 +45,9 @@ public class MemberStyle extends BaseInsertEntity {
 
     @Enumerated(EnumType.STRING)
     private ContactType contactType;
+
+    @Enumerated(EnumType.STRING)
+    private DateStyle dateStyle;
 
     @Enumerated(EnumType.STRING)
     private DateCostType dateCostType;
