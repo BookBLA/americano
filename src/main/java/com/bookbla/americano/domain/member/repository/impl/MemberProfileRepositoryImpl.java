@@ -67,7 +67,7 @@ public class MemberProfileRepositoryImpl implements MemberProfileRepository {
                 .innerJoin(memberBook).on(memberProfile.member.eq(memberBook.member))
                 .innerJoin(book).on(memberBook.book.eq(book))
                 .innerJoin(memberStyle).on(memberProfile.member.eq(memberStyle.member))
-                .where(builder)
+                .where(builder.or(memberProfile.member.id.eq(requestDto.getMemberId())))
                 .fetch();
     }
 
