@@ -20,7 +20,7 @@ public class AuthConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)
-                .addPathPatterns("/tests/**");
+                .addPathPatterns("/tests/**", "/members/**");
     }
 
     // 사용할 ArgumentResolver 등록
