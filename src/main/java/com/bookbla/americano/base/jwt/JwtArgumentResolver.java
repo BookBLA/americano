@@ -1,6 +1,5 @@
 package com.bookbla.americano.base.jwt;
 
-import com.bookbla.americano.domain.member.Member;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -18,7 +17,7 @@ public class JwtArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasMethodAnnotation(LoginUser.class) &&
+        return parameter.hasParameterAnnotation(LoginUser.class) &&
                 parameter.getParameterType().equals(Long.class);
     }
 
