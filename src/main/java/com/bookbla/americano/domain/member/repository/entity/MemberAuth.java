@@ -34,4 +34,5 @@ public class MemberAuth extends BaseInsertEntity {
 
     private String phoneNumber;
 
+    private String studentIdImageUrl;
 }
