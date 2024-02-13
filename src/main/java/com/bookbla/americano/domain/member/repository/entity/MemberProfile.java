@@ -1,6 +1,9 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
-import com.bookbla.americano.domain.member.enums.Gender;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberCreateResponse;
+import com.bookbla.americano.domain.member.repository.entity.enums.Gender;
+import com.bookbla.americano.domain.member.service.dto.MemberDto;
+import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -31,23 +34,24 @@ public class MemberProfile {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    private String name;
+
+    private String major;
+
+    @Column(nullable = false)
+    private LocalDate birthDate;
+
     private String profileImageUrl;
 
     private int studentNumber;
 
-    @Column(nullable = false)
-    private int age;
+    private String schoolName;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
-
-    private String schoolName;
-
-    private String major;
 
     @Column(unique = true)
     private String nickname;
 
     private String openKakaoRoomUrl;
-
 }
