@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.member.exception;
+package com.bookbla.americano.domain.member.repository.entity.exception;
 
 import com.bookbla.americano.base.exception.ExceptionType;
 import lombok.AllArgsConstructor;

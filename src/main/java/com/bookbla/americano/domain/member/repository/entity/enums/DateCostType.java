@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.member.enums;
+package com.bookbla.americano.domain.member.repository.entity.enums;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;

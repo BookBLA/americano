@@ -1,7 +1,7 @@
-package com.bookbla.americano.domain.member;
+package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.member.exception.MemberExceptionType;
+import com.bookbla.americano.domain.member.repository.entity.exception.MemberExceptionType;
 import java.util.regex.Pattern;
 import javax.persistence.Embeddable;
 import lombok.AccessLevel;
