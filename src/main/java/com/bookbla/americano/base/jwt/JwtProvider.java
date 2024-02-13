@@ -48,4 +48,14 @@ public class JwtProvider {
             throw new BaseException(AuthExceptionType.INVALID_TOKEN);
         }
     }
+
+    public Long getPayLoad(String token) {
+        Claims claims = Jwts
+                .parserBuilder()
+                .setSigningKey(generateKey(jwtConfig.getSecret()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return Long.parseLong(claims.getSubject());
+    }
 }
