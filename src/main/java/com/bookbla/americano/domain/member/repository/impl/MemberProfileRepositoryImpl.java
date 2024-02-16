@@ -19,10 +19,8 @@ import java.util.List;
 @Repository
 public class MemberProfileRepositoryImpl implements MemberProfileRepository {
     private final JPAQueryFactory queryFactory;
-    private final EntityManager em;
 
     public MemberProfileRepositoryImpl(EntityManager em) {
-        this.em = em;
         this.queryFactory = new JPAQueryFactory(em);
     }
 
@@ -44,6 +42,8 @@ public class MemberProfileRepositoryImpl implements MemberProfileRepository {
             builder.and(memberStyle.contactType.eq(requestDto.getContactType()));
         if (requestDto.getDateCostType() != null)
             builder.and(memberStyle.dateCostType.eq(requestDto.getDateCostType()));
+        if (requestDto.getSmokeType() != null)
+            builder.and(memberStyle.smokeType.eq(requestDto.getSmokeType()));
         if (requestDto.getDrinkType() != null)
             builder.and(memberStyle.drinkType.eq(requestDto.getDrinkType()));
         if (requestDto.getJustFriendType() != null)
