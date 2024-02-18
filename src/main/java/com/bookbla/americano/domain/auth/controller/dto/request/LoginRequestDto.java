@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class LoginRequestDto {
 
-    @NotNull
-    private String email;
+    @NotNull(message = "인가코드가 입력되지 않았습니다.")
+    private String authCode;
+
 }
