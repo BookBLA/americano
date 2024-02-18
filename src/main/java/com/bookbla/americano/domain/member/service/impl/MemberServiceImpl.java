@@ -3,7 +3,6 @@ package com.bookbla.americano.domain.member.service.impl;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
-import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberProfileRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
@@ -78,7 +77,7 @@ public class MemberServiceImpl implements MemberService {
                     .filter(bp -> i.getBookId() == bp.getBookId())
                     .collect(Collectors.toList());
             for (MemberBookProfileResponseDto j : bookProfiles) {
-                addBookProfileToList(result, i, j, selected, afterRepresentativeIdx, requestDto.getGender());
+                addBookProfileToList(result, i, j, selected, afterRepresentativeIdx);
             }
             if (afterRepresentativeIdx == -1)
                 afterRepresentativeIdx = result.size();
@@ -98,26 +97,22 @@ public class MemberServiceImpl implements MemberService {
             list.add(i);
     }
 
-    private void addBookProfileToList(List<MemberBookProfileResponseDto> result, MemberBookProfileResponseDto i, MemberBookProfileResponseDto j, Gender gender) {
-        if (gender == null) {
+    private void addBookProfileToList(List<MemberBookProfileResponseDto> result, MemberBookProfileResponseDto i, MemberBookProfileResponseDto j) {
+        if (j.isBookIsRepresentative() && i.isBookIsRepresentative())
+            result.add(0, j);
+        else
             result.add(j);
-        } else if (gender == j.getMemberGender()) {
-            if (j.isBookIsRepresentative() && i.isBookIsRepresentative())
-                result.add(0, j);
-            else
-                result.add(j);
-        }
     }
 
     private void addBookProfileToList(List<MemberBookProfileResponseDto> result, MemberBookProfileResponseDto i, MemberBookProfileResponseDto j,
-                                      Map<Long, MemberBookProfileResponseDto> selected, int afterRepresentativeIdx, Gender gender) {
+                                      Map<Long, MemberBookProfileResponseDto> selected, int afterRepresentativeIdx) {
         if (selected.containsKey(j.getMemberId()) && j.isBookIsRepresentative() && result.indexOf(selected.get(j.getMemberId())) >= afterRepresentativeIdx) {
             result.add(afterRepresentativeIdx, j);
             result.remove(selected.get(j.getMemberId()));
             selected.remove(j.getMemberId());
             selected.put(j.getMemberId(), j);
         } else if (!selected.containsKey(j.getMemberId())) {
-            addBookProfileToList(result, i, j, gender);
+            addBookProfileToList(result, i, j);
             selected.put(j.getMemberId(), j);
         }
     }

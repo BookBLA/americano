@@ -53,6 +53,8 @@ public class MemberProfileRepositoryImpl implements MemberProfileRepository {
             builder.and(memberStyle.mbti.eq(requestDto.getMbti()));
         if (requestDto.getJustFriendType() != null)
             builder.and(memberStyle.justFriendType.eq(requestDto.getJustFriendType()));
+        if (requestDto.getGender() != null)
+            builder.and(memberProfile.gender.eq(requestDto.getGender()));
 
         return queryFactory
                 .select(Projections.fields(MemberBookProfileResponseDto.class
