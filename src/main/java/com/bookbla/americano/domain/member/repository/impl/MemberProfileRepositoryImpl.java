@@ -14,6 +14,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -38,25 +39,27 @@ public class MemberProfileRepositoryImpl implements MemberProfileRepository {
                         .from(memberProfile)
                         .innerJoin(memberBook).on(memberProfile.member.eq(memberBook.member))
                         .where(memberProfile.member.id.eq(requestDto.getMemberId()))));
-        if (requestDto.getContactType() != null)
-            builder.and(memberStyle.contactType.eq(requestDto.getContactType()));
-        if (requestDto.getDateCostType() != null)
-            builder.and(memberStyle.dateCostType.eq(requestDto.getDateCostType()));
-        if (requestDto.getSmokeType() != null)
-            builder.and(memberStyle.smokeType.eq(requestDto.getSmokeType()));
         if (requestDto.getDrinkType() != null)
             builder.and(memberStyle.drinkType.eq(requestDto.getDrinkType()));
-        if (requestDto.getJustFriendType() != null)
-            builder.and(memberStyle.justFriendType.eq(requestDto.getJustFriendType()));
+        if (requestDto.getSmokeType() != null)
+            builder.and(memberStyle.smokeType.eq(requestDto.getSmokeType()));
+        if (requestDto.getContactType() != null)
+            builder.and(memberStyle.contactType.eq(requestDto.getContactType()));
+        if (requestDto.getDateStyle() != null)
+            builder.and(memberStyle.dateStyle.eq(requestDto.getDateStyle()));
+        if (requestDto.getDateCostType() != null)
+            builder.and(memberStyle.dateCostType.eq(requestDto.getDateCostType()));
         if (requestDto.getMbti() != null)
             builder.and(memberStyle.mbti.eq(requestDto.getMbti()));
+        if (requestDto.getJustFriendType() != null)
+            builder.and(memberStyle.justFriendType.eq(requestDto.getJustFriendType()));
 
         return queryFactory
                 .select(Projections.fields(MemberBookProfileResponseDto.class
                         , memberProfile.member.id.as("memberId")
                         , memberBook.book.id.as("bookId")
                         , memberProfile.nickname.as("memberName")
-                        , memberProfile.age.as("memberAge")
+                        , memberProfile.birthDate.year().subtract(LocalDate.now().getYear() + 1).abs().as("memberAge")
                         , memberProfile.gender.as("memberGender")
                         , memberProfile.schoolName.as("memberSchoolName")
                         , book.name.as("bookName")
