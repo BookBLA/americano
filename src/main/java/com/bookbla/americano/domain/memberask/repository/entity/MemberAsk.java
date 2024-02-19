@@ -2,7 +2,7 @@ package com.bookbla.americano.domain.memberask.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.member.Member;
+import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.memberask.exception.MemberAskExceptionType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

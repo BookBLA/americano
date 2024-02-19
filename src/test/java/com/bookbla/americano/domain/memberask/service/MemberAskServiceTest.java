@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.member.Member;
+import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.memberask.controller.dto.request.MemberAskCreateRequest;

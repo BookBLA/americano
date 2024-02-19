@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.memberask.controller.dto.request;
 
-import com.bookbla.americano.domain.member.Member;
+import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.memberask.repository.entity.MemberAsk;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;

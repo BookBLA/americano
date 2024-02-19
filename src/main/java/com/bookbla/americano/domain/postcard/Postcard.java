@@ -1,7 +1,7 @@
 package com.bookbla.americano.domain.postcard;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
-import com.bookbla.americano.domain.member.Member;
+import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.memberask.repository.entity.MemberReply;
 import com.bookbla.americano.domain.quiz.QuizReply;
 import javax.persistence.Entity;

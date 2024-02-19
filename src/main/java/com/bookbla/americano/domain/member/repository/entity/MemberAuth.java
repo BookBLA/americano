@@ -1,13 +1,13 @@
-package com.bookbla.americano.domain.member;
+package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
-import com.bookbla.americano.domain.member.enums.MemberType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,15 +19,19 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member extends BaseInsertEntity {
+public class MemberAuth extends BaseInsertEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String oauthEmail;
+    @OneToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 
-    @Enumerated(EnumType.STRING)
-    private MemberType memberType;
+    @Column(unique = true)
+    private String schoolEmail;
+
+    private String phoneNumber;
 
 }

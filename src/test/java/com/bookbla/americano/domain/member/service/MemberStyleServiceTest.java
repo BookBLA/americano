@@ -18,10 +18,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.member.Member;
-import com.bookbla.americano.domain.member.MemberStyle;
+import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCreateRequest;
-import com.bookbla.americano.domain.member.controller.dto.response.StylesResponse;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberStyleRepository;

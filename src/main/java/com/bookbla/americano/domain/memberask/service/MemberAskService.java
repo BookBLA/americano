@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.memberask.service;
 
-import com.bookbla.americano.domain.member.Member;
+import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.memberask.controller.dto.request.MemberAskCreateRequest;
 import com.bookbla.americano.domain.memberask.controller.dto.request.MemberAskUpdateRequest;

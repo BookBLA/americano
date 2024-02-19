@@ -1,7 +1,7 @@
 package com.bookbla.americano.domain.member.service;
 
-import com.bookbla.americano.domain.member.Member;
-import com.bookbla.americano.domain.member.MemberStyle;
+import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCreateRequest;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberStyleRepository;

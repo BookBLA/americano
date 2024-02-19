@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.member;
+package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.domain.member.enums.ContactType;
