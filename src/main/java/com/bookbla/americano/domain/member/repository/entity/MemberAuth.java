@@ -32,6 +32,10 @@ public class MemberAuth extends BaseInsertEntity {
     @Column(unique = true)
     private String schoolEmail;
 
+    private String emailVerifyCode;
+
+    private LocalDateTime emailVerifyStartTime;
+
     private String phoneNumber;
 
     private String studentIdImageUrl;
