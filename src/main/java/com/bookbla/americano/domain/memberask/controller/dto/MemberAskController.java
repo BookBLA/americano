@@ -2,12 +2,14 @@ package com.bookbla.americano.domain.memberask.controller.dto;
 
 
 import com.bookbla.americano.domain.memberask.controller.dto.request.MemberAskCreateRequest;
+import com.bookbla.americano.domain.memberask.controller.dto.request.MemberAskUpdateRequest;
 import com.bookbla.americano.domain.memberask.controller.dto.response.MemberAskResponse;
 import com.bookbla.americano.domain.memberask.service.MemberAskService;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,6 +25,12 @@ public class MemberAskController {
         MemberAskResponse memberAskResponse = memberAskService.createMemberAsk(memberId, memberAskCreateRequest);
         return ResponseEntity.created(URI.create(memberAskResponse.getMemberAskResponseId().toString()))
                 .build();
+    }
+
+    @PutMapping
+    public ResponseEntity<Void> updateMemberAsk(Long memberId, MemberAskUpdateRequest memberAskUpdateRequest) {
+        memberAskService.updateMemberAsk(memberId, memberAskUpdateRequest);
+        return ResponseEntity.noContent().build();
     }
 
 }
