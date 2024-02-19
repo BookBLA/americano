@@ -21,6 +21,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberAsk extends BaseInsertEntity {
 
+    private static final int MAX_CONTENTS_LENGTH = 80;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,7 +45,7 @@ public class MemberAsk extends BaseInsertEntity {
     }
 
     private void validate(String contents) {
-        if (contents.length() > 80) {
+        if (contents.length() > MAX_CONTENTS_LENGTH) {
             throw new BaseException(MemberAskExceptionType.INVALID_CONTENT_LENGTH);
         }
     }
