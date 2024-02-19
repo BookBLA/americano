@@ -1,52 +1,58 @@
 package com.bookbla.americano.domain.member.controller;
 
-import com.bookbla.americano.base.jwt.JwtProvider;
 import com.bookbla.americano.base.jwt.LoginUser;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberCreateRequest;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberCreateResponse;
-import com.bookbla.americano.domain.member.repository.MemberAuthRepository;
-import com.bookbla.americano.domain.member.repository.MemberProfileRepository;
-import com.bookbla.americano.domain.member.repository.MemberRepository;
+import com.bookbla.americano.domain.member.controller.dto.request.MailSendRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MailVerifyRequest;
+import com.bookbla.americano.domain.member.controller.dto.response.MailSendResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MailVerifyResponse;
 import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
-import com.bookbla.americano.domain.member.service.MemberAuthService;
-import com.bookbla.americano.domain.member.service.MemberProfileService;
+import com.bookbla.americano.domain.member.service.MailService;
 import com.bookbla.americano.domain.member.service.MemberService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/members")
 @RequiredArgsConstructor
-@Slf4j
 public class MemberController {
 
-    private final MemberRepository memberRepository;
     private final MemberService memberService;
-    private final MemberAuthService memberAuthService;
-    private final MemberProfileService memberProfileService;
+    private final MailService mailService;
 
-    @PostMapping
-    public ResponseEntity<MemberCreateResponse> createMember(
-        @RequestBody @Valid MemberCreateRequest memberCreateRequest,
-        @LoginUser Long memberid) {
+    @PostMapping("/emails/verification-requests")
+    public ResponseEntity<MailSendResponse> sendEmail(
+        @RequestBody @Valid MailSendRequest mailSendRequest,
+        @LoginUser Long memberId) {
 
-        Member member = memberRepository.getByIdOrThrow(memberid);
+        Member member = memberService.getMemberById(memberId);
 
-        MemberCreateResponse memberCreateResponse1 = memberProfileService.createProfile(
-            memberCreateRequest.toDto(member));
-        MemberCreateResponse memberCreateResponse2 = memberAuthService.createAuth(
-            memberCreateRequest.toDto(member));
+        mailService.sendEmail(member, mailSendRequest.getSchoolEmail());
 
-        // TODO: 학생증 인증 및 학교 이메일 인증 추가하기
-
-        return ResponseEntity.ok(memberCreateResponse2);
+        return ResponseEntity.ok()
+            .body(MailSendResponse.builder()
+                .message("메일 전송 성공")
+                .build());
     }
+
+    @GetMapping("/emails/verifications")
+    public ResponseEntity<MailVerifyResponse> verifyEmail(
+        @RequestBody @Valid MailVerifyRequest mailVerifyRequest,
+        @LoginUser Long memberId) {
+
+        Member member = memberService.getMemberById(memberId);
+
+        mailService.verifyEmail(member, mailVerifyRequest.getVerifyCode());
+
+        return ResponseEntity.ok()
+            .body(MailVerifyResponse.builder()
+                .message("메일 인증 성공")
+                .build());
+    }
+
 }
