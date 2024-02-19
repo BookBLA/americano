@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.service;
 
 import com.bookbla.americano.domain.member.Member;
 import com.bookbla.americano.domain.member.MemberStyle;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.StylesResponse;
 import com.bookbla.americano.domain.member.enums.ContactType;
 import com.bookbla.americano.domain.member.enums.DateCostType;
@@ -40,6 +41,15 @@ public class MemberStyleService {
         MemberStyle memberStyle = memberStyleRepository.getByMemberOrThrow(member);
 
         return MemberStyleResponse.of(member, memberStyle);
+    }
+
+    @Transactional
+    public MemberStyleResponse createMemberStyle(Long memberId, MemberStyleCreateRequest memberStyleCreateRequest) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberStyle memberStyle = memberStyleCreateRequest.toMemberStyleWith(member);
+
+        MemberStyle savedMemberStyle = memberStyleRepository.save(memberStyle);
+        return MemberStyleResponse.of(member, savedMemberStyle);
     }
 
     @Transactional

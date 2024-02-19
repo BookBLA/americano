@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.Member;
 import com.bookbla.americano.domain.member.MemberStyle;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.StylesResponse;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
@@ -66,6 +67,37 @@ class MemberStyleServiceTest {
                         "단 둘이 밥 먹기", "단 둘이 술 먹기", "단 둘이 여행 가기", "상관 없음")
         );
     }
+
+    @Test
+    void 회원의_스타일을_생성할_수_있다() {
+        // given
+        Member member = memberRepository.save(Member.builder()
+                .name("이준희")
+                .memberType(MemberType.APPLE)
+                .oauthEmail("bookbla@bookbla.com")
+                .build());
+        MemberStyleCreateRequest memberStyleCreateRequest = new MemberStyleCreateRequest(
+                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트"
+        );
+
+        // when
+        MemberStyleResponse memberStyleResponse = memberStyleService.createMemberStyle(member.getId(),
+                memberStyleCreateRequest);
+
+        // then
+        assertAll(
+                () -> assertThat(memberStyleResponse.getMemberId()).isNotNull(),
+                () -> assertThat(memberStyleResponse.getName()).isEqualTo("이준희"),
+                () -> assertThat(memberStyleResponse.getMbti()).isEqualToIgnoringCase("infj"),
+                () -> assertThat(memberStyleResponse.getDrinkType()).isEqualTo("매일"),
+                () -> assertThat(memberStyleResponse.getDateCostType()).isEqualTo("더치페이"),
+                () -> assertThat(memberStyleResponse.getSmokeType()).isEqualTo("비흡연"),
+                () -> assertThat(memberStyleResponse.getContactType()).isEqualTo("느긋이"),
+                () -> assertThat(memberStyleResponse.getJustFriendType()).isEqualTo("허용 X"),
+                () -> assertThat(memberStyleResponse.getDateStyleType()).isEqualTo("집 데이트")
+        );
+    }
+
 
     @Test
     void 회원의_스타일을_조회할_수_있다() {
