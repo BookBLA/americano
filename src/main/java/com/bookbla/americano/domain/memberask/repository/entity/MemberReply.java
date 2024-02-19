@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.memberask;
+package com.bookbla.americano.domain.memberask.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import javax.persistence.Entity;
