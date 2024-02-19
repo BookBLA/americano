@@ -97,7 +97,6 @@ class MemberStyleServiceTest {
         );
     }
 
-
     @Test
     void 회원의_스타일을_조회할_수_있다() {
         // given
@@ -199,21 +198,21 @@ class MemberStyleServiceTest {
     }
 
     @Test
-    void 회원_스타일이_저장되지_않은_회원의_스타일_업데이트시_예외가_발생한다() {
+    void 존재하지_않는_회원_식별자로_회원_스타일_수정시_예외가_발생한다() {
         // given
-        Long nonExistMemberId = -999999L;
+        Long nonMemberId = -999999L;
         MemberStyleUpdateRequest memberStyleUpdateRequest = new MemberStyleUpdateRequest(
                 "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트"
         );
 
         // when, then
-        assertThatThrownBy(() -> memberStyleService.updateMemberStyle(nonExistMemberId, memberStyleUpdateRequest))
+        assertThatThrownBy(() -> memberStyleService.updateMemberStyle(nonMemberId, memberStyleUpdateRequest))
                 .isInstanceOf(BaseException.class)
                 .hasMessageContaining("해당 식별자를 가진 회원이 존재하지 않습니다");
     }
 
     @Test
-    void 존재하지_않는_회원_식별자로_회원_스타일_수정시_예외가_발생한다() {
+    void 회원_스타일이_저장되지_않은_회원의_스타일_업데이트시_예외가_발생한다() {
         // given
         Member member = memberRepository.save(Member.builder()
                 .memberType(MemberType.APPLE)
