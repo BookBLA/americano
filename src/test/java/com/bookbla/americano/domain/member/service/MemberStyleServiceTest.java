@@ -49,26 +49,6 @@ class MemberStyleServiceTest {
     private MemberStyleRepository memberStyleRepository;
 
     @Test
-    void 회원_스타일_목록을_확인할_수_있다() {
-        // when
-        StylesResponse stylesResponse = memberStyleService.readStyles();
-
-        // then
-        assertAll(
-                () -> assertThat(stylesResponse.getSmokeTypes()).containsExactly("흡연", "비흡연", "가끔"),
-                () -> assertThat(stylesResponse.getDrinkTypes()).containsExactly("안마심", "월 1~2회",
-                        "주 1회", "주 1회 이상", "매일"),
-                () -> assertThat(stylesResponse.getContactTypes()).containsExactly("느긋이", "칼답"),
-                () -> assertThat(stylesResponse.getDateStyleTypes()).containsExactly("집 데이트",
-                        "야외 데이트"),
-                () -> assertThat(stylesResponse.getDateCostTypes()).containsExactly("더치페이",
-                        "번갈아가면서 사기", "여유있는 사람이 좀 더", "데이트 통장"),
-                () -> assertThat(stylesResponse.getJustFriendTypes()).containsExactly("허용 X",
-                        "단 둘이 밥 먹기", "단 둘이 술 먹기", "단 둘이 여행 가기", "상관 없음")
-        );
-    }
-
-    @Test
     void 회원의_스타일을_생성할_수_있다() {
         // given
         Member member = memberRepository.save(Member.builder()

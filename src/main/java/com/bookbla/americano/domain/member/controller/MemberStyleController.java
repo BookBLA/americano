@@ -1,7 +1,6 @@
 package com.bookbla.americano.domain.member.controller;
 
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCreateRequest;
-import com.bookbla.americano.domain.member.controller.dto.response.StylesResponse;
 import com.bookbla.americano.domain.member.service.MemberStyleService;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpdateRequest;
@@ -20,11 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberStyleController {
 
     private final MemberStyleService memberStyleService;
-
-    @GetMapping
-    public ResponseEntity<StylesResponse> readStyles() {
-        return ResponseEntity.ok(memberStyleService.readStyles());
-    }
 
     @PostMapping
     public ResponseEntity<MemberStyleResponse> createMemberStyle(Long memberId, MemberStyleCreateRequest memberStyleCreateRequest) {

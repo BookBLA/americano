@@ -3,13 +3,6 @@ package com.bookbla.americano.domain.member.service;
 import com.bookbla.americano.domain.member.Member;
 import com.bookbla.americano.domain.member.MemberStyle;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCreateRequest;
-import com.bookbla.americano.domain.member.controller.dto.response.StylesResponse;
-import com.bookbla.americano.domain.member.enums.ContactType;
-import com.bookbla.americano.domain.member.enums.DateCostType;
-import com.bookbla.americano.domain.member.enums.DateStyle;
-import com.bookbla.americano.domain.member.enums.DrinkType;
-import com.bookbla.americano.domain.member.enums.JustFriendType;
-import com.bookbla.americano.domain.member.enums.SmokeType;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberStyleRepository;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
@@ -19,23 +12,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class MemberStyleService {
 
     private final MemberRepository memberRepository;
     private final MemberStyleRepository memberStyleRepository;
 
-    public StylesResponse readStyles() {
-        return StylesResponse.of(
-                SmokeType.getValues(),
-                DrinkType.getValues(),
-                ContactType.getValues(),
-                DateStyle.getValues(),
-                DateCostType.getValues(),
-                JustFriendType.getValues()
-        );
-    }
-
+    @Transactional(readOnly = true)
     public MemberStyleResponse readMemberStyle(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberStyle memberStyle = memberStyleRepository.getByMemberOrThrow(member);
@@ -43,7 +27,6 @@ public class MemberStyleService {
         return MemberStyleResponse.of(member, memberStyle);
     }
 
-    @Transactional
     public MemberStyleResponse createMemberStyle(Long memberId, MemberStyleCreateRequest memberStyleCreateRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberStyle memberStyle = memberStyleCreateRequest.toMemberStyleWith(member);
@@ -52,7 +35,6 @@ public class MemberStyleService {
         return MemberStyleResponse.of(member, savedMemberStyle);
     }
 
-    @Transactional
     public void updateMemberStyle(Long memberId, MemberStyleUpdateRequest memberStyleUpdateRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberStyle memberStyle = memberStyleRepository.getByMemberOrThrow(member);
