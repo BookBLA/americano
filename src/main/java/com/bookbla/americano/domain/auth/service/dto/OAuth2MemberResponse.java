@@ -4,8 +4,6 @@ import com.bookbla.americano.domain.member.Member;
 
 public interface OAuth2MemberResponse {
 
-    String getName();
-
     String getEmail();
 
     Member toMember();
