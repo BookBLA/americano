@@ -26,6 +26,13 @@ public class MemberAskService {
         return MemberAskResponse.from(savedMemberAsk);
     }
 
+    @Transactional(readOnly = true)
+    public MemberAskResponse readMemberAsk(Long memberId) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberAsk memberAsk = memberAskRepository.getByMemberOrThrow(member);
+        return MemberAskResponse.from(memberAsk);
+    }
+
     public void updateMemberAsk(Long memberId, MemberAskUpdateRequest memberAskUpdateRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberAsk memberAsk = memberAskRepository.getByMemberOrThrow(member);

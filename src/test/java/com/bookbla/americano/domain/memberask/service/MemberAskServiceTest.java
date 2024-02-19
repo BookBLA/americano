@@ -78,6 +78,25 @@ class MemberAskServiceTest {
     }
 
     @Test
+    void 회원의_개인_질문을_조회할_수_있다() {
+        // given
+        Member member = memberRepository.save(Member.builder()
+                .memberType(MemberType.APPLE)
+                .oauthEmail("bookbla@bookbla.com")
+                .build());
+        MemberAsk memberAsk = MemberAsk.builder().member(member).contents("주로 어디서 책을 읽는 편이세요?")
+                .build();
+        memberAskRepository.save(memberAsk);
+
+        // when
+        MemberAskResponse memberAskResponse = memberAskService.readMemberAsk(member.getId());
+
+        // then
+        assertThat(memberAskResponse.getContents()).isEqualTo("주로 어디서 책을 읽는 편이세요?");
+    }
+
+
+    @Test
     void 회원의_개인_질문을_수정할_수_있다() {
         // given
         Member member = memberRepository.save(Member.builder()

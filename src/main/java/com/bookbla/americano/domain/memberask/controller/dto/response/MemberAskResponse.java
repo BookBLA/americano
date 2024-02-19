@@ -10,8 +10,9 @@ import lombok.Getter;
 public class MemberAskResponse {
 
     private final Long memberAskResponseId;
+    private final String contents;
 
     public static MemberAskResponse from(MemberAsk memberAsk) {
-        return new MemberAskResponse(memberAsk.getId());
+        return new MemberAskResponse(memberAsk.getId(), memberAsk.getContents());
     }
 }
