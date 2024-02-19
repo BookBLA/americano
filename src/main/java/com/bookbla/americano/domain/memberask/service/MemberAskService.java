@@ -22,6 +22,7 @@ public class MemberAskService {
     public MemberAskResponse createMemberAsk(Long memberId, MemberAskCreateRequest memberAskCreateRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberAsk memberAsk = memberAskCreateRequest.toMemberAskWith(member);
+
         MemberAsk savedMemberAsk = memberAskRepository.save(memberAsk);
         return MemberAskResponse.from(savedMemberAsk);
     }
@@ -30,6 +31,7 @@ public class MemberAskService {
     public MemberAskResponse readMemberAsk(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberAsk memberAsk = memberAskRepository.getByMemberOrThrow(member);
+
         return MemberAskResponse.from(memberAsk);
     }
 

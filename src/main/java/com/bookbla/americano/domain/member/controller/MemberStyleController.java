@@ -22,7 +22,8 @@ public class MemberStyleController {
     private final MemberStyleService memberStyleService;
 
     @PostMapping
-    public ResponseEntity<MemberStyleResponse> createMemberStyle(@LoginUser Long memberId, MemberStyleCreateRequest memberStyleCreateRequest) {
+    public ResponseEntity<MemberStyleResponse> createMemberStyle(
+            @LoginUser Long memberId, MemberStyleCreateRequest memberStyleCreateRequest) {
         MemberStyleResponse memberStyleResponse = memberStyleService.createMemberStyle(
                 memberId, memberStyleCreateRequest);
         return ResponseEntity.created(URI.create(memberStyleResponse.getMemberStyleId().toString()))
@@ -36,7 +37,8 @@ public class MemberStyleController {
     }
 
     @PutMapping
-    public ResponseEntity<Void> updateMemberStyle(@LoginUser Long memberId, MemberStyleUpdateRequest memberStyleUpdateRequest) {
+    public ResponseEntity<Void> updateMemberStyle(
+            @LoginUser Long memberId, MemberStyleUpdateRequest memberStyleUpdateRequest) {
         memberStyleService.updateMemberStyle(memberId, memberStyleUpdateRequest);
         return ResponseEntity.noContent().build();
     }
