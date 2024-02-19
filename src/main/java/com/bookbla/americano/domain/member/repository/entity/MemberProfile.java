@@ -1,8 +1,6 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
-import com.bookbla.americano.domain.member.controller.dto.response.MemberCreateResponse;
 import com.bookbla.americano.domain.member.repository.entity.enums.Gender;
-import com.bookbla.americano.domain.member.service.dto.MemberDto;
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;

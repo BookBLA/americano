@@ -1,10 +1,10 @@
 package com.bookbla.americano.domain.member.service.impl;
 
-import com.bookbla.americano.domain.member.controller.dto.response.MemberCreateResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileCreateResponse;
 import com.bookbla.americano.domain.member.repository.MemberProfileRepository;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
-import com.bookbla.americano.domain.member.service.dto.MemberDto;
+import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +15,9 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     private final MemberProfileRepository memberProfileRepository;
 
     @Override
-    public MemberCreateResponse createProfile(MemberDto memberDto) {
-        MemberProfile memberProfile = memberProfileRepository.save(memberDto.toMemberProfileEntity());
-        return MemberCreateResponse.from(memberProfile);
+    public MemberProfileCreateResponse createProfile(MemberProfileDto memberProfileDto) {
+        MemberProfile memberProfile = memberProfileRepository.save(memberProfileDto.toEntity());
+        return MemberProfileCreateResponse.from(memberProfile);
     }
 
 }
