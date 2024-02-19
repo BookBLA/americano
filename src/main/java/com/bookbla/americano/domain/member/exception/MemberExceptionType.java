@@ -17,7 +17,7 @@ public enum MemberExceptionType implements ExceptionType {
     DATE_COST_TYPE_NOT_VALID(HttpStatus.BAD_REQUEST, "member_006", "유효하지 않은 데이트 비용 부담 방식입니다."),
     DRINK_TYPE_NOT_VALID(HttpStatus.BAD_REQUEST, "member_007", "유효하지 않은 음주 주기입니다."),
     SMOKE_TYPE_NOT_VALID(HttpStatus.BAD_REQUEST, "member_008", "유효하지 않은 흡연 주기입니다."),
-    CONTAT_TYPE_NOT_VALID(HttpStatus.BAD_REQUEST, "member_009", "유효하지 않은 연락 주기입니다."),
+    CONTACT_TYPE_NOT_VALID(HttpStatus.BAD_REQUEST, "member_009", "유효하지 않은 연락 주기입니다."),
     JUST_FRIEND_TYPE_NOT_VALID(HttpStatus.BAD_REQUEST, "member_010", "유효하지 않은 남-여사친 유형입니다."),
     DATE_STYLE_NOT_VALID(HttpStatus.BAD_REQUEST, "member_011", "유효하지 않은 데이트 스타일입니다."),
     ;

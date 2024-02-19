@@ -28,6 +28,6 @@ public enum ContactType {
         return Arrays.stream(values())
                 .filter(it -> it.value.equals(name))
                 .findFirst()
-                .orElseThrow(() -> new BaseException(MemberExceptionType.CONTAT_TYPE_NOT_VALID));
+                .orElseThrow(() -> new BaseException(MemberExceptionType.CONTACT_TYPE_NOT_VALID));
     }
 }
