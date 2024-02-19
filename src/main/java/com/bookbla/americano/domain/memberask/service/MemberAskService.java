@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.memberask.service;
 import com.bookbla.americano.domain.member.Member;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.memberask.controller.dto.request.MemberAskCreateRequest;
+import com.bookbla.americano.domain.memberask.controller.dto.request.MemberAskUpdateRequest;
 import com.bookbla.americano.domain.memberask.controller.dto.response.MemberAskResponse;
 import com.bookbla.americano.domain.memberask.repository.MemberAskRepository;
 import com.bookbla.americano.domain.memberask.repository.entity.MemberAsk;
@@ -22,6 +23,14 @@ public class MemberAskService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberAsk memberAsk = memberAskCreateRequest.toMemberAskWith(member);
         MemberAsk savedMemberAsk = memberAskRepository.save(memberAsk);
-        return  MemberAskResponse.from(savedMemberAsk);
+        return MemberAskResponse.from(savedMemberAsk);
     }
+
+    public void updateMemberAsk(Long memberId, MemberAskUpdateRequest memberAskUpdateRequest) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberAsk memberAsk = memberAskRepository.getByMemberOrThrow(member);
+
+        memberAsk.updateContent(memberAskUpdateRequest.getContents());
+    }
+
 }

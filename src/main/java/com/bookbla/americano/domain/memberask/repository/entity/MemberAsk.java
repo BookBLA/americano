@@ -47,4 +47,9 @@ public class MemberAsk extends BaseInsertEntity {
             throw new BaseException(MemberAskExceptionType.INVALID_CONTENT_LENGTH);
         }
     }
+
+    public void updateContent(String contents) {
+        validate(contents);
+        this.contents = contents;
+    }
 }
