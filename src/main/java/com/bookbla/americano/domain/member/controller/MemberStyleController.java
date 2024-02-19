@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.member.controller;
 
+import com.bookbla.americano.base.jwt.LoginUser;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCreateRequest;
 import com.bookbla.americano.domain.member.service.MemberStyleService;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
@@ -21,23 +22,21 @@ public class MemberStyleController {
     private final MemberStyleService memberStyleService;
 
     @PostMapping
-    public ResponseEntity<MemberStyleResponse> createMemberStyle(Long memberId, MemberStyleCreateRequest memberStyleCreateRequest) {
-        MemberStyleResponse memberStyleResponse = memberStyleService.createMemberStyle(memberId,
-                memberStyleCreateRequest);
+    public ResponseEntity<MemberStyleResponse> createMemberStyle(@LoginUser Long memberId, MemberStyleCreateRequest memberStyleCreateRequest) {
+        MemberStyleResponse memberStyleResponse = memberStyleService.createMemberStyle(
+                memberId, memberStyleCreateRequest);
         return ResponseEntity.created(URI.create(memberStyleResponse.getMemberStyleId().toString()))
                 .body(memberStyleResponse);
     }
 
-    // member 식별자를 어디서 받아올까...
-    @GetMapping("/{memberId}")
-    public ResponseEntity<MemberStyleResponse> readMemberStyle(Long memberId) {
+    @GetMapping
+    public ResponseEntity<MemberStyleResponse> readMemberStyle(@LoginUser Long memberId) {
         MemberStyleResponse memberStyleResponse = memberStyleService.readMemberStyle(memberId);
         return ResponseEntity.ok(memberStyleResponse);
     }
 
-    // member 식별자를 어디서 받아올까...
     @PutMapping
-    public ResponseEntity<Void> updateMemberStyle(Long memberId, MemberStyleUpdateRequest memberStyleUpdateRequest) {
+    public ResponseEntity<Void> updateMemberStyle(@LoginUser Long memberId, MemberStyleUpdateRequest memberStyleUpdateRequest) {
         memberStyleService.updateMemberStyle(memberId, memberStyleUpdateRequest);
         return ResponseEntity.noContent().build();
     }

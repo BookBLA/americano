@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.memberask.controller;
 
 
+import com.bookbla.americano.base.jwt.LoginUser;
 import com.bookbla.americano.domain.memberask.controller.dto.request.MemberAskCreateRequest;
 import com.bookbla.americano.domain.memberask.controller.dto.request.MemberAskUpdateRequest;
 import com.bookbla.americano.domain.memberask.controller.dto.response.MemberAskResponse;
@@ -23,7 +24,7 @@ public class MemberAskController {
 
     @PostMapping
     public ResponseEntity<Void> createMemberAsk(
-            Long memberId, MemberAskCreateRequest memberAskCreateRequest) {
+            @LoginUser Long memberId, MemberAskCreateRequest memberAskCreateRequest) {
         MemberAskResponse memberAskResponse = memberAskService.createMemberAsk(
                 memberId, memberAskCreateRequest);
         return ResponseEntity.created(
@@ -32,14 +33,14 @@ public class MemberAskController {
     }
 
     @GetMapping
-    public ResponseEntity<MemberAskResponse> readMemberAsk(Long memberId) {
+    public ResponseEntity<MemberAskResponse> readMemberAsk(@LoginUser Long memberId) {
         MemberAskResponse memberAskResponse = memberAskService.readMemberAsk(memberId);
         return ResponseEntity.ok(memberAskResponse);
     }
 
     @PutMapping
     public ResponseEntity<Void> updateMemberAsk(
-            Long memberId,MemberAskUpdateRequest memberAskUpdateRequest) {
+            @LoginUser Long memberId,MemberAskUpdateRequest memberAskUpdateRequest) {
         memberAskService.updateMemberAsk(memberId, memberAskUpdateRequest);
         return ResponseEntity.noContent().build();
     }
