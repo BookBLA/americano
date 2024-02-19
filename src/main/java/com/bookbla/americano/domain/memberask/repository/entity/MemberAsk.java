@@ -1,7 +1,9 @@
 package com.bookbla.americano.domain.memberask.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.Member;
+import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -9,7 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberAsk extends BaseInsertEntity {
 
@@ -30,4 +30,21 @@ public class MemberAsk extends BaseInsertEntity {
     private Member member;
 
     private String contents;
+
+    public MemberAsk(Member member, String contents) {
+        this(null, member, contents);
+    }
+
+    public MemberAsk(Long id, Member member, String contents) {
+        validate(contents);
+        this.id = id;
+        this.member = member;
+        this.contents = contents;
+    }
+
+    private void validate(String contents) {
+        if (contents.length() > 80) {
+            throw new BaseException(MemberExceptionType.MEMBER_ASK_CONTENT_NOT_VALID_LENGTH);
+        }
+    }
 }
