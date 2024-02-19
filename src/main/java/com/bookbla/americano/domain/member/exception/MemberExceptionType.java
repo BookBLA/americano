@@ -20,7 +20,6 @@ public enum MemberExceptionType implements ExceptionType {
     CONTAT_TYPE_NOT_VALID(HttpStatus.BAD_REQUEST, "member_009", "유효하지 않은 연락 주기입니다."),
     JUST_FRIEND_TYPE_NOT_VALID(HttpStatus.BAD_REQUEST, "member_010", "유효하지 않은 남-여사친 유형입니다."),
     DATE_STYLE_NOT_VALID(HttpStatus.BAD_REQUEST, "member_011", "유효하지 않은 데이트 스타일입니다."),
-    MEMBER_ASK_CONTENT_NOT_VALID_LENGTH(HttpStatus.BAD_REQUEST, "member_012", "개인 질문은 공백 포함 80자 이하로만 작성가능합니다."),
     ;
 
     private final HttpStatus httpStatus;

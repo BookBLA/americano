@@ -3,7 +3,7 @@ package com.bookbla.americano.domain.memberask.repository.entity;
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.Member;
-import com.bookbla.americano.domain.member.exception.MemberExceptionType;
+import com.bookbla.americano.domain.memberask.exception.MemberAskExceptionType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -44,7 +44,7 @@ public class MemberAsk extends BaseInsertEntity {
 
     private void validate(String contents) {
         if (contents.length() > 80) {
-            throw new BaseException(MemberExceptionType.MEMBER_ASK_CONTENT_NOT_VALID_LENGTH);
+            throw new BaseException(MemberAskExceptionType.INVALID_CONTENT_LENGTH);
         }
     }
 }
