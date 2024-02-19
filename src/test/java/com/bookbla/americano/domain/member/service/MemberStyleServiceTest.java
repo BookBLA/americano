@@ -72,7 +72,6 @@ class MemberStyleServiceTest {
     void 회원의_스타일을_생성할_수_있다() {
         // given
         Member member = memberRepository.save(Member.builder()
-                .name("이준희")
                 .memberType(MemberType.APPLE)
                 .oauthEmail("bookbla@bookbla.com")
                 .build());
@@ -87,7 +86,6 @@ class MemberStyleServiceTest {
         // then
         assertAll(
                 () -> assertThat(memberStyleResponse.getMemberId()).isNotNull(),
-                () -> assertThat(memberStyleResponse.getName()).isEqualTo("이준희"),
                 () -> assertThat(memberStyleResponse.getMemberStyleId()).isNotNull(),
                 () -> assertThat(memberStyleResponse.getMbti()).isEqualToIgnoringCase("infj"),
                 () -> assertThat(memberStyleResponse.getDrinkType()).isEqualTo("매일"),
@@ -104,7 +102,6 @@ class MemberStyleServiceTest {
     void 회원의_스타일을_조회할_수_있다() {
         // given
         Member member = memberRepository.save(Member.builder()
-                .name("이준희")
                 .memberType(MemberType.APPLE)
                 .oauthEmail("bookbla@bookbla.com")
                 .build());
@@ -126,7 +123,6 @@ class MemberStyleServiceTest {
         // then
         assertAll(
                 () -> assertThat(memberStyleResponse.getMemberId()).isNotNull(),
-                () -> assertThat(memberStyleResponse.getName()).isEqualTo("이준희"),
                 () -> assertThat(memberStyleResponse.getSmokeType()).isEqualTo("흡연"),
                 () -> assertThat(memberStyleResponse.getContactType()).isEqualTo("칼답"),
                 () -> assertThat(memberStyleResponse.getDateCostType()).isEqualTo("데이트 통장"),
@@ -141,7 +137,6 @@ class MemberStyleServiceTest {
     void 스타일이_등록되지_않은_회원은_스타일_조회시_예외가_발생한다() {
         // given
         Member member = memberRepository.save(Member.builder()
-                .name("이준희")
                 .memberType(MemberType.APPLE)
                 .oauthEmail("bookbla@bookbla.com")
                 .build());
@@ -156,7 +151,6 @@ class MemberStyleServiceTest {
     void 존재하지_않는_회원_식별자로_스타일조회시_예외가_발생한다() {
         // given
         Member member = memberRepository.save(Member.builder()
-                .name("이준희")
                 .memberType(MemberType.APPLE)
                 .oauthEmail("bookbla@bookbla.com")
                 .build());
@@ -171,7 +165,6 @@ class MemberStyleServiceTest {
     void 회원_스타일을_업데이트_할_수_있다() {
         // given
         Member member = memberRepository.save(Member.builder()
-                .name("이준희")
                 .memberType(MemberType.APPLE)
                 .oauthEmail("bookbla@bookbla.com")
                 .build());
@@ -223,7 +216,6 @@ class MemberStyleServiceTest {
     void 존재하지_않는_회원_식별자로_회원_스타일_수정시_예외가_발생한다() {
         // given
         Member member = memberRepository.save(Member.builder()
-                .name("이준희")
                 .memberType(MemberType.APPLE)
                 .oauthEmail("bookbla@bookbla.com")
                 .build());
