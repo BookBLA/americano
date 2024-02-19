@@ -11,6 +11,7 @@ public class MemberStyleResponse {
 
     private final Long memberId;
     private final String name;
+    private final Long memberStyleId;
     private final String smokeType;
     private final String contactType;
     private final String dateCostType;
@@ -23,6 +24,7 @@ public class MemberStyleResponse {
         return new MemberStyleResponse(
                 member.getId(),
                 member.getName(),
+                memberStyle.getId(),
                 memberStyle.getSmokeType().getValue(),
                 memberStyle.getContactType().getValue(),
                 memberStyle.getDateCostType().getValue(),

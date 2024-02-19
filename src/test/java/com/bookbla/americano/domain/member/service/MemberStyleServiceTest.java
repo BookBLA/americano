@@ -88,6 +88,7 @@ class MemberStyleServiceTest {
         assertAll(
                 () -> assertThat(memberStyleResponse.getMemberId()).isNotNull(),
                 () -> assertThat(memberStyleResponse.getName()).isEqualTo("이준희"),
+                () -> assertThat(memberStyleResponse.getMemberStyleId()).isNotNull(),
                 () -> assertThat(memberStyleResponse.getMbti()).isEqualToIgnoringCase("infj"),
                 () -> assertThat(memberStyleResponse.getDrinkType()).isEqualTo("매일"),
                 () -> assertThat(memberStyleResponse.getDateCostType()).isEqualTo("더치페이"),
