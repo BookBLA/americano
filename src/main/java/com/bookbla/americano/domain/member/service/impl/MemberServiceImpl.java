@@ -13,10 +13,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -56,33 +58,94 @@ public class MemberServiceImpl implements MemberService {
             throw new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOK);
         }
         // 해당 사용자의 선호 책
-        List<MemberBookProfileResponseDto> userBookProfile = new ArrayList<>();
-        List<MemberBookProfileResponseDto> othersBookProfile = new ArrayList<>(allResult);
+        List<MemberBookProfileResponseDto> userBookProfiles = new ArrayList<>();
+        List<MemberBookProfileResponseDto> otherBookProfiles = new ArrayList<>(allResult);
         for (MemberBookProfileResponseDto i : allResult) {
             if (i.getMemberId() == requestDto.getMemberId()) {
-                addBookProfileToList(userBookProfile, i);
-                othersBookProfile.remove(i);
+                addBookProfileToList(userBookProfiles, i);
+                otherBookProfiles.remove(i);
             }
         }
         // 해당 사용자의 선호책이 없을 때, EMPTY_MEMBER_BOOK Exception
-        if (userBookProfile.isEmpty()) {
+        if (userBookProfiles.isEmpty()) {
             throw new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOK);
         }
 
-        List<MemberBookProfileResponseDto> result = new ArrayList<>();
-        Map<Long, MemberBookProfileResponseDto> selected = new HashMap<>();
-        int afterRepresentativeIdx = -1;
-        for (MemberBookProfileResponseDto i : userBookProfile) {
-            List<MemberBookProfileResponseDto> bookProfiles = othersBookProfile.stream()
-                    .filter(bp -> i.getBookId() == bp.getBookId())
-                    .collect(Collectors.toList());
-            for (MemberBookProfileResponseDto j : bookProfiles) {
-                addBookProfileToList(result, i, j, selected, afterRepresentativeIdx);
-            }
-            if (afterRepresentativeIdx == -1)
-                afterRepresentativeIdx = result.size();
-        }
-        return result;
+        // 1순위 : 대표책 - 대표책
+        List<MemberBookProfileResponseDto> firstResults = findMatches(
+                userBookProfiles,
+                otherBookProfiles,
+                MemberBookProfileResponseDto::isBookIsRepresentative,
+                MemberBookProfileResponseDto::isBookIsRepresentative
+        );
+
+        Collections.shuffle(firstResults);
+        removeMemberToOtherBookProfiles(otherBookProfiles, firstResults);
+
+        // 2순위 : 대표책 - 선호책
+        List<MemberBookProfileResponseDto> secondResults = findMatches(
+                userBookProfiles,
+                otherBookProfiles,
+                MemberBookProfileResponseDto::isBookIsRepresentative,
+                otherBookProfile -> !otherBookProfile.isBookIsRepresentative()
+        );
+
+        Collections.shuffle(secondResults);
+        removeMemberToOtherBookProfiles(otherBookProfiles, secondResults);
+
+        // 3순위 : 선호책 - 대표책
+        List<MemberBookProfileResponseDto> thirdResults = findMatches(
+                userBookProfiles,
+                otherBookProfiles,
+                userBookProfile -> !userBookProfile.isBookIsRepresentative(),
+                MemberBookProfileResponseDto::isBookIsRepresentative
+        );
+
+        Collections.shuffle(thirdResults);
+        removeMemberToOtherBookProfiles(otherBookProfiles, thirdResults);
+
+        // 4순위 : 선호책 - 선호책
+        List<MemberBookProfileResponseDto> fourthResults = findMatches(
+                userBookProfiles,
+                otherBookProfiles,
+                userBookProfile -> !userBookProfile.isBookIsRepresentative(),
+                otherBookProfile -> !otherBookProfile.isBookIsRepresentative()
+        );
+
+        Collections.shuffle(fourthResults);
+
+        return Stream.of(firstResults, secondResults, thirdResults, fourthResults)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+    }
+
+    private List<MemberBookProfileResponseDto> findMatches(
+            List<MemberBookProfileResponseDto> userBookProfiles,
+            List<MemberBookProfileResponseDto> otherBookProfiles,
+            Predicate<MemberBookProfileResponseDto> userPredicate,
+            Predicate<MemberBookProfileResponseDto> otherPredicate) {
+
+        return new ArrayList<>(userBookProfiles.stream()
+                .filter(userPredicate)
+                .flatMap(userBookProfile -> otherBookProfiles.stream()
+                        .filter(otherBookProfile -> otherBookProfile.getBookId()
+                                == userBookProfile.getBookId())
+                        .filter(otherPredicate)
+                ).collect(Collectors.groupingBy(MemberBookProfileResponseDto::getMemberId,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                memberBookProfileList -> memberBookProfileList.get(0)
+                        )))
+                .values());
+    }
+
+    private void removeMemberToOtherBookProfiles(
+            List<MemberBookProfileResponseDto> otherBookProfiles,
+            List<MemberBookProfileResponseDto> resultBookProfiles) {
+        otherBookProfiles.removeIf(otherBookProfile -> resultBookProfiles.stream()
+                .anyMatch(resultBookProfile -> resultBookProfile.getMemberId()
+                        == otherBookProfile.getMemberId()));
     }
     
     @Override
@@ -95,25 +158,5 @@ public class MemberServiceImpl implements MemberService {
             list.add(0, i);
         else
             list.add(i);
-    }
-
-    private void addBookProfileToList(List<MemberBookProfileResponseDto> result, MemberBookProfileResponseDto i, MemberBookProfileResponseDto j) {
-        if (j.isBookIsRepresentative() && i.isBookIsRepresentative())
-            result.add(0, j);
-        else
-            result.add(j);
-    }
-
-    private void addBookProfileToList(List<MemberBookProfileResponseDto> result, MemberBookProfileResponseDto i, MemberBookProfileResponseDto j,
-                                      Map<Long, MemberBookProfileResponseDto> selected, int afterRepresentativeIdx) {
-        if (selected.containsKey(j.getMemberId()) && j.isBookIsRepresentative() && result.indexOf(selected.get(j.getMemberId())) >= afterRepresentativeIdx) {
-            result.add(afterRepresentativeIdx, j);
-            result.remove(selected.get(j.getMemberId()));
-            selected.remove(j.getMemberId());
-            selected.put(j.getMemberId(), j);
-        } else if (!selected.containsKey(j.getMemberId())) {
-            addBookProfileToList(result, i, j);
-            selected.put(j.getMemberId(), j);
-        }
     }
 }
