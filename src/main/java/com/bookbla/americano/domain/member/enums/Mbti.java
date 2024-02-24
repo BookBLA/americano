@@ -21,7 +21,10 @@ public enum Mbti {
     ESTP,
     ESTJ,
     ESFP,
-    ESFJ;
+    ESFJ,
+
+    EMPTY,
+    ;
 
     public static Mbti from(String name) {
         return Arrays.stream(values())
