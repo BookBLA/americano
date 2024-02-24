@@ -40,13 +40,13 @@ public class MemberController {
                 .build());
     }
 
-    @GetMapping("/emails/verifications")
+    @PostMapping("/emails/verifications")
     public ResponseEntity<MailVerifyResponse> verifyEmail(
         @RequestBody @Valid MailVerifyRequest mailVerifyRequest,
         @LoginUser Long memberId) {
 
         Member member = memberService.getMemberById(memberId);
-
+        System.out.println(memberId + mailVerifyRequest.getVerifyCode());
         mailService.verifyEmail(member, mailVerifyRequest.getVerifyCode());
 
         return ResponseEntity.ok()
