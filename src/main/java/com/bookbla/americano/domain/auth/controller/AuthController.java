@@ -1,17 +1,17 @@
 package com.bookbla.americano.domain.auth.controller;
 
 import com.bookbla.americano.base.jwt.JwtProvider;
-import com.bookbla.americano.base.jwt.LoginUser;
 import com.bookbla.americano.domain.auth.controller.dto.request.LoginRequestDto;
 import com.bookbla.americano.domain.auth.controller.dto.response.LoginResponseDto;
-import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.auth.service.AuthService;
 import com.bookbla.americano.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.LazyToOne;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -23,6 +23,7 @@ public class AuthController {
 
     private final JwtProvider jwtProvider;
     private final MemberService memberService;
+    private final AuthService kakaoLoginService;
 
     @PostMapping("")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
@@ -34,9 +35,10 @@ public class AuthController {
             );
     }
 
-    @PostMapping("/{loginType}")
-    public ResponseEntity<LoginResponseDto> login(@LoginUser Long memberId) {
-        Member member = memberService.getMemberById(memberId);
+    @GetMapping("/oauth2/kakao")
+    public ResponseEntity<LoginResponseDto> kakaoLogin(@RequestParam("code") String code) {
+
+        Long memberId = kakaoLoginService.kakaoLogin(code);
 
         return ResponseEntity.ok()
             .header(AUTHORIZATION, jwtProvider.createToken(memberId.toString()))
@@ -45,4 +47,5 @@ public class AuthController {
                 .build()
             );
     }
+
 }
