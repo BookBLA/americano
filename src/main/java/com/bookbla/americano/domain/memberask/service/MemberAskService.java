@@ -24,6 +24,7 @@ public class MemberAskService {
         MemberAsk memberAsk = memberAskCreateRequest.toMemberAskWith(member);
 
         MemberAsk savedMemberAsk = memberAskRepository.save(memberAsk);
+
         return MemberAskResponse.from(savedMemberAsk);
     }
 

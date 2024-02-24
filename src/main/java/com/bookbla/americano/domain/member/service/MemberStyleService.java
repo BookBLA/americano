@@ -32,6 +32,7 @@ public class MemberStyleService {
         MemberStyle memberStyle = memberStyleCreateRequest.toMemberStyleWith(member);
 
         MemberStyle savedMemberStyle = memberStyleRepository.save(memberStyle);
+
         return MemberStyleResponse.of(member, savedMemberStyle);
     }
 
