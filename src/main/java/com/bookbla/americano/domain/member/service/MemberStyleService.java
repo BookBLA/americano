@@ -48,7 +48,7 @@ public class MemberStyleService {
         memberStyle.updateDateCostType(memberStyleUpdateRequest.getDateCostType());
         memberStyle.updateSmokeType(memberStyleUpdateRequest.getSmokeType());
         memberStyle.updateContactType(memberStyleUpdateRequest.getContactType());
-        memberStyle.updateDateStyle(memberStyleUpdateRequest.getDateStyleType());
+        memberStyle.updateDateStyleType(memberStyleUpdateRequest.getDateStyleType());
         memberStyle.updateJustFriendType(memberStyleUpdateRequest.getJustFriendType());
     }
 
