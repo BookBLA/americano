@@ -4,6 +4,7 @@ import com.bookbla.americano.base.jwt.LoginUser;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberCoinCountRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.service.MemberService;
@@ -40,6 +41,12 @@ public class MemberController {
 
         MemberResponse memberResponse = memberService.updateMember(memberId, memberUpdateRequest);
         return ResponseEntity.ok(memberResponse);
+    }
+
+    @GetMapping("/memberCoinCount")
+    public ResponseEntity<Integer> memberCoinCount(@ModelAttribute MemberCoinCountRequestDto memberCoinCountRequestDto){
+        Integer memberCoinCount = memberService.getMemberCoinCount(memberCoinCountRequestDto);
+        return ResponseEntity.ok(memberCoinCount);
     }
 
     @GetMapping("/sameBookMembers")

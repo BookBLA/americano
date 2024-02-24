@@ -2,8 +2,10 @@ package com.bookbla.americano.domain.member.service.impl;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberCoinCountRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
+import com.bookbla.americano.domain.member.repository.MemberCoinRepository;
 import com.bookbla.americano.domain.member.repository.MemberProfileRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,7 +26,9 @@ import java.util.stream.Stream;
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
-    private final MemberProfileRepository repository;
+    private final MemberProfileRepository memberProfileRepository;
+    private final MemberCoinRepository memberCoinRepository;
+    
 	@Override
     @Transactional(readOnly = true)
     public MemberResponse readMember(Long memberId) {
@@ -42,6 +47,15 @@ public class MemberServiceImpl implements MemberService {
     private void update(Member member, MemberUpdateRequest request) {
         member.updateOauthEmail(request.getOauthEmail())
             .updateMemberType(request.getMemberType());
+   	}
+   	
+    @Override
+    public int getMemberCoinCount(MemberCoinCountRequestDto requestDto) {
+        Optional<Integer> result = memberCoinRepository.getMemberCoinByMember_Id(requestDto.getMemberId());
+        if (result.isEmpty())
+            throw new BaseException(MemberExceptionType.EMPTY_MEMBER_COIN_INFO);
+
+        return result.get();
     }
 
 	@Override
@@ -52,7 +66,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional(readOnly = true)
     public List<MemberBookProfileResponseDto> findSameBookMembers(MemberBookProfileRequestDto requestDto) {
-        List<MemberBookProfileResponseDto> allResult = repository.searchSameBookMember(requestDto);
+        List<MemberBookProfileResponseDto> allResult = memberProfileRepository.searchSameBookMember(requestDto);
         // 탐색 결과가 없을 때, EMPTY_MEMBER_BOOK Exception(해당 사용자의 선호 책도 없음)
         if (allResult.isEmpty()) {
             throw new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOK);
