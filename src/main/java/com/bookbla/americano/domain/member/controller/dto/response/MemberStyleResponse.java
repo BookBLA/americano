@@ -26,7 +26,7 @@ public class MemberStyleResponse {
                 memberStyle.getSmokeType().getValue(),
                 memberStyle.getContactType().getValue(),
                 memberStyle.getDateCostType().getValue(),
-                memberStyle.getDateStyle().getValue(),
+                memberStyle.getDateStyleType().getValue(),
                 memberStyle.getJustFriendType().getValue(),
                 memberStyle.getDrinkType().getValue(),
                 memberStyle.getMbti().name()

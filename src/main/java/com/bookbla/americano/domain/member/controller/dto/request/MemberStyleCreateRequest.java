@@ -4,7 +4,7 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
 import com.bookbla.americano.domain.member.enums.ContactType;
 import com.bookbla.americano.domain.member.enums.DateCostType;
-import com.bookbla.americano.domain.member.enums.DateStyle;
+import com.bookbla.americano.domain.member.enums.DateStyleType;
 import com.bookbla.americano.domain.member.enums.DrinkType;
 import com.bookbla.americano.domain.member.enums.JustFriendType;
 import com.bookbla.americano.domain.member.enums.Mbti;
@@ -42,7 +42,7 @@ public class MemberStyleCreateRequest {
     public MemberStyle toMemberStyleWith(Member member) {
         return MemberStyle.builder()
                 .member(member)
-                .dateStyle(DateStyle.from(dateStyle))
+                .dateStyleType(DateStyleType.from(dateStyle))
                 .contactType(ContactType.from(contactType))
                 .smokeType(SmokeType.from(smokeType))
                 .mbti(Mbti.from(mbti))

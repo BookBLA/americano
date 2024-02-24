@@ -2,7 +2,7 @@ package com.bookbla.americano.domain.member.controller.dto.request;
 
 import com.bookbla.americano.domain.member.enums.ContactType;
 import com.bookbla.americano.domain.member.enums.DateCostType;
-import com.bookbla.americano.domain.member.enums.DateStyle;
+import com.bookbla.americano.domain.member.enums.DateStyleType;
 import com.bookbla.americano.domain.member.enums.DrinkType;
 import com.bookbla.americano.domain.member.enums.JustFriendType;
 import com.bookbla.americano.domain.member.enums.Mbti;
@@ -35,7 +35,7 @@ public class MemberStyleUpdateRequest {
     private String justFriendType;
 
     @NotNull(message = "데이트 스타일이 입력되지 않았습니다.")
-    private String dateStyle;
+    private String dateStyleType;
 
     public Mbti getMbti() {
         return Mbti.from(mbti);
@@ -61,7 +61,7 @@ public class MemberStyleUpdateRequest {
         return JustFriendType.from(justFriendType);
     }
 
-    public DateStyle getDateStyle() {
-        return DateStyle.from(dateStyle);
+    public DateStyleType getDateStyleType() {
+        return DateStyleType.from(dateStyleType);
     }
 }

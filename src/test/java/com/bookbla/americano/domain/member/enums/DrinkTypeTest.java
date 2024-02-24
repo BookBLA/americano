@@ -40,7 +40,7 @@ class DrinkTypeTest {
     @ValueSource(strings = {"cute", "kawaii", "swagg", "여하튼MBTI아닌것"})
     void 유효하지_않은_음주_유형이라면_예외가_발생한다(String input) {
         // when, then
-        assertThatThrownBy(() -> DateStyle.from(input))
+        assertThatThrownBy(() -> DateStyleType.from(input))
                 .isInstanceOf(BaseException.class);
     }
 

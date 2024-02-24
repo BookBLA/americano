@@ -4,7 +4,7 @@ import static com.bookbla.americano.domain.member.enums.ContactType.FAST;
 import static com.bookbla.americano.domain.member.enums.ContactType.SLOW;
 import static com.bookbla.americano.domain.member.enums.DateCostType.DATE_ACCOUNT;
 import static com.bookbla.americano.domain.member.enums.DateCostType.DUTCH_PAY;
-import static com.bookbla.americano.domain.member.enums.DateStyle.HOME;
+import static com.bookbla.americano.domain.member.enums.DateStyleType.HOME;
 import static com.bookbla.americano.domain.member.enums.DrinkType.EVERYDAY;
 import static com.bookbla.americano.domain.member.enums.DrinkType.NONE;
 import static com.bookbla.americano.domain.member.enums.JustFriendType.ALCOHOL;
@@ -89,7 +89,7 @@ class MemberStyleServiceTest {
                 .drinkType(NONE)
                 .smokeType(SMOKE)
                 .justFriendType(ALCOHOL)
-                .dateStyle(HOME)
+                .dateStyleType(HOME)
                 .mbti(INTP)
                 .dateCostType(DATE_ACCOUNT)
                 .build());
@@ -152,7 +152,7 @@ class MemberStyleServiceTest {
                 .drinkType(NONE)
                 .smokeType(SMOKE)
                 .justFriendType(ALCOHOL)
-                .dateStyle(HOME)
+                .dateStyleType(HOME)
                 .mbti(INTP)
                 .dateCostType(DATE_ACCOUNT)
                 .build());
@@ -166,7 +166,7 @@ class MemberStyleServiceTest {
         // then
         MemberStyle memberStyle = memberStyleRepository.getByMemberOrThrow(member);
         assertAll(
-                () -> assertThat(memberStyle.getDateStyle()).isEqualTo(HOME),
+                () -> assertThat(memberStyle.getDateStyleType()).isEqualTo(HOME),
                 () -> assertThat(memberStyle.getMbti()).isEqualTo(INFJ),
                 () -> assertThat(memberStyle.getDrinkType()).isEqualTo(EVERYDAY),
                 () -> assertThat(memberStyle.getDateCostType()).isEqualTo(DUTCH_PAY),

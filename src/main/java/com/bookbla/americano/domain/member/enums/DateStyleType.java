@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum DateStyle {
+public enum DateStyleType {
 
     HOME("집 데이트"),
     OUTSIDE("야외 데이트"),
@@ -24,7 +24,7 @@ public enum DateStyle {
                 .collect(Collectors.toList());
     }
 
-    public static DateStyle from(String name) {
+    public static DateStyleType from(String name) {
         return Arrays.stream(values())
                 .filter(it -> it.value.equals(name))
                 .findFirst()

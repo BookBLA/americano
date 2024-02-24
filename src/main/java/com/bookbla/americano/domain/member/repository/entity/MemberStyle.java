@@ -3,7 +3,7 @@ package com.bookbla.americano.domain.member.repository.entity;
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.domain.member.enums.ContactType;
 import com.bookbla.americano.domain.member.enums.DateCostType;
-import com.bookbla.americano.domain.member.enums.DateStyle;
+import com.bookbla.americano.domain.member.enums.DateStyleType;
 import com.bookbla.americano.domain.member.enums.DrinkType;
 import com.bookbla.americano.domain.member.enums.JustFriendType;
 import com.bookbla.americano.domain.member.enums.Mbti;
@@ -47,7 +47,7 @@ public class MemberStyle extends BaseInsertEntity {
     private ContactType contactType;
 
     @Enumerated(EnumType.STRING)
-    private DateStyle dateStyle;
+    private DateStyleType dateStyleType;
 
     @Enumerated(EnumType.STRING)
     private DateCostType dateCostType;
@@ -82,7 +82,7 @@ public class MemberStyle extends BaseInsertEntity {
         this.mbti = mbti;
     }
 
-    public void updateDateStyle(DateStyle dateStyle) {
-        this.dateStyle = dateStyle;
+    public void updateDateStyle(DateStyleType dateStyleType) {
+        this.dateStyleType = dateStyleType;
     }
 }
