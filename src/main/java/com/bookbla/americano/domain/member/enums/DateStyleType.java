@@ -10,10 +10,10 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum ContactType {
+public enum DateStyleType {
 
-    SLOW("느긋이"),
-    FAST("칼답"),
+    HOME("집 데이트"),
+    OUTSIDE("야외 데이트"),
     ;
 
     private final String value;
@@ -24,10 +24,10 @@ public enum ContactType {
                 .collect(Collectors.toList());
     }
 
-    public static ContactType from(String name) {
+    public static DateStyleType from(String name) {
         return Arrays.stream(values())
                 .filter(it -> it.value.equals(name))
                 .findFirst()
-                .orElseThrow(() -> new BaseException(MemberExceptionType.CONTACT_TYPE_NOT_VALID));
+                .orElseThrow(() -> new BaseException(MemberExceptionType.DATE_STYLE_NOT_VALID));
     }
 }

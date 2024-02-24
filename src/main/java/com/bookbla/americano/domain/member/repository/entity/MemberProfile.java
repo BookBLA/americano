@@ -1,8 +1,10 @@
-package com.bookbla.americano.domain.memberask;
+package com.bookbla.americano.domain.member.repository.entity;
 
-import com.bookbla.americano.base.entity.BaseInsertEntity;
-import com.bookbla.americano.domain.member.Member;
+import com.bookbla.americano.domain.member.enums.Gender;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberAsk extends BaseInsertEntity {
+public class MemberProfile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,5 +31,23 @@ public class MemberAsk extends BaseInsertEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private String contents;
+    private String profileImageUrl;
+
+    private int studentNumber;
+
+    @Column(nullable = false)
+    private int age;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    private String schoolName;
+
+    private String major;
+
+    @Column(unique = true)
+    private String nickname;
+
+    private String openKakaoRoomUrl;
+
 }

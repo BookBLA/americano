@@ -1,8 +1,9 @@
-package com.bookbla.americano.domain.member;
+package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.domain.member.enums.ContactType;
 import com.bookbla.americano.domain.member.enums.DateCostType;
+import com.bookbla.americano.domain.member.enums.DateStyleType;
 import com.bookbla.americano.domain.member.enums.DrinkType;
 import com.bookbla.americano.domain.member.enums.JustFriendType;
 import com.bookbla.americano.domain.member.enums.Mbti;
@@ -46,6 +47,9 @@ public class MemberStyle extends BaseInsertEntity {
     private ContactType contactType;
 
     @Enumerated(EnumType.STRING)
+    private DateStyleType dateStyleType;
+
+    @Enumerated(EnumType.STRING)
     private DateCostType dateCostType;
 
     @Enumerated(EnumType.STRING)
@@ -54,4 +58,31 @@ public class MemberStyle extends BaseInsertEntity {
     @Enumerated(EnumType.STRING)
     private Mbti mbti;
 
+    public void updateSmokeType(SmokeType smokeType) {
+        this.smokeType = smokeType;
+    }
+
+    public void updateDrinkType(DrinkType drinkType) {
+        this.drinkType = drinkType;
+    }
+
+    public void updateContactType(ContactType contactType) {
+        this.contactType = contactType;
+    }
+
+    public void updateDateCostType(DateCostType dateCostType) {
+        this.dateCostType = dateCostType;
+    }
+
+    public void updateJustFriendType(JustFriendType justFriendType) {
+        this.justFriendType = justFriendType;
+    }
+
+    public void updateMbti(Mbti mbti) {
+        this.mbti = mbti;
+    }
+
+    public void updateDateStyleType(DateStyleType dateStyleType) {
+        this.dateStyleType = dateStyleType;
+    }
 }
