@@ -4,7 +4,6 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.domain.member.exception.MailExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberAuthRepository;
-import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberAuth;
 import com.bookbla.americano.domain.member.service.MailService;
@@ -16,38 +15,47 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
+import javax.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class MailServiceImpl implements MailService {
 
-    private final JavaMailSender javaMailSender;
+    private final JavaMailSender mailSender;
+    private final TemplateEngine templateEngine;
     private final MemberAuthRepository memberAuthRepository;
     private final MemberAuthService memberAuthService;
 
     @Override
     @Transactional
     public void sendEmail(Member member, String schoolEmail) {
-        String title = "테스트용 이메일입니다.";
-        String verifyCode = this.createVerifyCode();
-
         checkDuplicatedEmail(schoolEmail);
 
-        SimpleMailMessage emailForm = createEmailForm(schoolEmail, title, verifyCode);
+        String subject = "Bookbla 이메일 인증 테스트입니다.";
+        String verifyCode = createVerifyCode();
+
+        Context context = new Context();
+        context.setVariable("verifyCode", verifyCode);
+        String text = templateEngine.process("verifyEmail", context);
 
         try {
-            javaMailSender.send(emailForm);
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage);
+            helper.setTo(schoolEmail);
+            helper.setSubject(subject);
+            helper.setText(text, true);
+            mailSender.send(mimeMessage);
         } catch (Exception e) {
-            log.debug("MailService.sendEmail exception occur schoolEmail: {}, "
-                + "title: {}, mailAuthCode: {}", schoolEmail, title, verifyCode);
-            log.error("email send error", e);
+            throw new BaseException(MailExceptionType.SEND_EMAIL_FAIL);
         }
 
         MemberAuthDto memberAuthDto = MemberAuthDto.builder()
@@ -73,15 +81,12 @@ public class MailServiceImpl implements MailService {
         log.info("MemberAuth : " + verifyCode, verifyTime);
         log.info("input data : " + inputVerifyCode, nowTime);
 
-        // nowTime과 verifyTime 사이의 차이 계산
         Duration duration = Duration.between(nowTime, verifyTime);
 
-        // 인증 코드가 다르다면
         if (!verifyCode.equals(inputVerifyCode)) {
             throw new BaseException(MailExceptionType.NOT_EQUAL_VERIFY_CODE);
         }
 
-        // 차이가 30분을 넘어 간다면
         if (duration.toMinutes() > 30) {
             throw new BaseException(MailExceptionType.EXPIRED_TIME);
         }
@@ -93,15 +98,6 @@ public class MailServiceImpl implements MailService {
         if (memberAuth.isPresent()) {
             throw new BaseException(MailExceptionType.ALREADY_EXIST);
         }
-    }
-
-    private SimpleMailMessage createEmailForm(String toEmail, String title, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);
-        message.setSubject(title);
-        message.setText(text);
-
-        return message;
     }
 
     private String createVerifyCode() {
