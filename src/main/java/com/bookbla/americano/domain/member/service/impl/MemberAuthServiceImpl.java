@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.service.impl;
 
 import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthUpdateResponse;
 import com.bookbla.americano.domain.member.repository.MemberAuthRepository;
+import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberAuth;
 import com.bookbla.americano.domain.member.service.MemberAuthService;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MemberAuthServiceImpl implements MemberAuthService {
 
+    private final MemberRepository memberRepository;
     private final MemberAuthRepository memberAuthRepository;
 
     @Override
@@ -23,9 +25,10 @@ public class MemberAuthServiceImpl implements MemberAuthService {
 
     @Override
     @Transactional
-    public MemberAuthUpdateResponse updateMemberAuth(Member member,
+    public MemberAuthUpdateResponse updateMemberAuth(Long memberId,
         String phoneNumber, String studentIdImageUrl) {
 
+        Member member = memberRepository.getByIdOrThrow(memberId);
         MemberAuth memberAuth = memberAuthRepository.findByMember(member)
             .orElseThrow(() -> new IllegalArgumentException("Not found member_id"));
 

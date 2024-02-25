@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class MemberAuthController {
 
-    private final MemberService memberService;
     private final MemberAuthService memberAuthService;
 
     @PutMapping
@@ -28,10 +27,8 @@ public class MemberAuthController {
         @RequestBody @Valid MemberAuthUpdateRequest memberAuthUpdateRequest,
         @LoginUser Long memberId) {
 
-        Member member = memberService.getMemberById(memberId);
-
         MemberAuthUpdateResponse memberAuthUpdateResponse =
-            memberAuthService.updateMemberAuth(member, memberAuthUpdateRequest.getPhoneNumber(),
+            memberAuthService.updateMemberAuth(memberId, memberAuthUpdateRequest.getPhoneNumber(),
                 memberAuthUpdateRequest.getStudentIdImageUrl());
 
         return ResponseEntity.created(URI.create("/member-auths/" + memberAuthUpdateResponse.getId()))

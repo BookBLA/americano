@@ -8,6 +8,6 @@ public interface MemberAuthService {
 
     void createMemberAuth(MemberAuthDto memberAuthDto);
 
-    MemberAuthUpdateResponse updateMemberAuth(Member member,
+    MemberAuthUpdateResponse updateMemberAuth(Long memberId,
         String phoneNumber, String studentIdImageUrl);
 }
