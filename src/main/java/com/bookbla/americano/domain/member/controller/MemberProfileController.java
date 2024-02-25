@@ -3,9 +3,7 @@ package com.bookbla.americano.domain.member.controller;
 import com.bookbla.americano.base.jwt.LoginUser;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileCreateResponse;
-import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
-import com.bookbla.americano.domain.member.service.MemberService;
 import java.net.URI;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class MemberProfileController {
 
-    private final MemberService memberService;
     private final MemberProfileService memberProfileService;
 
     @PostMapping
@@ -28,10 +25,8 @@ public class MemberProfileController {
         @RequestBody @Valid MemberProfileCreateRequest memberProfileCreateRequest,
         @LoginUser Long memberId) {
 
-        Member member = memberService.getMemberById(memberId);
-
         MemberProfileCreateResponse memberProfileCreateResponse =
-            memberProfileService.createProfile(memberProfileCreateRequest.toDto(member));
+            memberProfileService.createProfile(memberId, memberProfileCreateRequest);
 
         return ResponseEntity.created(URI.create("/member-profiles/" + memberProfileCreateResponse.getId()))
             .body(memberProfileCreateResponse);
