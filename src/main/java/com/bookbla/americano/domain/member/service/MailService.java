@@ -4,8 +4,8 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 
 public interface MailService {
 
-    void sendEmail(Member member, String schoolEmail);
+    void sendEmail(Long memberId, String schoolEmail);
 
-    void verifyEmail(Member member, String inputVerifyCode);
+    void verifyEmail(Long memberId, String inputVerifyCode);
 
 }

@@ -5,6 +5,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.MailSendReques
 import com.bookbla.americano.domain.member.controller.dto.request.MailVerifyRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MailSendResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MailVerifyResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.service.MailService;
 import com.bookbla.americano.domain.member.service.MemberService;
@@ -30,9 +31,7 @@ public class MemberController {
         @RequestBody @Valid MailSendRequest mailSendRequest,
         @LoginUser Long memberId) {
 
-        Member member = memberService.getMemberById(memberId);
-
-        mailService.sendEmail(member, mailSendRequest.getSchoolEmail());
+        mailService.sendEmail(memberId, mailSendRequest.getSchoolEmail());
 
         return ResponseEntity.ok()
             .body(MailSendResponse.builder()
@@ -45,9 +44,7 @@ public class MemberController {
         @RequestBody @Valid MailVerifyRequest mailVerifyRequest,
         @LoginUser Long memberId) {
 
-        Member member = memberService.getMemberById(memberId);
-        System.out.println(memberId + mailVerifyRequest.getVerifyCode());
-        mailService.verifyEmail(member, mailVerifyRequest.getVerifyCode());
+        mailService.verifyEmail(memberId, mailVerifyRequest.getVerifyCode());
 
         return ResponseEntity.ok()
             .body(MailVerifyResponse.builder()

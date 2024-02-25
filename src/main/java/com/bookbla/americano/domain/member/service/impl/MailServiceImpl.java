@@ -4,6 +4,7 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.domain.member.exception.MailExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberAuthRepository;
+import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberAuth;
 import com.bookbla.americano.domain.member.service.MailService;
@@ -32,12 +33,13 @@ public class MailServiceImpl implements MailService {
 
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
+    private final MemberRepository memberRepository;
     private final MemberAuthRepository memberAuthRepository;
     private final MemberAuthService memberAuthService;
 
     @Override
     @Transactional
-    public void sendEmail(Member member, String schoolEmail) {
+    public void sendEmail(Long memberId, String schoolEmail) {
         checkDuplicatedEmail(schoolEmail);
 
         String subject = "Bookbla 이메일 인증 테스트입니다.";
@@ -58,6 +60,7 @@ public class MailServiceImpl implements MailService {
             throw new BaseException(MailExceptionType.SEND_EMAIL_FAIL);
         }
 
+        Member member = memberRepository.getByIdOrThrow(memberId);
         MemberAuthDto memberAuthDto = MemberAuthDto.builder()
             .member(member)
             .schoolEmail(schoolEmail)
@@ -69,7 +72,8 @@ public class MailServiceImpl implements MailService {
 
     @Override
     @Transactional
-    public void verifyEmail(Member member, String inputVerifyCode) {
+    public void verifyEmail(Long memberId, String inputVerifyCode) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
         MemberAuth memberAuth = memberAuthRepository.findByMember(member)
             .orElseThrow(() -> new IllegalArgumentException("error"));
 
@@ -77,9 +81,6 @@ public class MailServiceImpl implements MailService {
 
         String verifyCode = memberAuth.getEmailVerifyCode();
         LocalDateTime verifyTime = memberAuth.getEmailVerifyStartTime();
-
-        log.info("MemberAuth : " + verifyCode, verifyTime);
-        log.info("input data : " + inputVerifyCode, nowTime);
 
         Duration duration = Duration.between(nowTime, verifyTime);
 
