@@ -51,9 +51,6 @@ dependencies {
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
 
-    implementation 'com.nimbusds:nimbus-jose-jwt:3.10'
-    implementation 'org.bouncycastle:bcpkix-jdk18on:1.72'
-
     // lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
