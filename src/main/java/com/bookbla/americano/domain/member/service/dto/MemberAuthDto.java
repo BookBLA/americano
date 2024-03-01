@@ -19,6 +19,8 @@ public class MemberAuthDto {
     private String schoolEmail;
     private String emailVerifyCode;
     private LocalDateTime emailVerifyStartTime;
+    private String phoneNumber;
+    private String studentIdImageUrl;
 
     public MemberAuth toEntity() {
         return MemberAuth.builder()
@@ -26,6 +28,8 @@ public class MemberAuthDto {
             .schoolEmail(schoolEmail)
             .emailVerifyCode(emailVerifyCode)
             .emailVerifyStartTime(LocalDateTime.now())
+            .phoneNumber(phoneNumber)
+            .studentIdImageUrl(studentIdImageUrl)
             .build();
     }
 

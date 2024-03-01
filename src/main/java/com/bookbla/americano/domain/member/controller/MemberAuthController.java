@@ -1,15 +1,18 @@
 package com.bookbla.americano.domain.member.controller;
 
 import com.bookbla.americano.base.jwt.LoginUser;
+import com.bookbla.americano.domain.member.controller.dto.request.MailVerifyRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthUpdateRequest;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthUpdateResponse;
-import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.controller.dto.response.MailVerifyResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthResponse;
 import com.bookbla.americano.domain.member.service.MemberAuthService;
-import com.bookbla.americano.domain.member.service.MemberService;
 import java.net.URI;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,16 +25,47 @@ public class MemberAuthController {
 
     private final MemberAuthService memberAuthService;
 
+    @PostMapping
+    public ResponseEntity<MemberAuthResponse> createMemberAuth(
+        @RequestBody @Valid MemberAuthCreateRequest memberAuthCreateRequest,
+        @LoginUser Long memberId) {
+
+        MemberAuthResponse memberAuthResponse =
+            memberAuthService.createMemberAuth(memberId, memberAuthCreateRequest);
+
+        return ResponseEntity.created(URI.create("/member-auths" +
+            memberAuthResponse.getMemberAuthId()))
+            .body(memberAuthResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<MemberAuthResponse> readMemberAuth(@LoginUser Long memberId) {
+        MemberAuthResponse memberAuthResponse = memberAuthService.readMemberAuth(memberId);
+        return ResponseEntity.ok(memberAuthResponse);
+    }
+
     @PutMapping
-    public ResponseEntity<MemberAuthUpdateResponse> updateMemberAuth(
+    public ResponseEntity<MemberAuthResponse> updateMemberAuth(
         @RequestBody @Valid MemberAuthUpdateRequest memberAuthUpdateRequest,
         @LoginUser Long memberId) {
 
-        MemberAuthUpdateResponse memberAuthUpdateResponse =
-            memberAuthService.updateMemberAuth(memberId, memberAuthUpdateRequest.getPhoneNumber(),
-                memberAuthUpdateRequest.getStudentIdImageUrl());
+        MemberAuthResponse memberAuthUpdateResponse =
+            memberAuthService.updateMemberAuth(memberId, memberAuthUpdateRequest);
 
-        return ResponseEntity.created(URI.create("/member-auths/" + memberAuthUpdateResponse.getId()))
-            .body(memberAuthUpdateResponse);
+        return ResponseEntity.ok(memberAuthUpdateResponse);
     }
+
+    @PostMapping("/emails/verifications")
+    public ResponseEntity<MailVerifyResponse> verifyEmail(
+        @RequestBody @Valid MailVerifyRequest mailVerifyRequest,
+        @LoginUser Long memberId) {
+
+        memberAuthService.verifyMemberAuth(memberId, mailVerifyRequest.getVerifyCode());
+
+        return ResponseEntity.ok()
+            .body(MailVerifyResponse.builder()
+                .message("메일 인증 성공")
+                .build());
+    }
+
 }
