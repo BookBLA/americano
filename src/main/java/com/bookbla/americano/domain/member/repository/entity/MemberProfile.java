@@ -53,4 +53,24 @@ public class MemberProfile {
 
     private String openKakaoRoomUrl;
 
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public void updateSchoolName(String schoolName) {
+        this.schoolName = schoolName;
+    }
+
+    public void updateGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public void updateOpenKakaoRoomUrl(String openKakaoRoomUrl) {
+        this.openKakaoRoomUrl = openKakaoRoomUrl;
+    }
+
 }

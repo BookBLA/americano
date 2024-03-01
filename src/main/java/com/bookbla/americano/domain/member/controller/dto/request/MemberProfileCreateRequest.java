@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class MemberProfileCreateRequest {
 
     @NotNull(message = "성별이 입력되지 않았습니다.")
-    private Gender gender;
+    private String gender;
 
     @NotNull(message = "생년월일이 입력되지 않았습니다.")
     private LocalDate birthDate;
@@ -29,7 +29,8 @@ public class MemberProfileCreateRequest {
 
     public MemberProfileDto toDto(Member member) {
         return MemberProfileDto.builder()
-            .gender(gender)
+            .member(member)
+            .gender(Gender.from(gender))
             .birthDate(birthDate)
             .name(name)
             .schoolName(schoolName)
