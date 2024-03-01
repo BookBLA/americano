@@ -2,8 +2,10 @@ package com.bookbla.americano.domain.member.service.impl;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
+import com.bookbla.americano.domain.member.controller.dto.request.MailVerifyRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthUpdateRequest;
+import com.bookbla.americano.domain.member.controller.dto.response.MailVerifyResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthResponse;
 import com.bookbla.americano.domain.member.exception.MailExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberAuthRepository;
@@ -53,7 +55,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
 
     @Override
     @Transactional
-    public void verifyMemberAuth(Long memberId, String inputVerifyCode) {
+    public MailVerifyResponse verifyMemberAuth(Long memberId, MailVerifyRequest mailVerifyRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberAuth memberAuth = memberAuthRepository.findByMember(member)
             .orElseThrow(() -> new IllegalArgumentException("error"));
@@ -65,7 +67,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
 
         Duration duration = Duration.between(nowTime, verifyTime);
 
-        if (!verifyCode.equals(inputVerifyCode)) {
+        if (!verifyCode.equals(mailVerifyRequest.getVerifyCode())) {
             throw new BaseException(MailExceptionType.NOT_EQUAL_VERIFY_CODE);
         }
 
@@ -73,6 +75,9 @@ public class MemberAuthServiceImpl implements MemberAuthService {
             throw new BaseException(MailExceptionType.EXPIRED_TIME);
         }
 
+        memberAuth.updateMailVerifyDone();
+
+        return MailVerifyResponse.from(memberAuth);
     }
 
     @Override

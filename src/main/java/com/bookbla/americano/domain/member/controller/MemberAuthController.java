@@ -56,16 +56,14 @@ public class MemberAuthController {
     }
 
     @PostMapping("/emails/verifications")
-    public ResponseEntity<MailVerifyResponse> verifyEmail(
+    public ResponseEntity<MailVerifyResponse> verifyMemberAuth(
         @RequestBody @Valid MailVerifyRequest mailVerifyRequest,
         @LoginUser Long memberId) {
 
-        memberAuthService.verifyMemberAuth(memberId, mailVerifyRequest.getVerifyCode());
+        MailVerifyResponse mailVerifyResponse =
+            memberAuthService.verifyMemberAuth(memberId, mailVerifyRequest);
 
-        return ResponseEntity.ok()
-            .body(MailVerifyResponse.builder()
-                .message("메일 인증 성공")
-                .build());
+        return ResponseEntity.ok(mailVerifyResponse);
     }
 
 }

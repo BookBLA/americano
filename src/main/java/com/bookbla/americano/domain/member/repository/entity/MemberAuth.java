@@ -1,9 +1,12 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.domain.member.enums.MailVerifyStatus;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,7 +17,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.internal.constraintvalidators.bv.time.futureorpresent.FutureOrPresentValidatorForDate;
 
 @Entity
 @Getter
@@ -44,6 +46,9 @@ public class MemberAuth extends BaseInsertEntity {
 
     private String studentIdImageUrl;
 
+    @Enumerated(EnumType.STRING)
+    private MailVerifyStatus mailVerifyStatus;
+
     public void updateSchoolEmail(String schoolEmail) {
         this.schoolEmail = schoolEmail;
     }
@@ -54,6 +59,10 @@ public class MemberAuth extends BaseInsertEntity {
 
     public void updateStudentIdImageUrl(String studentIdImageUrl) {
         this.studentIdImageUrl = studentIdImageUrl;
+    }
+
+    public void updateMailVerifyDone() {
+        this.mailVerifyStatus = MailVerifyStatus.DONE;
     }
 
 }

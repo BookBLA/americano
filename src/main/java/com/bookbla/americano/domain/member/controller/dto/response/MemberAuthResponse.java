@@ -16,15 +16,17 @@ public class MemberAuthResponse {
     private String schoolEmail;
     private String phoneNumeber;
     private String studentIdImageUrl;
+    private String mailVerifyStatus;
 
     public static MemberAuthResponse from(Member member, MemberAuth memberAuth) {
-        return new MemberAuthResponse(
-            member.getId(),
-            memberAuth.getId(),
-            memberAuth.getSchoolEmail(),
-            memberAuth.getPhoneNumber(),
-            memberAuth.getStudentIdImageUrl()
-        );
+        return MemberAuthResponse.builder()
+            .memberId(member.getId())
+            .memberAuthId(memberAuth.getId())
+            .schoolEmail(memberAuth.getSchoolEmail())
+            .phoneNumeber(memberAuth.getPhoneNumber())
+            .studentIdImageUrl(memberAuth.getStudentIdImageUrl())
+            .mailVerifyStatus(memberAuth.getMailVerifyStatus().name())
+            .build();
     }
 
 }
