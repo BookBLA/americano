@@ -7,6 +7,8 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberBookPro
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberPostcardRepository;
 import com.bookbla.americano.domain.member.repository.MemberProfileRepository;
+import com.bookbla.americano.domain.member.repository.MemberRepository;
+import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberPostcard;
 import com.bookbla.americano.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ import java.util.stream.Stream;
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
+    private final MemberRepository memberRepository;
     private final MemberProfileRepository memberProfileRepository;
     private final MemberPostcardRepository memberPostcardRepository;
 	@Override
