@@ -20,7 +20,7 @@ public enum MemberExceptionType implements ExceptionType {
     JUST_FRIEND_TYPE_NOT_VALID(HttpStatus.BAD_REQUEST, "member_010", "유효하지 않은 남-여사친 유형입니다."),
     DATE_STYLE_NOT_VALID(HttpStatus.BAD_REQUEST, "member_011", "유효하지 않은 데이트 스타일입니다."),
     EMPTY_MEMBER_BOOK(HttpStatus.NOT_FOUND, "4003", "사용자가 관심으로 등록한 책이 없습니다."),
-    EMPTY_MEMBER_COIN_INFO(HttpStatus.NOT_FOUND, "4004", "사용자의 코인 정보가 없습니다."),
+    EMPTY_MEMBER_POSTCARD_INFO(HttpStatus.NOT_FOUND, "4004", "사용자의 엽서 개수 정보가 없습니다."),
     GENDER_NOT_VALID(HttpStatus.BAD_REQUEST, "member_012", "유효하지 않은 성별입니다."),
     AUTH_NOT_REGISTERED(HttpStatus.BAD_REQUEST, "member_013", "인증이 등록되지 않은 회원입니다."),
     PROFILE_NOT_REGISTERED(HttpStatus.BAD_REQUEST, "member_014", "프로필이 등록되지 않은 회원입니다."),

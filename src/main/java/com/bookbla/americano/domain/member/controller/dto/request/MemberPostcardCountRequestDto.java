@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberCoinCountRequestDto {
+public class MemberPostcardCountRequestDto {
 
     @NotNull
     private long memberId;

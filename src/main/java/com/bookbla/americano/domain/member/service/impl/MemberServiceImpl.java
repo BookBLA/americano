@@ -2,7 +2,7 @@ package com.bookbla.americano.domain.member.service.impl;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberCoinCountRequestDto;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberPostcardCountRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberPostcardRepository;
@@ -47,10 +47,10 @@ public class MemberServiceImpl implements MemberService {
    	}
    	
     @Override
-    public int getMemberCoinCount(MemberCoinCountRequestDto requestDto) {
+    public int getMemberPostcardCount(MemberPostcardCountRequestDto requestDto) {
         Optional<MemberPostcard> result = memberPostcardRepository.findMemberPostcardByMember_Id(requestDto.getMemberId());
         if (result.isEmpty())
-            throw new BaseException(MemberExceptionType.EMPTY_MEMBER_COIN_INFO);
+            throw new BaseException(MemberExceptionType.EMPTY_MEMBER_POSTCARD_INFO);
 
         return result.get().getPayPostcardCount() + result.get().getFreePostcardCount();
     }
