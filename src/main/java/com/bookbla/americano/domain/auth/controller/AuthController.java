@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthController {
 
-
     private final AuthService authService;
 
     @PostMapping("/login/{type}")
@@ -26,30 +25,6 @@ public class AuthController {
     ) {
         LoginResponseDto loginResponseDto = authService.login(loginRequestDto, oAuthType);
         return ResponseEntity.ok(loginResponseDto);
-
-//    @PostMapping("")
-//    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
-//        return ResponseEntity.ok()
-//            .header(AUTHORIZATION, jwtProvider.createToken(loginRequestDto.getEmail()))
-//            .body(LoginResponseDto.builder()
-//                .message("인증 성공")
-//                .build()
-//            );
-//    }
-//
-//    @GetMapping("/oauth2/kakao")
-//    public ResponseEntity<LoginResponseDto> kakaoLogin(@RequestParam("code") String code) {
-//
-//        Long memberId = authService.kakaoLogin(code);
-//        System.out.println("memberId : " + memberId);
-//
-//        return ResponseEntity.ok()
-//            .header(AUTHORIZATION, jwtProvider.createToken(memberId.toString()))
-//            .body(LoginResponseDto.builder()
-//                .message("인증 성공")
-//                .build()
-//            );
-//    }
 
     }
 }
