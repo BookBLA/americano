@@ -20,7 +20,7 @@ import javax.persistence.OneToOne;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberCoin extends BaseInsertEntity {
+public class MemberPostcard extends BaseInsertEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,5 +31,8 @@ public class MemberCoin extends BaseInsertEntity {
     private Member member;
 
     @Column
-    private int coinCount;
+    private int payPostcardCount;
+
+    @Column
+    private int freePostcardCount;
 }

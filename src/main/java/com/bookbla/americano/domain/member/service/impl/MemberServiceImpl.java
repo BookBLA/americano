@@ -5,10 +5,9 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProf
 import com.bookbla.americano.domain.member.controller.dto.request.MemberCoinCountRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
-import com.bookbla.americano.domain.member.repository.MemberCoinRepository;
+import com.bookbla.americano.domain.member.repository.MemberPostcardRepository;
 import com.bookbla.americano.domain.member.repository.MemberProfileRepository;
-import com.bookbla.americano.domain.member.repository.MemberRepository;
-import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberPostcard;
 import com.bookbla.americano.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,15 +26,13 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
     private final MemberProfileRepository memberProfileRepository;
-    private final MemberCoinRepository memberCoinRepository;
-    
+    private final MemberPostcardRepository memberPostcardRepository;
 	@Override
     @Transactional(readOnly = true)
     public MemberResponse readMember(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         return MemberResponse.from(member);
     }
-
     @Override
     public MemberResponse updateMember(Long memberId, MemberUpdateRequest memberUpdateRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
@@ -51,11 +48,11 @@ public class MemberServiceImpl implements MemberService {
    	
     @Override
     public int getMemberCoinCount(MemberCoinCountRequestDto requestDto) {
-        Optional<Integer> result = memberCoinRepository.getMemberCoinByMember_Id(requestDto.getMemberId());
+        Optional<MemberPostcard> result = memberPostcardRepository.findMemberPostcardByMember_Id(requestDto.getMemberId());
         if (result.isEmpty())
             throw new BaseException(MemberExceptionType.EMPTY_MEMBER_COIN_INFO);
 
-        return result.get();
+        return result.get().getPayPostcardCount() + result.get().getFreePostcardCount();
     }
 
 	@Override
@@ -131,7 +128,6 @@ public class MemberServiceImpl implements MemberService {
         return Stream.of(firstResults, secondResults, thirdResults, fourthResults)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-
     }
 
     private List<MemberBookProfileResponseDto> findMatches(

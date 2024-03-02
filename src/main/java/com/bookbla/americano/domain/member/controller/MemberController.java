@@ -10,6 +10,10 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.service.MemberService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,14 +48,26 @@ public class MemberController {
     }
 
     @GetMapping("/memberCoinCount")
-    public ResponseEntity<Integer> memberCoinCount(@ModelAttribute MemberCoinCountRequestDto memberCoinCountRequestDto){
+    public ResponseEntity<Integer> memberCoinCount(@ModelAttribute MemberCoinCountRequestDto memberCoinCountRequestDto) {
         Integer memberCoinCount = memberService.getMemberCoinCount(memberCoinCountRequestDto);
         return ResponseEntity.ok(memberCoinCount);
     }
 
+
     @GetMapping("/sameBookMembers")
-    public ResponseEntity<List<MemberBookProfileResponseDto>> sameBookMembers(@ModelAttribute MemberBookProfileRequestDto memberBookProfileRequestDto) {
+    public ResponseEntity<Page<MemberBookProfileResponseDto>> sameBookMembersPage(@ModelAttribute MemberBookProfileRequestDto memberBookProfileRequestDto, Pageable pageable) {
         List<MemberBookProfileResponseDto> memberBookProfileResponseList = memberService.findSameBookMembers(memberBookProfileRequestDto);
-        return ResponseEntity.ok(memberBookProfileResponseList);
+        if(pageable == null)
+            pageable = PageRequest.of(0,0);
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), memberBookProfileResponseList.size());
+        Page<MemberBookProfileResponseDto> memberBookProfileResponsePage;
+        if(start >= memberBookProfileResponseList.size())
+            memberBookProfileResponsePage = Page.empty();
+        else
+            memberBookProfileResponsePage = new PageImpl<>(memberBookProfileResponseList.subList(start, end), pageable, memberBookProfileResponseList.size());
+
+        return ResponseEntity.ok(memberBookProfileResponsePage);
     }
 }
