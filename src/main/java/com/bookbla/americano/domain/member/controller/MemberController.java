@@ -5,6 +5,8 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberUpdateRe
 import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberPostcardCountRequestDto;
+import com.bookbla.americano.domain.member.controller.dto.response.MailSendResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MailVerifyResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.service.MemberService;
