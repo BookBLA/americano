@@ -4,6 +4,8 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.base.exception.ExceptionType;
 import com.bookbla.americano.base.response.ExceptionResponse;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +37,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     ResponseEntity<ExceptionResponse> handleException(HttpServletRequest request, Exception e) {
-        log.error("예상하지 못한 예외가 발생했습니다. URI: {}, 내용: {}", request.getRequestURI(), e.getMessage());
+        log.error("예상하지 못한 예외가 발생했습니다. URI: {}, 내용: {}", request.getRequestURI(), convertToString(e));
         return ResponseEntity.internalServerError()
                 .body(new ExceptionResponse(BaseExceptionType.UNKNOWN_SERVER_ERROR));
+    }
+
+    private String convertToString(Exception e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        return sw.toString();
     }
 
     @Override
