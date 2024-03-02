@@ -43,7 +43,7 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Make an Application.yml
-        run: echo "${{ secrets.AMERICANO_DEV }}" | base64 --decode > ./src/main/resources/application-dev.yml
+        run: echo "${{ secrets.AMERICANO_DEV }}" >> ./src/main/resources/application-dev.yml
 
       - name: Install JDK 11
         uses: actions/setup-java@v4
