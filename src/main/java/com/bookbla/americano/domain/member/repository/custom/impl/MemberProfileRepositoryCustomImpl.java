@@ -1,9 +1,9 @@
-package com.bookbla.americano.domain.member.repository.impl;
+package com.bookbla.americano.domain.member.repository.custom.impl;
 
 import com.bookbla.americano.domain.book.QBook;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
-import com.bookbla.americano.domain.member.repository.MemberProfileRepository;
+import com.bookbla.americano.domain.member.repository.custom.MemberProfileRepositoryCustom;
 import com.bookbla.americano.domain.member.repository.entity.QMemberBook;
 import com.bookbla.americano.domain.member.repository.entity.QMemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.QMemberStyle;
@@ -18,10 +18,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public class MemberProfileRepositoryImpl implements MemberProfileRepository {
+public class MemberProfileRepositoryCustomImpl implements MemberProfileRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
-    public MemberProfileRepositoryImpl(EntityManager em) {
+    public MemberProfileRepositoryCustomImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
