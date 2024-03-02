@@ -4,7 +4,7 @@ import com.bookbla.americano.base.jwt.JwtProvider;
 import com.bookbla.americano.domain.auth.controller.dto.request.LoginRequestDto;
 import com.bookbla.americano.domain.auth.controller.dto.response.LoginResponseDto;
 import com.bookbla.americano.domain.auth.service.dto.OAuth2MemberResponse;
-import com.bookbla.americano.domain.member.Member;
+import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.MemberRepository;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import lombok.RequiredArgsConstructor;

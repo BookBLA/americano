@@ -1,7 +1,7 @@
 package com.bookbla.americano.domain.auth.infra.apple.dto;
 
 import com.bookbla.americano.domain.auth.service.dto.OAuth2MemberResponse;
-import com.bookbla.americano.domain.member.Member;
+import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import lombok.RequiredArgsConstructor;
 
