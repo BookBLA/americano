@@ -2,12 +2,10 @@ package com.bookbla.americano.domain.auth.infra.apple;
 
 import com.bookbla.americano.domain.auth.infra.apple.dto.AppleTokenResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@Component
-@FeignClient(url = "https://appleid.apple.com")
+@FeignClient(value = "apple", url = "https://appleid.apple.com", configuration = AppleFeignClientConfig.class)
 public interface AppleOAuth2Client {
 
     @PostMapping("/auth/token")
