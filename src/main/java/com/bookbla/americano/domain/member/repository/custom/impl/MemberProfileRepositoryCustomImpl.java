@@ -45,8 +45,8 @@ public class MemberProfileRepositoryCustomImpl implements MemberProfileRepositor
             builder.and(memberStyle.smokeType.eq(requestDto.getSmokeType()));
         if (requestDto.getContactType() != null)
             builder.and(memberStyle.contactType.eq(requestDto.getContactType()));
-        if (requestDto.getDateStyle() != null)
-            builder.and(memberStyle.dateStyle.eq(requestDto.getDateStyle()));
+        if (requestDto.getDateStyleType() != null)
+            builder.and(memberStyle.dateStyleType.eq(requestDto.getDateStyleType()));
         if (requestDto.getDateCostType() != null)
             builder.and(memberStyle.dateCostType.eq(requestDto.getDateCostType()));
         if (requestDto.getMbti() != null)

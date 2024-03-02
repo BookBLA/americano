@@ -2,7 +2,7 @@ package com.bookbla.americano.domain.member.controller.dto.request;
 
 import com.bookbla.americano.domain.member.enums.ContactType;
 import com.bookbla.americano.domain.member.enums.DateCostType;
-import com.bookbla.americano.domain.member.enums.DateStyle;
+import com.bookbla.americano.domain.member.enums.DateStyleType;
 import com.bookbla.americano.domain.member.enums.DrinkType;
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.JustFriendType;
@@ -40,7 +40,7 @@ public class MemberBookProfileRequestDto {
     private ContactType contactType;
 
     @Nullable
-    private DateStyle dateStyle;
+    private DateStyleType dateStyleType;
 
     @Nullable
     private DateCostType dateCostType;
