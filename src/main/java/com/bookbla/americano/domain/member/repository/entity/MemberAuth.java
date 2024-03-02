@@ -1,6 +1,7 @@
-package com.bookbla.americano.domain.member;
+package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -32,6 +33,17 @@ public class MemberAuth extends BaseInsertEntity {
     @Column(unique = true)
     private String schoolEmail;
 
+    private String emailVerifyCode;
+
+    private LocalDateTime emailVerifyStartTime;
+
     private String phoneNumber;
+
+    private String studentIdImageUrl;
+
+    public void updateMemberAuth(String phoneNumber, String studentIdImageUrl) {
+        this.phoneNumber = phoneNumber;
+        this.studentIdImageUrl = studentIdImageUrl;
+    }
 
 }

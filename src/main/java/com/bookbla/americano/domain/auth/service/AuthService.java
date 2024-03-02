@@ -30,4 +30,5 @@ public class AuthService {
         String accessToken = jwtProvider.createToken(member.getId().toString());
         return new LoginResponseDto(accessToken);
     }
+  
 }
