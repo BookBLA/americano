@@ -7,11 +7,13 @@ import com.bookbla.americano.domain.memberask.controller.dto.request.MemberAskUp
 import com.bookbla.americano.domain.memberask.controller.dto.response.MemberAskResponse;
 import com.bookbla.americano.domain.memberask.service.MemberAskService;
 import java.net.URI;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,7 +26,8 @@ public class MemberAskController {
 
     @PostMapping
     public ResponseEntity<Void> createMemberAsk(
-            @LoginUser Long memberId, MemberAskCreateRequest memberAskCreateRequest) {
+            @LoginUser Long memberId,
+            @RequestBody @Valid MemberAskCreateRequest memberAskCreateRequest) {
         MemberAskResponse memberAskResponse = memberAskService.createMemberAsk(
                 memberId, memberAskCreateRequest);
         return ResponseEntity.created(
@@ -40,7 +43,8 @@ public class MemberAskController {
 
     @PutMapping
     public ResponseEntity<Void> updateMemberAsk(
-            @LoginUser Long memberId,MemberAskUpdateRequest memberAskUpdateRequest) {
+            @LoginUser Long memberId,
+            @RequestBody @Valid MemberAskUpdateRequest memberAskUpdateRequest) {
         memberAskService.updateMemberAsk(memberId, memberAskUpdateRequest);
         return ResponseEntity.noContent().build();
     }
