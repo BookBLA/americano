@@ -1,16 +1,13 @@
 package com.bookbla.americano.domain.member.controller;
 
 import com.bookbla.americano.base.jwt.LoginUser;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
-import java.net.URI;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,21 +20,8 @@ public class MemberProfileController {
 
     private final MemberProfileService memberProfileService;
 
-    @PostMapping
-    public ResponseEntity<MemberProfileResponse> createMemberProfile(
-        @RequestBody @Valid MemberProfileCreateRequest memberProfileCreateRequest,
-        @LoginUser Long memberId) {
-
-        MemberProfileResponse memberProfileResponse =
-            memberProfileService.createMemberProfile(memberId, memberProfileCreateRequest);
-
-        return ResponseEntity.created(URI.create("/member-profiles/" +
-            memberProfileResponse.getMemberProfileId()))
-            .body(memberProfileResponse);
-    }
-
     @GetMapping
-    public ResponseEntity<MemberProfileResponse> createMemberProfile(@LoginUser Long memberId) {
+    public ResponseEntity<MemberProfileResponse> readMemberProfile(@LoginUser Long memberId) {
         MemberProfileResponse memberProfileResponse =
             memberProfileService.readMemberProfile(memberId);
 

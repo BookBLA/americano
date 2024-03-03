@@ -3,8 +3,8 @@ package com.bookbla.americano.domain.member.service.impl;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.domain.member.controller.dto.request.MailVerifyRequest;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthUpdateRequest;
+import com.bookbla.americano.domain.member.controller.dto.response.MailSendResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MailVerifyResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthResponse;
 import com.bookbla.americano.domain.member.exception.MailExceptionType;
@@ -42,15 +42,14 @@ public class MemberAuthServiceImpl implements MemberAuthService {
 
     @Override
     @Transactional
-    public MemberAuthResponse createMemberAuth(Long memberId, MemberAuthCreateRequest memberAuthCreateRequest) {
-        String emailVerifyCode = sendEmail(memberAuthCreateRequest.getSchoolEmail());
+    public MailSendResponse createMemberAuth(Long memberId, MemberAuthDto memberAuthDto) {
+        String emailVerifyCode = sendEmail(memberAuthDto.getSchoolEmail());
 
         Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberAuth memberAuth = memberAuthRepository.save(
+            memberAuthDto.toEntity(member, emailVerifyCode));
 
-        MemberAuthDto memberAuthDto = memberAuthCreateRequest.toDto(member, emailVerifyCode);
-        MemberAuth memberAuth = memberAuthRepository.save(memberAuthDto.toEntity());
-
-        return MemberAuthResponse.from(member, memberAuth);
+        return MailSendResponse.from(member, memberAuth);
     }
 
     @Override

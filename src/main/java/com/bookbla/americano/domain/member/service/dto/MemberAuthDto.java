@@ -18,12 +18,11 @@ public class MemberAuthDto {
 
     private Member member;
     private String schoolEmail;
-    private String emailVerifyCode;
     private LocalDateTime emailVerifyStartTime;
     private String phoneNumber;
     private String studentIdImageUrl;
 
-    public MemberAuth toEntity() {
+    public MemberAuth toEntity(Member member, String emailVerifyCode) {
         return MemberAuth.builder()
             .member(member)
             .schoolEmail(schoolEmail)

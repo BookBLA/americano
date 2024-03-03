@@ -1,12 +1,10 @@
 package com.bookbla.americano.domain.member.service.impl;
 
-import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.repository.MemberProfileRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.bookbla.americano.domain.member.repository.entity.MemberAuth;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
@@ -21,14 +19,9 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     private final MemberProfileRepository memberProfileRepository;
 
     @Override
-    public MemberProfileResponse createMemberProfile(
-        Long memberId, MemberProfileCreateRequest memberProfileCreateRequest) {
-
+    public void createMemberProfile(Long memberId, MemberProfileDto memberProfileDto) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfileDto memberProfileDto = memberProfileCreateRequest.toDto(member);
-
-        MemberProfile memberProfile = memberProfileRepository.save(memberProfileDto.toEntity());
-        return MemberProfileResponse.from(member, memberProfile);
+        memberProfileRepository.save(memberProfileDto.toEntity(member));
     }
 
     @Override
