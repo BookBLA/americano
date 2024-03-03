@@ -1,7 +1,8 @@
 package com.bookbla.americano.domain.member.service.impl;
 
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberPolicyCreateRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MailSendRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MailSendRequest.AgreedStatuses;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberPolicyUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberPolicyResponse;
 import com.bookbla.americano.domain.member.exception.PolicyExceptionType;
@@ -32,27 +33,16 @@ public class MemberPolicyServiceImpl implements MemberPolicyService {
 
     @Override
     @Transactional
-    public List<MemberPolicyResponse> createMemberPolicies(Long memberId,
-        List<MemberPolicyCreateRequest> memberPolicyCreateRequests) {
+    public void createMemberPolicies(Long memberId, MailSendRequest mailSendRequest) {
 
         Member member = memberRepository.getByIdOrThrow(memberId);
-        List<Policy> policies = policyRepository.findAll(Sort.by("id"));
+        AgreedStatuses agreedStatuses = mailSendRequest.getAgreedStatuses();
 
-        if (memberPolicyCreateRequests.size() != policies.size()) {
-            throw new BaseException(PolicyExceptionType.NOT_EQUAL_POLICY_COUNT);
-        }
+        Policy policy = policyRepository.findById(1L)
+            .orElseThrow(() -> new BaseException(PolicyExceptionType.NOT_EQUAL_POLICY_COUNT));
 
-        return IntStream.range(0, policies.size())
-            .mapToObj(i -> new SimpleEntry<>(memberPolicyCreateRequests.get(i), policies.get(i)))
-            .map(entry -> {
-                MemberPolicyCreateRequest request = entry.getKey();
-                Policy policy = entry.getValue();
-                MemberPolicyDto memberPolicyDto = request.toDto(member, policy);
-                return memberPolicyRepository.save(memberPolicyDto.toEntity());
-            })
-            .map(MemberPolicyResponse::from)
-            .collect(Collectors.toList());
-
+        MemberPolicyDto memberPolicyDto = new MemberPolicyDto(agreedStatuses.getAdAgreementPolicy());
+        memberPolicyRepository.save(memberPolicyDto.toEntity(member, policy));
     }
 
     @Override
@@ -72,7 +62,8 @@ public class MemberPolicyServiceImpl implements MemberPolicyService {
             .map(entry -> {
                 MemberPolicyUpdateRequest request = entry.getKey();
                 Policy policy = entry.getValue();
-                MemberPolicy memberPolicy = memberPolicyRepository.findByMemberAndPolicy(member, policy)
+                MemberPolicy memberPolicy = memberPolicyRepository.findByMemberAndPolicy(member,
+                        policy)
                     .orElseThrow(() -> new IllegalArgumentException("Error"));
                 memberPolicy.updateAgreedStatus(request.getAgreedStatus());
                 return memberPolicy;

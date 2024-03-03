@@ -15,15 +15,14 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MemberPolicyDto {
 
-    private Member member;
-    private Policy policy;
-    private Boolean agreedStatus;
+    private Boolean adAgreementPolicy;
 
-    public MemberPolicy toEntity() {
+    public MemberPolicy toEntity(Member member, Policy policy) {
         return MemberPolicy.builder()
             .member(member)
             .policy(policy)
-            .agreedStatus(agreedStatus)
+            .agreedStatus(adAgreementPolicy)
             .build();
     }
+
 }
