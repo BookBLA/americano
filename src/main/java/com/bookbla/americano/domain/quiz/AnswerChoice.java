@@ -4,6 +4,5 @@ public enum AnswerChoice {
     FIRST,
     SECOND,
     THIRD,
-    FOURTH,
     ;
 }
