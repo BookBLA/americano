@@ -6,7 +6,6 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import com.bookbla.americano.domain.quiz.QuizQuestion;
 import com.bookbla.americano.domain.quiz.controller.dto.request.QuizQuestionCreateRequest;
-import com.bookbla.americano.domain.quiz.controller.dto.response.QuizQuestionCreateResponse;
 import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
 import com.bookbla.americano.domain.quiz.service.QuizQuestionService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,8 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
     private final MemberBookRepository memberBookRepository;
 
     @Override
-    public QuizQuestionCreateResponse createQuizQuestion(Long memberId, Long memberBookId, QuizQuestionCreateRequest quizQuestionCreateRequest) {
+    public Long createQuizQuestion(
+            Long memberId, Long memberBookId, QuizQuestionCreateRequest quizQuestionCreateRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
 
@@ -32,6 +32,6 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         memberBook.updateReview(quizQuestionCreateRequest.getReview());
 
         QuizQuestion quizQuestion = quizQuestionCreateRequest.toQuizQuestionWith(memberBook);
-        return new QuizQuestionCreateResponse(quizQuestionRepository.save(quizQuestion).getId());
+        return quizQuestionRepository.save(quizQuestion).getId();
     }
 }

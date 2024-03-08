@@ -2,7 +2,6 @@ package com.bookbla.americano.domain.quiz.controller;
 
 import com.bookbla.americano.base.jwt.LoginUser;
 import com.bookbla.americano.domain.quiz.controller.dto.request.QuizQuestionCreateRequest;
-import com.bookbla.americano.domain.quiz.controller.dto.response.QuizQuestionCreateResponse;
 import com.bookbla.americano.domain.quiz.service.QuizQuestionService;
 import java.net.URI;
 import javax.validation.Valid;
@@ -22,15 +21,14 @@ public class QuizController {
     private final QuizQuestionService quizQuestionService;
 
     @PostMapping("/{memberBookId}")
-    public ResponseEntity<QuizQuestionCreateResponse> createQuizQuestion(
+    public ResponseEntity<Void> createQuizQuestion(
             @LoginUser Long memberId, @PathVariable Long memberBookId,
             @RequestBody @Valid QuizQuestionCreateRequest quizQuestionCreateRequest
     ) {
-        QuizQuestionCreateResponse quizQuestionCreateResponse = quizQuestionService.createQuizQuestion(
-                memberId, memberBookId, quizQuestionCreateRequest);
+        Long quizQuestionId = quizQuestionService.createQuizQuestion(memberId, memberBookId, quizQuestionCreateRequest);
         return ResponseEntity
-                .created(URI.create("/quizzes/" + quizQuestionCreateResponse.getQuizQuestionId()))
-                .body(quizQuestionCreateResponse);
+                .created(URI.create("/quizzes/" + quizQuestionId.toString()))
+                .build();
     }
 
 }
