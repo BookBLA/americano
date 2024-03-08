@@ -36,10 +36,8 @@ public class MemberAuth extends BaseInsertEntity {
     @Column(unique = true)
     private String schoolEmail;
 
-    @Column(updatable = false)
     private String emailVerifyCode;
 
-    @Column(updatable = false)
     private LocalDateTime emailVerifyStartTime;
 
     private String phoneNumber;
@@ -51,6 +49,14 @@ public class MemberAuth extends BaseInsertEntity {
 
     public void updateSchoolEmail(String schoolEmail) {
         this.schoolEmail = schoolEmail;
+    }
+
+    public void updateEmailVerifyCode(String emailVerifyCode) {
+        this.emailVerifyCode = emailVerifyCode;
+    }
+
+    public void updateEmailVerifyStartTime(LocalDateTime emailVerifyStartTime) {
+        this.emailVerifyStartTime = emailVerifyStartTime;
     }
 
     public void updatePhoneNumber(String phoneNumber) {

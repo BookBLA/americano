@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.controller;
 
 import com.bookbla.americano.base.jwt.LoginUser;
+import com.bookbla.americano.domain.member.controller.dto.request.MailResendRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MailSendRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MailVerifyRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthUpdateRequest;
@@ -70,6 +71,17 @@ public class MemberAuthController {
             memberAuthService.verifyMemberAuth(memberId, mailVerifyRequest);
 
         return ResponseEntity.ok(mailVerifyResponse);
+    }
+
+    @PutMapping("/emails/resends")
+    public ResponseEntity<MailSendResponse> resendMail(
+        @RequestBody @Valid MailResendRequest mailResendRequest,
+        @LoginUser Long memberId) {
+
+        MailSendResponse mailSendResponse =
+            memberAuthService.resendMail(memberId, mailResendRequest);
+
+        return ResponseEntity.ok(mailSendResponse);
     }
 
 }

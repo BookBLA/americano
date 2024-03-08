@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.service.impl;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
+import com.bookbla.americano.domain.member.controller.dto.request.MailResendRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MailVerifyRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MailSendResponse;
@@ -43,7 +44,10 @@ public class MemberAuthServiceImpl implements MemberAuthService {
     @Override
     @Transactional
     public MailSendResponse createMemberAuth(Long memberId, MemberAuthDto memberAuthDto) {
-        String emailVerifyCode = sendEmail(memberAuthDto.getSchoolEmail());
+        String schoolEmail = memberAuthDto.getSchoolEmail();
+
+        checkDuplicatedEmail(schoolEmail);
+        String emailVerifyCode = sendEmail(schoolEmail);
 
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberAuth memberAuth = memberAuthRepository.save(
@@ -70,13 +74,37 @@ public class MemberAuthServiceImpl implements MemberAuthService {
             throw new BaseException(MailExceptionType.NOT_EQUAL_VERIFY_CODE);
         }
 
-        if (duration.toMinutes() > 30) {
+        if (duration.toMinutes() > 5) {
             throw new BaseException(MailExceptionType.EXPIRED_TIME);
         }
 
         memberAuth.updateMailVerifyDone();
 
         return MailVerifyResponse.from(memberAuth);
+    }
+
+    @Override
+    @Transactional
+    public MailSendResponse resendMail(Long memberId, MailResendRequest mailResendRequest) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        String schoolEmail = mailResendRequest.getSchoolEmail();
+
+        MemberAuth memberAuth = memberAuthRepository.findByMember(member)
+            .orElseThrow(() -> new IllegalArgumentException("error"));
+
+        String enrolledSchoolEmail = memberAuth.getSchoolEmail();
+
+        if (!schoolEmail.equals(enrolledSchoolEmail)) {
+            checkDuplicatedEmail(schoolEmail);
+            memberAuth.updateSchoolEmail(schoolEmail);
+        }
+
+        String emailVerifyCode = sendEmail(schoolEmail);
+
+        memberAuth.updateEmailVerifyCode(emailVerifyCode);
+        memberAuth.updateEmailVerifyStartTime(LocalDateTime.now());
+
+        return MailSendResponse.from(member, memberAuth);
     }
 
     @Override
@@ -110,9 +138,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         memberAuth.updateStudentIdImageUrl(memberAuthUpdateRequest.getStudentIdImageUrl());
     }
 
-
     private String sendEmail(String schoolEmail) {
-        checkDuplicatedEmail(schoolEmail);
 
         String subject = "Bookbla 이메일 인증 테스트입니다.";
         String verifyCode = createVerifyCode();
