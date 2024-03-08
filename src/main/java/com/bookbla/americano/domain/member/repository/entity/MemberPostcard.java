@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
-import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.base.entity.BaseUpdateEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +20,7 @@ import javax.persistence.OneToOne;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberPostcard extends BaseInsertEntity {
+public class MemberPostcard extends BaseUpdateEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

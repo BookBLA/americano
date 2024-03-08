@@ -9,9 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface MemberPostcardRepository extends JpaRepository<MemberPostcard, Long> {
-    Optional<MemberPostcard> findMemberPostcardByMember_Id(@Param("memberId") Long memberId);
+    Optional<MemberPostcard> findMemberPostcardByMemberId(@Param("memberId") Long memberId);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE MemberPostcard mp SET mp.freePostcardCount = 1")
     void initMemberFreePostcardCount();
 }

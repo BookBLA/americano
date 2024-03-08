@@ -14,7 +14,7 @@ public class MemberSchedulerService {
     private final MemberPostcardRepository memberPostcardRepository;
 
     @Scheduled(cron = "0 0 21 * * *", zone = "Asia/Seoul")
-    public void run(){
+    public void initMemberFreePostcardSchedule(){
         memberPostcardRepository.initMemberFreePostcardCount();
     }
 }

@@ -9,8 +9,6 @@ import com.bookbla.americano.domain.member.service.MemberPostcardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class MemberPostcardServiceImpl implements MemberPostcardService {
@@ -18,10 +16,13 @@ public class MemberPostcardServiceImpl implements MemberPostcardService {
 
     @Override
     public int getMemberPostcardCount(MemberPostcardCountRequestDto requestDto) {
-        Optional<MemberPostcard> result = memberPostcardRepository.findMemberPostcardByMember_Id(requestDto.getMemberId());
-        if (result.isEmpty())
-            throw new BaseException(MemberExceptionType.EMPTY_MEMBER_POSTCARD_INFO);
+        MemberPostcard result = memberPostcardRepository.findMemberPostcardByMemberId(requestDto.getMemberId())
+                .orElseThrow(() -> new BaseException(MemberExceptionType.EMPTY_MEMBER_POSTCARD_INFO));
 
-        return result.get().getPayPostcardCount() + result.get().getFreePostcardCount();
+        return getPostcardTotal(result);
+    }
+
+    private int getPostcardTotal(MemberPostcard memberPostcard) {
+        return memberPostcard.getFreePostcardCount() + memberPostcard.getPayPostcardCount();
     }
 }

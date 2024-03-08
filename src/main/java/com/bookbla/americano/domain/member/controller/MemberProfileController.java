@@ -11,8 +11,6 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberProfile
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
 import com.bookbla.americano.domain.member.service.MemberService;
-import java.util.List;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -27,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+import java.util.List;
 import lombok.extern.java.Log;
 
 @RestController
@@ -68,17 +68,17 @@ public class MemberProfileController {
     @GetMapping("/sameBookMembers")
     public ResponseEntity<Page<MemberBookProfileResponseDto>> sameBookMembersPage(@ModelAttribute MemberBookProfileRequestDto memberBookProfileRequestDto, Pageable pageable) {
         List<MemberBookProfileResponseDto> memberBookProfileResponseList = memberProfileService.findSameBookMembers(memberBookProfileRequestDto);
-        if(pageable == null)
-            pageable = PageRequest.of(0,0);
+        if (pageable == null)
+            pageable = PageRequest.of(0, 0);
 
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), memberBookProfileResponseList.size());
         Page<MemberBookProfileResponseDto> memberBookProfileResponsePage;
-        if(start >= memberBookProfileResponseList.size())
+        if (start >= memberBookProfileResponseList.size()) {
             memberBookProfileResponsePage = Page.empty();
-        else
+        } else {
             memberBookProfileResponsePage = new PageImpl<>(memberBookProfileResponseList.subList(start, end), pageable, memberBookProfileResponseList.size());
-
+        }
         return ResponseEntity.ok(memberBookProfileResponsePage);
     }
 }

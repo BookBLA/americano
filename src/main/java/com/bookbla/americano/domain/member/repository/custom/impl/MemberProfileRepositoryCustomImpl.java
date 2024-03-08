@@ -3,6 +3,14 @@ package com.bookbla.americano.domain.member.repository.custom.impl;
 import com.bookbla.americano.domain.book.QBook;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
+import com.bookbla.americano.domain.member.enums.ContactType;
+import com.bookbla.americano.domain.member.enums.DateCostType;
+import com.bookbla.americano.domain.member.enums.DateStyleType;
+import com.bookbla.americano.domain.member.enums.DrinkType;
+import com.bookbla.americano.domain.member.enums.Gender;
+import com.bookbla.americano.domain.member.enums.JustFriendType;
+import com.bookbla.americano.domain.member.enums.Mbti;
+import com.bookbla.americano.domain.member.enums.SmokeType;
 import com.bookbla.americano.domain.member.repository.custom.MemberProfileRepositoryCustom;
 import com.bookbla.americano.domain.member.repository.entity.QMemberBook;
 import com.bookbla.americano.domain.member.repository.entity.QMemberProfile;
@@ -11,19 +19,16 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 
 @Repository
+@RequiredArgsConstructor
 public class MemberProfileRepositoryCustomImpl implements MemberProfileRepositoryCustom {
     private final JPAQueryFactory queryFactory;
-
-    public MemberProfileRepositoryCustomImpl(EntityManager em) {
-        this.queryFactory = new JPAQueryFactory(em);
-    }
 
     @Override
     public List<MemberBookProfileResponseDto> searchSameBookMember(MemberBookProfileRequestDto requestDto) {
@@ -39,22 +44,15 @@ public class MemberProfileRepositoryCustomImpl implements MemberProfileRepositor
                         .from(memberProfile)
                         .innerJoin(memberBook).on(memberProfile.member.eq(memberBook.member))
                         .where(memberProfile.member.id.eq(requestDto.getMemberId()))));
-        if (requestDto.getDrinkType() != null)
-            builder.and(memberStyle.drinkType.eq(requestDto.getDrinkType()));
-        if (requestDto.getSmokeType() != null)
-            builder.and(memberStyle.smokeType.eq(requestDto.getSmokeType()));
-        if (requestDto.getContactType() != null)
-            builder.and(memberStyle.contactType.eq(requestDto.getContactType()));
-        if (requestDto.getDateStyleType() != null)
-            builder.and(memberStyle.dateStyleType.eq(requestDto.getDateStyleType()));
-        if (requestDto.getDateCostType() != null)
-            builder.and(memberStyle.dateCostType.eq(requestDto.getDateCostType()));
-        if (requestDto.getMbti() != null)
-            builder.and(memberStyle.mbti.eq(requestDto.getMbti()));
-        if (requestDto.getJustFriendType() != null)
-            builder.and(memberStyle.justFriendType.eq(requestDto.getJustFriendType()));
-        if (requestDto.getGender() != null)
-            builder.and(memberProfile.gender.eq(requestDto.getGender()));
+
+        builder.and(eqGender(memberProfile, requestDto.getGender()))
+                .and(eqSmokeType(memberStyle, requestDto.getSmokeType()))
+                .and(eqDrinkType(memberStyle, requestDto.getDrinkType()))
+                .and(eqContactType(memberStyle, requestDto.getContactType()))
+                .and(eqDateStyleType(memberStyle, requestDto.getDateStyleType()))
+                .and(eqDateCostType(memberStyle, requestDto.getDateCostType()))
+                .and(eqMbtiType(memberStyle, requestDto.getMbti()))
+                .and(eqJustFriendType(memberStyle, requestDto.getJustFriendType()));
 
         return queryFactory
                 .select(Projections.fields(MemberBookProfileResponseDto.class
@@ -76,4 +74,59 @@ public class MemberProfileRepositoryCustomImpl implements MemberProfileRepositor
                 .fetch();
     }
 
+    private BooleanBuilder eqGender(QMemberProfile memberProfile, Gender gender) {
+        if (gender == null) {
+            return null;
+        }
+        return new BooleanBuilder(memberProfile.gender.eq(gender));
+    }
+
+    private BooleanBuilder eqSmokeType(QMemberStyle memberStyle, SmokeType smokeType) {
+        if (smokeType == null) {
+            return null;
+        }
+        return new BooleanBuilder(memberStyle.smokeType.eq(smokeType));
+    }
+
+    private BooleanBuilder eqDrinkType(QMemberStyle memberStyle, DrinkType drinkType) {
+        if (drinkType == null) {
+            return null;
+        }
+        return new BooleanBuilder(memberStyle.drinkType.eq(drinkType));
+    }
+
+    private BooleanBuilder eqContactType(QMemberStyle memberStyle, ContactType contactType) {
+        if (contactType == null) {
+            return null;
+        }
+        return new BooleanBuilder(memberStyle.contactType.eq(contactType));
+    }
+
+    private BooleanBuilder eqDateStyleType(QMemberStyle memberStyle, DateStyleType dateStyleType) {
+        if (dateStyleType == null) {
+            return null;
+        }
+        return new BooleanBuilder(memberStyle.dateStyleType.eq(dateStyleType));
+    }
+
+    private BooleanBuilder eqDateCostType(QMemberStyle memberStyle, DateCostType dateCostType) {
+        if (dateCostType == null) {
+            return null;
+        }
+        return new BooleanBuilder(memberStyle.dateCostType.eq(dateCostType));
+    }
+
+    private BooleanBuilder eqMbtiType(QMemberStyle memberStyle, Mbti mbti) {
+        if (mbti == null) {
+            return null;
+        }
+        return new BooleanBuilder(memberStyle.mbti.eq(mbti));
+    }
+
+    private BooleanBuilder eqJustFriendType(QMemberStyle memberStyle, JustFriendType justFriendType) {
+        if (justFriendType == null) {
+            return null;
+        }
+        return new BooleanBuilder(memberStyle.justFriendType.eq(justFriendType));
+    }
 }
