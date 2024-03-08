@@ -21,6 +21,7 @@ public class MemberStyleServiceImpl implements MemberStyleService {
     private final MemberRepository memberRepository;
     private final MemberStyleRepository memberStyleRepository;
 
+    @Override
     @Transactional(readOnly = true)
     public MemberStyleResponse readMemberStyle(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
@@ -29,6 +30,7 @@ public class MemberStyleServiceImpl implements MemberStyleService {
         return MemberStyleResponse.of(member, memberStyle);
     }
 
+    @Override
     public MemberStyleResponse createMemberStyle(Long memberId, MemberStyleCreateRequest memberStyleCreateRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberStyle memberStyle = memberStyleCreateRequest.toMemberStyleWith(member);
@@ -38,6 +40,7 @@ public class MemberStyleServiceImpl implements MemberStyleService {
         return MemberStyleResponse.of(member, savedMemberStyle);
     }
 
+    @Override
     public void updateMemberStyle(Long memberId, MemberStyleUpdateRequest memberStyleUpdateRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberStyle memberStyle = memberStyleRepository.getByMemberOrThrow(member);
