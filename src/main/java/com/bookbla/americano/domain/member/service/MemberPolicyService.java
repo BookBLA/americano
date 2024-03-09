@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface MemberPolicyService {
 
-    void createMemberPolicies(Long memberId, MailSendRequest mailSendRequest);
+    MemberPolicyResponse createMemberPolicies(Long memberId, MemberPolicyDto memberPolicyDto);
 
     MemberPolicyResponse readMemberPolicies(Long memberId);
 

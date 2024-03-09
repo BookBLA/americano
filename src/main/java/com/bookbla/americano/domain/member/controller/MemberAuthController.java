@@ -15,6 +15,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,17 +48,13 @@ public class MemberAuthController {
         return ResponseEntity.ok(memberAuthUpdateResponse);
     }
 
-    @PostMapping("/emails/sends")
-    public ResponseEntity<MailSendResponse> sendMemberAuth(
+    @PostMapping("/emails")
+    public ResponseEntity<MailSendResponse> sendMailAndCreateMemberAuth(
         @RequestBody @Valid MailSendRequest mailSendRequest,
         @LoginUser Long memberId) {
 
         MailSendResponse mailSendResponse =
             memberAuthService.createMemberAuth(memberId, mailSendRequest.toMemberAuthDto());
-
-        memberPolicyService.createMemberPolicies(memberId, mailSendRequest);
-
-        memberProfileService.createMemberProfile(memberId, mailSendRequest.toMemberProfileDto());
 
         return ResponseEntity.ok(mailSendResponse);
     }
@@ -73,7 +70,7 @@ public class MemberAuthController {
         return ResponseEntity.ok(mailVerifyResponse);
     }
 
-    @PutMapping("/emails/resends")
+    @PatchMapping("/emails")
     public ResponseEntity<MailSendResponse> resendMail(
         @RequestBody @Valid MailResendRequest mailResendRequest,
         @LoginUser Long memberId) {

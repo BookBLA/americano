@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum PolicyExceptionType implements ExceptionType {
 
-    NOT_EQUAL_POLICY_COUNT(HttpStatus.BAD_REQUEST, "policy_001", "선택 약관 개수가 맞지 않습니다."),
+    EACH_POLICY_NOT_REGISTERED(HttpStatus.BAD_REQUEST, "policy_001", "해당 약관이 존재하지 않습니다."),
+    MEMBER_NOT_REGISTERED(HttpStatus.BAD_REQUEST, "policy_002", "해당 회원에 대한 약관 정보들이 존재하지 않습니다.")
     ;
 
     private final HttpStatus httpStatus;

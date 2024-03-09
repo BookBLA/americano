@@ -6,7 +6,7 @@ import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
 
 public interface MemberProfileService {
 
-    void createMemberProfile(Long memberId, MemberProfileDto memberProfileDto);
+    MemberProfileResponse createMemberProfile(Long memberId, MemberProfileDto memberProfileDto);
 
     MemberProfileResponse readMemberProfile(Long memberId);
 

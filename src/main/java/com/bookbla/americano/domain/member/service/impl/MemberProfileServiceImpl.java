@@ -19,9 +19,11 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     private final MemberProfileRepository memberProfileRepository;
 
     @Override
-    public void createMemberProfile(Long memberId, MemberProfileDto memberProfileDto) {
+    public MemberProfileResponse createMemberProfile(Long memberId, MemberProfileDto memberProfileDto) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        memberProfileRepository.save(memberProfileDto.toEntity(member));
+        MemberProfile memberProfile = memberProfileRepository.save(memberProfileDto.toEntity(member));
+
+        return MemberProfileResponse.from(member, memberProfile);
     }
 
     @Override
