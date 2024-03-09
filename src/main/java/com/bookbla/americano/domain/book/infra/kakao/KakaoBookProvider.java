@@ -1,9 +1,9 @@
 package com.bookbla.americano.domain.book.infra.kakao;
 
+
 import com.bookbla.americano.domain.book.infra.kakao.dto.KakaoBookResponse;
 import com.bookbla.americano.domain.book.service.BookProvider;
-import com.bookbla.americano.domain.book.service.dto.BookInformationResponse;
-import java.util.List;
+import com.bookbla.americano.domain.book.service.dto.BookSearchResponses;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -21,10 +21,10 @@ public class KakaoBookProvider implements BookProvider {
     }
 
     @Override
-    public List<BookInformationResponse> searchBooks(String text, int size, int page) {
+    public BookSearchResponses searchBooks(String text, int size, int page) {
         String tokenValue = AUTH_TYPE + token;
         KakaoBookResponse kakaoBookResponse = kakaoBookClient.getBookInformation(tokenValue, text, size, page);
-        return kakaoBookResponse.toBookInformationResponse();
+        return kakaoBookResponse.toBookSearchResponsesWith(page);
     }
 
 }

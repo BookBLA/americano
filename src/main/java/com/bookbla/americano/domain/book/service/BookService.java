@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.book.service;
 
-import com.bookbla.americano.domain.book.controller.dto.BookSearchResponses;
+import com.bookbla.americano.domain.book.service.dto.BookSearchResponses;
 
 public interface BookService {
 

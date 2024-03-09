@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.book.infra.kakao.dto;
 
-import com.bookbla.americano.domain.book.service.dto.BookInformationResponse;
+import com.bookbla.americano.domain.book.service.dto.BookSearchResponses;
+import com.bookbla.americano.domain.book.service.dto.BookSearchResponses.BookSearchResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -35,15 +36,16 @@ public class KakaoBookResponse {
     @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
     static class Meta {
 
-        private String isEnd;
+        private boolean isEnd;
         private int pageableCount;
         private int totalCount;
 
     }
 
-    public List<BookInformationResponse> toBookInformationResponse() {
-        return this.documents.stream()
-                .map(it -> new BookInformationResponse(it.title, it.authors, it.isbn, it.thumbnail))
+    public BookSearchResponses toBookSearchResponsesWith(int page) {
+        List<BookSearchResponse> bookSearchResponses = documents.stream()
+                .map(it -> new BookSearchResponse(it.title, it.authors, it.isbn, it.thumbnail))
                 .collect(Collectors.toList());
+        return new BookSearchResponses(getMeta().getTotalCount(), page, getMeta().isEnd(), bookSearchResponses);
     }
 }

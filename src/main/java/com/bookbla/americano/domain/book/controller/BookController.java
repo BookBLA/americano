@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.book.controller;
 
-import com.bookbla.americano.domain.book.controller.dto.BookSearchResponses;
+import com.bookbla.americano.domain.book.service.dto.BookSearchResponses;
 import com.bookbla.americano.domain.book.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
