@@ -8,6 +8,7 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,15 +22,24 @@ public class MemberPolicyController {
 
     private final MemberPolicyService memberPolicyService;
 
+    @GetMapping
+    public ResponseEntity<MemberPolicyResponse> readMemberPolicies(@LoginUser Long memberId) {
+
+        MemberPolicyResponse memberPolicyResponse = memberPolicyService.readMemberPolicies(
+            memberId);
+
+        return ResponseEntity.ok(memberPolicyResponse);
+    }
+
     @PutMapping
-    public ResponseEntity<List<MemberPolicyResponse>> updateMemberPolices(
-        @RequestBody @Valid List<MemberPolicyUpdateRequest> memberPolicyUpdateRequests,
+    public ResponseEntity<MemberPolicyResponse> updateMemberPolicies(
+        @RequestBody @Valid MemberPolicyUpdateRequest memberPolicyUpdateRequests,
         @LoginUser Long memberId) {
 
-        List<MemberPolicyResponse> memberPolicyResponses = memberPolicyService.updateMemberPolicies(
+        MemberPolicyResponse memberPolicyResponse = memberPolicyService.updateMemberPolicies(
             memberId, memberPolicyUpdateRequests);
 
-        return ResponseEntity.ok(memberPolicyResponses);
+        return ResponseEntity.ok(memberPolicyResponse);
     }
 
 }

@@ -4,6 +4,7 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MailSendRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MailSendRequest.AgreedStatuses;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberPolicyUpdateRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberPolicyUpdateRequest.UpdateStatuses;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberPolicyResponse;
 import com.bookbla.americano.domain.member.exception.PolicyExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberPolicyRepository;
@@ -14,11 +15,13 @@ import com.bookbla.americano.domain.member.repository.entity.MemberPolicy;
 import com.bookbla.americano.domain.member.repository.entity.Policy;
 import com.bookbla.americano.domain.member.service.MemberPolicyService;
 import com.bookbla.americano.domain.member.service.dto.MemberPolicyDto;
+import java.lang.reflect.Field;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.sql.Update;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,35 +44,42 @@ public class MemberPolicyServiceImpl implements MemberPolicyService {
         Policy policy = policyRepository.findById(1L)
             .orElseThrow(() -> new BaseException(PolicyExceptionType.NOT_EQUAL_POLICY_COUNT));
 
-        MemberPolicyDto memberPolicyDto = new MemberPolicyDto(agreedStatuses.getAdAgreementPolicy());
+        MemberPolicyDto memberPolicyDto = new MemberPolicyDto(
+            agreedStatuses.getAdAgreementPolicy());
         memberPolicyRepository.save(memberPolicyDto.toEntity(member, policy));
     }
 
     @Override
+    public MemberPolicyResponse readMemberPolicies(Long memberId) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+
+        Policy policy = policyRepository.findById(1L)
+            .orElseThrow(() -> new BaseException(PolicyExceptionType.NOT_EQUAL_POLICY_COUNT));
+
+        MemberPolicy memberPolicy = memberPolicyRepository.findByMemberAndPolicy(member, policy)
+            .orElseThrow(() -> new IllegalArgumentException("Not found member_id"));
+
+        return MemberPolicyResponse.from(member, memberPolicy);
+    }
+
+    @Override
     @Transactional
-    public List<MemberPolicyResponse> updateMemberPolicies(Long memberId,
-        List<MemberPolicyUpdateRequest> memberPolicyUpdateRequests) {
+    public MemberPolicyResponse updateMemberPolicies(Long memberId,
+        MemberPolicyUpdateRequest memberPolicyUpdateRequest) {
 
         Member member = memberRepository.getByIdOrThrow(memberId);
-        List<Policy> policies = policyRepository.findAll(Sort.by("id"));
+        UpdateStatuses updateStatuses = memberPolicyUpdateRequest.getUpdateStatuses();
 
-        if (memberPolicyUpdateRequests.size() != policies.size()) {
-            throw new BaseException(PolicyExceptionType.NOT_EQUAL_POLICY_COUNT);
-        }
+        Policy policy = policyRepository.findById(1L)
+            .orElseThrow(() -> new BaseException(PolicyExceptionType.NOT_EQUAL_POLICY_COUNT));
 
-        return IntStream.range(0, policies.size())
-            .mapToObj(i -> new SimpleEntry<>(memberPolicyUpdateRequests.get(i), policies.get(i)))
-            .map(entry -> {
-                MemberPolicyUpdateRequest request = entry.getKey();
-                Policy policy = entry.getValue();
-                MemberPolicy memberPolicy = memberPolicyRepository.findByMemberAndPolicy(member,
-                        policy)
-                    .orElseThrow(() -> new IllegalArgumentException("Error"));
-                memberPolicy.updateAgreedStatus(request.getAgreedStatus());
-                return memberPolicy;
-            })
-            .map(MemberPolicyResponse::from)
-            .collect(Collectors.toList());
+        MemberPolicy memberPolicy = memberPolicyRepository.findByMemberAndPolicy(member, policy)
+            .orElseThrow(() -> new IllegalArgumentException("Not found member_id"));
+
+        memberPolicy.updateAgreedStatus(updateStatuses.isAdAgreementPolicy());
+
+        return MemberPolicyResponse.from(member, memberPolicy);
     }
+
 
 }

@@ -10,7 +10,9 @@ public interface MemberPolicyService {
 
     void createMemberPolicies(Long memberId, MailSendRequest mailSendRequest);
 
-    List<MemberPolicyResponse> updateMemberPolicies(Long memberId,
-        List<MemberPolicyUpdateRequest> memberPolicyUpdateRequests);
+    MemberPolicyResponse readMemberPolicies(Long memberId);
+
+    MemberPolicyResponse updateMemberPolicies(Long memberId,
+        MemberPolicyUpdateRequest memberPolicyUpdateRequest);
 
 }
