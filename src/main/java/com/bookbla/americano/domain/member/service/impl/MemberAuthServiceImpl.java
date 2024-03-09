@@ -43,7 +43,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
 
     @Override
     @Transactional
-    public MailSendResponse createMemberAuth(Long memberId, MemberAuthDto memberAuthDto) {
+    public MailSendResponse sendEmailAndCreateMemberAuth(Long memberId, MemberAuthDto memberAuthDto) {
         String schoolEmail = memberAuthDto.getSchoolEmail();
 
         checkDuplicatedEmail(schoolEmail);
@@ -58,7 +58,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
 
     @Override
     @Transactional
-    public MailVerifyResponse verifyMemberAuth(Long memberId, MailVerifyRequest mailVerifyRequest) {
+    public MailVerifyResponse verifyEmail(Long memberId, MailVerifyRequest mailVerifyRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberAuth memberAuth = memberAuthRepository.findByMember(member)
             .orElseThrow(() -> new IllegalArgumentException("error"));
@@ -85,7 +85,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
 
     @Override
     @Transactional
-    public MailSendResponse resendMail(Long memberId, MailResendRequest mailResendRequest) {
+    public MailSendResponse resendEmail(Long memberId, MailResendRequest mailResendRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         String schoolEmail = mailResendRequest.getSchoolEmail();
 
@@ -140,7 +140,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
 
     private String sendEmail(String schoolEmail) {
 
-        String subject = "Bookbla 이메일 인증 테스트입니다.";
+        String subject = "Bookbla 이메일 인증";
         String verifyCode = createVerifyCode();
 
         Context context = new Context();

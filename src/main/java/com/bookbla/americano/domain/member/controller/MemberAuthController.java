@@ -9,8 +9,6 @@ import com.bookbla.americano.domain.member.controller.dto.response.MailSendRespo
 import com.bookbla.americano.domain.member.controller.dto.response.MailVerifyResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthResponse;
 import com.bookbla.americano.domain.member.service.MemberAuthService;
-import com.bookbla.americano.domain.member.service.MemberPolicyService;
-import com.bookbla.americano.domain.member.service.MemberProfileService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberAuthController {
 
     private final MemberAuthService memberAuthService;
-    private final MemberPolicyService memberPolicyService;
-    private final MemberProfileService memberProfileService;
-
     @GetMapping
     public ResponseEntity<MemberAuthResponse> readMemberAuth(@LoginUser Long memberId) {
         MemberAuthResponse memberAuthResponse = memberAuthService.readMemberAuth(memberId);
@@ -54,18 +49,18 @@ public class MemberAuthController {
         @LoginUser Long memberId) {
 
         MailSendResponse mailSendResponse =
-            memberAuthService.createMemberAuth(memberId, mailSendRequest.toMemberAuthDto());
+            memberAuthService.sendEmailAndCreateMemberAuth(memberId, mailSendRequest.toMemberAuthDto());
 
         return ResponseEntity.ok(mailSendResponse);
     }
 
     @PostMapping("/emails/verifications")
-    public ResponseEntity<MailVerifyResponse> verifyMemberAuth(
+    public ResponseEntity<MailVerifyResponse> verifyMail(
         @RequestBody @Valid MailVerifyRequest mailVerifyRequest,
         @LoginUser Long memberId) {
 
         MailVerifyResponse mailVerifyResponse =
-            memberAuthService.verifyMemberAuth(memberId, mailVerifyRequest);
+            memberAuthService.verifyEmail(memberId, mailVerifyRequest);
 
         return ResponseEntity.ok(mailVerifyResponse);
     }
@@ -76,7 +71,7 @@ public class MemberAuthController {
         @LoginUser Long memberId) {
 
         MailSendResponse mailSendResponse =
-            memberAuthService.resendMail(memberId, mailResendRequest);
+            memberAuthService.resendEmail(memberId, mailResendRequest);
 
         return ResponseEntity.ok(mailSendResponse);
     }

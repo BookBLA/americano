@@ -10,11 +10,11 @@ import com.bookbla.americano.domain.member.service.dto.MemberAuthDto;
 
 public interface MemberAuthService {
 
-    MailSendResponse createMemberAuth(Long memberId, MemberAuthDto memberAuthDto);
+    MailSendResponse sendEmailAndCreateMemberAuth(Long memberId, MemberAuthDto memberAuthDto);
 
-    MailVerifyResponse verifyMemberAuth(Long memberId, MailVerifyRequest mailVerifyRequest);
+    MailVerifyResponse verifyEmail(Long memberId, MailVerifyRequest mailVerifyRequest);
 
-    MailSendResponse resendMail(Long memberId, MailResendRequest mailResendRequest);
+    MailSendResponse resendEmail(Long memberId, MailResendRequest mailResendRequest);
 
     MemberAuthResponse readMemberAuth(Long memberId);
 
