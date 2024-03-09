@@ -70,8 +70,8 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MemberBookProfileResponseDto> findSameBookMembers(MemberBookProfileRequestDto requestDto) {
-        List<MemberBookProfileResponseDto> allResult = memberProfileRepository.searchSameBookMember(requestDto);
+    public List<MemberBookProfileResponseDto> findSameBookMembers(Long memberId, MemberBookProfileRequestDto requestDto) {
+        List<MemberBookProfileResponseDto> allResult = memberProfileRepository.searchSameBookMember(memberId, requestDto);
         // 탐색 결과가 없을 때, EMPTY_MEMBER_BOOK Exception(해당 사용자의 선호 책도 없음)
         if (allResult.isEmpty()) {
             throw new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOK);
@@ -80,7 +80,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         List<MemberBookProfileResponseDto> userBookProfiles = new ArrayList<>();
         List<MemberBookProfileResponseDto> otherBookProfiles = new ArrayList<>(allResult);
         for (MemberBookProfileResponseDto i : allResult) {
-            if (i.getMemberId() == requestDto.getMemberId()) {
+            if (i.getMemberId() == memberId) {
                 addBookProfileToList(userBookProfiles, i);
                 otherBookProfiles.remove(i);
             }

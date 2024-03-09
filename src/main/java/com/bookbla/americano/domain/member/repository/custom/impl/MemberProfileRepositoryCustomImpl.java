@@ -31,7 +31,7 @@ public class MemberProfileRepositoryCustomImpl implements MemberProfileRepositor
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<MemberBookProfileResponseDto> searchSameBookMember(MemberBookProfileRequestDto requestDto) {
+    public List<MemberBookProfileResponseDto> searchSameBookMember(Long memberId, MemberBookProfileRequestDto requestDto) {
         QMemberProfile memberProfile = QMemberProfile.memberProfile;
         QMemberStyle memberStyle = QMemberStyle.memberStyle;
         QMemberBook memberBook = QMemberBook.memberBook;
@@ -43,7 +43,7 @@ public class MemberProfileRepositoryCustomImpl implements MemberProfileRepositor
                         .select(memberBook.book.id)
                         .from(memberProfile)
                         .innerJoin(memberBook).on(memberProfile.member.eq(memberBook.member))
-                        .where(memberProfile.member.id.eq(requestDto.getMemberId()))));
+                        .where(memberProfile.member.id.eq(memberId))));
 
         builder.and(eqGender(memberProfile, requestDto.getGender()))
                 .and(eqSmokeType(memberStyle, requestDto.getSmokeType()))
@@ -70,7 +70,7 @@ public class MemberProfileRepositoryCustomImpl implements MemberProfileRepositor
                 .innerJoin(memberBook).on(memberProfile.member.eq(memberBook.member))
                 .innerJoin(book).on(memberBook.book.eq(book))
                 .innerJoin(memberStyle).on(memberProfile.member.eq(memberStyle.member))
-                .where(builder.or(memberProfile.member.id.eq(requestDto.getMemberId())))
+                .where(builder.or(memberProfile.member.id.eq(memberId)))
                 .fetch();
     }
 

@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface MemberProfileService {
 
-    List<MemberBookProfileResponseDto> findSameBookMembers(MemberBookProfileRequestDto memberBookProfileRequestDto);
+    List<MemberBookProfileResponseDto> findSameBookMembers(Long memberId, MemberBookProfileRequestDto memberBookProfileRequestDto);
     MemberProfileCreateResponse createProfile(MemberProfileDto memberProfileDto);
     MemberProfileResponse createMemberProfile(Long memberId, MemberProfileDto memberProfileDto);
     MemberProfileResponse readMemberProfile(Long memberId);
