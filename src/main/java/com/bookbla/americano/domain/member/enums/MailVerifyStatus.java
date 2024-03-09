@@ -3,11 +3,7 @@ package com.bookbla.americano.domain.member.enums;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.exception.MailExceptionType;
 import java.util.Arrays;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@Getter
-@RequiredArgsConstructor
 public enum MailVerifyStatus {
     PENDING,
     DONE
