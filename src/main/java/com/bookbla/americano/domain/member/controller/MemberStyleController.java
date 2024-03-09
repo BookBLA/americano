@@ -6,11 +6,13 @@ import com.bookbla.americano.domain.member.service.MemberStyleService;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpdateRequest;
 import java.net.URI;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,7 +25,8 @@ public class MemberStyleController {
 
     @PostMapping
     public ResponseEntity<MemberStyleResponse> createMemberStyle(
-            @LoginUser Long memberId, MemberStyleCreateRequest memberStyleCreateRequest) {
+            @LoginUser Long memberId,
+            @RequestBody @Valid MemberStyleCreateRequest memberStyleCreateRequest) {
         MemberStyleResponse memberStyleResponse = memberStyleService.createMemberStyle(
                 memberId, memberStyleCreateRequest);
         return ResponseEntity.created(URI.create(memberStyleResponse.getMemberStyleId().toString()))
@@ -38,7 +41,8 @@ public class MemberStyleController {
 
     @PutMapping
     public ResponseEntity<Void> updateMemberStyle(
-            @LoginUser Long memberId, MemberStyleUpdateRequest memberStyleUpdateRequest) {
+            @LoginUser Long memberId,
+            @RequestBody @Valid MemberStyleUpdateRequest memberStyleUpdateRequest) {
         memberStyleService.updateMemberStyle(memberId, memberStyleUpdateRequest);
         return ResponseEntity.noContent().build();
     }
