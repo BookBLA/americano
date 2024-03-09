@@ -40,6 +40,7 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
         with:
+          submodules: true
           ref: ${{ github.head_ref }}
 
       - name: Make an Application.yml
