@@ -23,7 +23,7 @@ public class MailSendRequest {
         private Boolean adAgreementPolicy;
     }
 
-    @NotNull
+    @NotNull(message = "약관의 동의여부가 입력되지 않았습니다.")
     private AgreedStatuses agreedStatuses;
 
     @NotNull(message = "성별이 입력되지 않았습니다.")
