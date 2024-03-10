@@ -19,17 +19,15 @@ public class MemberPolicyUpdateRequest {
     @AllArgsConstructor
     public static class UpdateStatuses {
         private Boolean adAgreementPolicy;
-        private Boolean testAgreementPolicy;
 
         public List<Boolean> toList() {
             List<Boolean> updateStatuses = new ArrayList<>();
             updateStatuses.add(adAgreementPolicy);
-            updateStatuses.add(testAgreementPolicy);
             return updateStatuses;
         }
     }
 
-    @NotNull(message = "약관의 동의여부가 입력되지 않았습니다.")
+    @NotNull(message = "선택 약관이 입력되지 않았습니다.")
     private UpdateStatuses updateStatuses;
 
 }

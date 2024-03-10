@@ -20,17 +20,15 @@ public class MemberPolicyCreateRequest {
     @AllArgsConstructor
     public static class AgreedStatuses {
         private Boolean adAgreementPolicy;
-        private Boolean testAgreementPolicy;
 
         public List<Boolean> toList() {
             List<Boolean> agreedStatuses = new ArrayList<>();
             agreedStatuses.add(adAgreementPolicy);
-            agreedStatuses.add(testAgreementPolicy);
             return agreedStatuses;
         }
     }
 
-    @NotNull(message = "약관의 동의여부가 입력되지 않았습니다.")
+    @NotNull(message = "선택 약관이 입력되지 않았습니다.")
     private AgreedStatuses agreedStatuses;
 
     public MemberPolicyDto toDto() {
