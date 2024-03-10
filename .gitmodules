@@ -1,0 +1,3 @@
+[submodule "americano-config"]
+	path = americano-config
+	url = https://github.com/BookBLA/americano-config.git

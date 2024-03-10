@@ -108,3 +108,12 @@ configurations {
     }
     querydsl.extendsFrom compileClasspath
 }
+
+tasks.register('copyExternalProperties', Copy) {
+    from "./americano-config"
+    include "*.yml"
+    into "src/main/resources"
+}
+
+processResources.dependsOn('copyExternalProperties')
+processTestResources.dependsOn('copyExternalProperties')

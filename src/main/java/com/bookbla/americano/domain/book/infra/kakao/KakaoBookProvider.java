@@ -2,9 +2,9 @@ package com.bookbla.americano.domain.book.infra.kakao;
 
 
 import com.bookbla.americano.domain.book.infra.kakao.dto.KakaoBookResponse;
+import com.bookbla.americano.domain.book.infra.kakao.dto.KakaoTokenConfig;
 import com.bookbla.americano.domain.book.service.BookProvider;
 import com.bookbla.americano.domain.book.service.dto.BookSearchResponses;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,9 +15,9 @@ public class KakaoBookProvider implements BookProvider {
     private final KakaoBookClient kakaoBookClient;
     private final String token;
 
-    public KakaoBookProvider(KakaoBookClient kakaoBookClient, @Value("${book.kakao.token}") String token) {
+    public KakaoBookProvider(KakaoBookClient kakaoBookClient, KakaoTokenConfig kakaoTokenConfig) {
         this.kakaoBookClient = kakaoBookClient;
-        this.token = token;
+        this.token = kakaoTokenConfig.getToken();
     }
 
     @Override

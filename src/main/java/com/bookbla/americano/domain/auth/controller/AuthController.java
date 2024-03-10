@@ -5,10 +5,10 @@ import com.bookbla.americano.domain.auth.controller.dto.response.LoginResponseDt
 import com.bookbla.americano.domain.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -18,10 +18,10 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/login/{type}")
+    @PostMapping("/login/{oAuthType}")
     public ResponseEntity<LoginResponseDto> login(
             @RequestBody LoginRequestDto loginRequestDto,
-            @RequestParam String oAuthType
+            @PathVariable String oAuthType
     ) {
         LoginResponseDto loginResponseDto = authService.login(loginRequestDto, oAuthType);
         return ResponseEntity.ok(loginResponseDto);
