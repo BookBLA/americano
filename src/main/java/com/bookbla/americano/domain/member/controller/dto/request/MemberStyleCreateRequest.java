@@ -37,12 +37,12 @@ public class MemberStyleCreateRequest {
     private String justFriendType;
 
     @NotNull(message = "데이트 스타일이 입력되지 않았습니다.")
-    private String dateStyle;
+    private String dateStyleType;
 
     public MemberStyle toMemberStyleWith(Member member) {
         return MemberStyle.builder()
                 .member(member)
-                .dateStyleType(DateStyleType.from(dateStyle))
+                .dateStyleType(DateStyleType.from(dateStyleType))
                 .contactType(ContactType.from(contactType))
                 .smokeType(SmokeType.from(smokeType))
                 .mbti(Mbti.from(mbti))
