@@ -48,14 +48,14 @@ public class MemberStyleServiceImpl implements MemberStyleService {
         update(memberStyle, memberStyleUpdateRequest);
     }
 
-    private void update(MemberStyle memberStyle, MemberStyleUpdateRequest memberStyleUpdateRequest) {
-        memberStyle.updateMbti(memberStyleUpdateRequest.getMbti());
-        memberStyle.updateDrinkType(memberStyleUpdateRequest.getDrinkType());
-        memberStyle.updateDateCostType(memberStyleUpdateRequest.getDateCostType());
-        memberStyle.updateSmokeType(memberStyleUpdateRequest.getSmokeType());
-        memberStyle.updateContactType(memberStyleUpdateRequest.getContactType());
-        memberStyle.updateDateStyleType(memberStyleUpdateRequest.getDateStyleType());
-        memberStyle.updateJustFriendType(memberStyleUpdateRequest.getJustFriendType());
+    private void update(MemberStyle memberStyle, MemberStyleUpdateRequest request) {
+        memberStyle.updateMbti(request.getMbti())
+                .updateDrinkType(request.getDrinkType())
+                .updateDateCostType(request.getDateCostType())
+                .updateSmokeType(request.getSmokeType())
+                .updateContactType(request.getContactType())
+                .updateDateStyleType(request.getDateStyleType())
+                .updateJustFriendType(request.getJustFriendType());
     }
 
 }
