@@ -27,7 +27,7 @@ public class MemberPolicyController {
 
     @PostMapping
     public ResponseEntity<MemberPolicyResponse> createMemberPolicies(@LoginUser Long memberId,
-        MemberPolicyCreateRequest memberPolicyCreateRequest) {
+        @RequestBody MemberPolicyCreateRequest memberPolicyCreateRequest) {
         MemberPolicyResponse memberPolicyResponse = memberPolicyService.createMemberPolicies(
             memberId, memberPolicyCreateRequest.toDto());
 

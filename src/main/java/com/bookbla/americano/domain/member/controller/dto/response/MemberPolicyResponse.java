@@ -22,7 +22,6 @@ public class MemberPolicyResponse {
     @Builder
     public static class AgreedStatuses {
         private Boolean adAgreementPolicy;
-        private Boolean testAgreementPolicy;
 
     }
 
@@ -31,7 +30,6 @@ public class MemberPolicyResponse {
             .memberId(member.getId())
             .agreedStatuses(AgreedStatuses.builder()
                 .adAgreementPolicy(memberPolicies.get(0).getAgreedStatus())
-                .testAgreementPolicy(memberPolicies.get(1).getAgreedStatus())
                 .build())
             .build();
     }

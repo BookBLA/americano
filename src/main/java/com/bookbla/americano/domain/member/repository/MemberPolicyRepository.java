@@ -11,5 +11,5 @@ public interface MemberPolicyRepository extends JpaRepository<MemberPolicy, Long
 
     Optional<MemberPolicy> findByMemberAndPolicy(Member member, Policy policy);
 
-    Optional<List<MemberPolicy>> findAllByMember(Member member);
+    List<MemberPolicy> findAllByMember(Member member);
 }
