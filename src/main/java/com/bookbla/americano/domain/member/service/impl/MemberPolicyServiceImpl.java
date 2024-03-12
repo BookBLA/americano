@@ -52,8 +52,11 @@ public class MemberPolicyServiceImpl implements MemberPolicyService {
     public MemberPolicyResponse readMemberPolicies(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
-        List<MemberPolicy> memberPolicies = memberPolicyRepository.findAllByMember(member)
-            .orElseThrow(() -> new BaseException(PolicyExceptionType.MEMBER_NOT_REGISTERED));
+        List<MemberPolicy> memberPolicies = memberPolicyRepository.findAllByMember(member);
+        if(memberPolicies.isEmpty()) {
+            throw new BaseException(PolicyExceptionType.MEMBER_NOT_REGISTERED);
+        }
+
 
         return MemberPolicyResponse.from(member, memberPolicies);
     }
@@ -76,8 +79,10 @@ public class MemberPolicyServiceImpl implements MemberPolicyService {
             memberPolicy.updateAgreedStatus(agreedStatuses.get(i));
         }
 
-        List<MemberPolicy> memberPolicies = memberPolicyRepository.findAllByMember(member)
-            .orElseThrow(() -> new BaseException(PolicyExceptionType.MEMBER_NOT_REGISTERED));
+        List<MemberPolicy> memberPolicies = memberPolicyRepository.findAllByMember(member);
+        if(memberPolicies.isEmpty()) {
+            throw new BaseException(PolicyExceptionType.MEMBER_NOT_REGISTERED);
+        }
 
         return MemberPolicyResponse.from(member, memberPolicies);
     }
