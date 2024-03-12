@@ -61,9 +61,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
     @Transactional
     public MailVerifyResponse verifyEmail(Long memberId, MailVerifyRequest mailVerifyRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberAuth memberAuth = memberAuthRepository.findByMember(member)
-            .orElseThrow(() -> new BaseException(MemberExceptionType.MEMBER_AUTH_NOT_FOUND));
-
+        MemberAuth memberAuth = memberAuthRepository.getByMemberOrThrow(member);
         LocalDateTime nowTime = LocalDateTime.now();
 
         String verifyCode = memberAuth.getEmailVerifyCode();
@@ -90,8 +88,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         String schoolEmail = mailResendRequest.getSchoolEmail();
 
-        MemberAuth memberAuth = memberAuthRepository.findByMember(member)
-            .orElseThrow(() -> new BaseException(MemberExceptionType.MEMBER_AUTH_NOT_FOUND));
+        MemberAuth memberAuth = memberAuthRepository.getByMemberOrThrow(member);
 
         String enrolledSchoolEmail = memberAuth.getSchoolEmail();
 
@@ -124,8 +121,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         MemberAuthUpdateRequest memberAuthUpdateRequest) {
 
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberAuth memberAuth = memberAuthRepository.findByMember(member)
-            .orElseThrow(() -> new BaseException(MemberExceptionType.MEMBER_AUTH_NOT_FOUND));
+        MemberAuth memberAuth = memberAuthRepository.getByMemberOrThrow(member);
 
         update(memberAuth, memberAuthUpdateRequest);
 

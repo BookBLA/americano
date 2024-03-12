@@ -12,7 +12,7 @@ public interface MemberAuthRepository extends JpaRepository<MemberAuth, Long> {
 
     default MemberAuth getByMemberOrThrow(Member member) {
         return findByMember(member)
-            .orElseThrow(() -> new BaseException(MemberExceptionType.AUTH_NOT_REGISTERED));
+            .orElseThrow(() -> new BaseException(MemberExceptionType.MEMBER_AUTH_NOT_FOUND));
     }
 
     Optional<MemberAuth> findByMember(Member member);
