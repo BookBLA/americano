@@ -25,7 +25,7 @@ public class MemberProfileController {
 
     @PostMapping
     public ResponseEntity<MemberProfileResponse> createMemberProfile(@LoginUser Long memberId,
-        MemberProfileCreateRequest memberProfileCreateRequest) {
+        @RequestBody @Valid MemberProfileCreateRequest memberProfileCreateRequest) {
 
         MemberProfileResponse memberProfileResponse = memberProfileService.createMemberProfile(
             memberId, memberProfileCreateRequest.toDto());
