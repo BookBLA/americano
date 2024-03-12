@@ -40,8 +40,9 @@ public class MemberPolicy extends BaseInsertEntity {
     @Convert(converter = BooleanToYNConverter.class)
     private Boolean agreedStatus;
 
-    public void updateAgreedStatus(Boolean agreedStatus) {
+    public MemberPolicy updateAgreedStatus(Boolean agreedStatus) {
         this.agreedStatus = agreedStatus;
+        return this;
     }
 
 }

@@ -47,28 +47,34 @@ public class MemberAuth extends BaseInsertEntity {
     @Enumerated(EnumType.STRING)
     private MailVerifyStatus mailVerifyStatus;
 
-    public void updateSchoolEmail(String schoolEmail) {
+    public MemberAuth updateSchoolEmail(String schoolEmail) {
         this.schoolEmail = schoolEmail;
+        return this;
     }
 
-    public void updateEmailVerifyCode(String emailVerifyCode) {
+    public MemberAuth updateEmailVerifyCode(String emailVerifyCode) {
         this.emailVerifyCode = emailVerifyCode;
+        return this;
     }
 
-    public void updateEmailVerifyStartTime(LocalDateTime emailVerifyStartTime) {
+    public MemberAuth updateEmailVerifyStartTime(LocalDateTime emailVerifyStartTime) {
         this.emailVerifyStartTime = emailVerifyStartTime;
+        return this;
     }
 
-    public void updatePhoneNumber(String phoneNumber) {
+    public MemberAuth updatePhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+        return this;
     }
 
-    public void updateStudentIdImageUrl(String studentIdImageUrl) {
+    public MemberAuth updateStudentIdImageUrl(String studentIdImageUrl) {
         this.studentIdImageUrl = studentIdImageUrl;
+        return this;
     }
 
-    public void updateMailVerifyDone() {
+    public MemberAuth updateMailVerifyDone() {
         this.mailVerifyStatus = MailVerifyStatus.DONE;
+        return this;
     }
 
 }

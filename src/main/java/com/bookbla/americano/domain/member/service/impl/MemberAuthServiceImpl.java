@@ -102,8 +102,8 @@ public class MemberAuthServiceImpl implements MemberAuthService {
 
         String emailVerifyCode = sendEmail(schoolEmail);
 
-        memberAuth.updateEmailVerifyCode(emailVerifyCode);
-        memberAuth.updateEmailVerifyStartTime(LocalDateTime.now());
+        memberAuth.updateEmailVerifyCode(emailVerifyCode)
+            .updateEmailVerifyStartTime(LocalDateTime.now());
 
         return MailSendResponse.from(member, memberAuth);
     }
@@ -133,10 +133,10 @@ public class MemberAuthServiceImpl implements MemberAuthService {
     }
 
 
-    private void update(MemberAuth memberAuth, MemberAuthUpdateRequest memberAuthUpdateRequest) {
-        memberAuth.updateSchoolEmail(memberAuthUpdateRequest.getSchoolEmail());
-        memberAuth.updatePhoneNumber(memberAuthUpdateRequest.getPhoneNumber());
-        memberAuth.updateStudentIdImageUrl(memberAuthUpdateRequest.getStudentIdImageUrl());
+    private void update(MemberAuth memberAuth, MemberAuthUpdateRequest request) {
+        memberAuth.updateSchoolEmail(request.getSchoolEmail())
+            .updatePhoneNumber(request.getPhoneNumber())
+            .updateStudentIdImageUrl(request.getStudentIdImageUrl());
     }
 
     private String sendEmail(String schoolEmail) {

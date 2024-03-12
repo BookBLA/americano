@@ -46,14 +46,12 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         return MemberProfileResponse.from(member, memberProfile);
     }
 
-    public void update(MemberProfile memberProfile,
-        MemberProfileUpdateRequest memberProfileUpdateRequest) {
-        memberProfile.updateName(memberProfileUpdateRequest.getName());
-        memberProfile.updateBirthDate(memberProfileUpdateRequest.getBirthDate());
-        memberProfile.updateSchoolName(memberProfileUpdateRequest.getSchoolName());
-        memberProfile.updateGender(memberProfileUpdateRequest.getGender());
-        memberProfile.updateOpenKakaoRoomUrl(memberProfileUpdateRequest.getOpenKakaoRoomUrl());
-
+    public void update(MemberProfile memberProfile, MemberProfileUpdateRequest request) {
+        memberProfile.updateName(request.getName())
+            .updateBirthDate(request.getBirthDate())
+            .updateSchoolName(request.getSchoolName())
+            .updateGender(request.getGender())
+            .updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl());
     }
 
 }

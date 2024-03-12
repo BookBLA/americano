@@ -30,8 +30,8 @@ public class MemberServiceImpl implements MemberService {
         return MemberResponse.from(member);
     }
 
-    private void update(Member member, MemberUpdateRequest memberUpdateRequest) {
-        member.updateOauthEmail(memberUpdateRequest.getOauthEmail());
-        member.updateMemberType(memberUpdateRequest.getMemberType());
+    private void update(Member member, MemberUpdateRequest request) {
+        member.updateOauthEmail(request.getOauthEmail())
+            .updateMemberType(request.getMemberType());
     }
 }
