@@ -41,9 +41,8 @@ public class MemberPolicyServiceImpl implements MemberPolicyService {
         for (int i = 0; i < policies.size(); i++) {
             MemberPolicy memberPolicy = memberPolicyDto.toEntity(member, policies.get(i), agreedStatuses.get(i));
             memberPolicies.add(memberPolicy);
+            memberPolicyRepository.save(memberPolicy);
         }
-
-        memberPolicyRepository.saveAll(memberPolicies);
 
         return MemberPolicyResponse.from(member, memberPolicies);
     }
