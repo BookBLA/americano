@@ -2,11 +2,13 @@ package com.bookbla.americano.domain.member.controller;
 
 import com.bookbla.americano.base.jwt.LoginUser;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookCreateRequest;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.service.MemberBookService;
 import java.net.URI;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +28,12 @@ public class MemberBookController {
     ) {
         Long memberBookId = memberBookService.addMemberBook(memberId, memberBookCreateRequest);
         return ResponseEntity.created(URI.create("/member-books/" + memberBookId.toString())).build();
+    }
+
+    @GetMapping
+    public ResponseEntity<MemberBookReadResponses> readMemberBooks(@LoginUser Long memberId) {
+        MemberBookReadResponses memberBookReadResponses = memberBookService.readMemberBooks(memberId);
+        return ResponseEntity.ok(memberBookReadResponses);
     }
 
 }
