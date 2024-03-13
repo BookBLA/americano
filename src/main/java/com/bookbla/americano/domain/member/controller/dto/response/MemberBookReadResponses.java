@@ -4,10 +4,12 @@ import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
+@Builder
 @RequiredArgsConstructor
 public class MemberBookReadResponses {
 
@@ -34,7 +36,9 @@ public class MemberBookReadResponses {
                         memberBook.getBook().getImageUrl(),
                         memberBook.getBook().getAuthors()
                 )).collect(Collectors.toList());
-        return new MemberBookReadResponses(memberBookReadResponses);
+        return MemberBookReadResponses.builder()
+                .memberBookReadResponses(memberBookReadResponses)
+                .build();
     }
 
 }
