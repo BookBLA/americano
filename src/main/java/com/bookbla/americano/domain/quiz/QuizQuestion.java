@@ -39,9 +39,9 @@ public class QuizQuestion extends BaseInsertEntity {
 
     private String thirdChoice;
 
-    private String fourthChoice;
-
+    // 첫번째 답변을 정답으로 저장
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private AnswerChoice answerChoice;
+    private AnswerChoice answerChoice = AnswerChoice.FIRST;
 
 }

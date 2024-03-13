@@ -26,7 +26,6 @@ import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberStyleRepository;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpdateRequest;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
@@ -207,9 +206,4 @@ class MemberStyleServiceTest {
                 .hasMessageContaining("스타일이 등록되지 않은 회원입니다");
     }
 
-    @AfterEach
-    void cleanUp() {
-        memberStyleRepository.deleteAll();
-        memberRepository.deleteAll();
-    }
 }

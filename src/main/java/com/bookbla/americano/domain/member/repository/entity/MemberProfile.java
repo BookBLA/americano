@@ -41,7 +41,7 @@ public class MemberProfile {
 
     private String profileImageUrl;
 
-    private int studentNumber;
+    private String studentNumber;
 
     private String schoolName;
 
