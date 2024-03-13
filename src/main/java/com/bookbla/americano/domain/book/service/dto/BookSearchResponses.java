@@ -3,10 +3,12 @@ package com.bookbla.americano.domain.book.service.dto;
 
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
+@Builder
 @RequiredArgsConstructor
 public class BookSearchResponses {
 
