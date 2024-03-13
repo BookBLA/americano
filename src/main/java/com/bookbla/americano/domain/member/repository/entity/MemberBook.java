@@ -2,7 +2,7 @@ package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.book.Book;
+import com.bookbla.americano.domain.book.repository.entity.Book;
 import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
