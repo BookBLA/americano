@@ -20,6 +20,8 @@ public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
 
     boolean existsByMemberAndBook(Member member, Book book);
 
+    long countByMember(Member member);
+
     List<MemberBook> findByMember(Member member);
 
 }

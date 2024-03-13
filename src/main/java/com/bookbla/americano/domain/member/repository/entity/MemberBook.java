@@ -24,6 +24,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberBook extends BaseInsertEntity {
 
+    public static final int MAX_MEMBER_BOOK_COUNT = 3;
+
     private static final int MAX_REVIEW_LENGTH = 100;
 
     @Id
