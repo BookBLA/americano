@@ -1,8 +1,12 @@
-package com.bookbla.americano.domain.book;
+package com.bookbla.americano.domain.book.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,9 +30,11 @@ public class Book extends BaseInsertEntity {
     @Column(unique = true)
     private String isbn;
 
-    private String name;
+    private String title;
 
-    private String author;
+    @Builder.Default
+    @ElementCollection(fetch = FetchType.LAZY)
+    private Set<String> authors = new HashSet<>();
 
     private String imageUrl;
 
