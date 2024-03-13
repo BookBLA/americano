@@ -9,4 +9,6 @@ public interface MemberBookService {
 
     MemberBookReadResponses readMemberBooks(Long memberId);
 
+    void deleteMemberBook(Long memberId, Long memberBookId);
+
 }

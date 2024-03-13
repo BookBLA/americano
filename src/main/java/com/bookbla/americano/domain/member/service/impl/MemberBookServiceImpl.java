@@ -58,4 +58,14 @@ public class MemberBookServiceImpl implements MemberBookService {
         return MemberBookReadResponses.from(memberBooks);
     }
 
+    @Override
+    public void deleteMemberBook(Long memberId, Long memberBookId) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
+
+        memberBook.validateOwner(member);
+
+        memberBookRepository.deleteById(memberBookId);
+    }
+
 }
