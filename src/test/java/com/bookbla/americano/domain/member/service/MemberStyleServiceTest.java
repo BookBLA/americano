@@ -26,6 +26,8 @@ import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberStyleRepository;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpdateRequest;
+import com.bookbla.americano.domain.memberask.repository.MemberAskRepository;
+import com.bookbla.americano.domain.memberask.repository.entity.MemberAsk;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
@@ -46,6 +48,9 @@ class MemberStyleServiceTest {
     @Autowired
     private MemberStyleRepository memberStyleRepository;
 
+    @Autowired
+    private MemberAskRepository memberAskRepository;
+
     @Test
     void 회원의_스타일을_생성할_수_있다() {
         // given
@@ -54,7 +59,7 @@ class MemberStyleServiceTest {
                 .oauthEmail("bookbla@bookbla.com")
                 .build());
         MemberStyleCreateRequest memberStyleCreateRequest = new MemberStyleCreateRequest(
-                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트"
+                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트", "주로 어디서 책을 읽는 편이세요?"
         );
 
         // when
@@ -71,7 +76,8 @@ class MemberStyleServiceTest {
                 () -> assertThat(memberStyleResponse.getSmokeType()).isEqualTo("비흡연"),
                 () -> assertThat(memberStyleResponse.getContactType()).isEqualTo("느긋이"),
                 () -> assertThat(memberStyleResponse.getJustFriendType()).isEqualTo("허용 X"),
-                () -> assertThat(memberStyleResponse.getDateStyleType()).isEqualTo("집 데이트")
+                () -> assertThat(memberStyleResponse.getDateStyleType()).isEqualTo("집 데이트"),
+                () -> assertThat(memberStyleResponse.getMemberAsk()).isEqualTo("주로 어디서 책을 읽는 편이세요?")
         );
     }
 
@@ -92,6 +98,11 @@ class MemberStyleServiceTest {
                 .mbti(INTP)
                 .dateCostType(DATE_ACCOUNT)
                 .build());
+        memberAskRepository.save(MemberAsk
+                .builder()
+                .member(member)
+                .contents("주로 어디서 책을 읽으세요?")
+                .build());
 
         // when
         MemberStyleResponse memberStyleResponse = memberStyleService.readMemberStyle(
@@ -106,7 +117,8 @@ class MemberStyleServiceTest {
                 () -> assertThat(memberStyleResponse.getDateStyleType()).isEqualTo("집 데이트"),
                 () -> assertThat(memberStyleResponse.getJustFriendType()).isEqualTo("단둘이 술 먹기"),
                 () -> assertThat(memberStyleResponse.getDrinkType()).isEqualTo("안마심"),
-                () -> assertThat(memberStyleResponse.getMbti()).isEqualToIgnoringCase("intp")
+                () -> assertThat(memberStyleResponse.getMbti()).isEqualToIgnoringCase("intp"),
+                () -> assertThat(memberStyleResponse.getMemberAsk()).isEqualTo("주로 어디서 책을 읽으세요?")
         );
     }
 
@@ -155,8 +167,12 @@ class MemberStyleServiceTest {
                 .mbti(INTP)
                 .dateCostType(DATE_ACCOUNT)
                 .build());
+        memberAskRepository.save(MemberAsk.builder()
+                .member(member)
+                .contents("어느 시간대에 책을 읽으시나요?")
+                .build());
         MemberStyleUpdateRequest memberStyleUpdateRequest = new MemberStyleUpdateRequest(
-                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트"
+                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트", "주로 어디서 책을 읽는 편이세요?"
         );
 
         // when
@@ -180,7 +196,7 @@ class MemberStyleServiceTest {
         // given
         Long nonMemberId = -999999L;
         MemberStyleUpdateRequest memberStyleUpdateRequest = new MemberStyleUpdateRequest(
-                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트"
+                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트", "주로 어디서 책을 읽으세요?"
         );
 
         // when, then
@@ -197,7 +213,7 @@ class MemberStyleServiceTest {
                 .oauthEmail("bookbla@bookbla.com")
                 .build());
         MemberStyleUpdateRequest memberStyleUpdateRequest = new MemberStyleUpdateRequest(
-                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트"
+                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트", "주로 어디서 책을 읽으세요?"
         );
 
         // when, then

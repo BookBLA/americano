@@ -37,6 +37,9 @@ public class MemberStyleUpdateRequest {
     @NotNull(message = "데이트 스타일이 입력되지 않았습니다.")
     private String dateStyleType;
 
+    @NotNull(message = "개인 질문이 입력되지 않았습니다.")
+    private String memberAsk;
+
     public Mbti getMbti() {
         return Mbti.from(mbti);
     }
@@ -63,5 +66,9 @@ public class MemberStyleUpdateRequest {
 
     public DateStyleType getDateStyleType() {
         return DateStyleType.from(dateStyleType);
+    }
+
+    public String getMemberAsk() {
+        return memberAsk;
     }
 }
