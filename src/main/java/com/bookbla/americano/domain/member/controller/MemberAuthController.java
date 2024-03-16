@@ -5,7 +5,6 @@ import com.bookbla.americano.domain.member.controller.dto.request.MailResendRequ
 import com.bookbla.americano.domain.member.controller.dto.request.MailSendRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MailVerifyRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthUpdateRequest;
-import com.bookbla.americano.domain.member.controller.dto.response.MailSendResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MailVerifyResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthResponse;
 import com.bookbla.americano.domain.member.service.MemberAuthService;
@@ -44,14 +43,14 @@ public class MemberAuthController {
     }
 
     @PostMapping("/emails")
-    public ResponseEntity<MailSendResponse> sendMailAndCreateMemberAuth(
+    public ResponseEntity<MemberAuthResponse> sendMailAndCreateMemberAuth(
         @RequestBody @Valid MailSendRequest mailSendRequest,
         @LoginUser Long memberId) {
 
-        MailSendResponse mailSendResponse =
+        MemberAuthResponse memberAuthResponse =
             memberAuthService.sendEmailAndCreateMemberAuth(memberId, mailSendRequest.toMemberAuthDto());
 
-        return ResponseEntity.ok(mailSendResponse);
+        return ResponseEntity.ok(memberAuthResponse);
     }
 
     @PostMapping("/emails/verifications")
@@ -66,14 +65,14 @@ public class MemberAuthController {
     }
 
     @PatchMapping("/emails")
-    public ResponseEntity<MailSendResponse> resendMail(
+    public ResponseEntity<MemberAuthResponse> resendMail(
         @RequestBody @Valid MailResendRequest mailResendRequest,
         @LoginUser Long memberId) {
 
-        MailSendResponse mailSendResponse =
+        MemberAuthResponse memberAuthResponse =
             memberAuthService.resendEmail(memberId, mailResendRequest);
 
-        return ResponseEntity.ok(mailSendResponse);
+        return ResponseEntity.ok(memberAuthResponse);
     }
 
 }
