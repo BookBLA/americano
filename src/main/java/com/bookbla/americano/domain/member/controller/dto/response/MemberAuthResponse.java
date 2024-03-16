@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class MailSendResponse {
+public class MemberAuthResponse {
 
     private Long memberId;
     private Long memberAuthId;
@@ -18,8 +18,8 @@ public class MailSendResponse {
     private String studentIdImageUrl;
     private String mailVerifyStatus;
 
-    public static MailSendResponse from(Member member, MemberAuth memberAuth) {
-        return MailSendResponse.builder()
+    public static MemberAuthResponse from(Member member, MemberAuth memberAuth) {
+        return MemberAuthResponse.builder()
             .memberId(member.getId())
             .memberAuthId(memberAuth.getId())
             .schoolEmail(memberAuth.getSchoolEmail())

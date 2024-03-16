@@ -33,4 +33,15 @@ public class Member extends BaseInsertEntity {
     @Enumerated(EnumType.STRING)
     private MemberType memberType;
 
+    public Member updateOauthEmail(String oauthEmail) {
+        this.oauthEmail = oauthEmail;
+        return this;
+    }
+
+    public Member updateMemberType(MemberType memberType) {
+        this.memberType = memberType;
+        return this;
+    }
+
+
 }

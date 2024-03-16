@@ -1,9 +1,12 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.domain.member.enums.MailVerifyStatus;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -41,9 +44,37 @@ public class MemberAuth extends BaseInsertEntity {
 
     private String studentIdImageUrl;
 
-    public void updateMemberAuth(String phoneNumber, String studentIdImageUrl) {
+    @Enumerated(EnumType.STRING)
+    private MailVerifyStatus mailVerifyStatus;
+
+    public MemberAuth updateSchoolEmail(String schoolEmail) {
+        this.schoolEmail = schoolEmail;
+        return this;
+    }
+
+    public MemberAuth updateEmailVerifyCode(String emailVerifyCode) {
+        this.emailVerifyCode = emailVerifyCode;
+        return this;
+    }
+
+    public MemberAuth updateEmailVerifyStartTime(LocalDateTime emailVerifyStartTime) {
+        this.emailVerifyStartTime = emailVerifyStartTime;
+        return this;
+    }
+
+    public MemberAuth updatePhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+        return this;
+    }
+
+    public MemberAuth updateStudentIdImageUrl(String studentIdImageUrl) {
         this.studentIdImageUrl = studentIdImageUrl;
+        return this;
+    }
+
+    public MemberAuth updateMailVerifyDone() {
+        this.mailVerifyStatus = MailVerifyStatus.DONE;
+        return this;
     }
 
 }
