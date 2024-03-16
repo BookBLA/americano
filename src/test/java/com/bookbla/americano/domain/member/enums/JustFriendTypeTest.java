@@ -21,7 +21,7 @@ class JustFriendTypeTest {
         List<String> result = JustFriendType.getValues();
 
         // then
-        assertThat(result).containsExactly("허용 X", "단 둘이 밥 먹기", "단 둘이 술 먹기", "단 둘이 여행 가기", "상관 없음");
+        assertThat(result).containsExactly("허용 X", "단둘이 밥 먹기", "단둘이 술 먹기", "단둘이 여행 가기", "상관 없음");
     }
 
     @Test

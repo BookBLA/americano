@@ -32,9 +32,9 @@ class StyleServiceTest {
                 () -> assertThat(stylesResponse.getDateStyleTypes()).containsExactly("집 데이트",
                         "야외 데이트"),
                 () -> assertThat(stylesResponse.getDateCostTypes()).containsExactly("더치페이",
-                        "번갈아가면서 사기", "여유있는 사람이 좀 더", "데이트 통장"),
+                        "번갈아가면서 사기", "여유 있는 사람이 좀 더", "데이트 통장"),
                 () -> assertThat(stylesResponse.getJustFriendTypes()).containsExactly("허용 X",
-                        "단 둘이 밥 먹기", "단 둘이 술 먹기", "단 둘이 여행 가기", "상관 없음")
+                        "단둘이 밥 먹기", "단둘이 술 먹기", "단둘이 여행 가기", "상관 없음")
         );
     }
 
