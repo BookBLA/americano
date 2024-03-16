@@ -104,7 +104,7 @@ class MemberStyleServiceTest {
                 () -> assertThat(memberStyleResponse.getContactType()).isEqualTo("칼답"),
                 () -> assertThat(memberStyleResponse.getDateCostType()).isEqualTo("데이트 통장"),
                 () -> assertThat(memberStyleResponse.getDateStyleType()).isEqualTo("집 데이트"),
-                () -> assertThat(memberStyleResponse.getJustFriendType()).isEqualTo("단 둘이 술 먹기"),
+                () -> assertThat(memberStyleResponse.getJustFriendType()).isEqualTo("단둘이 술 먹기"),
                 () -> assertThat(memberStyleResponse.getDrinkType()).isEqualTo("안마심"),
                 () -> assertThat(memberStyleResponse.getMbti()).isEqualToIgnoringCase("intp")
         );

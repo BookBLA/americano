@@ -13,9 +13,9 @@ import lombok.RequiredArgsConstructor;
 public enum JustFriendType {
 
     NEVER("허용 X"),
-    EATING("단 둘이 밥 먹기"),
-    ALCOHOL("단 둘이 술 먹기"),
-    TRAVEL("단 둘이 여행 가기"),
+    EATING("단둘이 밥 먹기"),
+    ALCOHOL("단둘이 술 먹기"),
+    TRAVEL("단둘이 여행 가기"),
     EVERYTHING("상관 없음"),
     ;
 
