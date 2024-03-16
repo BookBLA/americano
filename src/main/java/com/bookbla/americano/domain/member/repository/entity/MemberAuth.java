@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.domain.member.enums.MailVerifyStatus;
+import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,12 +41,15 @@ public class MemberAuth extends BaseInsertEntity {
 
     private LocalDateTime emailVerifyStartTime;
 
+    @Enumerated(EnumType.STRING)
+    private MailVerifyStatus mailVerifyStatus;
+
     private String phoneNumber;
 
     private String studentIdImageUrl;
 
     @Enumerated(EnumType.STRING)
-    private MailVerifyStatus mailVerifyStatus;
+    private StudentIdImageStatus studentIdImageStatus;
 
     public MemberAuth updateSchoolEmail(String schoolEmail) {
         this.schoolEmail = schoolEmail;

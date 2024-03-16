@@ -5,11 +5,9 @@ import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.domain.member.controller.dto.request.MailResendRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MailVerifyRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthUpdateRequest;
-import com.bookbla.americano.domain.member.controller.dto.response.MailSendResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MailVerifyResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthResponse;
 import com.bookbla.americano.domain.member.exception.MailExceptionType;
-import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberAuthRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -44,7 +42,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
 
     @Override
     @Transactional
-    public MailSendResponse sendEmailAndCreateMemberAuth(Long memberId, MemberAuthDto memberAuthDto) {
+    public MemberAuthResponse sendEmailAndCreateMemberAuth(Long memberId, MemberAuthDto memberAuthDto) {
         String schoolEmail = memberAuthDto.getSchoolEmail();
 
         checkDuplicatedEmail(schoolEmail);
@@ -54,7 +52,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         MemberAuth memberAuth = memberAuthRepository.save(
             memberAuthDto.toEntity(member, emailVerifyCode));
 
-        return MailSendResponse.from(member, memberAuth);
+        return MemberAuthResponse.from(member, memberAuth);
     }
 
     @Override
@@ -84,7 +82,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
 
     @Override
     @Transactional
-    public MailSendResponse resendEmail(Long memberId, MailResendRequest mailResendRequest) {
+    public MemberAuthResponse resendEmail(Long memberId, MailResendRequest mailResendRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         String schoolEmail = mailResendRequest.getSchoolEmail();
 
@@ -102,7 +100,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         memberAuth.updateEmailVerifyCode(emailVerifyCode)
             .updateEmailVerifyStartTime(LocalDateTime.now());
 
-        return MailSendResponse.from(member, memberAuth);
+        return MemberAuthResponse.from(member, memberAuth);
     }
 
     @Override

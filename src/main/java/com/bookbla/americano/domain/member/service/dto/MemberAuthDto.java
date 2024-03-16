@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.service.dto;
 
 import com.bookbla.americano.domain.member.enums.MailVerifyStatus;
+import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberAuth;
 import java.time.LocalDateTime;
@@ -28,9 +29,10 @@ public class MemberAuthDto {
             .schoolEmail(schoolEmail)
             .emailVerifyCode(emailVerifyCode)
             .emailVerifyStartTime(LocalDateTime.now())
+            .mailVerifyStatus(MailVerifyStatus.PENDING)
             .phoneNumber(phoneNumber)
             .studentIdImageUrl(studentIdImageUrl)
-            .mailVerifyStatus(MailVerifyStatus.PENDING)
+            .studentIdImageStatus(StudentIdImageStatus.PENDING)
             .build();
     }
 

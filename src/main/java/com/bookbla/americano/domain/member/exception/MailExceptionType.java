@@ -14,7 +14,7 @@ public enum MailExceptionType implements ExceptionType {
     SEND_EMAIL_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "mail_003", "이메일 송신을 실패하였습니다."),
     NOT_EQUAL_VERIFY_CODE(HttpStatus.BAD_REQUEST, "mail_004", "인증코드가 다릅니다."),
     EXPIRED_TIME(HttpStatus.BAD_REQUEST, "mail_005", "인증 시간이 만료되었습니다."),
-    MAIL_VERIFY_STATUS_NOT_VALID(HttpStatus.BAD_REQUEST, "mail_006", "유효하지 않음 메일 검증 상태입니다.")
+    MAIL_VERIFY_STATUS_NOT_VALID(HttpStatus.BAD_REQUEST, "mail_006", "유효하지 않은 메일 검증 상태입니다.")
     ;
 
     private final HttpStatus httpStatus;
