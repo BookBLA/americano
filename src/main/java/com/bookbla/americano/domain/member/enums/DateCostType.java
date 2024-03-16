@@ -14,7 +14,7 @@ public enum DateCostType {
 
     DUTCH_PAY("더치페이"),
     ROTATE("번갈아가면서 사기"),
-    MORE_MONEY("여유있는 사람이 좀 더"),
+    MORE_MONEY("여유있는"),
     DATE_ACCOUNT("데이트 통장"),
     ;
 
