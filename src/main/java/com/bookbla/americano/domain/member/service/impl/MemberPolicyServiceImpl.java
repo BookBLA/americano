@@ -33,7 +33,7 @@ public class MemberPolicyServiceImpl implements MemberPolicyService {
 
         Member member = memberRepository.getByIdOrThrow(memberId);
 
-        List<Policy> policies = policyRepository.findAll(Sort.by("id"));
+        List<Policy> policies = policyRepository.findAllSortedById();
         List<Boolean> agreedStatuses = memberPolicyDto.getAgreedStatuses();
 
 
@@ -67,7 +67,7 @@ public class MemberPolicyServiceImpl implements MemberPolicyService {
 
         Member member = memberRepository.getByIdOrThrow(memberId);
 
-        List<Policy> policies = policyRepository.findAll(Sort.by("id"));
+        List<Policy> policies = policyRepository.findAllSortedById();
         List<Boolean> agreedStatuses = memberPolicyUpdateRequest.getUpdateStatuses().toList();
 
         for (int i = 0; i < policies.size(); i++) {
