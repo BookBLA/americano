@@ -16,13 +16,12 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MemberProfileDto {
 
-    private Member member;
     private Gender gender;
     private LocalDate birthDate;
     private String name;
     private String schoolName;
 
-    public MemberProfile toEntity() {
+    public MemberProfile toEntity(Member member) {
         return MemberProfile.builder()
             .member(member)
             .gender(gender)

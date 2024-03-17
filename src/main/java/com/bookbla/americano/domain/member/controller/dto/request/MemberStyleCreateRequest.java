@@ -39,6 +39,9 @@ public class MemberStyleCreateRequest {
     @NotNull(message = "데이트 스타일이 입력되지 않았습니다.")
     private String dateStyleType;
 
+    @NotNull(message = "개인 질문이 입력되지 않았습니다.")
+    private String memberAsk;
+
     public MemberStyle toMemberStyleWith(Member member) {
         return MemberStyle.builder()
                 .member(member)
@@ -50,5 +53,9 @@ public class MemberStyleCreateRequest {
                 .justFriendType(JustFriendType.from(justFriendType))
                 .dateCostType(DateCostType.from(dateCostType))
                 .build();
+    }
+
+    public String getMemberAsk() {
+        return memberAsk;
     }
 }

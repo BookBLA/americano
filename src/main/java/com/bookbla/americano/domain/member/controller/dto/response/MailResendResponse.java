@@ -8,12 +8,14 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class MemberAuthUpdateResponse {
+public class MailResendResponse {
 
-    private Long id;
+    private String schoolEmail;
 
-    public static MemberAuthUpdateResponse from(MemberAuth memberAuth) {
-        return new MemberAuthUpdateResponse(memberAuth.getId());
+    public static MailResendResponse from(MemberAuth memberAuth) {
+        return MailResendResponse.builder()
+            .schoolEmail(memberAuth.getSchoolEmail())
+            .build();
     }
 
 }
