@@ -73,6 +73,11 @@ public class MemberProfile {
         return this;
     }
 
+    public MemberProfile updateProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+        return this;
+    }
+
     public MemberProfile updateOpenKakaoRoomUrl(String openKakaoRoomUrl) {
         this.openKakaoRoomUrl = openKakaoRoomUrl;
         return this;

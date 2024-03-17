@@ -20,6 +20,8 @@ public class MemberProfileDto {
     private LocalDate birthDate;
     private String name;
     private String schoolName;
+    private String profileImageUrl;
+    private String openKakaoRoomUrl;
 
     public MemberProfile toEntity(Member member) {
         return MemberProfile.builder()
@@ -28,6 +30,8 @@ public class MemberProfileDto {
             .birthDate(birthDate)
             .name(name)
             .schoolName(schoolName)
+            .profileImageUrl(profileImageUrl)
+            .openKakaoRoomUrl(openKakaoRoomUrl)
             .build();
     }
 }

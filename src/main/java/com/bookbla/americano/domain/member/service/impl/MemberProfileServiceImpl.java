@@ -11,6 +11,7 @@ import com.bookbla.americano.domain.member.service.MemberProfileService;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     private final MemberProfileRepository memberProfileRepository;
 
     @Override
+    @Transactional
     public MemberProfileResponse createMemberProfile(Long memberId, MemberProfileDto memberProfileDto) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = memberProfileRepository.save(memberProfileDto.toEntity(member));
@@ -31,6 +33,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MemberProfileResponse readMemberProfile(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = memberProfileRepository.getByMemberOrThrow(member);
@@ -39,6 +42,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     }
 
     @Override
+    @Transactional
     public MemberProfileResponse updateMemberProfile(Long memberId,
         MemberProfileUpdateRequest memberProfileUpdateRequest) {
 
@@ -55,6 +59,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
             .updateBirthDate(request.getBirthDate())
             .updateSchoolName(request.getSchoolName())
             .updateGender(request.getGender())
+            .updateProfileImageUrl(request.getProfileImageUrl())
             .updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl());
     }
 

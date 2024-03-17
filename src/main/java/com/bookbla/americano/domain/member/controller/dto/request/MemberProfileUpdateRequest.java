@@ -25,6 +25,9 @@ public class MemberProfileUpdateRequest {
     @NotNull(message = "성별이 입력되지 않았습니다.")
     private String gender;
 
+    @NotNull(message = "프로필 사진이 입력되지 않았습니다.")
+    private String profileImageUrl;
+
     @NotNull(message = "카톡방 링크가 입력되지 않았습니다.")
     private String openKakaoRoomUrl;
 
