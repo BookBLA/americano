@@ -7,6 +7,7 @@ import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public MemberResponse updateMember(Long memberId, MemberUpdateRequest memberUpdateRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         update(member, memberUpdateRequest);
@@ -39,6 +41,8 @@ public class MemberServiceImpl implements MemberService {
 
     private void update(Member member, MemberUpdateRequest request) {
         member.updateOauthEmail(request.getOauthEmail())
-            .updateMemberType(request.getMemberType());
+            .updateMemberType(request.getMemberType())
+            .updateMemberStatus(request.getMemberStatus())
+        ;
     }
 }

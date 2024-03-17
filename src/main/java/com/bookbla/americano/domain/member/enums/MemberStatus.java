@@ -28,7 +28,7 @@ public enum MemberStatus {
 
     public static MemberStatus from(String name) {
         return Arrays.stream(values())
-            .filter(it -> it.name().equalsIgnoreCase(name))
+            .filter(it -> it.value.equalsIgnoreCase(name))
             .findFirst()
             .orElseThrow(() -> new BaseException(MemberExceptionType.MEMBER_STATUS_NOT_VALID));
     }
