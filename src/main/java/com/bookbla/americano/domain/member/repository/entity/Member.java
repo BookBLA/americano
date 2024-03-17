@@ -31,6 +31,8 @@ public class Member extends BaseInsertEntity {
 
     private String oauthEmail;
 
+    private String oauthProfileImageUrl;
+
     @Enumerated(EnumType.STRING)
     private MemberType memberType;
 
