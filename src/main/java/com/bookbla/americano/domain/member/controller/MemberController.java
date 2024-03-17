@@ -1,14 +1,10 @@
 package com.bookbla.americano.domain.member.controller;
 
 import com.bookbla.americano.base.jwt.LoginUser;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberUpdateRequest;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberPostcardCountRequestDto;
-import com.bookbla.americano.domain.member.controller.dto.response.MailSendResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MailVerifyResponse;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
-import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
 import com.bookbla.americano.domain.member.service.MemberPostcardService;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
 import com.bookbla.americano.domain.member.service.MemberService;
@@ -21,8 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

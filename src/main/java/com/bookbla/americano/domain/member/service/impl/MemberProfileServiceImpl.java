@@ -2,9 +2,8 @@ package com.bookbla.americano.domain.member.service.impl;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileCreateResponse;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberProfileRepository;

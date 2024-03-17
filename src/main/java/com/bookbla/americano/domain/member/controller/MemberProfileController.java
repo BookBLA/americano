@@ -5,24 +5,16 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileC
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileCreateResponse;
-import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.bookbla.americano.domain.member.service.MemberProfileService;
-import com.bookbla.americano.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.List;
-import lombok.extern.java.Log;
 
 @RestController
 @RequestMapping("/member-profiles")
