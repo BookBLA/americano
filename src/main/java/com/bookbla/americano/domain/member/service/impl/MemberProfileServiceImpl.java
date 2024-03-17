@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.service.impl;
 
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.repository.MemberProfileRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -22,6 +23,9 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     public MemberProfileResponse createMemberProfile(Long memberId, MemberProfileDto memberProfileDto) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = memberProfileRepository.save(memberProfileDto.toEntity(member));
+
+        // 프로필 정보 입력이 완료되면 가입 승인 상태로 변경
+        member.updateMemberStatus(MemberStatus.APPROVAL);
 
         return MemberProfileResponse.from(member, memberProfile);
     }
