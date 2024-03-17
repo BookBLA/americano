@@ -30,7 +30,7 @@ public enum MemberStatus {
         return Arrays.stream(values())
             .filter(it -> it.name().equalsIgnoreCase(name))
             .findFirst()
-            .orElseThrow(() -> new BaseException(MemberExceptionType.GENDER_NOT_VALID));
+            .orElseThrow(() -> new BaseException(MemberExceptionType.MEMBER_STATUS_NOT_VALID));
     }
 
 }
