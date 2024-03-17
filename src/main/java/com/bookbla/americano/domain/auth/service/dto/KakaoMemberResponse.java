@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.auth.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.StringIdGenerator;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,6 +39,8 @@ public class KakaoMemberResponse {
     public static class Profile {
         private String nickname;
 
+        @JsonProperty("profile_image_url")
+        private String profileImageUrl;
     }
 
     public String getEmail() {
@@ -46,6 +49,10 @@ public class KakaoMemberResponse {
 
     public String getNickname() {
         return kakaoAccount.getProfile().getNickname();
+    }
+
+    public String getProfileImageUrl() {
+        return kakaoAccount.getProfile().getProfileImageUrl();
     }
 
 }

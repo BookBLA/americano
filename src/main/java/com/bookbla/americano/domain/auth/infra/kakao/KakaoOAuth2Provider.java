@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.auth.infra.kakao;
 import com.bookbla.americano.base.config.KakaoConfig;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
+import com.bookbla.americano.domain.auth.exception.KakaoExceptionType;
 import com.bookbla.americano.domain.auth.infra.kakao.dto.KakaoOAuth2MemberResponse;
 import com.bookbla.americano.domain.auth.service.OAuth2Provider;
 import com.bookbla.americano.domain.auth.service.dto.KakaoMemberResponse;
@@ -11,6 +12,7 @@ import com.bookbla.americano.domain.auth.service.dto.OAuth2MemberResponse;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -24,16 +26,18 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class KakaoOAuth2Provider implements OAuth2Provider {
 
     private final KakaoConfig kakaoConfig;
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
-    public OAuth2MemberResponse getMemberResponse(String authCode) {
+    public KakaoOAuth2MemberResponse getMemberResponse(String authCode) {
         String accessToken = getAccessToken(authCode);
         ResponseEntity<KakaoMemberResponse> kakaoMemberResponse = getMemberResource(accessToken);
-        return new KakaoOAuth2MemberResponse(kakaoMemberResponse.getBody().getEmail());
+        return new KakaoOAuth2MemberResponse(kakaoMemberResponse.getBody().getEmail(),
+            kakaoMemberResponse.getBody().getProfileImageUrl());
     }
 
     private String getAccessToken(String authCode) {
@@ -58,7 +62,8 @@ public class KakaoOAuth2Provider implements OAuth2Provider {
                     KakaoTokenResponse.class
             );
         } catch (HttpClientErrorException e) {
-            throw new BaseException(BaseExceptionType.TEST_FAIL);
+            log.error(e.getMessage());
+            throw new BaseException(KakaoExceptionType.TOKEN_ERROR);
         }
     }
 
@@ -77,7 +82,7 @@ public class KakaoOAuth2Provider implements OAuth2Provider {
                     KakaoMemberResponse.class
             );
         } catch (HttpClientErrorException e) {
-            throw new BaseException(BaseExceptionType.TEST_FAIL);
+            throw new BaseException(KakaoExceptionType.MEMBER_RESOURCE_ERROR);
         }
     }
 
