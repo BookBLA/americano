@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -33,6 +34,9 @@ public class Member extends BaseInsertEntity {
     @Enumerated(EnumType.STRING)
     private MemberType memberType;
 
+    @Enumerated(EnumType.STRING)
+    private MemberStatus memberStatus;
+
     public Member updateOauthEmail(String oauthEmail) {
         this.oauthEmail = oauthEmail;
         return this;
@@ -43,5 +47,9 @@ public class Member extends BaseInsertEntity {
         return this;
     }
 
+    public Member updateMemberStatus(MemberStatus memberStatus) {
+        this.memberStatus = memberStatus;
+        return this;
+    }
 
 }

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum MemberExceptionType implements ExceptionType {
 
+    MEMBER_STATUS_NOT_VALID(HttpStatus.NOT_FOUND, "member_001", "유효하지 않은 유저 상태입니다."),
     MEMBER_TYPE_NOT_VALID(HttpStatus.NOT_FOUND, "member_002", "존재하지 않는 유저 타입입니다"),
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "member_003", "해당 식별자를 가진 회원이 존재하지 않습니다."),
     STYLE_NOT_REGISTERED(HttpStatus.BAD_REQUEST, "member_004", "스타일이 등록되지 않은 회원입니다."),

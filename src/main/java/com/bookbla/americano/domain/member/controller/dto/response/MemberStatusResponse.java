@@ -8,18 +8,12 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class MemberResponse {
+public class MemberStatusResponse {
 
-    private Long id;
-    private String oauthEmail;
-    private String memberType;
     private String memberStatus;
 
-    public static MemberResponse from(Member member) {
-        return MemberResponse.builder()
-            .id(member.getId())
-            .oauthEmail(member.getOauthEmail())
-            .memberType(member.getMemberType().name())
+    public static MemberStatusResponse from(Member member) {
+        return MemberStatusResponse.builder()
             .memberStatus(member.getMemberStatus().getValue())
             .build();
     }

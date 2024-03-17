@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.service.impl;
 
 import com.bookbla.americano.domain.member.controller.dto.request.MemberUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberStatusResponse;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.service.MemberService;
@@ -20,6 +21,12 @@ public class MemberServiceImpl implements MemberService {
     public MemberResponse readMember(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         return MemberResponse.from(member);
+    }
+
+    @Override
+    public MemberStatusResponse readMemberStatus(Long memberId) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        return MemberStatusResponse.from(member);
     }
 
     @Override
