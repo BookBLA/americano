@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public enum StudentIdImageStatus {
     PENDING,
-    CANCELED,
+    DENIAL,
     DONE
     ;
 

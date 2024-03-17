@@ -130,7 +130,8 @@ public class MemberAuthServiceImpl implements MemberAuthService {
     private void update(MemberAuth memberAuth, MemberAuthUpdateRequest request) {
         memberAuth.updateSchoolEmail(request.getSchoolEmail())
             .updatePhoneNumber(request.getPhoneNumber())
-            .updateStudentIdImageUrl(request.getStudentIdImageUrl());
+            .updateStudentIdImageUrl(request.getStudentIdImageUrl())
+            .updateStudentIdImageStatus(request.getStudentIdImageStatus());
     }
 
     private String sendEmail(String schoolEmail) {
