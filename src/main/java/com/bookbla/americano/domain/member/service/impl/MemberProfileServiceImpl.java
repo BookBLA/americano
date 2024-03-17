@@ -60,7 +60,8 @@ public class MemberProfileServiceImpl implements MemberProfileService {
             .updateSchoolName(request.getSchoolName())
             .updateGender(request.getGender())
             .updateProfileImageUrl(request.getProfileImageUrl())
-            .updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl());
+            .updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl())
+            .updateOpenKakaoRoomUrlStatus(request.getOpenKakaoRoomUrlStatus());
     }
 
 }
