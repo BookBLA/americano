@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.domain.member.enums.MailVerifyStatus;
+import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
