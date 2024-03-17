@@ -5,9 +5,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileC
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +13,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/member-profiles")
@@ -51,5 +51,4 @@ public class MemberProfileController {
 
         return ResponseEntity.ok(memberProfileResponse);
     }
-
 }

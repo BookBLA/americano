@@ -6,7 +6,5 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberRespons
 public interface MemberService {
 
     MemberResponse readMember(Long memberId);
-
     MemberResponse updateMember(Long memberId, MemberUpdateRequest memberUpdateRequest);
-
 }

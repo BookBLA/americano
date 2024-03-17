@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.member.repository;
 
-
+import com.bookbla.americano.domain.member.repository.custom.MemberProfileRepositoryCustom;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -8,7 +8,7 @@ import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MemberProfileRepository extends JpaRepository<MemberProfile, Long> {
+public interface MemberProfileRepository  extends JpaRepository<MemberProfile, Long>, MemberProfileRepositoryCustom {
 
     default MemberProfile getByMemberOrThrow(Member member) {
         return findByMember(member)
