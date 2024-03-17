@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 public class MailServiceImpl implements MailService {
 
     private final JavaMailSender javaMailSender;
-    @Value("${mail.auth-email}")
+    @Value("${mail.username}")
     String adminEmail;
 
     @Override
