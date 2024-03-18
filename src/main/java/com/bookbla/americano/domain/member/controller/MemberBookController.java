@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.controller;
 
 import com.bookbla.americano.base.jwt.LoginUser;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookCreateRequest;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberBookCreateResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.service.MemberBookService;
 import java.net.URI;
@@ -24,14 +25,14 @@ public class MemberBookController {
     private final MemberBookService memberBookService;
 
     @PostMapping
-    public ResponseEntity<Void> addMemberBook(
+    public ResponseEntity<MemberBookCreateResponse> addMemberBook(
             @LoginUser Long memberId,
             @RequestBody @Valid MemberBookCreateRequest memberBookCreateRequest
     ) {
-        Long memberBookId = memberBookService.addMemberBook(memberId, memberBookCreateRequest);
+        MemberBookCreateResponse memberBookCreateResponse = memberBookService.addMemberBook(memberId, memberBookCreateRequest);
         return ResponseEntity
-                .created(URI.create("/member-books/" + memberBookId.toString()))
-                .build();
+                .created(URI.create("/member-books/" + memberBookCreateResponse.getMemberBookId()))
+                .body(memberBookCreateResponse);
     }
 
     @GetMapping

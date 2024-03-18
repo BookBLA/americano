@@ -6,6 +6,7 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.book.repository.entity.Book;
 import com.bookbla.americano.domain.book.repository.BookRepository;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookCreateRequest;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberBookCreateResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
@@ -31,7 +32,7 @@ public class MemberBookServiceImpl implements MemberBookService {
     private final MemberProfileRepository memberProfileRepository;
 
     @Override
-    public Long addMemberBook(Long memberId, MemberBookCreateRequest memberBookCreateRequest) {
+    public MemberBookCreateResponse addMemberBook(Long memberId, MemberBookCreateRequest memberBookCreateRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         Book book = bookRepository.findByIsbn(memberBookCreateRequest.getIsbn())
                 .orElseGet(() -> bookRepository.save(memberBookCreateRequest.toBook()));
@@ -43,7 +44,7 @@ public class MemberBookServiceImpl implements MemberBookService {
                 .isRepresentative(memberBookCreateRequest.getIsRepresentative())
                 .member(member)
                 .build();
-        return memberBookRepository.save(memberBook).getId();
+        return MemberBookCreateResponse.from(memberBookRepository.save(memberBook).getId());
     }
 
     private void validateAddMemberBook(Member member, Book book) {
