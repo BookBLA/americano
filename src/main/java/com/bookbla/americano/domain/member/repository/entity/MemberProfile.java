@@ -55,6 +55,11 @@ public class MemberProfile {
 
     private String openKakaoRoomUrl;
 
+    public String showBlindName() {
+        String firstName = name.split("")[0];
+        return firstName + "OO";
+    }
+
     public int calculateAge(LocalDate now) {
         int age = Period.between(birthDate, now).getYears();
 
