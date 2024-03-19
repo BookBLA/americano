@@ -2,12 +2,12 @@ package com.bookbla.americano.domain.member.controller.dto.request;
 
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
 public class MemberBookUpdateRequest {
 
