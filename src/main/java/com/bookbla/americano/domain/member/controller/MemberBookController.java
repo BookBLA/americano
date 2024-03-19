@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.controller;
 
 import com.bookbla.americano.base.jwt.LoginUser;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookCreateRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberBookUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookCreateResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.service.MemberBookService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,6 +41,15 @@ public class MemberBookController {
     public ResponseEntity<MemberBookReadResponses> readMemberBooks(@LoginUser Long memberId) {
         MemberBookReadResponses memberBookReadResponses = memberBookService.readMemberBooks(memberId);
         return ResponseEntity.ok(memberBookReadResponses);
+    }
+
+    @PutMapping("/{memberBookId}")
+    public ResponseEntity<Void> updateMemberBook(
+            @PathVariable Long memberBookId, @LoginUser Long memberId,
+            @RequestBody @Valid MemberBookUpdateRequest memberBookUpdateRequest
+    ) {
+        memberBookService.updateMemberBook(memberBookUpdateRequest, memberBookId, memberId);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{memberBookId}")
