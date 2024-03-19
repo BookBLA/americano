@@ -44,7 +44,8 @@ public class MemberBookServiceImpl implements MemberBookService {
                 .isRepresentative(memberBookCreateRequest.getIsRepresentative())
                 .member(member)
                 .build();
-        return MemberBookCreateResponse.from(memberBookRepository.save(memberBook).getId());
+        MemberBook savedMemberBook = memberBookRepository.save(memberBook);
+        return MemberBookCreateResponse.from(savedMemberBook);
     }
 
     private void validateAddMemberBook(Member member, Book book) {
