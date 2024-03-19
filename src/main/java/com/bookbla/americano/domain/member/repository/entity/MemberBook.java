@@ -2,7 +2,7 @@ package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.book.Book;
+import com.bookbla.americano.domain.book.repository.entity.Book;
 import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,6 +24,8 @@ import javax.persistence.ManyToOne;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberBook extends BaseInsertEntity {
+
+    public static final int MAX_MEMBER_BOOK_COUNT = 3;
 
     private static final int MAX_REVIEW_LENGTH = 100;
 

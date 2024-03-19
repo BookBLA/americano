@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.repository.custom.impl;
 
-import com.bookbla.americano.domain.book.QBook;
+
+import com.bookbla.americano.domain.book.repository.entity.QBook;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
 import com.bookbla.americano.domain.member.enums.ContactType;
@@ -62,7 +63,7 @@ public class MemberProfileRepositoryCustomImpl implements MemberProfileRepositor
                         , memberProfile.birthDate.year().subtract(LocalDate.now().getYear() + 1).abs().as("memberAge")
                         , memberProfile.gender.as("memberGender")
                         , memberProfile.schoolName.as("memberSchoolName")
-                        , book.name.as("bookName")
+                        , book.title.as("bookName")
                         , book.imageUrl.as("bookImageUrl")
                         , memberBook.isRepresentative.as("bookIsRepresentative"))
                 )
