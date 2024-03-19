@@ -30,4 +30,17 @@ public class MemberLibraryServiceImpl implements MemberLibraryService {
 
         return MemberLibraryProfileReadResponse.of(member, memberProfile, memberBooks);
     }
+
+    @Override
+    public MemberLibraryProfileReadResponse getLibraryProfile(Long memberId, Long targetMemberId) {
+        Member targetMember = memberRepository.getByIdOrThrow(targetMemberId);
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberProfile memberProfile = memberProfileRepository.getByMemberOrThrow(targetMember);
+        List<MemberBook> memberBooks = memberBookRepository.findByMember(targetMember);
+
+        // TODO: 매칭 여부 확인해서 isMatched 값 설정
+        boolean isMathced = false;
+
+        return MemberLibraryProfileReadResponse.of(targetMember, memberProfile, memberBooks, isMathced);
+    }
 }
