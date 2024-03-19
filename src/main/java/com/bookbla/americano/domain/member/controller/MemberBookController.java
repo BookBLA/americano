@@ -4,6 +4,7 @@ import com.bookbla.americano.base.jwt.LoginUser;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookCreateResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.service.MemberBookService;
 import java.net.URI;
@@ -41,6 +42,12 @@ public class MemberBookController {
     public ResponseEntity<MemberBookReadResponses> readMemberBooks(@LoginUser Long memberId) {
         MemberBookReadResponses memberBookReadResponses = memberBookService.readMemberBooks(memberId);
         return ResponseEntity.ok(memberBookReadResponses);
+    }
+
+    @GetMapping("/{memberBookId}")
+    public ResponseEntity<MemberBookReadResponse> readMemberBook(@PathVariable Long memberBookId) {
+        MemberBookReadResponse memberBookReadResponse = memberBookService.readMemberBook(memberBookId);
+        return ResponseEntity.ok(memberBookReadResponse);
     }
 
     @PutMapping("/{memberBookId}")

@@ -44,8 +44,8 @@ public class MemberProfileController {
     @PutMapping
     public ResponseEntity<MemberProfileResponse> updateMemberProfile(
         @RequestBody @Valid MemberProfileUpdateRequest memberProfileUpdateRequest,
-        @LoginUser Long memberId) {
-
+        @LoginUser Long memberId
+    ) {
         MemberProfileResponse memberProfileResponse =
             memberProfileService.updateMemberProfile(memberId, memberProfileUpdateRequest);
 

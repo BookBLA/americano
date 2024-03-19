@@ -8,6 +8,7 @@ import com.bookbla.americano.domain.book.repository.BookRepository;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookCreateResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
@@ -69,6 +70,13 @@ public class MemberBookServiceImpl implements MemberBookService {
 
         List<MemberBook> memberBooks = memberBookRepository.findByMember(member);
         return MemberBookReadResponses.from(memberBooks);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MemberBookReadResponse readMemberBook(Long memberBookId) {
+        MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
+        return MemberBookReadResponse.of(memberBook);
     }
 
     @Override
