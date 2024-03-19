@@ -44,4 +44,24 @@ public class QuizQuestion extends BaseInsertEntity {
     @Enumerated(EnumType.STRING)
     private AnswerChoice answerChoice = AnswerChoice.FIRST;
 
+    public QuizQuestion updateContents(String contents) {
+        this.contents = contents;
+        return this;
+    }
+
+    public QuizQuestion updateCorrectAnswer(String answer) {
+        this.firstChoice = answer;
+        return this;
+    }
+
+    public QuizQuestion updateFirstWrongAnswer(String firstWrongAnswer) {
+        this.secondChoice = firstWrongAnswer;
+        return this;
+    }
+
+    public QuizQuestion updateSecondWrongAnswer(String secondWrongAnswer) {
+        this.thirdChoice = secondWrongAnswer;
+        return this;
+    }
+
 }
