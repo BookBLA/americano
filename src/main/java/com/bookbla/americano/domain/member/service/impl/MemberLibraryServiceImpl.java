@@ -23,6 +23,7 @@ public class MemberLibraryServiceImpl implements MemberLibraryService {
     private final MemberBookRepository memberBookRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public MemberLibraryProfileReadResponse getLibraryProfile(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = memberProfileRepository.getByMemberOrThrow(member);
@@ -32,6 +33,7 @@ public class MemberLibraryServiceImpl implements MemberLibraryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MemberLibraryProfileReadResponse getLibraryProfile(Long memberId, Long targetMemberId) {
         Member targetMember = memberRepository.getByIdOrThrow(targetMemberId);
         Member member = memberRepository.getByIdOrThrow(memberId);

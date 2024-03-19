@@ -35,6 +35,18 @@ public class MemberStyleServiceImpl implements MemberStyleService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public MemberStyleResponse readMemberStyle(Long memberId, Long targetMemberId) {
+        Member member = memberRepository.getByIdOrThrow(targetMemberId);
+        MemberStyle memberStyle = memberStyleRepository.getByMemberOrThrow(member);
+        MemberAsk memberAsk = memberAskRepository.getByMemberOrThrow(member);
+
+        // TODO: 프로필 조회 저장 로직 추가?
+
+        return MemberStyleResponse.of(member, memberStyle, memberAsk);
+    }
+
+    @Override
     public MemberStyleResponse createMemberStyle(Long memberId, MemberStyleCreateRequest memberStyleCreateRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberStyle memberStyle = memberStyleCreateRequest.toMemberStyleWith(member);
