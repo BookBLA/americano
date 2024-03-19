@@ -6,7 +6,9 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.book.repository.entity.Book;
 import com.bookbla.americano.domain.book.repository.BookRepository;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookCreateRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberBookUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookCreateResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
@@ -71,6 +73,27 @@ public class MemberBookServiceImpl implements MemberBookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public MemberBookReadResponse readMemberBook(Long memberBookId) {
+        MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
+        return MemberBookReadResponse.of(memberBook);
+    }
+
+    @Override
+    public void updateMemberBook(
+            MemberBookUpdateRequest memberBookUpdateRequest,
+            Long memberBookId, Long memberId
+    ) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
+
+        memberBook.validateOwner(member);
+
+        memberBook.updateReview(memberBookUpdateRequest.getContents());
+    }
+
+
+    @Override
     public void deleteMemberBook(Long memberId, Long memberBookId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
@@ -79,5 +102,6 @@ public class MemberBookServiceImpl implements MemberBookService {
 
         memberBookRepository.deleteById(memberBookId);
     }
+
 
 }

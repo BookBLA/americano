@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.domain.member.enums.Gender;
+import java.time.Period;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,6 +54,21 @@ public class MemberProfile {
     private String nickname;
 
     private String openKakaoRoomUrl;
+
+    public String showBlindName() {
+        String firstName = name.split("")[0];
+        return firstName + "OO";
+    }
+
+    public int calculateAge(LocalDate now) {
+        int age = Period.between(birthDate, now).getYears();
+
+        if (now.isBefore(birthDate.plusYears(age))) {
+            age--;
+        }
+
+        return age;
+    }
 
     public MemberProfile updateName(String name) {
         this.name = name;
