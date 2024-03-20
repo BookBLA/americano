@@ -10,14 +10,17 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -64,4 +67,22 @@ public class QuizQuestion extends BaseInsertEntity {
         return this;
     }
 
+    public QuizQuestion shuffleChoices(QuizQuestion quizQuestion) {
+        // 선택지를 리스트로 변환
+        List<String> choices = new ArrayList<>(Arrays.asList(
+                quizQuestion.getFirstChoice(),
+                quizQuestion.getSecondChoice(),
+                quizQuestion.getThirdChoice()
+        ));
+
+        // 선택지 리스트를 랜덤하게 섞음
+        Collections.shuffle(choices);
+
+        // 랜덤하게 섞인 선택지를 다시 QuizQuestion 객체에 설정
+        quizQuestion.setFirstChoice(choices.get(0));
+        quizQuestion.setSecondChoice(choices.get(1));
+        quizQuestion.setThirdChoice(choices.get(2));
+
+        return quizQuestion;
+    }
 }
