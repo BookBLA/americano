@@ -9,8 +9,6 @@ public interface MemberStyleService {
 
     MemberStyleResponse readMemberStyle(Long memberId);
 
-    MemberStyleResponse readMemberStyle(Long memberId, Long targetMemberId);
-
     MemberStyleResponse createMemberStyle(Long memberId, MemberStyleCreateRequest memberStyleCreateRequest);
 
     void updateMemberStyle(Long memberId, MemberStyleUpdateRequest memberStyleUpdateRequest);

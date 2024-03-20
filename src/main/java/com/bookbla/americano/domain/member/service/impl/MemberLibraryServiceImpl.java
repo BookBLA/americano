@@ -29,7 +29,7 @@ public class MemberLibraryServiceImpl implements MemberLibraryService {
         MemberProfile memberProfile = memberProfileRepository.getByMemberOrThrow(member);
         List<MemberBook> memberBooks = memberBookRepository.findByMember(member);
 
-        return MemberLibraryProfileReadResponse.of(member, memberProfile, memberBooks);
+        return MemberLibraryProfileReadResponse.of(member, memberProfile, memberBooks, false);
     }
 
     @Override

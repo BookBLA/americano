@@ -29,15 +29,9 @@ public class MemberStyleController {
                 .body(memberStyleResponse);
     }
 
-    @GetMapping
-    public ResponseEntity<MemberStyleResponse> readMemberStyle(@LoginUser Long memberId) {
+    @GetMapping("/{memberId}")
+    public ResponseEntity<MemberStyleResponse> readMemberStyle(@PathVariable Long memberId) {
         MemberStyleResponse memberStyleResponse = memberStyleService.readMemberStyle(memberId);
-        return ResponseEntity.ok(memberStyleResponse);
-    }
-
-    @GetMapping("/target/{targetMemberId}")
-    public ResponseEntity<MemberStyleResponse> readMemberStyle(@LoginUser Long memberId, @PathVariable Long targetMemberId) {
-        MemberStyleResponse memberStyleResponse = memberStyleService.readMemberStyle(memberId, targetMemberId);
         return ResponseEntity.ok(memberStyleResponse);
     }
 
