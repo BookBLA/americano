@@ -40,6 +40,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public QuizQuestionReadResponse getQuizQuestion(Long memberId, Long memberBookId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
