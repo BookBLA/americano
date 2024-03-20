@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.service.impl;
 
 import com.bookbla.americano.domain.member.controller.dto.response.MemberLibraryProfileReadResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberTargetLibraryProfileReadResponse;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberProfileRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
@@ -29,12 +30,12 @@ public class MemberLibraryServiceImpl implements MemberLibraryService {
         MemberProfile memberProfile = memberProfileRepository.getByMemberOrThrow(member);
         List<MemberBook> memberBooks = memberBookRepository.findByMember(member);
 
-        return MemberLibraryProfileReadResponse.of(member, memberProfile, memberBooks, false);
+        return MemberLibraryProfileReadResponse.of(member, memberProfile, memberBooks);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public MemberLibraryProfileReadResponse getLibraryProfile(Long memberId, Long targetMemberId) {
+    public MemberTargetLibraryProfileReadResponse getLibraryProfile(Long memberId, Long targetMemberId) {
         Member targetMember = memberRepository.getByIdOrThrow(targetMemberId);
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = memberProfileRepository.getByMemberOrThrow(targetMember);
@@ -43,6 +44,6 @@ public class MemberLibraryServiceImpl implements MemberLibraryService {
         // TODO: 매칭 여부 확인해서 isMatched 값 설정
         boolean isMathced = false;
 
-        return MemberLibraryProfileReadResponse.of(targetMember, memberProfile, memberBooks, isMathced);
+        return MemberTargetLibraryProfileReadResponse.of(targetMember, memberProfile, memberBooks, isMathced);
     }
 }

@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.controller;
 
 import com.bookbla.americano.base.jwt.LoginUser;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberLibraryProfileReadResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberTargetLibraryProfileReadResponse;
 import com.bookbla.americano.domain.member.service.MemberLibraryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,8 @@ public class MemberLibraryController {
     }
 
     @GetMapping("/target/{targetMemberId}")
-    public ResponseEntity<MemberLibraryProfileReadResponse> readMemberProfileByTarget(@LoginUser Long memberId, @PathVariable Long targetMemberId) {
-        MemberLibraryProfileReadResponse memberLibraryProfileReadResponse = memberLibraryService.getLibraryProfile(memberId, targetMemberId);
-        return ResponseEntity.ok(memberLibraryProfileReadResponse);
+    public ResponseEntity<MemberTargetLibraryProfileReadResponse> readMemberProfileByTarget(@LoginUser Long memberId, @PathVariable Long targetMemberId) {
+        MemberTargetLibraryProfileReadResponse memberLibraryTargetProfileReadResponse = memberLibraryService.getLibraryProfile(memberId, targetMemberId);
+        return ResponseEntity.ok(memberLibraryTargetProfileReadResponse);
     }
 }

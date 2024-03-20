@@ -20,19 +20,17 @@ public class MemberLibraryProfileReadResponse {
     private final String gender;
     private final String school;
     private final String profileImageUrl;
-    private final boolean isMatched;
     private final List<BookResponse> bookResponses;
 
     @Getter
     @AllArgsConstructor
     public static class BookResponse {
-
         private final Long memberBookId;
         private final String bookImageUrl;
 
     }
 
-    public static MemberLibraryProfileReadResponse of(Member member, MemberProfile memberProfile, List<MemberBook> memberBooks, boolean isMatched) {
+    public static MemberLibraryProfileReadResponse of(Member member, MemberProfile memberProfile, List<MemberBook> memberBooks) {
         List<BookResponse> bookResponses = memberBooks.stream()
                 .map(it -> new BookResponse(it.getId(), it.getBook().getImageUrl()))
                 .collect(Collectors.toList());
@@ -44,7 +42,6 @@ public class MemberLibraryProfileReadResponse {
                 memberProfile.getGender().name(),
                 memberProfile.getSchoolName(),
                 memberProfile.getProfileImageUrl(),
-                isMatched,
                 bookResponses
         );
     }
