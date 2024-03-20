@@ -20,7 +20,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -79,9 +78,9 @@ public class QuizQuestion extends BaseInsertEntity {
         Collections.shuffle(choices);
 
         // 랜덤하게 섞인 선택지를 다시 QuizQuestion 객체에 설정
-        quizQuestion.setFirstChoice(choices.get(0));
-        quizQuestion.setSecondChoice(choices.get(1));
-        quizQuestion.setThirdChoice(choices.get(2));
+        quizQuestion.firstChoice = choices.get(0);
+        quizQuestion.secondChoice = choices.get(1);
+        quizQuestion.thirdChoice = choices.get(2);
 
         return quizQuestion;
     }
