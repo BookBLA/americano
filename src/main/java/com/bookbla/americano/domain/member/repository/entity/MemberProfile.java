@@ -94,5 +94,4 @@ public class MemberProfile {
         this.openKakaoRoomUrl = openKakaoRoomUrl;
         return this;
     }
-
 }

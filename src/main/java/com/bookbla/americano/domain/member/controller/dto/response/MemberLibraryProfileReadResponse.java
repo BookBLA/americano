@@ -25,7 +25,6 @@ public class MemberLibraryProfileReadResponse {
     @Getter
     @AllArgsConstructor
     public static class BookResponse {
-
         private final Long memberBookId;
         private final String bookImageUrl;
 
@@ -46,5 +45,4 @@ public class MemberLibraryProfileReadResponse {
                 bookResponses
         );
     }
-
 }
