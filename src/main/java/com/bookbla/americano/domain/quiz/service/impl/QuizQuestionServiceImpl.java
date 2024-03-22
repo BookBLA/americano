@@ -48,12 +48,12 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         QuizQuestion quizQuestion = quizQuestionRepository.findByMemberBook(memberBook)
                 .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
 
-        // 자신의 책이면 그대로 반환, 나머지 책이면 1, 2, 3 순서를 랜덤으로 섞어서 반환
         if (!memberBook.isOwner(member)) {
-            return QuizQuestionReadResponse.from(quizQuestion.shuffleChoices(quizQuestion));
+            return QuizQuestionReadResponse.fromShuffledChoices(quizQuestion);
         }
         return QuizQuestionReadResponse.from(quizQuestion);
     }
+
 
     @Override
     public void updateQuizQuestion(

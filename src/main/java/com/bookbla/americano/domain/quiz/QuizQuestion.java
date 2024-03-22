@@ -13,11 +13,6 @@ import javax.persistence.OneToOne;
 
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 @Entity
 @Getter
 @Builder
@@ -64,24 +59,5 @@ public class QuizQuestion extends BaseInsertEntity {
     public QuizQuestion updateSecondWrongAnswer(String secondWrongAnswer) {
         this.thirdChoice = secondWrongAnswer;
         return this;
-    }
-
-    public QuizQuestion shuffleChoices(QuizQuestion quizQuestion) {
-        // 선택지를 리스트로 변환
-        List<String> choices = new ArrayList<>(Arrays.asList(
-                quizQuestion.getFirstChoice(),
-                quizQuestion.getSecondChoice(),
-                quizQuestion.getThirdChoice()
-        ));
-
-        // 선택지 리스트를 랜덤하게 섞음
-        Collections.shuffle(choices);
-
-        // 랜덤하게 섞인 선택지를 다시 QuizQuestion 객체에 설정
-        quizQuestion.firstChoice = choices.get(0);
-        quizQuestion.secondChoice = choices.get(1);
-        quizQuestion.thirdChoice = choices.get(2);
-
-        return quizQuestion;
     }
 }
