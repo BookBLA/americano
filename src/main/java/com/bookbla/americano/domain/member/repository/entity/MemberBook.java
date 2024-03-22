@@ -51,6 +51,10 @@ public class MemberBook extends BaseInsertEntity {
         }
     }
 
+    public boolean isOwner(Member other) {
+        return this.member.equals(other);
+    }
+
     public void updateReview(String review) {
         if (review.length() > MAX_REVIEW_LENGTH) {
             throw new BaseException(MemberBookExceptionType.REVIEW_LENGTH_NOT_VALID);

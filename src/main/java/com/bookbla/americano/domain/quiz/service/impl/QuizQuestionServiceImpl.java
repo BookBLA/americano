@@ -8,6 +8,7 @@ import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import com.bookbla.americano.domain.quiz.QuizQuestion;
 import com.bookbla.americano.domain.quiz.controller.dto.request.QuizQuestionCreateRequest;
 import com.bookbla.americano.domain.quiz.controller.dto.request.QuizQuestionUpdateRequest;
+import com.bookbla.americano.domain.quiz.controller.dto.response.QuizQuestionReadResponse;
 import com.bookbla.americano.domain.quiz.exception.QuizQuestionExceptionType;
 import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
 import com.bookbla.americano.domain.quiz.service.QuizQuestionService;
@@ -37,6 +38,22 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         QuizQuestion quizQuestion = quizQuestionCreateRequest.toQuizQuestionWith(memberBook);
         return quizQuestionRepository.save(quizQuestion).getId();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public QuizQuestionReadResponse getQuizQuestion(Long memberId, Long memberBookId) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
+
+        QuizQuestion quizQuestion = quizQuestionRepository.findByMemberBook(memberBook)
+                .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
+
+        if (!memberBook.isOwner(member)) {
+            return QuizQuestionReadResponse.fromShuffledChoices(quizQuestion);
+        }
+        return QuizQuestionReadResponse.from(quizQuestion);
+    }
+
 
     @Override
     public void updateQuizQuestion(
