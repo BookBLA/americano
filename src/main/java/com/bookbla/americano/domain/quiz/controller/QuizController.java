@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.quiz.controller;
 
-import com.bookbla.americano.base.jwt.LoginUser;
+import com.bookbla.americano.base.resolver.LoginUser;
+import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.quiz.controller.dto.request.QuizQuestionCreateRequest;
 import com.bookbla.americano.domain.quiz.controller.dto.request.QuizQuestionUpdateRequest;
 import com.bookbla.americano.domain.quiz.controller.dto.response.QuizQuestionReadResponse;
@@ -20,10 +21,10 @@ public class QuizController {
 
     @PostMapping("/{memberBookId}")
     public ResponseEntity<Void> createQuizQuestion(
-            @LoginUser Long memberId, @PathVariable Long memberBookId,
+            @User LoginUser loginUser, @PathVariable Long memberBookId,
             @RequestBody @Valid QuizQuestionCreateRequest quizQuestionCreateRequest
     ) {
-        Long quizQuestionId = quizQuestionService.createQuizQuestion(memberId, memberBookId, quizQuestionCreateRequest);
+        Long quizQuestionId = quizQuestionService.createQuizQuestion(loginUser.getMemberId(), memberBookId, quizQuestionCreateRequest);
         return ResponseEntity
                 .created(URI.create("/quizzes/" + quizQuestionId.toString()))
                 .build();
@@ -31,18 +32,18 @@ public class QuizController {
 
     @GetMapping("/{memberBookId}")
     public ResponseEntity<QuizQuestionReadResponse> createQuizQuestion(
-            @LoginUser Long memberId, @PathVariable Long memberBookId
+            @User LoginUser loginUser, @PathVariable Long memberBookId
     ) {
-        QuizQuestionReadResponse quizQuestionReadResponse = quizQuestionService.getQuizQuestion(memberId, memberBookId);
+        QuizQuestionReadResponse quizQuestionReadResponse = quizQuestionService.getQuizQuestion(loginUser.getMemberId(), memberBookId);
         return ResponseEntity.ok(quizQuestionReadResponse);
     }
 
     @PutMapping("/{memberBookId}")
     public ResponseEntity<Void> createQuizQuestion(
-            @LoginUser Long memberId, @PathVariable Long memberBookId,
+            @User LoginUser loginUser, @PathVariable Long memberBookId,
             @RequestBody @Valid QuizQuestionUpdateRequest quizQuestionUpdateRequest
     ) {
-        quizQuestionService.updateQuizQuestion(memberId, memberBookId, quizQuestionUpdateRequest);
+        quizQuestionService.updateQuizQuestion(loginUser.getMemberId(), memberBookId, quizQuestionUpdateRequest);
         return ResponseEntity.noContent().build();
     }
 

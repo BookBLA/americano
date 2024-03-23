@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.auth.controller;
 import com.bookbla.americano.domain.auth.controller.dto.request.LoginRequestDto;
 import com.bookbla.americano.domain.auth.controller.dto.response.LoginResponseDto;
 import com.bookbla.americano.domain.auth.service.AuthService;
+import com.bookbla.americano.domain.auth.service.impl.AuthServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;

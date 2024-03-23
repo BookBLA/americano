@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.controller;
 
-import com.bookbla.americano.base.jwt.LoginUser;
+import com.bookbla.americano.base.resolver.LoginUser;
+import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileStatusUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
@@ -27,51 +28,41 @@ public class MemberProfileController {
     private final MemberProfileService memberProfileService;
 
     @PostMapping
-    public ResponseEntity<MemberProfileResponse> createMemberProfile(@LoginUser Long memberId,
-        @RequestBody @Valid MemberProfileCreateRequest memberProfileCreateRequest) {
-
-        MemberProfileResponse memberProfileResponse = memberProfileService.createMemberProfile(
-            memberId, memberProfileCreateRequest.toDto());
-
+    public ResponseEntity<MemberProfileResponse> createMemberProfile(
+            @User LoginUser loginUser,
+            @RequestBody @Valid MemberProfileCreateRequest memberProfileCreateRequest
+    ) {
+        MemberProfileResponse memberProfileResponse = memberProfileService.createMemberProfile(loginUser.getMemberId(), memberProfileCreateRequest.toDto());
         return ResponseEntity.ok(memberProfileResponse);
     }
 
     @GetMapping
-    public ResponseEntity<MemberProfileResponse> readMemberProfile(@LoginUser Long memberId) {
-        MemberProfileResponse memberProfileResponse =
-            memberProfileService.readMemberProfile(memberId);
-
+    public ResponseEntity<MemberProfileResponse> readMemberProfile(@User LoginUser loginUser) {
+        MemberProfileResponse memberProfileResponse = memberProfileService.readMemberProfile(loginUser.getMemberId());
         return ResponseEntity.ok(memberProfileResponse);
     }
 
     @PutMapping
     public ResponseEntity<MemberProfileResponse> updateMemberProfile(
         @RequestBody @Valid MemberProfileUpdateRequest memberProfileUpdateRequest,
-        @LoginUser Long memberId
+        @User LoginUser loginUser
     ) {
-        MemberProfileResponse memberProfileResponse =
-            memberProfileService.updateMemberProfile(memberId, memberProfileUpdateRequest);
-
+        MemberProfileResponse memberProfileResponse = memberProfileService.updateMemberProfile(loginUser.getMemberId(), memberProfileUpdateRequest);
         return ResponseEntity.ok(memberProfileResponse);
     }
 
     @GetMapping("/statuses")
-    public ResponseEntity<MemberProfileStatusResponse> readMemberProfileStatus(
-        @LoginUser Long memberId) {
-        MemberProfileStatusResponse memberProfileStatusResponse =
-            memberProfileService.readMemberProfileStatus(memberId);
+    public ResponseEntity<MemberProfileStatusResponse> readMemberProfileStatus(@User LoginUser loginUser) {
+        MemberProfileStatusResponse memberProfileStatusResponse = memberProfileService.readMemberProfileStatus(loginUser.getMemberId());
 
         return ResponseEntity.ok(memberProfileStatusResponse);
     }
 
     @PatchMapping("/statuses")
     public ResponseEntity<MemberProfileStatusResponse> updateMemberProfileStatus(
-        @LoginUser Long memberId,
+        @User LoginUser loginUser,
         MemberProfileStatusUpdateRequest memberProfileStatusUpdateRequest) {
-
-        MemberProfileStatusResponse memberProfileStatusResponse =
-            memberProfileService.updateMemberProfileStatus(memberId,
-                memberProfileStatusUpdateRequest);
+        MemberProfileStatusResponse memberProfileStatusResponse = memberProfileService.updateMemberProfileStatus(loginUser.getMemberId(), memberProfileStatusUpdateRequest);
 
         return ResponseEntity.ok(memberProfileStatusResponse);
     }

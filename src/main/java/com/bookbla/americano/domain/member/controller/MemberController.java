@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.controller;
 
-import com.bookbla.americano.base.jwt.LoginUser;
+import com.bookbla.americano.base.resolver.LoginUser;
+import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
@@ -36,25 +37,23 @@ public class MemberController {
     private final MemberProfileService memberProfileService;
 
     @GetMapping
-    public ResponseEntity<MemberResponse> readMember(@LoginUser Long memberId) {
-
-        MemberResponse memberResponse = memberService.readMember(memberId);
+    public ResponseEntity<MemberResponse> readMember(@User LoginUser loginUser) {
+        MemberResponse memberResponse = memberService.readMember(loginUser.getMemberId());
         return ResponseEntity.ok(memberResponse);
     }
 
     @GetMapping("/statuses")
-    public ResponseEntity<MemberStatusResponse> readMemberStatus(@LoginUser Long memberId) {
-
-        MemberStatusResponse memberStatusResponse = memberService.readMemberStatus(memberId);
+    public ResponseEntity<MemberStatusResponse> readMemberStatus(@User LoginUser loginUser) {
+        MemberStatusResponse memberStatusResponse = memberService.readMemberStatus(loginUser.getMemberId());
         return ResponseEntity.ok(memberStatusResponse);
     }
 
     @PutMapping
     public ResponseEntity<MemberResponse> updateMember(
         @RequestBody @Valid MemberUpdateRequest memberUpdateRequest,
-        @LoginUser Long memberId) {
-
-        MemberResponse memberResponse = memberService.updateMember(memberId, memberUpdateRequest);
+        @User LoginUser loginUser
+    ) {
+        MemberResponse memberResponse = memberService.updateMember(loginUser.getMemberId(), memberUpdateRequest);
         return ResponseEntity.ok(memberResponse);
     }
 
