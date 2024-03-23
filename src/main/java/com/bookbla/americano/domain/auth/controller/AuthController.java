@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.auth.controller;
 
 import com.bookbla.americano.domain.auth.controller.dto.request.LoginRequestDto;
 import com.bookbla.americano.domain.auth.controller.dto.response.LoginResponseDto;
+import com.bookbla.americano.domain.auth.service.AuthService;
 import com.bookbla.americano.domain.auth.service.impl.AuthServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final AuthServiceImpl authService;
+    private final AuthService authService;
 
     @PostMapping("/login/{oAuthType}")
     public ResponseEntity<LoginResponseDto> login(
