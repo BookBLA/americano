@@ -11,6 +11,7 @@ import com.bookbla.americano.domain.test.controller.dto.request.TestCreateReques
 import com.bookbla.americano.domain.test.controller.dto.request.TestSignUpRequest;
 import com.bookbla.americano.domain.test.controller.dto.response.TestCreateResponse;
 import com.bookbla.americano.domain.test.controller.dto.response.TestReadResponse;
+import com.bookbla.americano.domain.test.controller.dto.response.TestSignUpResponse;
 import com.bookbla.americano.domain.test.service.TestService;
 import java.net.URI;
 import java.util.List;
@@ -55,11 +56,11 @@ public class TestController {
 
 
     @PostMapping("/sign-up")
-    public ResponseEntity<String> testSignUp(
+    public ResponseEntity<TestSignUpResponse> testSignUp(
             @RequestBody TestSignUpRequest testSignUpRequest
     ) {
         Member member = testService.signUp(testSignUpRequest.getEmail());
         String token = jwtProvider.createToken(member.getId().toString());
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(new TestSignUpResponse(token));
     }
 }
