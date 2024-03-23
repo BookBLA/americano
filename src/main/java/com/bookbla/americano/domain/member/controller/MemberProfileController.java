@@ -52,22 +52,17 @@ public class MemberProfileController {
     }
 
     @GetMapping("/statuses")
-    public ResponseEntity<MemberProfileStatusResponse> readMemberProfileStatus(
-        @LoginUser Long memberId) {
-        MemberProfileStatusResponse memberProfileStatusResponse =
-            memberProfileService.readMemberProfileStatus(memberId);
+    public ResponseEntity<MemberProfileStatusResponse> readMemberProfileStatus(@User LoginUser loginUser) {
+        MemberProfileStatusResponse memberProfileStatusResponse = memberProfileService.readMemberProfileStatus(loginUser.getMemberId());
 
         return ResponseEntity.ok(memberProfileStatusResponse);
     }
 
     @PatchMapping("/statuses")
     public ResponseEntity<MemberProfileStatusResponse> updateMemberProfileStatus(
-        @LoginUser Long memberId,
+        @User LoginUser loginUser,
         MemberProfileStatusUpdateRequest memberProfileStatusUpdateRequest) {
-
-        MemberProfileStatusResponse memberProfileStatusResponse =
-            memberProfileService.updateMemberProfileStatus(memberId,
-                memberProfileStatusUpdateRequest);
+        MemberProfileStatusResponse memberProfileStatusResponse = memberProfileService.updateMemberProfileStatus(loginUser.getMemberId(), memberProfileStatusUpdateRequest);
 
         return ResponseEntity.ok(memberProfileStatusResponse);
     }

@@ -43,9 +43,8 @@ public class MemberController {
     }
 
     @GetMapping("/statuses")
-    public ResponseEntity<MemberStatusResponse> readMemberStatus(@LoginUser Long memberId) {
-
-        MemberStatusResponse memberStatusResponse = memberService.readMemberStatus(memberId);
+    public ResponseEntity<MemberStatusResponse> readMemberStatus(@User LoginUser loginUser) {
+        MemberStatusResponse memberStatusResponse = memberService.readMemberStatus(loginUser.getMemberId());
         return ResponseEntity.ok(memberStatusResponse);
     }
 

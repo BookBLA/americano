@@ -80,20 +80,20 @@ public class MemberAuthController {
 
     @GetMapping("/statuses")
     public ResponseEntity<MemberAuthStatusResponse> readMemberAuthStatus(
-        @LoginUser Long memberId) {
+        @User LoginUser loginUser) {
 
         MemberAuthStatusResponse memberAuthStatusResponse =
-            memberAuthService.readMemberAuthStatus(memberId);
+            memberAuthService.readMemberAuthStatus(loginUser.getMemberId());
 
         return ResponseEntity.ok(memberAuthStatusResponse);
     }
 
     @PatchMapping("/statuses")
     public ResponseEntity<MemberAuthStatusResponse> updateMemberAuthStatus(
-        @LoginUser Long memberId, MemberAuthStatusUpdateRequest memberAuthStatusUpdateRequest) {
+            @User LoginUser loginUser, MemberAuthStatusUpdateRequest memberAuthStatusUpdateRequest) {
 
         MemberAuthStatusResponse memberAuthStatusResponse =
-            memberAuthService.updateMemberAuthStatus(memberId, memberAuthStatusUpdateRequest);
+            memberAuthService.updateMemberAuthStatus(loginUser.getMemberId(), memberAuthStatusUpdateRequest);
 
         return ResponseEntity.ok(memberAuthStatusResponse);
     }
