@@ -11,5 +11,4 @@ public interface MemberService {
     MemberStatusResponse readMemberStatus(Long memberId);
 
     MemberResponse updateMember(Long memberId, MemberUpdateRequest memberUpdateRequest);
-
 }

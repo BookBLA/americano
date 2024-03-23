@@ -43,6 +43,6 @@ public class MemberServiceImpl implements MemberService {
         member.updateOauthEmail(request.getOauthEmail())
             .updateMemberType(request.getMemberType())
             .updateMemberStatus(request.getMemberStatus())
-        ;
+            .updateMemberType(request.getMemberType());
     }
 }

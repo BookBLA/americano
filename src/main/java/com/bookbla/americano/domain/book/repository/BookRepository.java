@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.book.repository;
 
-import com.bookbla.americano.domain.book.Book;
+import com.bookbla.americano.domain.book.repository.entity.Book;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

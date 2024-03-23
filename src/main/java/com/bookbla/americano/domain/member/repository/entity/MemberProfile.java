@@ -3,6 +3,13 @@ package com.bookbla.americano.domain.member.repository.entity;
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomUrlStatus;
 import java.time.LocalDate;
+import java.time.Period;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,11 +19,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -55,6 +58,21 @@ public class MemberProfile {
     private String openKakaoRoomUrl;
 
     private OpenKakaoRoomUrlStatus openKakaoRoomUrlStatus;
+
+    public String showBlindName() {
+        String firstName = name.split("")[0];
+        return firstName + "OO";
+    }
+
+    public int calculateAge(LocalDate now) {
+        int age = Period.between(birthDate, now).getYears();
+
+        if (now.isBefore(birthDate.plusYears(age))) {
+            age--;
+        }
+
+        return age;
+    }
 
     public MemberProfile updateName(String name) {
         this.name = name;

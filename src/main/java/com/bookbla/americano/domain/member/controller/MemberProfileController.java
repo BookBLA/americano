@@ -7,9 +7,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileU
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,6 +16,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/member-profiles")
@@ -47,8 +47,8 @@ public class MemberProfileController {
     @PutMapping
     public ResponseEntity<MemberProfileResponse> updateMemberProfile(
         @RequestBody @Valid MemberProfileUpdateRequest memberProfileUpdateRequest,
-        @LoginUser Long memberId) {
-
+        @LoginUser Long memberId
+    ) {
         MemberProfileResponse memberProfileResponse =
             memberProfileService.updateMemberProfile(memberId, memberProfileUpdateRequest);
 

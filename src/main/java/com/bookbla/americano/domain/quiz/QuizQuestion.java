@@ -10,11 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 
 @Entity
 @Getter
@@ -44,4 +41,23 @@ public class QuizQuestion extends BaseInsertEntity {
     @Enumerated(EnumType.STRING)
     private AnswerChoice answerChoice = AnswerChoice.FIRST;
 
+    public QuizQuestion updateContents(String contents) {
+        this.contents = contents;
+        return this;
+    }
+
+    public QuizQuestion updateCorrectAnswer(String answer) {
+        this.firstChoice = answer;
+        return this;
+    }
+
+    public QuizQuestion updateFirstWrongAnswer(String firstWrongAnswer) {
+        this.secondChoice = firstWrongAnswer;
+        return this;
+    }
+
+    public QuizQuestion updateSecondWrongAnswer(String secondWrongAnswer) {
+        this.thirdChoice = secondWrongAnswer;
+        return this;
+    }
 }

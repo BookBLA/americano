@@ -8,13 +8,9 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpd
 import java.net.URI;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -33,8 +29,8 @@ public class MemberStyleController {
                 .body(memberStyleResponse);
     }
 
-    @GetMapping
-    public ResponseEntity<MemberStyleResponse> readMemberStyle(@LoginUser Long memberId) {
+    @GetMapping("/{memberId}")
+    public ResponseEntity<MemberStyleResponse> readMemberStyle(@PathVariable Long memberId) {
         MemberStyleResponse memberStyleResponse = memberStyleService.readMemberStyle(memberId);
         return ResponseEntity.ok(memberStyleResponse);
     }
