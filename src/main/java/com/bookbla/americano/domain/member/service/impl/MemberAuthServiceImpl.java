@@ -4,9 +4,11 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.domain.member.controller.dto.request.MailResendRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MailVerifyRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthStatusUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MailVerifyResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthStatusResponse;
 import com.bookbla.americano.domain.member.exception.MailExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberAuthRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
@@ -32,7 +34,6 @@ import org.thymeleaf.context.Context;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class MemberAuthServiceImpl implements MemberAuthService {
 
     private final MemberRepository memberRepository;
@@ -42,7 +43,8 @@ public class MemberAuthServiceImpl implements MemberAuthService {
 
     @Override
     @Transactional
-    public MemberAuthResponse sendEmailAndCreateMemberAuth(Long memberId, MemberAuthDto memberAuthDto) {
+    public MemberAuthResponse sendEmailAndCreateMemberAuth(Long memberId,
+        MemberAuthDto memberAuthDto) {
         String schoolEmail = memberAuthDto.getSchoolEmail();
 
         checkDuplicatedEmail(schoolEmail);
@@ -126,6 +128,28 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         return MemberAuthResponse.from(member, memberAuth);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public MemberAuthStatusResponse readMemberAuthStatus(Long memberId) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberAuth memberAuth = memberAuthRepository.getByMemberOrThrow(member);
+
+        return MemberAuthStatusResponse.from(memberAuth);
+    }
+
+    @Override
+    @Transactional
+    public MemberAuthStatusResponse updateMemberAuthStatus(Long memberId,
+        MemberAuthStatusUpdateRequest memberAuthStatusUpdateRequest) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberAuth memberAuth = memberAuthRepository.getByMemberOrThrow(member);
+
+        memberAuth.updateStudentIdImageStatus(
+            memberAuthStatusUpdateRequest.getStudentIdImageStatus());
+
+        return MemberAuthStatusResponse.from(memberAuth);
+    }
+
 
     private void update(MemberAuth memberAuth, MemberAuthUpdateRequest request) {
         memberAuth.updateSchoolEmail(request.getSchoolEmail())
@@ -178,7 +202,6 @@ public class MemberAuthServiceImpl implements MemberAuthService {
 
             return builder.toString();
         } catch (NoSuchAlgorithmException e) {
-            log.error("MailService.createCode() exception occur" + e);
             throw new BaseException(BaseExceptionType.TEST_FAIL);
         }
     }
