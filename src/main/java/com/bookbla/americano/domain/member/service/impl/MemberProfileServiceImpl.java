@@ -1,7 +1,9 @@
 package com.bookbla.americano.domain.member.service.impl;
 
+import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileStatusUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.repository.MemberProfileRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
@@ -22,9 +24,11 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
     @Override
     @Transactional
-    public MemberProfileResponse createMemberProfile(Long memberId, MemberProfileDto memberProfileDto) {
+    public MemberProfileResponse createMemberProfile(Long memberId,
+        MemberProfileDto memberProfileDto) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = memberProfileRepository.save(memberProfileDto.toEntity(member));
+        MemberProfile memberProfile = memberProfileRepository.save(
+            memberProfileDto.toEntity(member));
 
         // 프로필 정보 입력이 완료되면 가입 승인 상태로 변경
         member.updateMemberStatus(MemberStatus.APPROVAL);
@@ -53,6 +57,29 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
         return MemberProfileResponse.from(member, memberProfile);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MemberProfileStatusResponse readMemberProfileStatus(Long memberId) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberProfile memberProfile = memberProfileRepository.getByMemberOrThrow(member);
+
+        return MemberProfileStatusResponse.from(memberProfile);
+    }
+
+    @Override
+    @Transactional
+    public MemberProfileStatusResponse updateMemberProfileStatus(Long memberId,
+        MemberProfileStatusUpdateRequest memberProfileStatusUpdateRequest) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberProfile memberProfile = memberProfileRepository.getByMemberOrThrow(member);
+
+        memberProfile.updateOpenKakaoRoomUrlStatus(
+            memberProfileStatusUpdateRequest.getOpenKakaoRoomUrlStatus());
+
+        return MemberProfileStatusResponse.from(memberProfile);
+    }
+
 
     public void update(MemberProfile memberProfile, MemberProfileUpdateRequest request) {
         memberProfile.updateName(request.getName())
