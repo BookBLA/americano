@@ -1,5 +1,6 @@
-package com.bookbla.americano.domain.auth.service;
+package com.bookbla.americano.domain.auth.service.impl;
 
+import com.bookbla.americano.domain.auth.service.OAuth2Provider;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import java.util.Map;
 import java.util.Set;
@@ -8,11 +9,11 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OAuth2Clients {
+public class OAuth2Providers {
 
     private final Map<MemberType, OAuth2Provider> oAuthProviderMap;
 
-    public OAuth2Clients(Set<OAuth2Provider> oAuth2Providers) {
+    public OAuth2Providers(Set<OAuth2Provider> oAuth2Providers) {
         oAuthProviderMap = oAuth2Providers.stream()
                 .collect(Collectors.toMap(
                         OAuth2Provider::getMemberType,

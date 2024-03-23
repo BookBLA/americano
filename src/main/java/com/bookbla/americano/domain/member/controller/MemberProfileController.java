@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.controller;
 
-import com.bookbla.americano.base.jwt.LoginUser;
+import com.bookbla.americano.base.resolver.LoginUser;
+import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
@@ -24,31 +25,26 @@ public class MemberProfileController {
     private final MemberProfileService memberProfileService;
 
     @PostMapping
-    public ResponseEntity<MemberProfileResponse> createMemberProfile(@LoginUser Long memberId,
-        @RequestBody @Valid MemberProfileCreateRequest memberProfileCreateRequest) {
-
-        MemberProfileResponse memberProfileResponse = memberProfileService.createMemberProfile(
-            memberId, memberProfileCreateRequest.toDto());
-
+    public ResponseEntity<MemberProfileResponse> createMemberProfile(
+            @User LoginUser loginUser,
+            @RequestBody @Valid MemberProfileCreateRequest memberProfileCreateRequest
+    ) {
+        MemberProfileResponse memberProfileResponse = memberProfileService.createMemberProfile(loginUser.getMemberId(), memberProfileCreateRequest.toDto());
         return ResponseEntity.ok(memberProfileResponse);
     }
 
     @GetMapping
-    public ResponseEntity<MemberProfileResponse> readMemberProfile(@LoginUser Long memberId) {
-        MemberProfileResponse memberProfileResponse =
-            memberProfileService.readMemberProfile(memberId);
-
+    public ResponseEntity<MemberProfileResponse> readMemberProfile(@User LoginUser loginUser) {
+        MemberProfileResponse memberProfileResponse = memberProfileService.readMemberProfile(loginUser.getMemberId());
         return ResponseEntity.ok(memberProfileResponse);
     }
 
     @PutMapping
     public ResponseEntity<MemberProfileResponse> updateMemberProfile(
         @RequestBody @Valid MemberProfileUpdateRequest memberProfileUpdateRequest,
-        @LoginUser Long memberId
+        @User LoginUser loginUser
     ) {
-        MemberProfileResponse memberProfileResponse =
-            memberProfileService.updateMemberProfile(memberId, memberProfileUpdateRequest);
-
+        MemberProfileResponse memberProfileResponse = memberProfileService.updateMemberProfile(loginUser.getMemberId(), memberProfileUpdateRequest);
         return ResponseEntity.ok(memberProfileResponse);
     }
 }

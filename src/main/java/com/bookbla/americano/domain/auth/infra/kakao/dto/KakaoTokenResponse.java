@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.auth.service.dto;
+package com.bookbla.americano.domain.auth.infra.kakao.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

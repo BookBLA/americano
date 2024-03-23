@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.controller;
 
-import com.bookbla.americano.base.jwt.LoginUser;
+import com.bookbla.americano.base.resolver.LoginUser;
+import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookCreateResponse;
@@ -29,18 +30,18 @@ public class MemberBookController {
 
     @PostMapping
     public ResponseEntity<MemberBookCreateResponse> addMemberBook(
-            @LoginUser Long memberId,
+            @User LoginUser loginUser,
             @RequestBody @Valid MemberBookCreateRequest memberBookCreateRequest
     ) {
-        MemberBookCreateResponse memberBookCreateResponse = memberBookService.addMemberBook(memberId, memberBookCreateRequest);
+        MemberBookCreateResponse memberBookCreateResponse = memberBookService.addMemberBook(loginUser.getMemberId(), memberBookCreateRequest);
         return ResponseEntity
                 .created(URI.create("/member-books/" + memberBookCreateResponse.getMemberBookId()))
                 .body(memberBookCreateResponse);
     }
 
     @GetMapping
-    public ResponseEntity<MemberBookReadResponses> readMemberBooks(@LoginUser Long memberId) {
-        MemberBookReadResponses memberBookReadResponses = memberBookService.readMemberBooks(memberId);
+    public ResponseEntity<MemberBookReadResponses> readMemberBooks(@User LoginUser loginUser) {
+        MemberBookReadResponses memberBookReadResponses = memberBookService.readMemberBooks(loginUser.getMemberId());
         return ResponseEntity.ok(memberBookReadResponses);
     }
 
@@ -52,16 +53,16 @@ public class MemberBookController {
 
     @PutMapping("/{memberBookId}")
     public ResponseEntity<Void> updateMemberBook(
-            @PathVariable Long memberBookId, @LoginUser Long memberId,
+            @PathVariable Long memberBookId, @User LoginUser loginUser,
             @RequestBody @Valid MemberBookUpdateRequest memberBookUpdateRequest
     ) {
-        memberBookService.updateMemberBook(memberBookUpdateRequest, memberBookId, memberId);
+        memberBookService.updateMemberBook(memberBookUpdateRequest, memberBookId, loginUser.getMemberId());
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{memberBookId}")
-    public ResponseEntity<Void> deleteMemberBook(@LoginUser Long memberId, @PathVariable Long memberBookId) {
-        memberBookService.deleteMemberBook(memberId, memberBookId);
+    public ResponseEntity<Void> deleteMemberBook(@User LoginUser loginUser, @PathVariable Long memberBookId) {
+        memberBookService.deleteMemberBook(loginUser.getMemberId(), memberBookId);
         return ResponseEntity.noContent().build();
     }
 

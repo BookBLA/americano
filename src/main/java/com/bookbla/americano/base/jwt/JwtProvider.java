@@ -36,10 +36,7 @@ public class JwtProvider {
 
     public void validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(generateKey(jwtConfig.getSecret()))
-                    .build()
-                    .parseClaimsJws(token);
+            parseToken(token);
         } catch (SecurityException | MalformedJwtException e) {
             throw new BaseException(AuthExceptionType.INVALID_TOKEN_SIGNATURE);
         } catch (ExpiredJwtException e) {
@@ -47,5 +44,16 @@ public class JwtProvider {
         } catch (UnsupportedJwtException e) {
             throw new BaseException(AuthExceptionType.INVALID_TOKEN);
         }
+    }
+
+    public String decodeToken(String token) {
+        return parseToken(token).getBody().getSubject();
+    }
+
+    private Jws<Claims> parseToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(generateKey(jwtConfig.getSecret()))
+                .build()
+                .parseClaimsJws(token);
     }
 }

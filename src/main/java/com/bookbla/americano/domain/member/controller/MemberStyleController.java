@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.controller;
 
-import com.bookbla.americano.base.jwt.LoginUser;
+import com.bookbla.americano.base.resolver.LoginUser;
+import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCreateRequest;
 import com.bookbla.americano.domain.member.service.MemberStyleService;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
@@ -8,7 +9,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpd
 import java.net.URI;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.Query;
+import lombok.extern.java.Log;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,10 +22,10 @@ public class MemberStyleController {
 
     @PostMapping
     public ResponseEntity<MemberStyleResponse> createMemberStyle(
-            @LoginUser Long memberId,
+            @User LoginUser loginUser,
             @RequestBody @Valid MemberStyleCreateRequest memberStyleCreateRequest) {
         MemberStyleResponse memberStyleResponse = memberStyleService.createMemberStyle(
-                memberId, memberStyleCreateRequest);
+                loginUser.getMemberId(), memberStyleCreateRequest);
         return ResponseEntity.created(URI.create(memberStyleResponse.getMemberStyleId().toString()))
                 .body(memberStyleResponse);
     }
@@ -37,9 +38,9 @@ public class MemberStyleController {
 
     @PutMapping
     public ResponseEntity<Void> updateMemberStyle(
-            @LoginUser Long memberId,
+            @User LoginUser loginUser,
             @RequestBody @Valid MemberStyleUpdateRequest memberStyleUpdateRequest) {
-        memberStyleService.updateMemberStyle(memberId, memberStyleUpdateRequest);
+        memberStyleService.updateMemberStyle(loginUser.getMemberId(), memberStyleUpdateRequest);
         return ResponseEntity.noContent().build();
     }
 }
