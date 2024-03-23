@@ -11,9 +11,11 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthRes
 import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthStatusResponse;
 import com.bookbla.americano.domain.member.exception.MailExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberAuthRepository;
+import com.bookbla.americano.domain.member.repository.MemberPostcardRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberAuth;
+import com.bookbla.americano.domain.member.repository.entity.MemberPostcard;
 import com.bookbla.americano.domain.member.service.MemberAuthService;
 import com.bookbla.americano.domain.member.service.dto.MemberAuthDto;
 import java.security.NoSuchAlgorithmException;
@@ -24,7 +26,6 @@ import java.util.Optional;
 import java.util.Random;
 import javax.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
 
     private final MemberRepository memberRepository;
     private final MemberAuthRepository memberAuthRepository;
+    private final MemberPostcardRepository memberPostcardRepository;
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
 
@@ -78,6 +80,13 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         }
 
         memberAuth.updateMailVerifyDone();
+
+        // 메일 인증시 멤버 엽서 엔티티 생성
+        memberPostcardRepository.save(MemberPostcard.builder()
+                .member(member)
+                .freePostcardCount(1)
+                .payPostcardCount(10)
+                .build());
 
         return MailVerifyResponse.from(memberAuth);
     }
