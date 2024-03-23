@@ -43,7 +43,7 @@ public class MemberProfileCreateRequest {
     public MemberProfileDto toDto() {
         return MemberProfileDto.builder()
             .gender(Gender.from(gender))
-            .birthDate(LocalDate.parse(birthDate))
+            .birthDate(getBirthDate())
             .name(name)
             .schoolName(schoolName)
             .profileImageUrl(profileImageUrl)

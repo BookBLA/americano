@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomUrlStatus;
+import com.bookbla.americano.domain.member.enums.ProfileImageUrlStatus;
 import java.time.LocalDate;
 import java.time.Period;
 import lombok.AccessLevel;
@@ -45,6 +46,9 @@ public class MemberProfile {
 
     private String profileImageUrl;
 
+    @Enumerated(EnumType.STRING)
+    private ProfileImageUrlStatus profileImageUrlStatus;
+
     private String studentNumber;
 
     private String schoolName;
@@ -57,6 +61,7 @@ public class MemberProfile {
 
     private String openKakaoRoomUrl;
 
+    @Enumerated(EnumType.STRING)
     private OpenKakaoRoomUrlStatus openKakaoRoomUrlStatus;
 
     public String showBlindName() {
@@ -99,12 +104,18 @@ public class MemberProfile {
         return this;
     }
 
+    public MemberProfile updateProfileImageUrlStatus(ProfileImageUrlStatus profileImageUrlStatus) {
+        this.profileImageUrlStatus = profileImageUrlStatus;
+        return this;
+    }
+
     public MemberProfile updateOpenKakaoRoomUrl(String openKakaoRoomUrl) {
         this.openKakaoRoomUrl = openKakaoRoomUrl;
         return this;
     }
 
-    public MemberProfile updateOpenKakaoRoomUrlStatus(OpenKakaoRoomUrlStatus openKakaoRoomUrlStatus) {
+    public MemberProfile updateOpenKakaoRoomUrlStatus(
+        OpenKakaoRoomUrlStatus openKakaoRoomUrlStatus) {
         this.openKakaoRoomUrlStatus = openKakaoRoomUrlStatus;
         return this;
     }

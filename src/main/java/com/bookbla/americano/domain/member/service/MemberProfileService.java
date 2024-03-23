@@ -8,6 +8,7 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberProfile
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
 
+import com.bookbla.americano.domain.member.service.dto.MemberProfileStatusDto;
 import java.util.List;
 
 public interface MemberProfileService {
@@ -21,6 +22,6 @@ public interface MemberProfileService {
     MemberProfileStatusResponse readMemberProfileStatus(Long memberId);
 
     MemberProfileStatusResponse updateMemberProfileStatus(Long memberId,
-        MemberProfileStatusUpdateRequest memberProfileStatusUpdateRequest);
+        MemberProfileStatusDto memberProfileStatusDto);
 
 }

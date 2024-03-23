@@ -32,19 +32,12 @@ public class MemberProfileUpdateRequest {
     @NotNull(message = "카톡방 링크가 입력되지 않았습니다.")
     private String openKakaoRoomUrl;
 
-    @NotNull(message = "오픈카톡방 상태가 입력되지 않았습니다.")
-    private String openKakaoRoomUrlStatus;
-
     public LocalDate getBirthDate() {
         return LocalDate.parse(birthDate);
     }
 
     public Gender getGender() {
         return Gender.from(gender);
-    }
-
-    public OpenKakaoRoomUrlStatus getOpenKakaoRoomUrlStatus() {
-        return OpenKakaoRoomUrlStatus.from(openKakaoRoomUrlStatus);
     }
 
 }

@@ -84,8 +84,6 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         // 메일 인증시 멤버 엽서 엔티티 생성
         memberPostcardRepository.save(MemberPostcard.builder()
                 .member(member)
-                .freePostcardCount(1)
-                .payPostcardCount(10)
                 .build());
 
         return MailVerifyResponse.from(memberAuth);

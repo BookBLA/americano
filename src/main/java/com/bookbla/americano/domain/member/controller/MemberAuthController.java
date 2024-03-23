@@ -28,9 +28,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberAuthController {
 
     private final MemberAuthService memberAuthService;
+
     @GetMapping
     public ResponseEntity<MemberAuthResponse> readMemberAuth(@User LoginUser loginUser) {
-        MemberAuthResponse memberAuthResponse = memberAuthService.readMemberAuth(loginUser.getMemberId());
+        MemberAuthResponse memberAuthResponse = memberAuthService.readMemberAuth(
+            loginUser.getMemberId());
         return ResponseEntity.ok(memberAuthResponse);
     }
 
@@ -51,7 +53,8 @@ public class MemberAuthController {
         @User LoginUser loginUser) {
 
         MemberAuthResponse memberAuthResponse =
-            memberAuthService.sendEmailAndCreateMemberAuth(loginUser.getMemberId(), mailSendRequest.toMemberAuthDto());
+            memberAuthService.sendEmailAndCreateMemberAuth(loginUser.getMemberId(),
+                mailSendRequest.toMemberAuthDto());
 
         return ResponseEntity.ok(memberAuthResponse);
     }
@@ -90,10 +93,12 @@ public class MemberAuthController {
 
     @PatchMapping("/statuses")
     public ResponseEntity<MemberAuthStatusResponse> updateMemberAuthStatus(
-            @User LoginUser loginUser, MemberAuthStatusUpdateRequest memberAuthStatusUpdateRequest) {
+        @User LoginUser loginUser,
+        @RequestBody @Valid MemberAuthStatusUpdateRequest memberAuthStatusUpdateRequest) {
 
         MemberAuthStatusResponse memberAuthStatusResponse =
-            memberAuthService.updateMemberAuthStatus(loginUser.getMemberId(), memberAuthStatusUpdateRequest);
+            memberAuthService.updateMemberAuthStatus(loginUser.getMemberId(),
+                memberAuthStatusUpdateRequest);
 
         return ResponseEntity.ok(memberAuthStatusResponse);
     }

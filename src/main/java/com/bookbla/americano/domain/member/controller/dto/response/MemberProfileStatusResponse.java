@@ -10,10 +10,12 @@ import lombok.Getter;
 @AllArgsConstructor
 public class MemberProfileStatusResponse {
 
+    private String profileImageUrlStatus;
     private String openKakaoRoomUrlStatus;
 
     public static MemberProfileStatusResponse from(MemberProfile memberProfile) {
         return MemberProfileStatusResponse.builder()
+            .profileImageUrlStatus(memberProfile.getProfileImageUrlStatus().name())
             .openKakaoRoomUrlStatus(memberProfile.getOpenKakaoRoomUrlStatus().name())
             .build();
     }

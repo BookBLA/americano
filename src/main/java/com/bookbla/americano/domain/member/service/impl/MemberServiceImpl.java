@@ -25,6 +25,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MemberStatusResponse readMemberStatus(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         return MemberStatusResponse.from(member);

@@ -15,6 +15,7 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
+import com.bookbla.americano.domain.member.service.dto.MemberProfileStatusDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,12 +84,14 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     @Override
     @Transactional
     public MemberProfileStatusResponse updateMemberProfileStatus(Long memberId,
-        MemberProfileStatusUpdateRequest memberProfileStatusUpdateRequest) {
+        MemberProfileStatusDto memberProfileStatusDto) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = memberProfileRepository.getByMemberOrThrow(member);
 
-        memberProfile.updateOpenKakaoRoomUrlStatus(
-            memberProfileStatusUpdateRequest.getOpenKakaoRoomUrlStatus());
+        memberProfile.updateProfileImageUrlStatus(
+            memberProfileStatusDto.getProfileImageUrlStatus()
+        ).updateOpenKakaoRoomUrlStatus(
+            memberProfileStatusDto.getOpenKakaoRoomUrlStatus());
 
         return MemberProfileStatusResponse.from(memberProfile);
     }
@@ -100,8 +103,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
             .updateSchoolName(request.getSchoolName())
             .updateGender(request.getGender())
             .updateProfileImageUrl(request.getProfileImageUrl())
-            .updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl())
-            .updateOpenKakaoRoomUrlStatus(request.getOpenKakaoRoomUrlStatus());
+            .updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl());
     }
 
     @Override
