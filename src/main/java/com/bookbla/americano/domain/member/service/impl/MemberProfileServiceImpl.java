@@ -1,10 +1,13 @@
 package com.bookbla.americano.domain.member.service.impl;
 
+import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileStatusUpdateRequest;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberProfileRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
@@ -14,6 +17,7 @@ import com.bookbla.americano.domain.member.service.MemberProfileService;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -32,14 +36,21 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     private final MemberProfileRepository memberProfileRepository;
 
     @Override
-    public MemberProfileResponse createMemberProfile(Long memberId, MemberProfileDto memberProfileDto) {
+    @Transactional
+    public MemberProfileResponse createMemberProfile(Long memberId,
+        MemberProfileDto memberProfileDto) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = memberProfileRepository.save(memberProfileDto.toEntity(member));
+        MemberProfile memberProfile = memberProfileRepository.save(
+            memberProfileDto.toEntity(member));
+
+        // 프로필 정보 입력이 완료되면 가입 승인 상태로 변경
+        member.updateMemberStatus(MemberStatus.APPROVAL);
 
         return MemberProfileResponse.from(member, memberProfile);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MemberProfileResponse readMemberProfile(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = memberProfileRepository.getByMemberOrThrow(member);
@@ -48,6 +59,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     }
 
     @Override
+    @Transactional
     public MemberProfileResponse updateMemberProfile(Long memberId,
         MemberProfileUpdateRequest memberProfileUpdateRequest) {
 
@@ -59,12 +71,37 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         return MemberProfileResponse.from(member, memberProfile);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public MemberProfileStatusResponse readMemberProfileStatus(Long memberId) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberProfile memberProfile = memberProfileRepository.getByMemberOrThrow(member);
+
+        return MemberProfileStatusResponse.from(memberProfile);
+    }
+
+    @Override
+    @Transactional
+    public MemberProfileStatusResponse updateMemberProfileStatus(Long memberId,
+        MemberProfileStatusUpdateRequest memberProfileStatusUpdateRequest) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberProfile memberProfile = memberProfileRepository.getByMemberOrThrow(member);
+
+        memberProfile.updateOpenKakaoRoomUrlStatus(
+            memberProfileStatusUpdateRequest.getOpenKakaoRoomUrlStatus());
+
+        return MemberProfileStatusResponse.from(memberProfile);
+    }
+
+
     public void update(MemberProfile memberProfile, MemberProfileUpdateRequest request) {
         memberProfile.updateName(request.getName())
             .updateBirthDate(request.getBirthDate())
             .updateSchoolName(request.getSchoolName())
             .updateGender(request.getGender())
-            .updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl());
+            .updateProfileImageUrl(request.getProfileImageUrl())
+            .updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl())
+            .updateOpenKakaoRoomUrlStatus(request.getOpenKakaoRoomUrlStatus());
     }
 
     @Override

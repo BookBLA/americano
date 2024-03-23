@@ -3,12 +3,15 @@ package com.bookbla.americano.domain.member.controller;
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileCreateRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileStatusUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,4 +50,26 @@ public class MemberProfileController {
         MemberProfileResponse memberProfileResponse = memberProfileService.updateMemberProfile(loginUser.getMemberId(), memberProfileUpdateRequest);
         return ResponseEntity.ok(memberProfileResponse);
     }
+
+    @GetMapping("/statuses")
+    public ResponseEntity<MemberProfileStatusResponse> readMemberProfileStatus(
+        @LoginUser Long memberId) {
+        MemberProfileStatusResponse memberProfileStatusResponse =
+            memberProfileService.readMemberProfileStatus(memberId);
+
+        return ResponseEntity.ok(memberProfileStatusResponse);
+    }
+
+    @PatchMapping("/statuses")
+    public ResponseEntity<MemberProfileStatusResponse> updateMemberProfileStatus(
+        @LoginUser Long memberId,
+        MemberProfileStatusUpdateRequest memberProfileStatusUpdateRequest) {
+
+        MemberProfileStatusResponse memberProfileStatusResponse =
+            memberProfileService.updateMemberProfileStatus(memberId,
+                memberProfileStatusUpdateRequest);
+
+        return ResponseEntity.ok(memberProfileStatusResponse);
+    }
+
 }

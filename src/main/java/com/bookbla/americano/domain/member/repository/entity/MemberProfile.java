@@ -1,6 +1,8 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.domain.member.enums.Gender;
+import com.bookbla.americano.domain.member.enums.OpenKakaoRoomUrlStatus;
+import java.time.LocalDate;
 import java.time.Period;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -55,6 +57,8 @@ public class MemberProfile {
 
     private String openKakaoRoomUrl;
 
+    private OpenKakaoRoomUrlStatus openKakaoRoomUrlStatus;
+
     public String showBlindName() {
         String firstName = name.split("")[0];
         return firstName + "OO";
@@ -90,8 +94,19 @@ public class MemberProfile {
         return this;
     }
 
+    public MemberProfile updateProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+        return this;
+    }
+
     public MemberProfile updateOpenKakaoRoomUrl(String openKakaoRoomUrl) {
         this.openKakaoRoomUrl = openKakaoRoomUrl;
         return this;
     }
+
+    public MemberProfile updateOpenKakaoRoomUrlStatus(OpenKakaoRoomUrlStatus openKakaoRoomUrlStatus) {
+        this.openKakaoRoomUrlStatus = openKakaoRoomUrlStatus;
+        return this;
+    }
+
 }

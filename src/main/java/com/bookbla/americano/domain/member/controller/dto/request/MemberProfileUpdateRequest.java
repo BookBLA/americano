@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.controller.dto.request;
 
 import com.bookbla.americano.domain.member.enums.Gender;
+import com.bookbla.americano.domain.member.enums.OpenKakaoRoomUrlStatus;
 import java.time.LocalDate;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -25,8 +26,14 @@ public class MemberProfileUpdateRequest {
     @NotNull(message = "성별이 입력되지 않았습니다.")
     private String gender;
 
+    @NotNull(message = "프로필 사진이 입력되지 않았습니다.")
+    private String profileImageUrl;
+
     @NotNull(message = "카톡방 링크가 입력되지 않았습니다.")
     private String openKakaoRoomUrl;
+
+    @NotNull(message = "오픈카톡방 상태가 입력되지 않았습니다.")
+    private String openKakaoRoomUrlStatus;
 
     public LocalDate getBirthDate() {
         return LocalDate.parse(birthDate);
@@ -35,5 +42,9 @@ public class MemberProfileUpdateRequest {
     public Gender getGender() {
         return Gender.from(gender);
     }
-    
+
+    public OpenKakaoRoomUrlStatus getOpenKakaoRoomUrlStatus() {
+        return OpenKakaoRoomUrlStatus.from(openKakaoRoomUrlStatus);
+    }
+
 }

@@ -23,6 +23,7 @@ public class MemberProfileResponse {
     private String schoolName;
     private String gender;
     private String openKakaoRoomUrl;
+    private String openKakaoRoomUrlStatus;
 
     public static MemberProfileResponse from(Member member, MemberProfile memberProfile) {
         return new MemberProfileResponse(
@@ -32,7 +33,8 @@ public class MemberProfileResponse {
             memberProfile.getBirthDate().toString(),
             memberProfile.getSchoolName(),
             memberProfile.getGender().name(),
-            memberProfile.getOpenKakaoRoomUrl()
+            memberProfile.getOpenKakaoRoomUrl(),
+            memberProfile.getOpenKakaoRoomUrlStatus().name()
         );
     }
 

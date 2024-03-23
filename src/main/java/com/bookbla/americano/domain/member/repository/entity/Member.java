@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -31,8 +32,13 @@ public class Member extends BaseInsertEntity {
 
     private String oauthEmail;
 
+    private String oauthProfileImageUrl;
+
     @Enumerated(EnumType.STRING)
     private MemberType memberType;
+
+    @Enumerated(EnumType.STRING)
+    private MemberStatus memberStatus;
 
     public Member updateOauthEmail(String oauthEmail) {
         this.oauthEmail = oauthEmail;
@@ -44,5 +50,9 @@ public class Member extends BaseInsertEntity {
         return this;
     }
 
+    public Member updateMemberStatus(MemberStatus memberStatus) {
+        this.memberStatus = memberStatus;
+        return this;
+    }
 
 }

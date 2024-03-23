@@ -82,4 +82,9 @@ public class MemberAuth extends BaseInsertEntity {
         return this;
     }
 
+    public MemberAuth updateStudentIdImageStatus(StudentIdImageStatus studentIdImageStatus) {
+        this.studentIdImageStatus = studentIdImageStatus;
+        return this;
+    }
+
 }

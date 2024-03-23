@@ -5,9 +5,11 @@ import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.request.MailResendRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MailSendRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MailVerifyRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthStatusUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MailVerifyResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthStatusResponse;
 import com.bookbla.americano.domain.member.service.MemberAuthService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -74,6 +76,26 @@ public class MemberAuthController {
             memberAuthService.resendEmail(loginUser.getMemberId(), mailResendRequest);
 
         return ResponseEntity.ok(memberAuthResponse);
+    }
+
+    @GetMapping("/statuses")
+    public ResponseEntity<MemberAuthStatusResponse> readMemberAuthStatus(
+        @LoginUser Long memberId) {
+
+        MemberAuthStatusResponse memberAuthStatusResponse =
+            memberAuthService.readMemberAuthStatus(memberId);
+
+        return ResponseEntity.ok(memberAuthStatusResponse);
+    }
+
+    @PatchMapping("/statuses")
+    public ResponseEntity<MemberAuthStatusResponse> updateMemberAuthStatus(
+        @LoginUser Long memberId, MemberAuthStatusUpdateRequest memberAuthStatusUpdateRequest) {
+
+        MemberAuthStatusResponse memberAuthStatusResponse =
+            memberAuthService.updateMemberAuthStatus(memberId, memberAuthStatusUpdateRequest);
+
+        return ResponseEntity.ok(memberAuthStatusResponse);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.service.dto;
 
 import com.bookbla.americano.domain.member.enums.Gender;
+import com.bookbla.americano.domain.member.enums.OpenKakaoRoomUrlStatus;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import java.time.LocalDate;
@@ -20,6 +21,8 @@ public class MemberProfileDto {
     private LocalDate birthDate;
     private String name;
     private String schoolName;
+    private String profileImageUrl;
+    private String openKakaoRoomUrl;
 
     public MemberProfile toEntity(Member member) {
         return MemberProfile.builder()
@@ -28,6 +31,9 @@ public class MemberProfileDto {
             .birthDate(birthDate)
             .name(name)
             .schoolName(schoolName)
+            .profileImageUrl(profileImageUrl)
+            .openKakaoRoomUrl(openKakaoRoomUrl)
+            .openKakaoRoomUrlStatus(OpenKakaoRoomUrlStatus.PENDING)
             .build();
     }
 }
