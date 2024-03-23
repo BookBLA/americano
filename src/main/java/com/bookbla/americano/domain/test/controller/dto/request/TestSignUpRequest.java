@@ -1,11 +1,11 @@
 package com.bookbla.americano.domain.test.controller.dto.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
 @NoArgsConstructor
 public class TestSignUpRequest {
 
