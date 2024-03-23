@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.controller;
 
-import com.bookbla.americano.base.jwt.LoginUser;
+import com.bookbla.americano.base.resolver.LoginUser;
+import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberLibraryProfileReadResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberTargetLibraryProfileReadResponse;
 import com.bookbla.americano.domain.member.service.MemberLibraryService;
@@ -19,14 +20,14 @@ public class MemberLibraryController {
     private final MemberLibraryService memberLibraryService;
 
     @GetMapping
-    public ResponseEntity<MemberLibraryProfileReadResponse> readMemberProfile(@LoginUser Long memberId) {
-        MemberLibraryProfileReadResponse memberLibraryProfileReadResponse = memberLibraryService.getLibraryProfile(memberId);
+    public ResponseEntity<MemberLibraryProfileReadResponse> readMemberProfile(@User LoginUser loginUser) {
+        MemberLibraryProfileReadResponse memberLibraryProfileReadResponse = memberLibraryService.getLibraryProfile(loginUser.getMemberId());
         return ResponseEntity.ok(memberLibraryProfileReadResponse);
     }
 
     @GetMapping("/target/{targetMemberId}")
-    public ResponseEntity<MemberTargetLibraryProfileReadResponse> readMemberProfileByTarget(@LoginUser Long memberId, @PathVariable Long targetMemberId) {
-        MemberTargetLibraryProfileReadResponse memberLibraryTargetProfileReadResponse = memberLibraryService.getLibraryProfile(memberId, targetMemberId);
+    public ResponseEntity<MemberTargetLibraryProfileReadResponse> readMemberProfileByTarget(@User LoginUser loginUser, @PathVariable Long targetMemberId) {
+        MemberTargetLibraryProfileReadResponse memberLibraryTargetProfileReadResponse = memberLibraryService.getLibraryProfile(loginUser.getMemberId(), targetMemberId);
         return ResponseEntity.ok(memberLibraryTargetProfileReadResponse);
     }
 }
