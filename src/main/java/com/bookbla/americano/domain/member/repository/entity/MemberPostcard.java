@@ -31,8 +31,10 @@ public class MemberPostcard extends BaseUpdateEntity {
     private Member member;
 
     @Column
-    private int payPostcardCount;
+    @Builder.Default
+    private int payPostcardCount = 10;
 
     @Column
-    private int freePostcardCount;
+    @Builder.Default
+    private int freePostcardCount = 1;
 }

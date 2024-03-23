@@ -5,9 +5,11 @@ import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.request.MailResendRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MailSendRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MailVerifyRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthStatusUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MailVerifyResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthStatusResponse;
 import com.bookbla.americano.domain.member.service.MemberAuthService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +28,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberAuthController {
 
     private final MemberAuthService memberAuthService;
+
     @GetMapping
     public ResponseEntity<MemberAuthResponse> readMemberAuth(@User LoginUser loginUser) {
-        MemberAuthResponse memberAuthResponse = memberAuthService.readMemberAuth(loginUser.getMemberId());
+        MemberAuthResponse memberAuthResponse = memberAuthService.readMemberAuth(
+            loginUser.getMemberId());
         return ResponseEntity.ok(memberAuthResponse);
     }
 
@@ -49,7 +53,8 @@ public class MemberAuthController {
         @User LoginUser loginUser) {
 
         MemberAuthResponse memberAuthResponse =
-            memberAuthService.sendEmailAndCreateMemberAuth(loginUser.getMemberId(), mailSendRequest.toMemberAuthDto());
+            memberAuthService.sendEmailAndCreateMemberAuth(loginUser.getMemberId(),
+                mailSendRequest.toMemberAuthDto());
 
         return ResponseEntity.ok(memberAuthResponse);
     }
@@ -74,6 +79,28 @@ public class MemberAuthController {
             memberAuthService.resendEmail(loginUser.getMemberId(), mailResendRequest);
 
         return ResponseEntity.ok(memberAuthResponse);
+    }
+
+    @GetMapping("/statuses")
+    public ResponseEntity<MemberAuthStatusResponse> readMemberAuthStatus(
+        @User LoginUser loginUser) {
+
+        MemberAuthStatusResponse memberAuthStatusResponse =
+            memberAuthService.readMemberAuthStatus(loginUser.getMemberId());
+
+        return ResponseEntity.ok(memberAuthStatusResponse);
+    }
+
+    @PatchMapping("/statuses")
+    public ResponseEntity<MemberAuthStatusResponse> updateMemberAuthStatus(
+        @User LoginUser loginUser,
+        @RequestBody @Valid MemberAuthStatusUpdateRequest memberAuthStatusUpdateRequest) {
+
+        MemberAuthStatusResponse memberAuthStatusResponse =
+            memberAuthService.updateMemberAuthStatus(loginUser.getMemberId(),
+                memberAuthStatusUpdateRequest);
+
+        return ResponseEntity.ok(memberAuthStatusResponse);
     }
 
 }

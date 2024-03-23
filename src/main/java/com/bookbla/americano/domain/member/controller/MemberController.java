@@ -6,6 +6,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProf
 import com.bookbla.americano.domain.member.controller.dto.request.MemberUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberStatusResponse;
 import com.bookbla.americano.domain.member.service.MemberPostcardService;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
 import com.bookbla.americano.domain.member.service.MemberService;
@@ -39,6 +40,12 @@ public class MemberController {
     public ResponseEntity<MemberResponse> readMember(@User LoginUser loginUser) {
         MemberResponse memberResponse = memberService.readMember(loginUser.getMemberId());
         return ResponseEntity.ok(memberResponse);
+    }
+
+    @GetMapping("/statuses")
+    public ResponseEntity<MemberStatusResponse> readMemberStatus(@User LoginUser loginUser) {
+        MemberStatusResponse memberStatusResponse = memberService.readMemberStatus(loginUser.getMemberId());
+        return ResponseEntity.ok(memberStatusResponse);
     }
 
     @PutMapping
