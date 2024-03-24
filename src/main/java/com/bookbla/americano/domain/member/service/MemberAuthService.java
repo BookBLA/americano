@@ -17,6 +17,7 @@ public interface MemberAuthService {
 
     MemberAuthResponse readMemberAuth(Long memberId);
 
-    MemberAuthResponse updateMemberAuth(Long memberId, MemberAuthUpdateRequest memberAuthUpdateRequest);
+    MemberAuthResponse updateMemberAuth(Long memberId,
+        MemberAuthUpdateRequest memberAuthUpdateRequest);
 
 }

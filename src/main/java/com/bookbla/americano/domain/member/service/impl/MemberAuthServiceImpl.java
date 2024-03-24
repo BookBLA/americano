@@ -9,9 +9,11 @@ import com.bookbla.americano.domain.member.controller.dto.response.MailVerifyRes
 import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthResponse;
 import com.bookbla.americano.domain.member.exception.MailExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberAuthRepository;
+import com.bookbla.americano.domain.member.repository.MemberPostcardRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberAuth;
+import com.bookbla.americano.domain.member.repository.entity.MemberPostcard;
 import com.bookbla.americano.domain.member.service.MemberAuthService;
 import com.bookbla.americano.domain.member.service.dto.MemberAuthDto;
 import java.security.NoSuchAlgorithmException;
@@ -22,7 +24,6 @@ import java.util.Optional;
 import java.util.Random;
 import javax.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -32,17 +33,18 @@ import org.thymeleaf.context.Context;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class MemberAuthServiceImpl implements MemberAuthService {
 
     private final MemberRepository memberRepository;
     private final MemberAuthRepository memberAuthRepository;
+    private final MemberPostcardRepository memberPostcardRepository;
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
 
     @Override
     @Transactional
-    public MemberAuthResponse sendEmailAndCreateMemberAuth(Long memberId, MemberAuthDto memberAuthDto) {
+    public MemberAuthResponse sendEmailAndCreateMemberAuth(Long memberId,
+        MemberAuthDto memberAuthDto) {
         String schoolEmail = memberAuthDto.getSchoolEmail();
 
         checkDuplicatedEmail(schoolEmail);
@@ -75,7 +77,12 @@ public class MemberAuthServiceImpl implements MemberAuthService {
             throw new BaseException(MailExceptionType.EXPIRED_TIME);
         }
 
-        memberAuth.updateMailVerifyDone();
+        memberAuth.updateEmailVerifyDone();
+
+        // 메일 인증시 멤버 엽서 엔티티 생성
+        memberPostcardRepository.save(MemberPostcard.builder()
+                .member(member)
+                .build());
 
         return MailVerifyResponse.from(memberAuth);
     }
@@ -98,7 +105,8 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         String emailVerifyCode = sendEmail(schoolEmail);
 
         memberAuth.updateEmailVerifyCode(emailVerifyCode)
-            .updateEmailVerifyStartTime(LocalDateTime.now());
+            .updateEmailVerifyStartTime(LocalDateTime.now())
+            .updateEmailVerifyPending();
 
         return MemberAuthResponse.from(member, memberAuth);
     }
@@ -111,7 +119,6 @@ public class MemberAuthServiceImpl implements MemberAuthService {
 
         return MemberAuthResponse.from(member, memberAuth);
     }
-
 
     @Override
     @Transactional
@@ -126,11 +133,8 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         return MemberAuthResponse.from(member, memberAuth);
     }
 
-
     private void update(MemberAuth memberAuth, MemberAuthUpdateRequest request) {
-        memberAuth.updateSchoolEmail(request.getSchoolEmail())
-            .updatePhoneNumber(request.getPhoneNumber())
-            .updateStudentIdImageUrl(request.getStudentIdImageUrl());
+        memberAuth.updateSchoolEmail(request.getSchoolEmail());
     }
 
     private String sendEmail(String schoolEmail) {
@@ -156,7 +160,6 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         return verifyCode;
     }
 
-
     private void checkDuplicatedEmail(String email) {
         Optional<MemberAuth> memberAuth = memberAuthRepository.findBySchoolEmail(email);
         if (memberAuth.isPresent()) {
@@ -177,7 +180,6 @@ public class MemberAuthServiceImpl implements MemberAuthService {
 
             return builder.toString();
         } catch (NoSuchAlgorithmException e) {
-            log.error("MailService.createCode() exception occur" + e);
             throw new BaseException(BaseExceptionType.TEST_FAIL);
         }
     }

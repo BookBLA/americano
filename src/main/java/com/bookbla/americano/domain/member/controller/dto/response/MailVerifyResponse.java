@@ -12,13 +12,13 @@ public class MailVerifyResponse {
 
     private Long id;
     private String schoolEmail;
-    private String mailVerifyStatus;
+    private String emailVerifyStatus;
 
     public static MailVerifyResponse from(MemberAuth memberAuth) {
         return MailVerifyResponse.builder()
             .id(memberAuth.getId())
             .schoolEmail(memberAuth.getSchoolEmail())
-            .mailVerifyStatus(memberAuth.getMailVerifyStatus().name())
+            .emailVerifyStatus(memberAuth.getEmailVerifyStatus().name())
             .build();
     }
 

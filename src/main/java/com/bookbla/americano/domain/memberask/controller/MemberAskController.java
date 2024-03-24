@@ -1,11 +1,13 @@
 package com.bookbla.americano.domain.memberask.controller;
 
 
-import com.bookbla.americano.base.jwt.LoginUser;
+import com.bookbla.americano.base.resolver.User;
+import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.domain.memberask.controller.dto.request.MemberAskCreateRequest;
 import com.bookbla.americano.domain.memberask.controller.dto.request.MemberAskUpdateRequest;
 import com.bookbla.americano.domain.memberask.controller.dto.response.MemberAskResponse;
 import com.bookbla.americano.domain.memberask.service.MemberAskService;
+import io.swagger.v3.oas.annotations.Parameter;
 import java.net.URI;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,26 +28,29 @@ public class MemberAskController {
 
     @PostMapping
     public ResponseEntity<Void> createMemberAsk(
-            @LoginUser Long memberId,
-            @RequestBody @Valid MemberAskCreateRequest memberAskCreateRequest) {
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MemberAskCreateRequest memberAskCreateRequest
+    ) {
         MemberAskResponse memberAskResponse = memberAskService.createMemberAsk(
-                memberId, memberAskCreateRequest);
+            loginUser.getMemberId(), memberAskCreateRequest);
         return ResponseEntity.created(
                 URI.create(memberAskResponse.getMemberAskResponseId().toString()))
-                .build();
+            .build();
     }
 
     @GetMapping
-    public ResponseEntity<MemberAskResponse> readMemberAsk(@LoginUser Long memberId) {
-        MemberAskResponse memberAskResponse = memberAskService.readMemberAsk(memberId);
+    public ResponseEntity<MemberAskResponse> readMemberAsk(
+        @Parameter(hidden = true) @User LoginUser loginUser) {
+        MemberAskResponse memberAskResponse = memberAskService.readMemberAsk(
+            loginUser.getMemberId());
         return ResponseEntity.ok(memberAskResponse);
     }
 
     @PutMapping
     public ResponseEntity<Void> updateMemberAsk(
-            @LoginUser Long memberId,
-            @RequestBody @Valid MemberAskUpdateRequest memberAskUpdateRequest) {
-        memberAskService.updateMemberAsk(memberId, memberAskUpdateRequest);
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MemberAskUpdateRequest memberAskUpdateRequest) {
+        memberAskService.updateMemberAsk(loginUser.getMemberId(), memberAskUpdateRequest);
         return ResponseEntity.noContent().build();
     }
 }

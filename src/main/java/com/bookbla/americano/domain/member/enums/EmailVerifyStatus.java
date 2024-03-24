@@ -1,19 +1,19 @@
 package com.bookbla.americano.domain.member.enums;
 
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.member.exception.MemberAuthExceptionType;
+import com.bookbla.americano.domain.member.exception.MailExceptionType;
 import java.util.Arrays;
 
-public enum StudentIdImageStatus {
+public enum EmailVerifyStatus {
     PENDING,
-    DENIAL,
     DONE
     ;
 
-    public static StudentIdImageStatus from(String name) {
+    public static EmailVerifyStatus from(String name) {
         return Arrays.stream(values())
             .filter(it -> it.name().equalsIgnoreCase(name))
             .findFirst()
-            .orElseThrow(() -> new BaseException(MemberAuthExceptionType.STATUS_IMAGE_ID_NOT_VALID));
+            .orElseThrow(() -> new BaseException(MailExceptionType.MAIL_VERIFY_STATUS_NOT_VALID));
     }
+
 }

@@ -1,7 +1,6 @@
 package com.bookbla.americano.domain.member.service.dto;
 
-import com.bookbla.americano.domain.member.enums.MailVerifyStatus;
-import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
+import com.bookbla.americano.domain.member.enums.EmailVerifyStatus;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberAuth;
 import java.time.LocalDateTime;
@@ -19,9 +18,6 @@ public class MemberAuthDto {
 
     private Member member;
     private String schoolEmail;
-    private LocalDateTime emailVerifyStartTime;
-    private String phoneNumber;
-    private String studentIdImageUrl;
 
     public MemberAuth toEntity(Member member, String emailVerifyCode) {
         return MemberAuth.builder()
@@ -29,10 +25,7 @@ public class MemberAuthDto {
             .schoolEmail(schoolEmail)
             .emailVerifyCode(emailVerifyCode)
             .emailVerifyStartTime(LocalDateTime.now())
-            .mailVerifyStatus(MailVerifyStatus.PENDING)
-            .phoneNumber(phoneNumber)
-            .studentIdImageUrl(studentIdImageUrl)
-            .studentIdImageStatus(StudentIdImageStatus.PENDING)
+            .emailVerifyStatus(EmailVerifyStatus.PENDING)
             .build();
     }
 

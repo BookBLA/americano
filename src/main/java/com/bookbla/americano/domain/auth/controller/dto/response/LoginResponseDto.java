@@ -10,4 +10,10 @@ import lombok.Getter;
 public class LoginResponseDto {
     
     private final String accessToken;
+
+    public static LoginResponseDto from(String accessToken) {
+        return LoginResponseDto.builder()
+                .accessToken(accessToken)
+                .build();
+    }
 }

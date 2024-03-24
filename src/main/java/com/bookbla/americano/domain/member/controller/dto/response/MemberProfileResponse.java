@@ -22,18 +22,19 @@ public class MemberProfileResponse {
     private String birthDate;
     private String schoolName;
     private String gender;
+    private String profileImageUrl;
     private String openKakaoRoomUrl;
+    private String studentIdImageUrl;
 
     public static MemberProfileResponse from(Member member, MemberProfile memberProfile) {
-        return new MemberProfileResponse(
-            member.getId(),
-            memberProfile.getId(),
-            memberProfile.getName(),
-            memberProfile.getBirthDate().toString(),
-            memberProfile.getSchoolName(),
-            memberProfile.getGender().name(),
-            memberProfile.getOpenKakaoRoomUrl()
-        );
+        return MemberProfileResponse.builder()
+            .memberId(member.getId())
+            .memberProfileId(memberProfile.getId())
+            .birthDate(memberProfile.getBirthDate().toString())
+            .schoolName(memberProfile.getSchoolName())
+            .profileImageUrl(memberProfile.getProfileImageUrl())
+            .openKakaoRoomUrl(memberProfile.getOpenKakaoRoomUrl())
+            .studentIdImageUrl(memberProfile.getStudentIdImageUrl())
+            .build();
     }
-
 }

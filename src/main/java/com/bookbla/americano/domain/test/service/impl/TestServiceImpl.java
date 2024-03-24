@@ -1,5 +1,9 @@
 package com.bookbla.americano.domain.test.service.impl;
 
+import com.bookbla.americano.domain.member.enums.MemberStatus;
+import com.bookbla.americano.domain.member.enums.MemberType;
+import com.bookbla.americano.domain.member.repository.MemberRepository;
+import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.test.controller.dto.response.TestCreateResponse;
 import com.bookbla.americano.domain.test.controller.dto.response.TestReadResponse;
 import com.bookbla.americano.domain.test.repository.TestRepository;
@@ -17,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TestServiceImpl implements TestService {
 
     private final TestRepository testRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     @Transactional
@@ -31,5 +36,17 @@ public class TestServiceImpl implements TestService {
         return testRepository.findByContents(contents).stream()
                 .map(TestReadResponse::from)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public Member signUp(String email) {
+        return memberRepository.findByMemberTypeAndOauthEmail(MemberType.ADMIN, email)
+                .orElseGet(() -> memberRepository.save(
+                        Member.builder()
+                                .memberType(MemberType.ADMIN)
+                                .oauthEmail(email)
+                                .memberStatus(MemberStatus.COMPLETED)
+                                .build()));
     }
 }

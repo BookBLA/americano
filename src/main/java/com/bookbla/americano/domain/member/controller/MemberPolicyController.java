@@ -1,15 +1,15 @@
 package com.bookbla.americano.domain.member.controller;
 
-import com.bookbla.americano.base.jwt.LoginUser;
+import com.bookbla.americano.base.resolver.LoginUser;
+import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberPolicyCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberPolicyUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberPolicyResponse;
 import com.bookbla.americano.domain.member.service.MemberPolicyService;
-import java.util.List;
+import io.swagger.v3.oas.annotations.Parameter;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -26,32 +26,30 @@ public class MemberPolicyController {
     private final MemberPolicyService memberPolicyService;
 
     @PostMapping
-    public ResponseEntity<MemberPolicyResponse> createMemberPolicies(@LoginUser Long memberId,
-        @RequestBody MemberPolicyCreateRequest memberPolicyCreateRequest) {
+    public ResponseEntity<MemberPolicyResponse> createMemberPolicies(
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody MemberPolicyCreateRequest memberPolicyCreateRequest
+    ) {
         MemberPolicyResponse memberPolicyResponse = memberPolicyService.createMemberPolicies(
-            memberId, memberPolicyCreateRequest.toDto());
-
+            loginUser.getMemberId(), memberPolicyCreateRequest.toDto());
         return ResponseEntity.ok(memberPolicyResponse);
     }
 
     @GetMapping
-    public ResponseEntity<MemberPolicyResponse> readMemberPolicies(@LoginUser Long memberId) {
-
+    public ResponseEntity<MemberPolicyResponse> readMemberPolicies(
+        @Parameter(hidden = true) @User LoginUser loginUser) {
         MemberPolicyResponse memberPolicyResponse = memberPolicyService.readMemberPolicies(
-            memberId);
-
+            loginUser.getMemberId());
         return ResponseEntity.ok(memberPolicyResponse);
     }
 
-
     @PutMapping
     public ResponseEntity<MemberPolicyResponse> updateMemberPolicies(
-        @RequestBody @Valid MemberPolicyUpdateRequest memberPolicyUpdateRequests,
-        @LoginUser Long memberId) {
-
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MemberPolicyUpdateRequest memberPolicyUpdateRequests
+    ) {
         MemberPolicyResponse memberPolicyResponse = memberPolicyService.updateMemberPolicies(
-            memberId, memberPolicyUpdateRequests);
-
+            loginUser.getMemberId(), memberPolicyUpdateRequests);
         return ResponseEntity.ok(memberPolicyResponse);
     }
 

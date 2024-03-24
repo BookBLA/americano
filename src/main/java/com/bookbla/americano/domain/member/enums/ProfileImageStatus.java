@@ -1,19 +1,20 @@
 package com.bookbla.americano.domain.member.enums;
 
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.member.exception.MailExceptionType;
+import com.bookbla.americano.domain.member.exception.MemberProfileException;
 import java.util.Arrays;
 
-public enum MailVerifyStatus {
+public enum ProfileImageStatus {
+
     PENDING,
-    DONE
+    DENIAL,
+    DONE,
     ;
 
-    public static MailVerifyStatus from(String name) {
+    public static ProfileImageStatus from(String name) {
         return Arrays.stream(values())
             .filter(it -> it.name().equalsIgnoreCase(name))
             .findFirst()
-            .orElseThrow(() -> new BaseException(MailExceptionType.MAIL_VERIFY_STATUS_NOT_VALID));
+            .orElseThrow(() -> new BaseException(MemberProfileException.OKA_STATUS_NOT_VALID));
     }
-
 }
