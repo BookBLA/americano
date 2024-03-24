@@ -26,7 +26,7 @@ public class MemberLibraryController {
 
     @GetMapping("/target/{targetMemberId}")
     public ResponseEntity<MemberTargetLibraryProfileReadResponse> readMemberProfileByTarget(@LoginUser Long memberId, @PathVariable Long targetMemberId) {
-        MemberTargetLibraryProfileReadResponse memberLibraryTargetProfileReadResponse = memberLibraryService.getLibraryProfile(memberId, targetMemberId);
+        MemberTargetLibraryProfileReadResponse memberLibraryTargetProfileReadResponse = memberLibraryService.getTargetLibraryProfile(memberId, targetMemberId);
         return ResponseEntity.ok(memberLibraryTargetProfileReadResponse);
     }
 }

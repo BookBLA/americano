@@ -7,5 +7,5 @@ public interface MemberLibraryService {
 
     MemberLibraryProfileReadResponse getLibraryProfile(Long memberId);
 
-    MemberTargetLibraryProfileReadResponse getLibraryProfile(Long memberId, Long targetMemberId);
+    MemberTargetLibraryProfileReadResponse getTargetLibraryProfile(Long memberId, Long targetMemberId);
 }
