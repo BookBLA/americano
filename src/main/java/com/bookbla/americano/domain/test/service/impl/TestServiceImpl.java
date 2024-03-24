@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.test.service.impl;
 
+import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -45,6 +46,7 @@ public class TestServiceImpl implements TestService {
                         Member.builder()
                                 .memberType(MemberType.ADMIN)
                                 .oauthEmail(email)
+                                .memberStatus(MemberStatus.COMPLETED)
                                 .build()));
     }
 }
