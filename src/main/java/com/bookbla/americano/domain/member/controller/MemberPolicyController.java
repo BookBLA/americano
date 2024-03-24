@@ -6,6 +6,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberPolicyCr
 import com.bookbla.americano.domain.member.controller.dto.request.MemberPolicyUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberPolicyResponse;
 import com.bookbla.americano.domain.member.service.MemberPolicyService;
+import io.swagger.v3.oas.annotations.Parameter;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,25 +27,29 @@ public class MemberPolicyController {
 
     @PostMapping
     public ResponseEntity<MemberPolicyResponse> createMemberPolicies(
-            @User LoginUser loginUser,
-            @RequestBody MemberPolicyCreateRequest memberPolicyCreateRequest
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody MemberPolicyCreateRequest memberPolicyCreateRequest
     ) {
-        MemberPolicyResponse memberPolicyResponse = memberPolicyService.createMemberPolicies(loginUser.getMemberId(), memberPolicyCreateRequest.toDto());
+        MemberPolicyResponse memberPolicyResponse = memberPolicyService.createMemberPolicies(
+            loginUser.getMemberId(), memberPolicyCreateRequest.toDto());
         return ResponseEntity.ok(memberPolicyResponse);
     }
 
     @GetMapping
-    public ResponseEntity<MemberPolicyResponse> readMemberPolicies(@User LoginUser loginUser) {
-        MemberPolicyResponse memberPolicyResponse = memberPolicyService.readMemberPolicies(loginUser.getMemberId());
+    public ResponseEntity<MemberPolicyResponse> readMemberPolicies(
+        @Parameter(hidden = true) @User LoginUser loginUser) {
+        MemberPolicyResponse memberPolicyResponse = memberPolicyService.readMemberPolicies(
+            loginUser.getMemberId());
         return ResponseEntity.ok(memberPolicyResponse);
     }
 
     @PutMapping
     public ResponseEntity<MemberPolicyResponse> updateMemberPolicies(
-        @RequestBody @Valid MemberPolicyUpdateRequest memberPolicyUpdateRequests,
-        @User LoginUser loginUser
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MemberPolicyUpdateRequest memberPolicyUpdateRequests
     ) {
-        MemberPolicyResponse memberPolicyResponse = memberPolicyService.updateMemberPolicies(loginUser.getMemberId(), memberPolicyUpdateRequests);
+        MemberPolicyResponse memberPolicyResponse = memberPolicyService.updateMemberPolicies(
+            loginUser.getMemberId(), memberPolicyUpdateRequests);
         return ResponseEntity.ok(memberPolicyResponse);
     }
 

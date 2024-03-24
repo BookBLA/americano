@@ -4,11 +4,9 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.domain.member.controller.dto.request.MailResendRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MailVerifyRequest;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthStatusUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MailVerifyResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthStatusResponse;
 import com.bookbla.americano.domain.member.exception.MailExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberAuthRepository;
 import com.bookbla.americano.domain.member.repository.MemberPostcardRepository;
@@ -79,7 +77,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
             throw new BaseException(MailExceptionType.EXPIRED_TIME);
         }
 
-        memberAuth.updateMailVerifyDone();
+        memberAuth.updateEmailVerifyDone();
 
         // 메일 인증시 멤버 엽서 엔티티 생성
         memberPostcardRepository.save(MemberPostcard.builder()
@@ -107,7 +105,8 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         String emailVerifyCode = sendEmail(schoolEmail);
 
         memberAuth.updateEmailVerifyCode(emailVerifyCode)
-            .updateEmailVerifyStartTime(LocalDateTime.now());
+            .updateEmailVerifyStartTime(LocalDateTime.now())
+            .updateEmailVerifyPending();
 
         return MemberAuthResponse.from(member, memberAuth);
     }
@@ -120,7 +119,6 @@ public class MemberAuthServiceImpl implements MemberAuthService {
 
         return MemberAuthResponse.from(member, memberAuth);
     }
-
 
     @Override
     @Transactional
@@ -135,34 +133,8 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         return MemberAuthResponse.from(member, memberAuth);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public MemberAuthStatusResponse readMemberAuthStatus(Long memberId) {
-        Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberAuth memberAuth = memberAuthRepository.getByMemberOrThrow(member);
-
-        return MemberAuthStatusResponse.from(memberAuth);
-    }
-
-    @Override
-    @Transactional
-    public MemberAuthStatusResponse updateMemberAuthStatus(Long memberId,
-        MemberAuthStatusUpdateRequest memberAuthStatusUpdateRequest) {
-        Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberAuth memberAuth = memberAuthRepository.getByMemberOrThrow(member);
-
-        memberAuth.updateStudentIdImageStatus(
-            memberAuthStatusUpdateRequest.getStudentIdImageStatus());
-
-        return MemberAuthStatusResponse.from(memberAuth);
-    }
-
-
     private void update(MemberAuth memberAuth, MemberAuthUpdateRequest request) {
-        memberAuth.updateSchoolEmail(request.getSchoolEmail())
-            .updatePhoneNumber(request.getPhoneNumber())
-            .updateStudentIdImageUrl(request.getStudentIdImageUrl())
-            .updateStudentIdImageStatus(request.getStudentIdImageStatus());
+        memberAuth.updateSchoolEmail(request.getSchoolEmail());
     }
 
     private String sendEmail(String schoolEmail) {
@@ -187,7 +159,6 @@ public class MemberAuthServiceImpl implements MemberAuthService {
 
         return verifyCode;
     }
-
 
     private void checkDuplicatedEmail(String email) {
         Optional<MemberAuth> memberAuth = memberAuthRepository.findBySchoolEmail(email);

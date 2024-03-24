@@ -1,8 +1,8 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
-import com.bookbla.americano.domain.member.enums.MailVerifyStatus;
-import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
+import com.bookbla.americano.domain.member.Email;
+import com.bookbla.americano.domain.member.enums.EmailVerifyStatus;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,14 +43,8 @@ public class MemberAuth extends BaseInsertEntity {
     private LocalDateTime emailVerifyStartTime;
 
     @Enumerated(EnumType.STRING)
-    private MailVerifyStatus mailVerifyStatus;
+    private EmailVerifyStatus emailVerifyStatus;
 
-    private String phoneNumber;
-
-    private String studentIdImageUrl;
-
-    @Enumerated(EnumType.STRING)
-    private StudentIdImageStatus studentIdImageStatus;
 
     public MemberAuth updateSchoolEmail(String schoolEmail) {
         this.schoolEmail = schoolEmail;
@@ -67,24 +61,20 @@ public class MemberAuth extends BaseInsertEntity {
         return this;
     }
 
-    public MemberAuth updatePhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public MemberAuth updateEmailVerifyStatus(EmailVerifyStatus emailVerifyStatus) {
+        this.emailVerifyStatus = emailVerifyStatus;
         return this;
     }
 
-    public MemberAuth updateStudentIdImageUrl(String studentIdImageUrl) {
-        this.studentIdImageUrl = studentIdImageUrl;
+    public MemberAuth updateEmailVerifyPending() {
+        this.emailVerifyStatus = emailVerifyStatus.PENDING;
         return this;
     }
 
-    public MemberAuth updateMailVerifyDone() {
-        this.mailVerifyStatus = MailVerifyStatus.DONE;
+    public MemberAuth updateEmailVerifyDone() {
+        this.emailVerifyStatus = EmailVerifyStatus.DONE;
         return this;
     }
 
-    public MemberAuth updateStudentIdImageStatus(StudentIdImageStatus studentIdImageStatus) {
-        this.studentIdImageStatus = studentIdImageStatus;
-        return this;
-    }
 
 }

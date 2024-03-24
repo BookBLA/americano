@@ -20,20 +20,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MailSendRequest {
 
-    @NotNull(message = "전화 번호가 입력되지 않았습니다.")
-    private String phoneNumber;
-
-    @NotNull(message = "학생증 이미지 주소가 입력되지 않았습니다.")
-    private String studentIdImageUrl;
-
     @NotNull(message = "학교 이메일이 입력되지 않았습니다.")
     private String schoolEmail;
 
     public MemberAuthDto toMemberAuthDto() {
         return MemberAuthDto.builder()
             .schoolEmail(schoolEmail)
-            .phoneNumber(phoneNumber)
-            .studentIdImageUrl(studentIdImageUrl)
             .build();
     }
 

@@ -10,6 +10,7 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberStatusR
 import com.bookbla.americano.domain.member.service.MemberPostcardService;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
 import com.bookbla.americano.domain.member.service.MemberService;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -37,23 +39,26 @@ public class MemberController {
     private final MemberProfileService memberProfileService;
 
     @GetMapping
-    public ResponseEntity<MemberResponse> readMember(@User LoginUser loginUser) {
+    public ResponseEntity<MemberResponse> readMember(
+        @Parameter(hidden = true) @User LoginUser loginUser) {
         MemberResponse memberResponse = memberService.readMember(loginUser.getMemberId());
         return ResponseEntity.ok(memberResponse);
     }
 
     @GetMapping("/statuses")
-    public ResponseEntity<MemberStatusResponse> readMemberStatus(@User LoginUser loginUser) {
-        MemberStatusResponse memberStatusResponse = memberService.readMemberStatus(loginUser.getMemberId());
+    public ResponseEntity<MemberStatusResponse> readMemberStatus(
+        @Parameter(hidden = true) @User LoginUser loginUser) {
+        MemberStatusResponse memberStatusResponse = memberService.readMemberStatus(
+            loginUser.getMemberId());
         return ResponseEntity.ok(memberStatusResponse);
     }
 
     @PutMapping
     public ResponseEntity<MemberResponse> updateMember(
-        @RequestBody @Valid MemberUpdateRequest memberUpdateRequest,
-        @User LoginUser loginUser
-    ) {
-        MemberResponse memberResponse = memberService.updateMember(loginUser.getMemberId(), memberUpdateRequest);
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MemberUpdateRequest memberUpdateRequest) {
+        MemberResponse memberResponse = memberService.updateMember(loginUser.getMemberId(),
+            memberUpdateRequest);
         return ResponseEntity.ok(memberResponse);
     }
 
@@ -64,10 +69,15 @@ public class MemberController {
     }
 
     @GetMapping("/{memberId}/same-book-members")
-    public ResponseEntity<Page<MemberBookProfileResponseDto>> sameBookMembersPage(@PathVariable Long memberId, @ModelAttribute MemberBookProfileRequestDto memberBookProfileRequestDto, Pageable pageable) {
-        List<MemberBookProfileResponseDto> memberBookProfileResponseList = memberProfileService.findSameBookMembers(memberId, memberBookProfileRequestDto);
-        if (pageable == null)
+    public ResponseEntity<Page<MemberBookProfileResponseDto>> sameBookMembersPage(
+        @PathVariable Long memberId,
+        @ModelAttribute MemberBookProfileRequestDto memberBookProfileRequestDto,
+        Pageable pageable) {
+        List<MemberBookProfileResponseDto> memberBookProfileResponseList = memberProfileService.findSameBookMembers(
+            memberId, memberBookProfileRequestDto);
+        if (pageable == null) {
             pageable = PageRequest.of(0, 0);
+        }
 
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), memberBookProfileResponseList.size());
@@ -75,7 +85,9 @@ public class MemberController {
         if (start >= memberBookProfileResponseList.size()) {
             memberBookProfileResponsePage = Page.empty();
         } else {
-            memberBookProfileResponsePage = new PageImpl<>(memberBookProfileResponseList.subList(start, end), pageable, memberBookProfileResponseList.size());
+            memberBookProfileResponsePage = new PageImpl<>(
+                memberBookProfileResponseList.subList(start, end), pageable,
+                memberBookProfileResponseList.size());
         }
         return ResponseEntity.ok(memberBookProfileResponsePage);
     }

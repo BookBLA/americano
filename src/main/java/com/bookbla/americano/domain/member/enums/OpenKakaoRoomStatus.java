@@ -4,14 +4,14 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.exception.MemberProfileException;
 import java.util.Arrays;
 
-public enum OpenKakaoRoomUrlStatus {
+public enum OpenKakaoRoomStatus {
     PENDING,
     INACCESSIBLE,
     NOT_DEFAULT,
     DONE
     ;
 
-    public static OpenKakaoRoomUrlStatus from(String name) {
+    public static OpenKakaoRoomStatus from(String name) {
         return Arrays.stream(values())
             .filter(it -> it.name().equalsIgnoreCase(name))
             .findFirst()

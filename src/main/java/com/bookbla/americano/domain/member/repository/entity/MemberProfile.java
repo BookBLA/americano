@@ -1,8 +1,9 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.domain.member.enums.Gender;
-import com.bookbla.americano.domain.member.enums.OpenKakaoRoomUrlStatus;
-import com.bookbla.americano.domain.member.enums.ProfileImageUrlStatus;
+import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
+import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
+import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import java.time.LocalDate;
 import java.time.Period;
 import lombok.AccessLevel;
@@ -20,7 +21,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -39,30 +39,37 @@ public class MemberProfile {
 
     private String name;
 
-    private String major;
-
     @Column(nullable = false)
     private LocalDate birthDate;
-
-    private String profileImageUrl;
-
-    @Enumerated(EnumType.STRING)
-    private ProfileImageUrlStatus profileImageUrlStatus;
-
-    private String studentNumber;
-
-    private String schoolName;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Column(unique = true)
-    private String nickname;
+    private String schoolName;
+
+    private String phoneNumber;
+
+    private String profileImageUrl;
+
+    @Enumerated(EnumType.STRING)
+    private ProfileImageStatus profileImageStatus;
 
     private String openKakaoRoomUrl;
 
     @Enumerated(EnumType.STRING)
-    private OpenKakaoRoomUrlStatus openKakaoRoomUrlStatus;
+    private OpenKakaoRoomStatus openKakaoRoomStatus;
+
+    private String studentIdImageUrl;
+
+    @Enumerated(EnumType.STRING)
+    private StudentIdImageStatus studentIdImageStatus;
+
+    private String major;
+
+    private String studentNumber;
+
+    private String nickname;
+
 
     public String showBlindName() {
         String firstName = name.split("")[0];
@@ -89,13 +96,18 @@ public class MemberProfile {
         return this;
     }
 
+    public MemberProfile updateGender(Gender gender) {
+        this.gender = gender;
+        return this;
+    }
+
     public MemberProfile updateSchoolName(String schoolName) {
         this.schoolName = schoolName;
         return this;
     }
 
-    public MemberProfile updateGender(Gender gender) {
-        this.gender = gender;
+    public MemberProfile updatePhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
         return this;
     }
 
@@ -104,8 +116,8 @@ public class MemberProfile {
         return this;
     }
 
-    public MemberProfile updateProfileImageUrlStatus(ProfileImageUrlStatus profileImageUrlStatus) {
-        this.profileImageUrlStatus = profileImageUrlStatus;
+    public MemberProfile updateProfileImageStatus(ProfileImageStatus profileImageStatus) {
+        this.profileImageStatus = profileImageStatus;
         return this;
     }
 
@@ -114,9 +126,18 @@ public class MemberProfile {
         return this;
     }
 
-    public MemberProfile updateOpenKakaoRoomUrlStatus(
-        OpenKakaoRoomUrlStatus openKakaoRoomUrlStatus) {
-        this.openKakaoRoomUrlStatus = openKakaoRoomUrlStatus;
+    public MemberProfile updateOpenKakaoRoomStatus(OpenKakaoRoomStatus openKakaoRoomStatus) {
+        this.openKakaoRoomStatus = openKakaoRoomStatus;
+        return this;
+    }
+
+    public MemberProfile updateStudentIdImageUrl(String studentIdImageUrl) {
+        this.studentIdImageUrl = studentIdImageUrl;
+        return this;
+    }
+
+    public MemberProfile updateStudentIdImageStatus(StudentIdImageStatus studentIdImageStatus) {
+        this.studentIdImageStatus = studentIdImageStatus;
         return this;
     }
 

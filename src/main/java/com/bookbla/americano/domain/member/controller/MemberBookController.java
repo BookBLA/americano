@@ -8,6 +8,7 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberBookCre
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.service.MemberBookService;
+import io.swagger.v3.oas.annotations.Parameter;
 import java.net.URI;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,38 +31,45 @@ public class MemberBookController {
 
     @PostMapping
     public ResponseEntity<MemberBookCreateResponse> addMemberBook(
-            @User LoginUser loginUser,
-            @RequestBody @Valid MemberBookCreateRequest memberBookCreateRequest
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MemberBookCreateRequest memberBookCreateRequest
     ) {
-        MemberBookCreateResponse memberBookCreateResponse = memberBookService.addMemberBook(loginUser.getMemberId(), memberBookCreateRequest);
+        MemberBookCreateResponse memberBookCreateResponse = memberBookService.addMemberBook(
+            loginUser.getMemberId(), memberBookCreateRequest);
         return ResponseEntity
-                .created(URI.create("/member-books/" + memberBookCreateResponse.getMemberBookId()))
-                .body(memberBookCreateResponse);
+            .created(URI.create("/member-books/" + memberBookCreateResponse.getMemberBookId()))
+            .body(memberBookCreateResponse);
     }
 
     @GetMapping
-    public ResponseEntity<MemberBookReadResponses> readMemberBooks(@User LoginUser loginUser) {
-        MemberBookReadResponses memberBookReadResponses = memberBookService.readMemberBooks(loginUser.getMemberId());
+    public ResponseEntity<MemberBookReadResponses> readMemberBooks(
+        @Parameter(hidden = true) @User LoginUser loginUser) {
+        MemberBookReadResponses memberBookReadResponses = memberBookService.readMemberBooks(
+            loginUser.getMemberId());
         return ResponseEntity.ok(memberBookReadResponses);
     }
 
     @GetMapping("/{memberBookId}")
     public ResponseEntity<MemberBookReadResponse> readMemberBook(@PathVariable Long memberBookId) {
-        MemberBookReadResponse memberBookReadResponse = memberBookService.readMemberBook(memberBookId);
+        MemberBookReadResponse memberBookReadResponse = memberBookService.readMemberBook(
+            memberBookId);
         return ResponseEntity.ok(memberBookReadResponse);
     }
 
     @PutMapping("/{memberBookId}")
     public ResponseEntity<Void> updateMemberBook(
-            @PathVariable Long memberBookId, @User LoginUser loginUser,
-            @RequestBody @Valid MemberBookUpdateRequest memberBookUpdateRequest
+        @PathVariable Long memberBookId, @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MemberBookUpdateRequest memberBookUpdateRequest
     ) {
-        memberBookService.updateMemberBook(memberBookUpdateRequest, memberBookId, loginUser.getMemberId());
+        memberBookService.updateMemberBook(memberBookUpdateRequest, memberBookId,
+            loginUser.getMemberId());
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{memberBookId}")
-    public ResponseEntity<Void> deleteMemberBook(@User LoginUser loginUser, @PathVariable Long memberBookId) {
+    public ResponseEntity<Void> deleteMemberBook(
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @PathVariable Long memberBookId) {
         memberBookService.deleteMemberBook(loginUser.getMemberId(), memberBookId);
         return ResponseEntity.noContent().build();
     }

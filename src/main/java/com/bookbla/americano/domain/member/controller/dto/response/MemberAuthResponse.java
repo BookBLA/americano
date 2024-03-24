@@ -14,20 +14,14 @@ public class MemberAuthResponse {
     private Long memberId;
     private Long memberAuthId;
     private String schoolEmail;
-    private String mailVerifyStatus;
-    private String phoneNumeber;
-    private String studentIdImageUrl;
-    private String studentIdImageStatus;
+    private String emailVerifyStatus;
 
     public static MemberAuthResponse from(Member member, MemberAuth memberAuth) {
         return MemberAuthResponse.builder()
             .memberId(member.getId())
             .memberAuthId(memberAuth.getId())
             .schoolEmail(memberAuth.getSchoolEmail())
-            .mailVerifyStatus(memberAuth.getMailVerifyStatus().name())
-            .phoneNumeber(memberAuth.getPhoneNumber())
-            .studentIdImageUrl(memberAuth.getStudentIdImageUrl())
-            .studentIdImageStatus(memberAuth.getStudentIdImageStatus().name())
+            .emailVerifyStatus(memberAuth.getEmailVerifyStatus().name())
             .build();
     }
 
