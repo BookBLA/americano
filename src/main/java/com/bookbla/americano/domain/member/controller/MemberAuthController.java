@@ -9,6 +9,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthUpda
 import com.bookbla.americano.domain.member.controller.dto.response.MailVerifyResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthResponse;
 import com.bookbla.americano.domain.member.service.MemberAuthService;
+import io.swagger.v3.oas.annotations.Parameter;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,7 +30,8 @@ public class MemberAuthController {
     private final MemberAuthService memberAuthService;
 
     @GetMapping
-    public ResponseEntity<MemberAuthResponse> readMemberAuth(@User LoginUser loginUser) {
+    public ResponseEntity<MemberAuthResponse> readMemberAuth(
+        @Parameter(hidden = true) @User LoginUser loginUser) {
         MemberAuthResponse memberAuthResponse = memberAuthService.readMemberAuth(
             loginUser.getMemberId());
         return ResponseEntity.ok(memberAuthResponse);
@@ -36,8 +39,8 @@ public class MemberAuthController {
 
     @PutMapping
     public ResponseEntity<MemberAuthResponse> updateMemberAuth(
-        @RequestBody @Valid MemberAuthUpdateRequest memberAuthUpdateRequest,
-        @User LoginUser loginUser) {
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MemberAuthUpdateRequest memberAuthUpdateRequest) {
 
         MemberAuthResponse memberAuthUpdateResponse =
             memberAuthService.updateMemberAuth(loginUser.getMemberId(), memberAuthUpdateRequest);
@@ -47,8 +50,8 @@ public class MemberAuthController {
 
     @PostMapping("/emails")
     public ResponseEntity<MemberAuthResponse> sendMailAndCreateMemberAuth(
-        @RequestBody @Valid MailSendRequest mailSendRequest,
-        @User LoginUser loginUser) {
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MailSendRequest mailSendRequest) {
 
         MemberAuthResponse memberAuthResponse =
             memberAuthService.sendEmailAndCreateMemberAuth(loginUser.getMemberId(),
@@ -59,8 +62,8 @@ public class MemberAuthController {
 
     @PostMapping("/emails/verifications")
     public ResponseEntity<MailVerifyResponse> verifyMail(
-        @RequestBody @Valid MailVerifyRequest mailVerifyRequest,
-        @User LoginUser loginUser) {
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MailVerifyRequest mailVerifyRequest) {
 
         MailVerifyResponse mailVerifyResponse =
             memberAuthService.verifyEmail(loginUser.getMemberId(), mailVerifyRequest);
@@ -70,8 +73,8 @@ public class MemberAuthController {
 
     @PatchMapping("/emails")
     public ResponseEntity<MemberAuthResponse> resendMail(
-        @RequestBody @Valid MailResendRequest mailResendRequest,
-        @User LoginUser loginUser) {
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MailResendRequest mailResendRequest) {
 
         MemberAuthResponse memberAuthResponse =
             memberAuthService.resendEmail(loginUser.getMemberId(), mailResendRequest);

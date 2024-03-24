@@ -8,6 +8,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileU
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,7 @@ public class MemberProfileController {
 
     @PostMapping
     public ResponseEntity<MemberProfileResponse> createMemberProfile(
-        @User LoginUser loginUser,
+        @Parameter(hidden = true) @User LoginUser loginUser,
         @RequestBody @Valid MemberProfileCreateRequest memberProfileCreateRequest
     ) {
         MemberProfileResponse memberProfileResponse = memberProfileService.createMemberProfile(
@@ -38,7 +39,8 @@ public class MemberProfileController {
     }
 
     @GetMapping
-    public ResponseEntity<MemberProfileResponse> readMemberProfile(@User LoginUser loginUser) {
+    public ResponseEntity<MemberProfileResponse> readMemberProfile(
+        @Parameter(hidden = true) @User LoginUser loginUser) {
         MemberProfileResponse memberProfileResponse = memberProfileService.readMemberProfile(
             loginUser.getMemberId());
         return ResponseEntity.ok(memberProfileResponse);
@@ -46,8 +48,8 @@ public class MemberProfileController {
 
     @PutMapping
     public ResponseEntity<MemberProfileResponse> updateMemberProfile(
-        @RequestBody @Valid MemberProfileUpdateRequest memberProfileUpdateRequest,
-        @User LoginUser loginUser
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MemberProfileUpdateRequest memberProfileUpdateRequest
     ) {
         MemberProfileResponse memberProfileResponse = memberProfileService.updateMemberProfile(
             loginUser.getMemberId(), memberProfileUpdateRequest);
@@ -56,7 +58,7 @@ public class MemberProfileController {
 
     @GetMapping("/statuses")
     public ResponseEntity<MemberProfileStatusResponse> readMemberProfileStatus(
-        @User LoginUser loginUser) {
+        @Parameter(hidden = true) @User LoginUser loginUser) {
         MemberProfileStatusResponse memberProfileStatusResponse = memberProfileService.readMemberProfileStatus(
             loginUser.getMemberId());
 
@@ -65,7 +67,7 @@ public class MemberProfileController {
 
     @PatchMapping("/statuses")
     public ResponseEntity<MemberProfileStatusResponse> updateMemberProfileStatus(
-        @User LoginUser loginUser,
+        @Parameter(hidden = true) @User LoginUser loginUser,
         @RequestBody @Valid MemberProfileStatusUpdateRequest memberProfileStatusUpdateRequest) {
         MemberProfileStatusResponse memberProfileStatusResponse = memberProfileService.updateMemberProfileStatus(
             loginUser.getMemberId(), memberProfileStatusUpdateRequest.toDto());

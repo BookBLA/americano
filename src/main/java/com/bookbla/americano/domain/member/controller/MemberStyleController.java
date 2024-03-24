@@ -6,6 +6,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCre
 import com.bookbla.americano.domain.member.service.MemberStyleService;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpdateRequest;
+import io.swagger.v3.oas.annotations.Parameter;
 import java.net.URI;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +23,12 @@ public class MemberStyleController {
 
     @PostMapping
     public ResponseEntity<MemberStyleResponse> createMemberStyle(
-            @User LoginUser loginUser,
-            @RequestBody @Valid MemberStyleCreateRequest memberStyleCreateRequest) {
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MemberStyleCreateRequest memberStyleCreateRequest) {
         MemberStyleResponse memberStyleResponse = memberStyleService.createMemberStyle(
-                loginUser.getMemberId(), memberStyleCreateRequest);
+            loginUser.getMemberId(), memberStyleCreateRequest);
         return ResponseEntity.created(URI.create(memberStyleResponse.getMemberStyleId().toString()))
-                .body(memberStyleResponse);
+            .body(memberStyleResponse);
     }
 
     @GetMapping("/{memberId}")
@@ -38,8 +39,8 @@ public class MemberStyleController {
 
     @PutMapping
     public ResponseEntity<Void> updateMemberStyle(
-            @User LoginUser loginUser,
-            @RequestBody @Valid MemberStyleUpdateRequest memberStyleUpdateRequest) {
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MemberStyleUpdateRequest memberStyleUpdateRequest) {
         memberStyleService.updateMemberStyle(loginUser.getMemberId(), memberStyleUpdateRequest);
         return ResponseEntity.noContent().build();
     }
