@@ -1,8 +1,8 @@
 package com.bookbla.americano.domain.member.controller.dto.request;
 
-import com.bookbla.americano.domain.member.enums.OpenKakaoRoomUrlStatus;
-import com.bookbla.americano.domain.member.enums.ProfileImageUrlStatus;
-import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
+import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
+import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
+import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileStatusDto;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -16,23 +16,31 @@ import lombok.NoArgsConstructor;
 public class MemberProfileStatusUpdateRequest {
 
     @NotNull(message = "프로필 사진 상태가 입력되지 않았습니다.")
-    private String profileImageUrlStatus;
+    private String profileImageStatus;
 
     @NotNull(message = "오픈카톡방 상태가 입력되지 않았습니다.")
-    private String openKakaoRoomUrlStatus;
+    private String openKakaoRoomStatus;
 
-    public ProfileImageUrlStatus getProfileImageUrlStatus() {
-        return ProfileImageUrlStatus.from(profileImageUrlStatus);
+    @NotNull(message = "학생증 상태가 입력되지 않았습니다.")
+    private String studentIdImageStatus;
+
+    public ProfileImageStatus getProfileImageStatus() {
+        return ProfileImageStatus.from(profileImageStatus);
     }
 
-    public OpenKakaoRoomUrlStatus getOpenKakaoRoomUrlStatus() {
-        return OpenKakaoRoomUrlStatus.from(openKakaoRoomUrlStatus);
+    public OpenKakaoRoomStatus getOpenKakaoRoomStatus() {
+        return OpenKakaoRoomStatus.from(openKakaoRoomStatus);
+    }
+
+    public StudentIdImageStatus getStudentIdImageStatus() {
+        return StudentIdImageStatus.from(studentIdImageStatus);
     }
 
     public MemberProfileStatusDto toDto() {
         return MemberProfileStatusDto.builder()
-            .profileImageUrlStatus(getProfileImageUrlStatus())
-            .openKakaoRoomUrlStatus(getOpenKakaoRoomUrlStatus())
+            .profileImageStatus(getProfileImageStatus())
+            .openKakaoRoomStatus(getOpenKakaoRoomStatus())
+            .studentIdImageStatus(getStudentIdImageStatus())
             .build();
     }
 
