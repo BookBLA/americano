@@ -31,7 +31,7 @@ public class MemberLibraryController {
     @GetMapping("/target/{targetMemberId}")
     public ResponseEntity<MemberTargetLibraryProfileReadResponse> readMemberProfileByTarget(
         @Parameter(hidden = true) @User LoginUser loginUser, @PathVariable Long targetMemberId) {
-        MemberTargetLibraryProfileReadResponse memberLibraryTargetProfileReadResponse = memberLibraryService.getLibraryProfile(
+        MemberTargetLibraryProfileReadResponse memberLibraryTargetProfileReadResponse = memberLibraryService.getTargetLibraryProfile(
             loginUser.getMemberId(), targetMemberId);
         return ResponseEntity.ok(memberLibraryTargetProfileReadResponse);
     }
