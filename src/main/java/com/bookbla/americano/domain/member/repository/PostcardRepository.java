@@ -8,5 +8,4 @@ import java.util.Optional;
 
 public interface PostcardRepository extends JpaRepository<Postcard, Long> {
     Boolean existsBySendMemberIdAndReciveMemberIdAndPostcardStatus(Long sendMemberId, Long reciveMemberId, PostcardStatus status);
-    Boolean existsByReciveMemberIdAndSendMemberIdAndPostcardStatus(Long reciveMemberId, Long sendMemberId, PostcardStatus status);
 }

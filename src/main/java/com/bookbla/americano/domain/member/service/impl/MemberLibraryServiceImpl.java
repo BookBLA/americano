@@ -45,7 +45,7 @@ public class MemberLibraryServiceImpl implements MemberLibraryService {
 
         if (PostcardRepository.existsBySendMemberIdAndReciveMemberIdAndPostcardStatus(memberId, targetMemberId, PostcardStatus.ACCEPT)) {
             isMatched = true;
-        } else if (PostcardRepository.existsByReciveMemberIdAndSendMemberIdAndPostcardStatus(targetMemberId, memberId, PostcardStatus.ACCEPT)) {
+        } else if (PostcardRepository.existsBySendMemberIdAndReciveMemberIdAndPostcardStatus(targetMemberId, memberId, PostcardStatus.ACCEPT)) {
             isMatched = true;
         }
 
