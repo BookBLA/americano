@@ -22,7 +22,7 @@ public class MemberLibraryServiceImpl implements MemberLibraryService {
     private final MemberRepository memberRepository;
     private final MemberProfileRepository memberProfileRepository;
     private final MemberBookRepository memberBookRepository;
-    private final PostcardRepository PostcardRepository;
+    private final PostcardRepository postcardRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -43,9 +43,9 @@ public class MemberLibraryServiceImpl implements MemberLibraryService {
 
         boolean isMatched = false;
 
-        if (PostcardRepository.existsBySendMemberIdAndReciveMemberIdAndPostcardStatus(memberId, targetMemberId, PostcardStatus.ACCEPT)) {
+        if (postcardRepository.existsBySendMemberIdAndReciveMemberIdAndPostcardStatus(memberId, targetMemberId, PostcardStatus.ACCEPT)) {
             isMatched = true;
-        } else if (PostcardRepository.existsBySendMemberIdAndReciveMemberIdAndPostcardStatus(targetMemberId, memberId, PostcardStatus.ACCEPT)) {
+        } else if (postcardRepository.existsBySendMemberIdAndReciveMemberIdAndPostcardStatus(targetMemberId, memberId, PostcardStatus.ACCEPT)) {
             isMatched = true;
         }
 
