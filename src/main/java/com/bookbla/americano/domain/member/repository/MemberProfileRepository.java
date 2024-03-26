@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.repository;
 
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
+import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.exception.MemberProfileException;
 import com.bookbla.americano.domain.member.repository.custom.MemberProfileRepositoryCustom;
 import com.bookbla.americano.base.exception.BaseException;
@@ -23,6 +24,8 @@ public interface MemberProfileRepository  extends JpaRepository<MemberProfile, L
     Optional<MemberProfile> findByMember(Member member);
 
     List<MemberProfile> findByOpenKakaoRoomStatus(OpenKakaoRoomStatus openKakaoRoomStatus, Pageable pageable);
+
+    List<MemberProfile> findByProfileImageStatus(ProfileImageStatus profileImageStatus, Pageable pageable);
 
     default MemberProfile getByIdOrThrow(Long memberProfileId) {
         return findById(memberProfileId).orElseThrow(() -> new BaseException(MemberProfileException.NOT_FOUND_ID));

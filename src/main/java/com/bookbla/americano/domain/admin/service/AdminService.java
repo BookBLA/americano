@@ -38,4 +38,21 @@ public class AdminService {
 
         memberProfile.updateOpenKakaoRoomStatus(openKakaoRoomStatus);
     }
+
+    @Transactional(readOnly = true)
+    public AdminMemberProfileImageResponses readProfileImagePendingMemberProfiles(Pageable pageable) {
+        List<MemberProfile> pendingMemberProfiles = memberProfileRepository.findByProfileImageStatus(ProfileImageStatus.PENDING, pageable);
+        return AdminMemberProfileImageResponses.from(pendingMemberProfiles);
+    }
+
+    public void updateMemberProfileImageStatus(StatusUpdateDto statusUpdateDto) {
+        Long memberProfileId = statusUpdateDto.getMemberProfileId();
+        MemberProfile memberProfile = memberProfileRepository.getByIdOrThrow(memberProfileId);
+
+        String status = statusUpdateDto.getStatus();
+        ProfileImageStatus profileImageStatus = ProfileImageStatus.from(status);
+
+        memberProfile.updateProfileImageStatus(profileImageStatus);
+    }
+
 }
