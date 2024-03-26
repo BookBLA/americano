@@ -131,7 +131,10 @@ class AdminAuthServiceTest {
     void 세션이_만료되었다면_예외가_발생한다() {
         // given
         String uuid = UUID.randomUUID().toString();
-        AdminSession adminSession = new AdminSession(1L, uuid, LocalDateTime.now().minusMinutes(1));
+        AdminSession adminSession = AdminSession.builder()
+                .sessionId(uuid)
+                .expiredTime(LocalDateTime.now().minusMinutes(1))
+                .build();
         adminSessionRepository.save(adminSession);
 
         // when, then

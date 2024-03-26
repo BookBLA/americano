@@ -10,12 +10,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Getter
 public class AdminSession {
@@ -26,8 +28,10 @@ public class AdminSession {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Builder.Default
     private String sessionId = UUID.randomUUID().toString();
 
+    @Builder.Default
     private LocalDateTime expiredTime = LocalDateTime.now().plusSeconds(SESSION_SECONDS);
 
     public void validateExpired() {
