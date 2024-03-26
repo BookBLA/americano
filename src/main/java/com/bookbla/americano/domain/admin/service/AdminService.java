@@ -55,4 +55,20 @@ public class AdminService {
         memberProfile.updateProfileImageStatus(profileImageStatus);
     }
 
+    @Transactional(readOnly = true)
+    public AdminMemberProfileStudentIdImageResponses readStudentIdImagePendingMemberProfiles(Pageable pageable) {
+        List<MemberProfile> pendingMemberProfiles = memberProfileRepository.findByStudentIdImageStatus(StudentIdImageStatus.PENDING, pageable);
+        return AdminMemberProfileStudentIdImageResponses.from(pendingMemberProfiles);
+    }
+
+    public void updateMemberProfileStudentIdImageStatus(StatusUpdateDto statusUpdateDto) {
+        Long memberProfileId = statusUpdateDto.getMemberProfileId();
+        MemberProfile memberProfile = memberProfileRepository.getByIdOrThrow(memberProfileId);
+
+        String status = statusUpdateDto.getStatus();
+        StudentIdImageStatus studentIdImageStatus = StudentIdImageStatus.from(status);
+
+        memberProfile.updateStudentIdImageStatus(studentIdImageStatus);
+    }
+
 }
