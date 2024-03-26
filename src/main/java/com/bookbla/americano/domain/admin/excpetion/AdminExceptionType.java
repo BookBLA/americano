@@ -14,6 +14,7 @@ public enum AdminExceptionType implements ExceptionType {
     NOT_MATCHED_PASSWORD(HttpStatus.BAD_REQUEST, "admin-003", "비밀번호가 일치하지 않습니다."),
     USER_ID_NOT_FOUND(HttpStatus.NOT_FOUND, "admin-004", "해당 사용자 id를 가진 관리자가 존재하지 않습니다."),
     SESSION_NOT_FOUND(HttpStatus.NOT_FOUND, "admin-005", "올바르지 않은 세션입니다."),
+    ADMIN_AUTH_FAIL(HttpStatus.UNAUTHORIZED, "admin-006", "관리자 인증에 실패했습니다"),
     ;
 
     private final HttpStatus httpStatus;
