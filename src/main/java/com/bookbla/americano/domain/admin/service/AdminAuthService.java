@@ -36,4 +36,10 @@ public class AdminAuthService {
         AdminSession adminSession = adminSessionRepository.save(new AdminSession());
         return new AdminLoginResponse(adminSession.getSessionId());
     }
+
+    public void validateSession(String uuid) {
+        AdminSession adminSession = adminSessionRepository.findBySessionId(uuid)
+                .orElseThrow(() -> new BaseException(AdminExceptionType.SESSION_NOT_FOUND));
+        adminSession.validateExpired();
+    }
 }

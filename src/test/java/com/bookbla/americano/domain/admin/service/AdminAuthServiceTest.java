@@ -1,11 +1,15 @@
 package com.bookbla.americano.domain.admin.service;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.admin.controller.dto.request.AdminLoginRequest;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminLoginResponse;
 import com.bookbla.americano.domain.admin.repository.AdminRepository;
 import com.bookbla.americano.domain.admin.repository.AdminSessionRepository;
 import com.bookbla.americano.domain.admin.repository.entity.Admin;
+import com.bookbla.americano.domain.admin.repository.entity.AdminSession;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -16,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @SuppressWarnings("NonAsciiCharacters")
@@ -112,5 +117,35 @@ class AdminAuthServiceTest {
 
         // then
         assertThat(adminSessionRepository.findBySessionId(adminLoginResponse.getSessionId())).isPresent();
+    }
+
+    @Test
+    void 올바르지_않은_세션은_예외가_발생한다() {
+        // when, then
+        assertThatThrownBy(() -> adminAuthService.validateSession("wrongUUID"))
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining("올바르지 않은 세션입니다");
+    }
+
+    @Test
+    void 세션이_만료되었다면_예외가_발생한다() {
+        // given
+        String uuid = UUID.randomUUID().toString();
+        AdminSession adminSession = new AdminSession(1L, uuid, LocalDateTime.now().minusMinutes(1));
+        adminSessionRepository.save(adminSession);
+
+        // when, then
+        assertThatThrownBy(() -> adminAuthService.validateSession(uuid))
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining("세션이 만료되었습니다");
+    }
+
+    @Test
+    void 만료되지_않은_세션이라면_예외가_발생하지_않는다() {
+        // given
+        AdminSession adminSession = adminSessionRepository.save(new AdminSession());
+
+        // when, then
+        assertDoesNotThrow(() -> adminAuthService.validateSession(adminSession.getSessionId()));
     }
 }
