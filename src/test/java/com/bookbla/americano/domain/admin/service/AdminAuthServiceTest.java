@@ -1,0 +1,116 @@
+package com.bookbla.americano.domain.admin.service;
+
+import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.admin.controller.dto.request.AdminLoginRequest;
+import com.bookbla.americano.domain.admin.controller.dto.response.AdminLoginResponse;
+import com.bookbla.americano.domain.admin.repository.AdminRepository;
+import com.bookbla.americano.domain.admin.repository.AdminSessionRepository;
+import com.bookbla.americano.domain.admin.repository.entity.Admin;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+@SuppressWarnings("NonAsciiCharacters")
+@SpringBootTest
+@Transactional
+class AdminAuthServiceTest {
+
+    @Autowired
+    private AdminAuthService adminAuthService;
+
+    @Autowired
+    private AdminSessionRepository adminSessionRepository;
+
+    @Autowired
+    private AdminRepository adminRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Test
+    void 입력한_아이디에_해당하는_관리자가_없다면_예외가_발생한다() {
+        // given
+        AdminLoginRequest adminLoginRequest = new AdminLoginRequest("user", "password");
+
+        // when, then
+        assertThatThrownBy(() -> adminAuthService.login(adminLoginRequest))
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining("해당 사용자 id를 가진 관리자가 존재하지 않습니다");
+    }
+
+    @Test
+    void 비밀번호를_최대_실패_가능_횟수_이상_틀리는_경우_예외가_발생한다() {
+        // given
+        Admin admin = Admin.builder()
+                .userId("user")
+                .password(passwordEncoder.encode("password"))
+                .failCount(5)
+                .build();
+        adminRepository.save(admin);
+        AdminLoginRequest adminLoginRequest = new AdminLoginRequest(admin.getUserId(), "password");
+
+        // when, then
+        assertThatThrownBy(() -> adminAuthService.login(adminLoginRequest))
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining("최대 비밀번호 입력 횟수를 초과했습니다");
+    }
+
+    @Test
+    void 로그인에_실패한다면_예외가_발생한다() {
+        // given
+        Admin admin = Admin.builder()
+                .userId("user")
+                .password(passwordEncoder.encode("password"))
+                .build();
+        Admin savedAdmin = adminRepository.save(admin);
+        AdminLoginRequest adminLoginRequest = new AdminLoginRequest(savedAdmin.getUserId(), "wrongPassword");
+
+        // when, then
+        assertThatThrownBy(() -> adminAuthService.login(adminLoginRequest))
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining("비밀번호가 일치하지 않습니다.");
+    }
+
+    @Test
+    void 로그인에_성공하는_경우_계정의_비밀번호_실패_횟수가_초기화_된다() {
+        // given
+        Admin admin = Admin.builder()
+                .userId("user")
+                .password(passwordEncoder.encode("password"))
+                .build();
+        Admin savedAdmin = adminRepository.save(admin);
+        AdminLoginRequest adminLoginRequest = new AdminLoginRequest(savedAdmin.getUserId(), "password");
+
+        // when
+        adminAuthService.login(adminLoginRequest);
+
+        // then
+        Admin findAdmin = adminRepository.findByUserId(admin.getUserId()).orElseThrow();
+        assertThat(findAdmin.getFailCount()).isZero();
+    }
+
+    @Test
+    void 로그인에_성공하는_경우_세션을_저장하고_세션의_UUID를_반환한다() {
+        // given
+        Admin admin = Admin.builder()
+                .userId("user")
+                .password(passwordEncoder.encode("password"))
+                .build();
+        Admin savedAdmin = adminRepository.save(admin);
+        AdminLoginRequest adminLoginRequest = new AdminLoginRequest(savedAdmin.getUserId(), "password");
+
+        // when
+        AdminLoginResponse adminLoginResponse = adminAuthService.login(adminLoginRequest);
+
+        // then
+        assertThat(adminSessionRepository.findBySessionId(adminLoginResponse.getSessionId())).isPresent();
+    }
+}
