@@ -34,11 +34,11 @@ public class AdminAuthService {
 
         admin.resetFailCount();
         AdminSession adminSession = adminSessionRepository.save(new AdminSession());
-        return new AdminLoginResponse(adminSession.getSessionId());
+        return AdminLoginResponse.from(adminSession);
     }
 
-    public void validateSession(String uuid) {
-        AdminSession adminSession = adminSessionRepository.findBySessionId(uuid)
+    public void validateSession(String sessionId) {
+        AdminSession adminSession = adminSessionRepository.findBySessionId(sessionId)
                 .orElseThrow(() -> new BaseException(AdminExceptionType.SESSION_NOT_FOUND));
         adminSession.validateExpired();
     }
