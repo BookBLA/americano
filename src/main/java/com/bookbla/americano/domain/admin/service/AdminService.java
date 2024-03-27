@@ -37,6 +37,7 @@ public class AdminService {
         MemberProfile memberProfile = memberProfileRepository.getByIdOrThrow(memberProfileId);
 
         memberProfile.updateOpenKakaoRoomStatus(openKakaoRoomStatus);
+        // 성공 푸쉬알림?
     }
 
     @Transactional(readOnly = true)
@@ -53,6 +54,7 @@ public class AdminService {
         MemberProfile memberProfile = memberProfileRepository.getByIdOrThrow(memberProfileId);
 
         memberProfile.updateProfileImageStatus(profileImageStatus);
+        // 성공 푸쉬알림?
     }
 
     @Transactional(readOnly = true)
@@ -69,6 +71,7 @@ public class AdminService {
         MemberProfile memberProfile = memberProfileRepository.getByIdOrThrow(memberProfileId);
 
         memberProfile.updateStudentIdImageStatus(studentIdImageStatus);
+        // 성공 푸쉬알림?
     }
 
 }
