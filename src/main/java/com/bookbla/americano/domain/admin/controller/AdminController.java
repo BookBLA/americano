@@ -41,7 +41,7 @@ public class AdminController {
         return ResponseEntity.ok(adminService.readOpenKakaoRoomPendingMemberProfiles(pageable));
     }
 
-    @PutMapping("/member-profiles/{memberProfileId}/kakao-room-status")
+    @PatchMapping("/member-profiles/{memberProfileId}/kakao-room-status")
     public ResponseEntity<Void> updateMemberProfileKakaoRoomStatus(
             @PathVariable Long memberProfileId,
             @RequestBody @Valid AdminMemberProfileStatusUpdateRequest request
@@ -55,7 +55,7 @@ public class AdminController {
         return ResponseEntity.ok(adminService.readProfileImagePendingMemberProfiles(pageable));
     }
 
-    @PutMapping("/member-profiles/{memberProfileId}/profile-image-status")
+    @PatchMapping("/member-profiles/{memberProfileId}/profile-image-status")
     public ResponseEntity<Void> updateMemberProfileImageStatus(
             @PathVariable Long memberProfileId,
             @RequestBody @Valid AdminMemberProfileStatusUpdateRequest request
@@ -69,7 +69,7 @@ public class AdminController {
         return ResponseEntity.ok(adminService.readStudentIdImagePendingMemberProfiles(pageable));
     }
 
-    @PutMapping("/member-profiles/{memberProfileId}/student-id-status")
+    @PatchMapping("/member-profiles/{memberProfileId}/student-id-status")
     public ResponseEntity<Void> updateMemberProfileStudentIdStatus(
             @PathVariable Long memberProfileId,
             @RequestBody @Valid AdminMemberProfileStatusUpdateRequest request
