@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface AdminSessionRepository extends JpaRepository<AdminSession, Long> {
 
     Optional<AdminSession> findBySessionId(String sessionId);
+
+    void deleteBySessionId(String sessionId);
 }

@@ -1,10 +1,12 @@
 package com.bookbla.americano.domain.admin.service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.admin.controller.dto.request.AdminLoginRequest;
+import com.bookbla.americano.domain.admin.controller.dto.request.AdminLogoutRequest;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminLoginResponse;
 import com.bookbla.americano.domain.admin.repository.AdminRepository;
 import com.bookbla.americano.domain.admin.repository.AdminSessionRepository;
@@ -116,7 +118,8 @@ class AdminAuthServiceTest {
         AdminLoginResponse adminLoginResponse = adminAuthService.login(adminLoginRequest);
 
         // then
-        assertThat(adminSessionRepository.findBySessionId(adminLoginResponse.getSessionId())).isPresent();
+        Optional<AdminSession> findAdminSession = adminSessionRepository.findBySessionId(adminLoginResponse.getSessionId());
+        assertThat(findAdminSession).isPresent();
     }
 
     @Test
@@ -148,4 +151,19 @@ class AdminAuthServiceTest {
         // when, then
         assertDoesNotThrow(() -> adminAuthService.validateSession(adminSession.getSessionId()));
     }
+
+    @Test
+    void 로그아웃시_세션을_파기한다() {
+        // given
+        AdminSession adminSession = adminSessionRepository.save(new AdminSession());
+        AdminLogoutRequest adminLogoutRequest = new AdminLogoutRequest(adminSession.getSessionId());
+
+        // when
+        adminAuthService.logout(adminLogoutRequest);
+
+        // then
+        Optional<AdminSession> findAdminSession = adminSessionRepository.findBySessionId(adminSession.getSessionId());
+        assertThat(findAdminSession).isEmpty();
+    }
+
 }

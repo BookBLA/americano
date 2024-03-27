@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.admin.service;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.admin.controller.dto.request.AdminLoginRequest;
+import com.bookbla.americano.domain.admin.controller.dto.request.AdminLogoutRequest;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminLoginResponse;
 import com.bookbla.americano.domain.admin.excpetion.AdminExceptionType;
 import com.bookbla.americano.domain.admin.repository.AdminRepository;
@@ -41,5 +42,9 @@ public class AdminAuthService {
         AdminSession adminSession = adminSessionRepository.findBySessionId(sessionId)
                 .orElseThrow(() -> new BaseException(AdminExceptionType.SESSION_NOT_FOUND));
         adminSession.validateExpired();
+    }
+
+    public void logout(AdminLogoutRequest adminLogoutRequest) {
+        adminSessionRepository.deleteBySessionId(adminLogoutRequest.getSessionId());
     }
 }
