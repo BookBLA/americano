@@ -38,7 +38,8 @@ public class AdminController {
 
     @GetMapping("/member-profiles/kakao-room/pending")
     public ResponseEntity<AdminMemberProfileKakaoRoomResponses> readOpenKakaoRoomPendingMemberProfiles(Pageable pageable) {
-        return ResponseEntity.ok(adminService.readOpenKakaoRoomPendingMemberProfiles(pageable));
+        AdminMemberProfileKakaoRoomResponses adminMemberProfileKakaoRoomResponses = adminService.readOpenKakaoRoomPendingMemberProfiles(pageable);
+        return ResponseEntity.ok(adminMemberProfileKakaoRoomResponses);
     }
 
     @PatchMapping("/member-profiles/{memberProfileId}/kakao-room-status")
@@ -52,7 +53,8 @@ public class AdminController {
 
     @GetMapping("/member-profiles/profile-image/pending")
     public ResponseEntity<AdminMemberProfileImageResponses> readProfileImagePendingMemberProfiles(Pageable pageable) {
-        return ResponseEntity.ok(adminService.readProfileImagePendingMemberProfiles(pageable));
+        AdminMemberProfileImageResponses adminMemberProfileImageResponses = adminService.readProfileImagePendingMemberProfiles(pageable);
+        return ResponseEntity.ok(adminMemberProfileImageResponses);
     }
 
     @PatchMapping("/member-profiles/{memberProfileId}/profile-image-status")
@@ -66,7 +68,8 @@ public class AdminController {
 
     @GetMapping("/member-profiles/student-id/pending")
     public ResponseEntity<AdminMemberProfileStudentIdImageResponses> readStudentIdImagePendingMemberProfiles(Pageable pageable) {
-        return ResponseEntity.ok(adminService.readStudentIdImagePendingMemberProfiles(pageable));
+        AdminMemberProfileStudentIdImageResponses adminMemberProfileStudentIdImageResponses = adminService.readStudentIdImagePendingMemberProfiles(pageable);
+        return ResponseEntity.ok(adminMemberProfileStudentIdImageResponses);
     }
 
     @PatchMapping("/member-profiles/{memberProfileId}/student-id-status")
