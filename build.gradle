@@ -65,7 +65,8 @@ dependencies {
     implementation "com.querydsl:querydsl-jpa:5.0.0"
     implementation "com.querydsl:querydsl-apt:5.0.0"
 
-
+    // bcrypt
+    implementation 'org.mindrot:jbcrypt:0.4'
 
     //test
     testImplementation 'io.rest-assured:rest-assured:4.4.0'
