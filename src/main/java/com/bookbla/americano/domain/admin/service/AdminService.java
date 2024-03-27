@@ -30,11 +30,11 @@ public class AdminService {
     }
 
     public void updateMemberProfileKakaoRoomStatus(StatusUpdateDto statusUpdateDto) {
-        Long memberProfileId = statusUpdateDto.getMemberProfileId();
-        MemberProfile memberProfile = memberProfileRepository.getByIdOrThrow(memberProfileId);
-
         String status = statusUpdateDto.getStatus();
         OpenKakaoRoomStatus openKakaoRoomStatus = OpenKakaoRoomStatus.from(status);
+
+        Long memberProfileId = statusUpdateDto.getMemberProfileId();
+        MemberProfile memberProfile = memberProfileRepository.getByIdOrThrow(memberProfileId);
 
         memberProfile.updateOpenKakaoRoomStatus(openKakaoRoomStatus);
     }
@@ -46,11 +46,11 @@ public class AdminService {
     }
 
     public void updateMemberProfileImageStatus(StatusUpdateDto statusUpdateDto) {
-        Long memberProfileId = statusUpdateDto.getMemberProfileId();
-        MemberProfile memberProfile = memberProfileRepository.getByIdOrThrow(memberProfileId);
-
         String status = statusUpdateDto.getStatus();
         ProfileImageStatus profileImageStatus = ProfileImageStatus.from(status);
+
+        Long memberProfileId = statusUpdateDto.getMemberProfileId();
+        MemberProfile memberProfile = memberProfileRepository.getByIdOrThrow(memberProfileId);
 
         memberProfile.updateProfileImageStatus(profileImageStatus);
     }
@@ -62,11 +62,11 @@ public class AdminService {
     }
 
     public void updateMemberProfileStudentIdImageStatus(StatusUpdateDto statusUpdateDto) {
-        Long memberProfileId = statusUpdateDto.getMemberProfileId();
-        MemberProfile memberProfile = memberProfileRepository.getByIdOrThrow(memberProfileId);
-
         String status = statusUpdateDto.getStatus();
         StudentIdImageStatus studentIdImageStatus = StudentIdImageStatus.from(status);
+
+        Long memberProfileId = statusUpdateDto.getMemberProfileId();
+        MemberProfile memberProfile = memberProfileRepository.getByIdOrThrow(memberProfileId);
 
         memberProfile.updateStudentIdImageStatus(studentIdImageStatus);
     }
