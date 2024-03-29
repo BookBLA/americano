@@ -1,13 +1,16 @@
 package com.bookbla.americano.domain.member.service.impl;
 
+import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
+import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberStyleRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
 import com.bookbla.americano.domain.member.service.MemberStyleService;
+import com.bookbla.americano.domain.memberask.exception.MemberAskExceptionType;
 import com.bookbla.americano.domain.memberask.repository.MemberAskRepository;
 import com.bookbla.americano.domain.memberask.repository.entity.MemberAsk;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +31,10 @@ public class MemberStyleServiceImpl implements MemberStyleService {
     @Transactional(readOnly = true)
     public MemberStyleResponse readMemberStyle(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberStyle memberStyle = memberStyleRepository.getByMemberOrThrow(member);
-        MemberAsk memberAsk = memberAskRepository.getByMemberOrThrow(member);
+        MemberStyle memberStyle = memberStyleRepository.findByMember(member)
+                .orElseThrow(() -> new BaseException(MemberExceptionType.STYLE_NOT_REGISTERED));
+        MemberAsk memberAsk  = memberAskRepository.findByMember(member)
+                .orElseThrow(() -> new BaseException(MemberAskExceptionType.NOT_REGISTERED_MEMBER));
 
         return MemberStyleResponse.of(member, memberStyle, memberAsk);
     }
@@ -52,8 +57,10 @@ public class MemberStyleServiceImpl implements MemberStyleService {
     @Override
     public void updateMemberStyle(Long memberId, MemberStyleUpdateRequest memberStyleUpdateRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberStyle memberStyle = memberStyleRepository.getByMemberOrThrow(member);
-        MemberAsk memberAsk  = memberAskRepository.getByMemberOrThrow(member);
+        MemberStyle memberStyle = memberStyleRepository.findByMember(member)
+                .orElseThrow(() -> new BaseException(MemberExceptionType.STYLE_NOT_REGISTERED));
+        MemberAsk memberAsk  = memberAskRepository.findByMember(member)
+                .orElseThrow(() -> new BaseException(MemberAskExceptionType.NOT_REGISTERED_MEMBER));
 
         memberAsk.updateContent(memberStyleUpdateRequest.getMemberAsk());
         updateMemberStyle(memberStyle, memberStyleUpdateRequest);

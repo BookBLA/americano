@@ -111,7 +111,7 @@ class MemberAskServiceTest {
         memberAskService.updateMemberAsk(member.getId(), memberAskUpdateRequest);
 
         // then
-        MemberAsk updatedMemberAsk = memberAskRepository.getByMemberOrThrow(member);
+        MemberAsk updatedMemberAsk = memberAskRepository.findByMember(member).orElseThrow();
         assertThat(updatedMemberAsk.getContents()).isEqualTo("어느 시간대에 책을 읽는 편이세요?");
     }
 

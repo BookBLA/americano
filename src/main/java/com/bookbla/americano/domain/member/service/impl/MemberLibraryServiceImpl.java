@@ -1,7 +1,9 @@
 package com.bookbla.americano.domain.member.service.impl;
 
+import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberLibraryProfileReadResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberTargetLibraryProfileReadResponse;
+import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.*;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
@@ -28,7 +30,8 @@ public class MemberLibraryServiceImpl implements MemberLibraryService {
     @Transactional(readOnly = true)
     public MemberLibraryProfileReadResponse getLibraryProfile(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = memberProfileRepository.getByMemberOrThrow(member);
+        MemberProfile memberProfile = memberProfileRepository.findByMember(member)
+                .orElseThrow(() -> new BaseException(MemberExceptionType.PROFILE_NOT_REGISTERED));
         List<MemberBook> memberBooks = memberBookRepository.findByMember(member);
 
         return MemberLibraryProfileReadResponse.of(member, memberProfile, memberBooks);
@@ -38,7 +41,8 @@ public class MemberLibraryServiceImpl implements MemberLibraryService {
     @Transactional(readOnly = true)
     public MemberTargetLibraryProfileReadResponse getTargetLibraryProfile(Long memberId, Long targetMemberId) {
         Member targetMember = memberRepository.getByIdOrThrow(targetMemberId);
-        MemberProfile memberProfile = memberProfileRepository.getByMemberOrThrow(targetMember);
+        MemberProfile memberProfile = memberProfileRepository.findByMember(targetMember)
+                .orElseThrow(() -> new BaseException(MemberExceptionType.PROFILE_NOT_REGISTERED));
         List<MemberBook> memberBooks = memberBookRepository.findByMember(targetMember);
 
         boolean isMatched = false;

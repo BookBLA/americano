@@ -2,7 +2,6 @@ package com.bookbla.americano.domain.member.service.impl;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileStatusUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
@@ -53,7 +52,8 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     @Transactional(readOnly = true)
     public MemberProfileResponse readMemberProfile(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = memberProfileRepository.getByMemberOrThrow(member);
+        MemberProfile memberProfile = memberProfileRepository.findByMember(member)
+                .orElseThrow(() -> new BaseException(MemberExceptionType.PROFILE_NOT_REGISTERED));
 
         return MemberProfileResponse.from(member, memberProfile);
     }
@@ -64,7 +64,8 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         MemberProfileUpdateRequest memberProfileUpdateRequest) {
 
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = memberProfileRepository.getByMemberOrThrow(member);
+        MemberProfile memberProfile = memberProfileRepository.findByMember(member)
+                .orElseThrow(() -> new BaseException(MemberExceptionType.PROFILE_NOT_REGISTERED));
 
         updateEntity(memberProfile, memberProfileUpdateRequest);
 
@@ -75,7 +76,8 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     @Transactional(readOnly = true)
     public MemberProfileStatusResponse readMemberProfileStatus(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = memberProfileRepository.getByMemberOrThrow(member);
+        MemberProfile memberProfile = memberProfileRepository.findByMember(member)
+                .orElseThrow(() -> new BaseException(MemberExceptionType.PROFILE_NOT_REGISTERED));
 
         return MemberProfileStatusResponse.from(memberProfile);
     }
@@ -85,7 +87,8 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     public MemberProfileStatusResponse updateMemberProfileStatus(Long memberId,
         MemberProfileStatusDto memberProfileStatusDto) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = memberProfileRepository.getByMemberOrThrow(member);
+        MemberProfile memberProfile = memberProfileRepository.findByMember(member)
+                .orElseThrow(() -> new BaseException(MemberExceptionType.PROFILE_NOT_REGISTERED));
 
         updateStatusEntity(memberProfile, memberProfileStatusDto);
 
