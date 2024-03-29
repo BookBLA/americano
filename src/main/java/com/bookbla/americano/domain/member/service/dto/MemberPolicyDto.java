@@ -2,7 +2,7 @@ package com.bookbla.americano.domain.member.service.dto;
 
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberPolicy;
-import com.bookbla.americano.domain.member.repository.entity.Policy;
+import com.bookbla.americano.domain.policy.Policy;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
