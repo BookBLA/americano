@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.postcard;
+package com.bookbla.americano.domain.postcard.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import javax.persistence.Entity;

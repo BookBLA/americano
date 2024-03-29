@@ -11,7 +11,8 @@ import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.service.MemberLibraryService;
 import java.util.List;
 
-import com.bookbla.americano.domain.postcard.PostcardStatus;
+import com.bookbla.americano.domain.postcard.repository.entity.PostcardStatus;
+import com.bookbla.americano.domain.postcard.repository.PostcardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
