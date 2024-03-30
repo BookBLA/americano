@@ -8,6 +8,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthUpda
 import com.bookbla.americano.domain.member.controller.dto.response.MailVerifyResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthResponse;
 import com.bookbla.americano.domain.member.exception.MailExceptionType;
+import com.bookbla.americano.domain.member.exception.MemberAuthExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberAuthRepository;
 import com.bookbla.americano.domain.member.repository.MemberPostcardRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
@@ -61,7 +62,8 @@ public class MemberAuthServiceImpl implements MemberAuthService {
     @Transactional
     public MailVerifyResponse verifyEmail(Long memberId, MailVerifyRequest mailVerifyRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberAuth memberAuth = memberAuthRepository.getByMemberOrThrow(member);
+        MemberAuth memberAuth = memberAuthRepository.findByMember(member)
+                .orElseThrow(() -> new BaseException(MemberAuthExceptionType.MEMBER_AUTH_NOT_FOUND));
         LocalDateTime nowTime = LocalDateTime.now();
 
         String verifyCode = memberAuth.getEmailVerifyCode();
@@ -93,7 +95,8 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         String schoolEmail = mailResendRequest.getSchoolEmail();
 
-        MemberAuth memberAuth = memberAuthRepository.getByMemberOrThrow(member);
+        MemberAuth memberAuth = memberAuthRepository.findByMember(member)
+                .orElseThrow(() -> new BaseException(MemberAuthExceptionType.MEMBER_AUTH_NOT_FOUND));
 
         String enrolledSchoolEmail = memberAuth.getSchoolEmail();
 
@@ -115,7 +118,8 @@ public class MemberAuthServiceImpl implements MemberAuthService {
     @Transactional
     public MemberAuthResponse readMemberAuth(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberAuth memberAuth = memberAuthRepository.getByMemberOrThrow(member);
+        MemberAuth memberAuth = memberAuthRepository.findByMember(member)
+                .orElseThrow(() -> new BaseException(MemberAuthExceptionType.MEMBER_AUTH_NOT_FOUND));
 
         return MemberAuthResponse.from(member, memberAuth);
     }
@@ -126,7 +130,8 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         MemberAuthUpdateRequest memberAuthUpdateRequest) {
 
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberAuth memberAuth = memberAuthRepository.getByMemberOrThrow(member);
+        MemberAuth memberAuth = memberAuthRepository.findByMember(member)
+                .orElseThrow(() -> new BaseException(MemberAuthExceptionType.MEMBER_AUTH_NOT_FOUND));
 
         update(memberAuth, memberAuthUpdateRequest);
 

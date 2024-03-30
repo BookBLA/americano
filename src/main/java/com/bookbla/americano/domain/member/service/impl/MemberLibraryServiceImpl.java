@@ -1,7 +1,9 @@
 package com.bookbla.americano.domain.member.service.impl;
 
+import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberLibraryProfileReadResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberTargetLibraryProfileReadResponse;
+import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.*;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
@@ -9,7 +11,8 @@ import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.service.MemberLibraryService;
 import java.util.List;
 
-import com.bookbla.americano.domain.postcard.PostcardStatus;
+import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
+import com.bookbla.americano.domain.postcard.repository.PostcardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +31,8 @@ public class MemberLibraryServiceImpl implements MemberLibraryService {
     @Transactional(readOnly = true)
     public MemberLibraryProfileReadResponse getLibraryProfile(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = memberProfileRepository.getByMemberOrThrow(member);
+        MemberProfile memberProfile = memberProfileRepository.findByMember(member)
+                .orElseThrow(() -> new BaseException(MemberExceptionType.PROFILE_NOT_REGISTERED));
         List<MemberBook> memberBooks = memberBookRepository.findByMember(member);
 
         return MemberLibraryProfileReadResponse.of(member, memberProfile, memberBooks);
@@ -38,14 +42,15 @@ public class MemberLibraryServiceImpl implements MemberLibraryService {
     @Transactional(readOnly = true)
     public MemberTargetLibraryProfileReadResponse getTargetLibraryProfile(Long memberId, Long targetMemberId) {
         Member targetMember = memberRepository.getByIdOrThrow(targetMemberId);
-        MemberProfile memberProfile = memberProfileRepository.getByMemberOrThrow(targetMember);
+        MemberProfile memberProfile = memberProfileRepository.findByMember(targetMember)
+                .orElseThrow(() -> new BaseException(MemberExceptionType.PROFILE_NOT_REGISTERED));
         List<MemberBook> memberBooks = memberBookRepository.findByMember(targetMember);
 
         boolean isMatched = false;
 
-        if (postcardRepository.existsBySendMemberIdAndReciveMemberIdAndPostcardStatus(memberId, targetMemberId, PostcardStatus.ACCEPT)) {
+        if (postcardRepository.existsBySendMemberIdAndReceiveMemberIdAndPostcardStatus(memberId, targetMemberId, PostcardStatus.ACCEPT)) {
             isMatched = true;
-        } else if (postcardRepository.existsBySendMemberIdAndReciveMemberIdAndPostcardStatus(targetMemberId, memberId, PostcardStatus.ACCEPT)) {
+        } else if (postcardRepository.existsBySendMemberIdAndReceiveMemberIdAndPostcardStatus(targetMemberId, memberId, PostcardStatus.ACCEPT)) {
             isMatched = true;
         }
 

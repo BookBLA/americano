@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.domain.policy.Policy;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;

@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.member.repository.entity;
+package com.bookbla.americano.domain.postcard.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import javax.persistence.Entity;
@@ -16,14 +16,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Policy extends BaseInsertEntity {
+public class PostcardType extends BaseInsertEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
+    private int price;
 
-    private String contents;
+    private String name;
 
 }

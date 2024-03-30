@@ -5,7 +5,7 @@ import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
-import com.bookbla.americano.domain.quiz.QuizQuestion;
+import com.bookbla.americano.domain.quiz.repository.entity.QuizQuestion;
 import com.bookbla.americano.domain.quiz.controller.dto.request.QuizQuestionCreateRequest;
 import com.bookbla.americano.domain.quiz.controller.dto.request.QuizQuestionUpdateRequest;
 import com.bookbla.americano.domain.quiz.controller.dto.response.QuizQuestionReadResponse;
@@ -28,7 +28,8 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
     @Override
     public Long createQuizQuestion(
             Long memberId, Long memberBookId,
-            QuizQuestionCreateRequest quizQuestionCreateRequest) {
+            QuizQuestionCreateRequest quizQuestionCreateRequest
+    ) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
 
@@ -58,8 +59,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
     @Override
     public void updateQuizQuestion(
             Long memberId, Long memberBookId,
-            QuizQuestionUpdateRequest quizQuestionUpdateRequest
-    ) {
+            QuizQuestionUpdateRequest quizQuestionUpdateRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
 

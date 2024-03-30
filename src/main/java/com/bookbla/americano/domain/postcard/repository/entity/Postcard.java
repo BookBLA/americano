@@ -1,9 +1,10 @@
-package com.bookbla.americano.domain.postcard;
+package com.bookbla.americano.domain.postcard.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.memberask.repository.entity.MemberReply;
-import com.bookbla.americano.domain.quiz.QuizReply;
+import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
+import com.bookbla.americano.domain.quiz.repository.entity.QuizReply;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,8 +38,8 @@ public class Postcard extends BaseInsertEntity {
     private Member sendMember;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recive_member_id")
-    private Member reciveMember;
+    @JoinColumn(name = "receive_member_id")
+    private Member receiveMember;
 
     @OneToOne
     @JoinColumn(name = "member_reply_id")

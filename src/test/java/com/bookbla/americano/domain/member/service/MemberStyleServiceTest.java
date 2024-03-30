@@ -179,7 +179,7 @@ class MemberStyleServiceTest {
         memberStyleService.updateMemberStyle(member.getId(), memberStyleUpdateRequest);
 
         // then
-        MemberStyle memberStyle = memberStyleRepository.getByMemberOrThrow(member);
+        MemberStyle memberStyle = memberStyleRepository.findByMember(member).orElseThrow();
         assertAll(
                 () -> assertThat(memberStyle.getDateStyleType()).isEqualTo(HOME),
                 () -> assertThat(memberStyle.getMbti()).isEqualTo(INFJ),

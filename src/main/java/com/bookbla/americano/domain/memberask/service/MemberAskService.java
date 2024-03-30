@@ -1,10 +1,12 @@
 package com.bookbla.americano.domain.memberask.service;
 
+import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.memberask.controller.dto.request.MemberAskCreateRequest;
 import com.bookbla.americano.domain.memberask.controller.dto.request.MemberAskUpdateRequest;
 import com.bookbla.americano.domain.memberask.controller.dto.response.MemberAskResponse;
+import com.bookbla.americano.domain.memberask.exception.MemberAskExceptionType;
 import com.bookbla.americano.domain.memberask.repository.MemberAskRepository;
 import com.bookbla.americano.domain.memberask.repository.entity.MemberAsk;
 import lombok.RequiredArgsConstructor;
@@ -31,14 +33,16 @@ public class MemberAskService {
     @Transactional(readOnly = true)
     public MemberAskResponse readMemberAsk(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberAsk memberAsk = memberAskRepository.getByMemberOrThrow(member);
+        MemberAsk memberAsk  = memberAskRepository.findByMember(member)
+                .orElseThrow(() -> new BaseException(MemberAskExceptionType.NOT_REGISTERED_MEMBER));
 
         return MemberAskResponse.from(memberAsk);
     }
 
     public void updateMemberAsk(Long memberId, MemberAskUpdateRequest memberAskUpdateRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberAsk memberAsk = memberAskRepository.getByMemberOrThrow(member);
+        MemberAsk memberAsk  = memberAskRepository.findByMember(member)
+                .orElseThrow(() -> new BaseException(MemberAskExceptionType.NOT_REGISTERED_MEMBER));
 
         memberAsk.updateContent(memberAskUpdateRequest.getContents());
     }
