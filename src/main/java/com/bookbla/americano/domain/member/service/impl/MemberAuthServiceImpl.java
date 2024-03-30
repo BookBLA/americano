@@ -139,8 +139,9 @@ public class MemberAuthServiceImpl implements MemberAuthService {
 
     private String sendEmail(String schoolEmail) {
 
-        String subject = "Bookbla 이메일 인증";
+        String subject = "북블라 학교 이메일 인증코드";
         String verifyCode = createVerifyCode();
+
 
         Context context = new Context();
         context.setVariable("verifyCode", verifyCode);
@@ -168,14 +169,16 @@ public class MemberAuthServiceImpl implements MemberAuthService {
     }
 
     private String createVerifyCode() {
-        int length = 6;
+        final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        final int CODE_LENGTH = 6;
 
         try {
             Random random = SecureRandom.getInstanceStrong();
             StringBuilder builder = new StringBuilder();
 
-            for (int i = 0; i < length; i++) {
-                builder.append(random.nextInt(10));
+            for (int i = 0; i < CODE_LENGTH; i++) {
+                int randomIdx = random.nextInt(CHARACTERS.length());
+                builder.append(CHARACTERS.charAt(randomIdx));
             }
 
             return builder.toString();
