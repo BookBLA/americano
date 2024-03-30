@@ -61,6 +61,6 @@ public class TestController {
     ) {
         Member member = testService.signUp(testSignUpRequest.getEmail());
         String token = jwtProvider.createToken(member.getId().toString());
-        return ResponseEntity.ok(new TestSignUpResponse(token));
+        return ResponseEntity.ok(TestSignUpResponse.of(member, token));
     }
 }
