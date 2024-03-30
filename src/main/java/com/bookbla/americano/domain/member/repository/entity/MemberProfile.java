@@ -54,8 +54,8 @@ public class MemberProfile {
     private String nickname;
 
     public String showBlindName() {
-        String firstName = name.split("")[0];
-        return firstName + "OO";
+        String familyName = name.split("")[0];
+        return familyName + "OO";
     }
 
     public int calculateAge(LocalDate now) {

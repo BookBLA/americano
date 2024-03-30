@@ -30,7 +30,7 @@ public class AuthServiceImpl implements AuthService {
                 .orElseGet(() -> memberRepository.save(oAuth2MemberResponse.toMember()));
 
         String accessToken = jwtProvider.createToken(member.getId().toString());
-        return LoginResponseDto.from(accessToken);
+        return LoginResponseDto.of(accessToken, member);
     }
   
 }
