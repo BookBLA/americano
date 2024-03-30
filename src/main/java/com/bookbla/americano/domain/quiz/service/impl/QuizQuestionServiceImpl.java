@@ -28,7 +28,8 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
     @Override
     public Long createQuizQuestion(
             Long memberId, Long memberBookId,
-            QuizQuestionCreateRequest quizQuestionCreateRequest) {
+            QuizQuestionCreateRequest quizQuestionCreateRequest
+    ) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
 

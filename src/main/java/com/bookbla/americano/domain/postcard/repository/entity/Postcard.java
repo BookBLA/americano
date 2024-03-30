@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.postcard.repository.entity;
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.memberask.repository.entity.MemberReply;
+import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.quiz.QuizReply;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
