@@ -52,8 +52,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         String emailVerifyCode = sendEmail(schoolEmail);
 
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberAuth memberAuth = memberAuthRepository.save(
-            memberAuthDto.toEntity(member, emailVerifyCode));
+        MemberAuth memberAuth = memberAuthRepository.save(memberAuthDto.toEntity(emailVerifyCode));
 
         return MemberAuthResponse.from(member, memberAuth);
     }
