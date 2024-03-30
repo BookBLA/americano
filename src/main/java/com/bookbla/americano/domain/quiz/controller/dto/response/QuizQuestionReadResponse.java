@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.quiz.controller.dto.response;
 
-import com.bookbla.americano.domain.quiz.QuizQuestion;
+import com.bookbla.americano.domain.quiz.repository.entity.QuizQuestion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

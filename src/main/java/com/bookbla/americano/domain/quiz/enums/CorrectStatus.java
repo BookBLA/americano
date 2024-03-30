@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.quiz;
+package com.bookbla.americano.domain.quiz.enums;
 
 public enum CorrectStatus {
     CORRECT, WRONG

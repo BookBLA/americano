@@ -1,7 +1,8 @@
-package com.bookbla.americano.domain.quiz;
+package com.bookbla.americano.domain.quiz.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
+import com.bookbla.americano.domain.quiz.enums.AnswerChoice;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
