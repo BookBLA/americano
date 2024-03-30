@@ -17,7 +17,7 @@ public class MemberSchedulerServiceImpl implements MemberSchedulerService {
     private final MailService mailService;
 
     @Transactional
-    @Scheduled(cron = "0 0 21 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 6 * * *", zone = "Asia/Seoul")
     public void initMemberFreePostcardSchedule() {
         try {
             memberPostcardRepository.initMemberFreePostcardCount();
