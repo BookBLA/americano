@@ -12,14 +12,12 @@ import lombok.Getter;
 public class MemberAuthResponse {
 
     private Long memberId;
-    private Long memberAuthId;
     private String schoolEmail;
     private String emailVerifyStatus;
 
     public static MemberAuthResponse from(Member member, MemberAuth memberAuth) {
         return MemberAuthResponse.builder()
             .memberId(member.getId())
-            .memberAuthId(memberAuth.getId())
             .schoolEmail(memberAuth.getSchoolEmail())
             .emailVerifyStatus(memberAuth.getEmailVerifyStatus().name())
             .build();

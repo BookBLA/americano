@@ -25,11 +25,11 @@ public class MemberPolicyResponse {
 
     }
 
-    public static MemberPolicyResponse from(Member member, List<MemberPolicy> memberPolicies) {
+    public static MemberPolicyResponse from(Member member, MemberPolicy memberPolicy) {
         return MemberPolicyResponse.builder()
             .memberId(member.getId())
             .agreedStatuses(AgreedStatuses.builder()
-                .adAgreementPolicy(memberPolicies.get(0).getAgreedStatus())
+                .adAgreementPolicy(memberPolicy.getAdAgreementPolicy())
                 .build())
             .build();
     }

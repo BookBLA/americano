@@ -42,9 +42,8 @@ public class MemberStyleCreateRequest {
     @NotNull(message = "개인 질문이 입력되지 않았습니다.")
     private String memberAsk;
 
-    public MemberStyle toMemberStyleWith(Member member) {
+    public MemberStyle toMemberStyleWith() {
         return MemberStyle.builder()
-                .member(member)
                 .dateStyleType(DateStyleType.from(dateStyleType))
                 .contactType(ContactType.from(contactType))
                 .smokeType(SmokeType.from(smokeType))

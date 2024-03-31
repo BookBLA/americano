@@ -7,8 +7,10 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberBookPro
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
+import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
+import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
+import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
-import com.bookbla.americano.domain.member.repository.MemberProfileRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
@@ -32,15 +34,19 @@ import java.util.stream.Stream;
 public class MemberProfileServiceImpl implements MemberProfileService {
 
     private final MemberRepository memberRepository;
-    private final MemberProfileRepository memberProfileRepository;
 
     @Override
     @Transactional
     public MemberProfileResponse createMemberProfile(Long memberId,
         MemberProfileDto memberProfileDto) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = memberProfileRepository.save(
-            memberProfileDto.toEntity(member));
+
+        member.updateMemberProfile(memberProfileDto.toEntity());
+        MemberProfile memberProfile = member.getMemberProfile();
+
+        memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING)
+            .updateStudentIdImageStatus(StudentIdImageStatus.PENDING)
+            .updateProfileImageStatus(ProfileImageStatus.PENDING);
 
         // 프로필 정보 입력이 완료되면 가입 승인 상태로 변경
         member.updateMemberStatus(MemberStatus.APPROVAL);
@@ -52,8 +58,10 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     @Transactional(readOnly = true)
     public MemberProfileResponse readMemberProfile(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = memberProfileRepository.findByMember(member)
-                .orElseThrow(() -> new BaseException(MemberExceptionType.PROFILE_NOT_REGISTERED));
+        MemberProfile memberProfile = member.getMemberProfile();
+        if (memberProfile == null) {
+            throw new BaseException(MemberExceptionType.PROFILE_NOT_REGISTERED);
+        }
 
         return MemberProfileResponse.from(member, memberProfile);
     }
@@ -64,8 +72,10 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         MemberProfileUpdateRequest memberProfileUpdateRequest) {
 
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = memberProfileRepository.findByMember(member)
-                .orElseThrow(() -> new BaseException(MemberExceptionType.PROFILE_NOT_REGISTERED));
+        MemberProfile memberProfile = member.getMemberProfile();
+        if (memberProfile == null) {
+            throw new BaseException(MemberExceptionType.PROFILE_NOT_REGISTERED);
+        }
 
         updateEntity(memberProfile, memberProfileUpdateRequest);
 
@@ -76,9 +86,10 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     @Transactional(readOnly = true)
     public MemberProfileStatusResponse readMemberProfileStatus(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = memberProfileRepository.findByMember(member)
-                .orElseThrow(() -> new BaseException(MemberExceptionType.PROFILE_NOT_REGISTERED));
-
+        MemberProfile memberProfile = member.getMemberProfile();
+        if (memberProfile == null) {
+            throw new BaseException(MemberExceptionType.PROFILE_NOT_REGISTERED);
+        }
         return MemberProfileStatusResponse.from(memberProfile);
     }
 
@@ -87,8 +98,10 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     public MemberProfileStatusResponse updateMemberProfileStatus(Long memberId,
         MemberProfileStatusDto memberProfileStatusDto) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = memberProfileRepository.findByMember(member)
-                .orElseThrow(() -> new BaseException(MemberExceptionType.PROFILE_NOT_REGISTERED));
+        MemberProfile memberProfile = member.getMemberProfile();
+        if (memberProfile == null) {
+            throw new BaseException(MemberExceptionType.PROFILE_NOT_REGISTERED);
+        }
 
         updateStatusEntity(memberProfile, memberProfileStatusDto);
 
@@ -115,76 +128,82 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<MemberBookProfileResponseDto> findSameBookMembers(Long memberId,
-        MemberBookProfileRequestDto requestDto) {
-        List<MemberBookProfileResponseDto> allResult = memberProfileRepository.searchSameBookMember(
-            memberId, requestDto);
-        // 탐색 결과가 없을 때, EMPTY_MEMBER_BOOK Exception(해당 사용자의 선호 책도 없음)
-        if (allResult.isEmpty()) {
-            throw new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOK);
-        }
-        // 해당 사용자의 선호 책
-        List<MemberBookProfileResponseDto> userBookProfiles = new ArrayList<>();
-        List<MemberBookProfileResponseDto> otherBookProfiles = new ArrayList<>(allResult);
-        for (MemberBookProfileResponseDto i : allResult) {
-            if (i.getMemberId() == memberId) {
-                addBookProfileToList(userBookProfiles, i);
-                otherBookProfiles.remove(i);
-            }
-        }
-        // 해당 사용자의 선호책이 없을 때, EMPTY_MEMBER_BOOK Exception
-        if (userBookProfiles.isEmpty()) {
-            throw new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOK);
-        }
-
-        // 1순위 : 대표책 - 대표책
-        List<MemberBookProfileResponseDto> firstResults = findMatches(
-            userBookProfiles,
-            otherBookProfiles,
-            MemberBookProfileResponseDto::isBookIsRepresentative,
-            MemberBookProfileResponseDto::isBookIsRepresentative
-        );
-
-        Collections.shuffle(firstResults);
-        removeMemberToOtherBookProfiles(otherBookProfiles, firstResults);
-
-        // 2순위 : 대표책 - 선호책
-        List<MemberBookProfileResponseDto> secondResults = findMatches(
-            userBookProfiles,
-            otherBookProfiles,
-            MemberBookProfileResponseDto::isBookIsRepresentative,
-            otherBookProfile -> !otherBookProfile.isBookIsRepresentative()
-        );
-
-        Collections.shuffle(secondResults);
-        removeMemberToOtherBookProfiles(otherBookProfiles, secondResults);
-
-        // 3순위 : 선호책 - 대표책
-        List<MemberBookProfileResponseDto> thirdResults = findMatches(
-            userBookProfiles,
-            otherBookProfiles,
-            userBookProfile -> !userBookProfile.isBookIsRepresentative(),
-            MemberBookProfileResponseDto::isBookIsRepresentative
-        );
-
-        Collections.shuffle(thirdResults);
-        removeMemberToOtherBookProfiles(otherBookProfiles, thirdResults);
-
-        // 4순위 : 선호책 - 선호책
-        List<MemberBookProfileResponseDto> fourthResults = findMatches(
-            userBookProfiles,
-            otherBookProfiles,
-            userBookProfile -> !userBookProfile.isBookIsRepresentative(),
-            otherBookProfile -> !otherBookProfile.isBookIsRepresentative()
-        );
-
-        Collections.shuffle(fourthResults);
-
-        return Stream.of(firstResults, secondResults, thirdResults, fourthResults)
-            .flatMap(Collection::stream)
-            .collect(Collectors.toList());
+        MemberBookProfileRequestDto memberBookProfileRequestDto) {
+        return null;
     }
+
+//    @Override
+//    @Transactional(readOnly = true)
+//    public List<MemberBookProfileResponseDto> findSameBookMembers(Long memberId,
+//        MemberBookProfileRequestDto requestDto) {
+//        List<MemberBookProfileResponseDto> allResult = memberProfileRepository.searchSameBookMember(
+//            memberId, requestDto);
+//        // 탐색 결과가 없을 때, EMPTY_MEMBER_BOOK Exception(해당 사용자의 선호 책도 없음)
+//        if (allResult.isEmpty()) {
+//            throw new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOK);
+//        }
+//        // 해당 사용자의 선호 책
+//        List<MemberBookProfileResponseDto> userBookProfiles = new ArrayList<>();
+//        List<MemberBookProfileResponseDto> otherBookProfiles = new ArrayList<>(allResult);
+//        for (MemberBookProfileResponseDto i : allResult) {
+//            if (i.getMemberId() == memberId) {
+//                addBookProfileToList(userBookProfiles, i);
+//                otherBookProfiles.remove(i);
+//            }
+//        }
+//        // 해당 사용자의 선호책이 없을 때, EMPTY_MEMBER_BOOK Exception
+//        if (userBookProfiles.isEmpty()) {
+//            throw new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOK);
+//        }
+//
+//        // 1순위 : 대표책 - 대표책
+//        List<MemberBookProfileResponseDto> firstResults = findMatches(
+//            userBookProfiles,
+//            otherBookProfiles,
+//            MemberBookProfileResponseDto::isBookIsRepresentative,
+//            MemberBookProfileResponseDto::isBookIsRepresentative
+//        );
+//
+//        Collections.shuffle(firstResults);
+//        removeMemberToOtherBookProfiles(otherBookProfiles, firstResults);
+//
+//        // 2순위 : 대표책 - 선호책
+//        List<MemberBookProfileResponseDto> secondResults = findMatches(
+//            userBookProfiles,
+//            otherBookProfiles,
+//            MemberBookProfileResponseDto::isBookIsRepresentative,
+//            otherBookProfile -> !otherBookProfile.isBookIsRepresentative()
+//        );
+//
+//        Collections.shuffle(secondResults);
+//        removeMemberToOtherBookProfiles(otherBookProfiles, secondResults);
+//
+//        // 3순위 : 선호책 - 대표책
+//        List<MemberBookProfileResponseDto> thirdResults = findMatches(
+//            userBookProfiles,
+//            otherBookProfiles,
+//            userBookProfile -> !userBookProfile.isBookIsRepresentative(),
+//            MemberBookProfileResponseDto::isBookIsRepresentative
+//        );
+//
+//        Collections.shuffle(thirdResults);
+//        removeMemberToOtherBookProfiles(otherBookProfiles, thirdResults);
+//
+//        // 4순위 : 선호책 - 선호책
+//        List<MemberBookProfileResponseDto> fourthResults = findMatches(
+//            userBookProfiles,
+//            otherBookProfiles,
+//            userBookProfile -> !userBookProfile.isBookIsRepresentative(),
+//            otherBookProfile -> !otherBookProfile.isBookIsRepresentative()
+//        );
+//
+//        Collections.shuffle(fourthResults);
+//
+//        return Stream.of(firstResults, secondResults, thirdResults, fourthResults)
+//            .flatMap(Collection::stream)
+//            .collect(Collectors.toList());
+//    }
 
     private List<MemberBookProfileResponseDto> findMatches(
         List<MemberBookProfileResponseDto> userBookProfiles,

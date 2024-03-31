@@ -50,7 +50,7 @@ public class MemberProfileCreateRequest {
         return MemberProfileDto.builder()
             .name(name)
             .birthDate(getBirthDate())
-            .gender(Gender.from(gender))
+            .gender(getGender())
             .schoolName(schoolName)
             .phoneNumber(phoneNumber)
             .profileImageUrl(profileImageUrl)

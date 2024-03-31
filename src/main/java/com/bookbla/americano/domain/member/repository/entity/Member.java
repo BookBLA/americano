@@ -48,6 +48,9 @@ public class Member extends BaseInsertEntity {
     private MemberProfile memberProfile;
 
     @Embedded
+    private MemberPolicy memberPolicy;
+
+    @Embedded
     private MemberStyle memberStyle;
 
     public Member updateOauthEmail(String oauthEmail) {
@@ -62,6 +65,21 @@ public class Member extends BaseInsertEntity {
 
     public Member updateMemberStatus(MemberStatus memberStatus) {
         this.memberStatus = memberStatus;
+        return this;
+    }
+
+    public Member updateMemberAuth(MemberAuth memberAuth) {
+        this.memberAuth = memberAuth;
+        return this;
+    }
+
+    public Member updateMemberProfile(MemberProfile memberProfile) {
+        this.memberProfile = memberProfile;
+        return this;
+    }
+
+    public Member updateMemberPolicy(MemberPolicy memberPolicy) {
+        this.memberPolicy = memberPolicy;
         return this;
     }
 
