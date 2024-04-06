@@ -8,6 +8,7 @@ import com.bookbla.americano.base.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +30,9 @@ public class AuthInterceptor implements HandlerInterceptor {
             HttpServletResponse response,
             Object handler
     ) {
+        if (CorsUtils.isPreFlightRequest(request)) {
+            return true;
+        }
         if (hasNotAuthorization(request)) {
             throw new BaseException(AuthExceptionType.MISSING_AUTH_HEADER);
         }
