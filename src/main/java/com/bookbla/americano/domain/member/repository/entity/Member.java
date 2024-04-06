@@ -7,6 +7,7 @@ import com.bookbla.americano.domain.member.enums.MemberType;
 import com.bookbla.americano.domain.member.exception.MemberAuthExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
+import com.bookbla.americano.domain.member.exception.PolicyExceptionType;
 import javax.persistence.Embedded;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -46,6 +47,7 @@ public class Member extends BaseInsertEntity {
     private MemberStatus memberStatus;
 
     @Embedded
+    @Getter(AccessLevel.NONE)
     private MemberAuth memberAuth;
 
     @Embedded
@@ -53,6 +55,7 @@ public class Member extends BaseInsertEntity {
     private MemberProfile memberProfile;
 
     @Embedded
+    @Getter(AccessLevel.NONE)
     private MemberPolicy memberPolicy;
 
     @Embedded
@@ -113,5 +116,12 @@ public class Member extends BaseInsertEntity {
             throw new BaseException(MemberAuthExceptionType.MEMBER_AUTH_NOT_FOUND);
         }
         return memberAuth;
+    }
+
+    public MemberPolicy getMemberPolicy() {
+        if (memberPolicy == null) {
+            throw new BaseException(PolicyExceptionType.MEMBER_NOT_REGISTERED);
+        }
+        return memberPolicy;
     }
 }
