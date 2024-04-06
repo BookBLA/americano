@@ -31,33 +31,12 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     private final MemberRepository memberRepository;
 
     @Override
-    @Transactional
-    public MemberProfileResponse createMemberProfile(
-            Long memberId,
-            MemberProfileDto memberProfileDto
-    ) {
-        Member member = memberRepository.getByIdOrThrow(memberId);
-
-        member.updateMemberProfile(memberProfileDto.toEntity());
-        MemberProfile memberProfile = member.getMemberProfile();
-
-        memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING)
-                .updateStudentIdImageStatus(StudentIdImageStatus.PENDING)
-                .updateProfileImageStatus(ProfileImageStatus.PENDING);
-
-        // 프로필 정보 입력이 완료되면 가입 승인 상태로 변경
-        member.updateMemberStatus(MemberStatus.APPROVAL);
-
-        return MemberProfileResponse.from(member, memberProfile);
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public MemberProfileResponse readMemberProfile(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
 
-        return MemberProfileResponse.from(member, memberProfile);
+        return MemberProfileResponse.from(memberProfile);
     }
 
     @Override
@@ -70,7 +49,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
         updateEntity(memberProfile, memberProfileUpdateRequest);
 
-        return MemberProfileResponse.from(member, memberProfile);
+        return MemberProfileResponse.from(memberProfile);
     }
 
     private void updateEntity(MemberProfile memberProfile, MemberProfileUpdateRequest request) {
@@ -94,8 +73,10 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
     @Override
     @Transactional
-    public MemberProfileStatusResponse updateMemberProfileStatus(Long memberId,
-                                                                 MemberProfileStatusDto memberProfileStatusDto) {
+    public MemberProfileStatusResponse updateMemberProfileStatus(
+            Long memberId,
+            MemberProfileStatusDto memberProfileStatusDto
+    ) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
 

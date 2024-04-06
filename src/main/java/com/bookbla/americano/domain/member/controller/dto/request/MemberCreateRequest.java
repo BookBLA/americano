@@ -12,7 +12,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class MemberProfileCreateRequest {
+public class MemberCreateRequest {
+
+    @NotNull
+    private Long memberSignUpInformationId;
 
     @NotNull(message = "이름이 입력되지 않았습니다.")
     private String name;
@@ -46,7 +49,7 @@ public class MemberProfileCreateRequest {
         return Gender.from(gender);
     }
 
-    public MemberProfileDto toDto() {
+    public MemberProfileDto toMemberProfileDto() {
         return MemberProfileDto.builder()
             .name(name)
             .birthDate(getBirthDate())

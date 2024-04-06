@@ -1,8 +1,7 @@
 package com.bookbla.americano.domain.auth.infra.apple.dto;
 
+import com.bookbla.americano.domain.auth.repository.entity.MemberSignUpInformation;
 import com.bookbla.americano.domain.auth.service.dto.OAuth2MemberResponse;
-import com.bookbla.americano.domain.member.enums.MemberStatus;
-import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import lombok.RequiredArgsConstructor;
 
@@ -17,11 +16,10 @@ public class AppleOAuth2MemberResponse implements OAuth2MemberResponse {
     }
 
     @Override
-    public Member toMember() {
-        return Member.builder()
-                .oauthEmail(email)
+    public MemberSignUpInformation toMemberSignUpInformation() {
+        return MemberSignUpInformation.builder()
+                .email(email)
                 .memberType(MemberType.APPLE)
-                .memberStatus(MemberStatus.PROFILE)
                 .build();
     }
 }

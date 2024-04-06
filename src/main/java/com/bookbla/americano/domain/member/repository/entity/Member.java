@@ -98,14 +98,14 @@ public class Member extends BaseInsertEntity {
     }
 
     public MemberProfile getMemberProfile() {
-        if (memberProfile == null || memberStatus.isProfileEmpty()) {
+        if (memberProfile == null) {
             throw new BaseException(MemberProfileExceptionType.PROFILE_NOT_FOUND);
         }
         return memberProfile;
     }
 
     public MemberStyle getMemberStyle() {
-        if (memberStyle == null || memberStatus.isMemberStyleEmpty()) {
+        if (memberStyle == null || memberStatus.isMemberStyleUnregistrated()) {
             throw new BaseException(MemberExceptionType.STYLE_NOT_REGISTERED);
         }
         return memberStyle;

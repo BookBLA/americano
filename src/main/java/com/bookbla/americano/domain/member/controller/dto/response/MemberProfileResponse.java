@@ -25,9 +25,8 @@ public class MemberProfileResponse {
     private String openKakaoRoomUrl;
     private String studentIdImageUrl;
 
-    public static MemberProfileResponse from(Member member, MemberProfile memberProfile) {
+    public static MemberProfileResponse from(MemberProfile memberProfile) {
         return MemberProfileResponse.builder()
-            .memberId(member.getId())
             .name(memberProfile.getName())
             .birthDate(memberProfile.getBirthDate().toString())
             .schoolName(memberProfile.getSchoolName())
