@@ -1,17 +1,14 @@
 package com.bookbla.americano.domain.member.service.impl;
 
-import com.bookbla.americano.base.exception.BaseException;
+import java.time.LocalDateTime;
+
 import com.bookbla.americano.domain.member.controller.dto.request.MemberPolicyUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberPolicyResponse;
-import com.bookbla.americano.domain.member.exception.PolicyExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberPolicy;
 import com.bookbla.americano.domain.member.service.MemberPolicyService;
 import com.bookbla.americano.domain.member.service.dto.MemberPolicyDto;
-
-
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,11 +21,8 @@ public class MemberPolicyServiceImpl implements MemberPolicyService {
 
     @Override
     @Transactional
-    public MemberPolicyResponse createMemberPolicies(Long memberId,
-        MemberPolicyDto memberPolicyDto) {
-
+    public MemberPolicyResponse createMemberPolicies(Long memberId, MemberPolicyDto memberPolicyDto) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-
         member.updateMemberPolicy(memberPolicyDto.toEntity());
 
         MemberPolicy memberPolicy = member.getMemberPolicy();
@@ -47,17 +41,14 @@ public class MemberPolicyServiceImpl implements MemberPolicyService {
     @Override
     @Transactional
     public MemberPolicyResponse updateMemberPolicies(
-        Long memberId, MemberPolicyUpdateRequest memberPolicyUpdateRequest
+            Long memberId, MemberPolicyUpdateRequest memberPolicyUpdateRequest
     ) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberPolicy memberPolicy = member.getMemberPolicy();
 
-        memberPolicy.updateAdAgreementPolicy(
-            memberPolicyUpdateRequest.getAgreedStatuses().getAdAgreementPolicy())
-            .updateAdAgreementAt(LocalDateTime.now());
+        memberPolicy.updateAdAgreementPolicy(memberPolicyUpdateRequest.getAgreedStatuses().getAdAgreementPolicy())
+                .updateAdAgreementAt(LocalDateTime.now());
 
         return MemberPolicyResponse.from(member, memberPolicy);
     }
-
-
 }

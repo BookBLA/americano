@@ -1,6 +1,5 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -18,6 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberPolicy {
 
+    // 광고 동의
     @Column(length = 1)
     @Convert(converter = BooleanToYNConverter.class)
     private Boolean adAgreementPolicy;

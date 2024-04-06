@@ -4,9 +4,7 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
-import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
-import com.bookbla.americano.domain.member.repository.MemberStyleRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
 import com.bookbla.americano.domain.member.service.MemberStyleService;
@@ -17,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.bookbla.americano.domain.member.enums.MemberStatus.COMPLETED;
+
 
 @Service
 @Transactional
@@ -24,16 +24,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberStyleServiceImpl implements MemberStyleService {
 
     private final MemberRepository memberRepository;
-    private final MemberStyleRepository memberStyleRepository;
     private final MemberAskRepository memberAskRepository;
 
     @Override
     @Transactional(readOnly = true)
     public MemberStyleResponse readMemberStyle(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberStyle memberStyle = memberStyleRepository.findByMember(member)
-                .orElseThrow(() -> new BaseException(MemberExceptionType.STYLE_NOT_REGISTERED));
-        MemberAsk memberAsk  = memberAskRepository.findByMember(member)
+        MemberStyle memberStyle = member.getMemberStyle();
+
+        MemberAsk memberAsk = memberAskRepository.findByMember(member)
                 .orElseThrow(() -> new BaseException(MemberAskExceptionType.NOT_REGISTERED_MEMBER));
 
         return MemberStyleResponse.of(member, memberStyle, memberAsk);
@@ -42,24 +41,24 @@ public class MemberStyleServiceImpl implements MemberStyleService {
     @Override
     public MemberStyleResponse createMemberStyle(Long memberId, MemberStyleCreateRequest memberStyleCreateRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberStyle memberStyle = memberStyleCreateRequest.toMemberStyleWith(member);
+        member.updateMemberStyle(memberStyleCreateRequest.toMemberStyle());
+
         MemberAsk memberAsk = MemberAsk.builder()
                 .member(member)
                 .contents(memberStyleCreateRequest.getMemberAsk())
                 .build();
-
-        MemberStyle savedMemberStyle = memberStyleRepository.save(memberStyle);
         MemberAsk savedMemberAsk = memberAskRepository.save(memberAsk);
+        member.updateMemberStatus(COMPLETED);
 
-        return MemberStyleResponse.of(member, savedMemberStyle, savedMemberAsk);
+        return MemberStyleResponse.of(member, member.getMemberStyle(), savedMemberAsk);
     }
 
     @Override
     public void updateMemberStyle(Long memberId, MemberStyleUpdateRequest memberStyleUpdateRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberStyle memberStyle = memberStyleRepository.findByMember(member)
-                .orElseThrow(() -> new BaseException(MemberExceptionType.STYLE_NOT_REGISTERED));
-        MemberAsk memberAsk  = memberAskRepository.findByMember(member)
+        MemberStyle memberStyle = member.getMemberStyle();
+
+        MemberAsk memberAsk = memberAskRepository.findByMember(member)
                 .orElseThrow(() -> new BaseException(MemberAskExceptionType.NOT_REGISTERED_MEMBER));
 
         memberAsk.updateContent(memberStyleUpdateRequest.getMemberAsk());
@@ -75,5 +74,4 @@ public class MemberStyleServiceImpl implements MemberStyleService {
                 .updateDateStyleType(request.getDateStyleType())
                 .updateJustFriendType(request.getJustFriendType());
     }
-
 }

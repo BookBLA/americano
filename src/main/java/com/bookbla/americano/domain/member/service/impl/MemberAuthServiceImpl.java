@@ -8,7 +8,6 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberAuthUpda
 import com.bookbla.americano.domain.member.controller.dto.response.MailVerifyResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberAuthResponse;
 import com.bookbla.americano.domain.member.exception.MailExceptionType;
-import com.bookbla.americano.domain.member.exception.MemberAuthExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberPostcardRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -62,9 +61,6 @@ public class MemberAuthServiceImpl implements MemberAuthService {
     public MailVerifyResponse verifyEmail(Long memberId, MailVerifyRequest mailVerifyRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberAuth memberAuth = member.getMemberAuth();
-        if (memberAuth == null) {
-            throw new BaseException(MemberAuthExceptionType.MEMBER_AUTH_NOT_FOUND);
-        }
 
         LocalDateTime nowTime = LocalDateTime.now();
 
@@ -98,9 +94,6 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         String schoolEmail = mailResendRequest.getSchoolEmail();
 
         MemberAuth memberAuth = member.getMemberAuth();
-        if (memberAuth == null) {
-            throw new BaseException(MemberAuthExceptionType.MEMBER_AUTH_NOT_FOUND);
-        }
         String enrolledSchoolEmail = memberAuth.getSchoolEmail();
 
         if (!schoolEmail.equals(enrolledSchoolEmail)) {
@@ -117,15 +110,18 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         return MemberAuthResponse.from(member, memberAuth);
     }
 
+    private void checkDuplicatedEmail(String email) {
+        Optional<Member> member = memberRepository.findByMemberAuthSchoolEmail(email);
+        if (member.isPresent()) {
+            throw new BaseException(MailExceptionType.ALREADY_EXIST);
+        }
+    }
+
     @Override
     @Transactional
     public MemberAuthResponse readMemberAuth(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-
         MemberAuth memberAuth = member.getMemberAuth();
-        if (memberAuth == null) {
-            throw new BaseException(MemberAuthExceptionType.MEMBER_AUTH_NOT_FOUND);
-        }
 
         return MemberAuthResponse.from(member, memberAuth);
     }
@@ -137,24 +133,16 @@ public class MemberAuthServiceImpl implements MemberAuthService {
 
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberAuth memberAuth = member.getMemberAuth();
-        if (memberAuth == null) {
-            throw new BaseException(MemberAuthExceptionType.MEMBER_AUTH_NOT_FOUND);
-        }
 
-        update(memberAuth, memberAuthUpdateRequest);
+        memberAuth.updateSchoolEmail(memberAuthUpdateRequest.getSchoolEmail());
 
         return MemberAuthResponse.from(member, memberAuth);
-    }
-
-    private void update(MemberAuth memberAuth, MemberAuthUpdateRequest request) {
-        memberAuth.updateSchoolEmail(request.getSchoolEmail());
     }
 
     private String sendEmail(String schoolEmail) {
 
         String subject = "북블라 학교 이메일 인증코드";
         String verifyCode = createVerifyCode();
-
 
         Context context = new Context();
         context.setVariable("verifyCode", verifyCode);
@@ -172,13 +160,6 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         }
 
         return verifyCode;
-    }
-
-    private void checkDuplicatedEmail(String email) {
-        Optional<Member> member = memberRepository.findByMemberAuthSchoolEmail(email);
-        if (member.isPresent()) {
-            throw new BaseException(MailExceptionType.ALREADY_EXIST);
-        }
     }
 
     private String createVerifyCode() {

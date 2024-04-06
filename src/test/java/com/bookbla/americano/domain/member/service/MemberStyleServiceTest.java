@@ -18,12 +18,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCreateRequest;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
-import com.bookbla.americano.domain.member.repository.MemberStyleRepository;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpdateRequest;
 import com.bookbla.americano.domain.memberask.repository.MemberAskRepository;
@@ -46,9 +46,6 @@ class MemberStyleServiceTest {
     private MemberRepository memberRepository;
 
     @Autowired
-    private MemberStyleRepository memberStyleRepository;
-
-    @Autowired
     private MemberAskRepository memberAskRepository;
 
     @Test
@@ -69,7 +66,6 @@ class MemberStyleServiceTest {
         // then
         assertAll(
                 () -> assertThat(memberStyleResponse.getMemberId()).isNotNull(),
-                () -> assertThat(memberStyleResponse.getMemberStyleId()).isNotNull(),
                 () -> assertThat(memberStyleResponse.getMbti()).isEqualToIgnoringCase("infj"),
                 () -> assertThat(memberStyleResponse.getDrinkType()).isEqualTo("매일"),
                 () -> assertThat(memberStyleResponse.getDateCostType()).isEqualTo("더치페이"),
@@ -87,16 +83,16 @@ class MemberStyleServiceTest {
         Member member = memberRepository.save(Member.builder()
                 .memberType(MemberType.APPLE)
                 .oauthEmail("bookbla@bookbla.com")
-                .build());
-        memberStyleRepository.save(MemberStyle.builder()
-                .member(member)
-                .contactType(FAST)
-                .drinkType(NONE)
-                .smokeType(SMOKE)
-                .justFriendType(ALCOHOL)
-                .dateStyleType(HOME)
-                .mbti(INTP)
-                .dateCostType(DATE_ACCOUNT)
+                .memberStatus(MemberStatus.COMPLETED)
+                .memberStyle(MemberStyle.builder()
+                        .contactType(FAST)
+                        .drinkType(NONE)
+                        .smokeType(SMOKE)
+                        .justFriendType(ALCOHOL)
+                        .dateStyleType(HOME)
+                        .mbti(INTP)
+                        .dateCostType(DATE_ACCOUNT)
+                        .build())
                 .build());
         memberAskRepository.save(MemberAsk
                 .builder()
@@ -105,8 +101,7 @@ class MemberStyleServiceTest {
                 .build());
 
         // when
-        MemberStyleResponse memberStyleResponse = memberStyleService.readMemberStyle(
-                member.getId());
+        MemberStyleResponse memberStyleResponse = memberStyleService.readMemberStyle(member.getId());
 
         // then
         assertAll(
@@ -156,17 +151,18 @@ class MemberStyleServiceTest {
         Member member = memberRepository.save(Member.builder()
                 .memberType(MemberType.APPLE)
                 .oauthEmail("bookbla@bookbla.com")
-                .build());
-        memberStyleRepository.save(MemberStyle.builder()
-                .member(member)
-                .contactType(FAST)
-                .drinkType(NONE)
-                .smokeType(SMOKE)
-                .justFriendType(ALCOHOL)
-                .dateStyleType(HOME)
-                .mbti(INTP)
-                .dateCostType(DATE_ACCOUNT)
-                .build());
+                .memberStatus(MemberStatus.COMPLETED)
+                .memberStyle(
+                        MemberStyle.builder()
+                                .contactType(FAST)
+                                .drinkType(NONE)
+                                .smokeType(SMOKE)
+                                .justFriendType(ALCOHOL)
+                                .dateStyleType(HOME)
+                                .mbti(INTP)
+                                .dateCostType(DATE_ACCOUNT)
+                                .build()
+                ).build());
         memberAskRepository.save(MemberAsk.builder()
                 .member(member)
                 .contents("어느 시간대에 책을 읽으시나요?")
@@ -179,7 +175,7 @@ class MemberStyleServiceTest {
         memberStyleService.updateMemberStyle(member.getId(), memberStyleUpdateRequest);
 
         // then
-        MemberStyle memberStyle = memberStyleRepository.findByMember(member).orElseThrow();
+        MemberStyle memberStyle = memberRepository.getByIdOrThrow(member.getId()).getMemberStyle();
         assertAll(
                 () -> assertThat(memberStyle.getDateStyleType()).isEqualTo(HOME),
                 () -> assertThat(memberStyle.getMbti()).isEqualTo(INFJ),

@@ -1,8 +1,12 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.MemberType;
+import com.bookbla.americano.domain.member.exception.MemberAuthExceptionType;
+import com.bookbla.americano.domain.member.exception.MemberExceptionType;
+import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import javax.persistence.Embedded;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -45,12 +49,14 @@ public class Member extends BaseInsertEntity {
     private MemberAuth memberAuth;
 
     @Embedded
+    @Getter(AccessLevel.NONE)
     private MemberProfile memberProfile;
 
     @Embedded
     private MemberPolicy memberPolicy;
 
     @Embedded
+    @Getter(AccessLevel.NONE)
     private MemberStyle memberStyle;
 
     public Member updateOauthEmail(String oauthEmail) {
@@ -83,4 +89,29 @@ public class Member extends BaseInsertEntity {
         return this;
     }
 
+    public Member updateMemberStyle(MemberStyle memberStyle) {
+        this.memberStyle = memberStyle;
+        return this;
+    }
+
+    public MemberProfile getMemberProfile() {
+        if (memberProfile == null || memberStatus.isProfileEmpty()) {
+            throw new BaseException(MemberProfileExceptionType.PROFILE_NOT_FOUND);
+        }
+        return memberProfile;
+    }
+
+    public MemberStyle getMemberStyle() {
+        if (memberStyle == null || memberStatus.isMemberStyleEmpty()) {
+            throw new BaseException(MemberExceptionType.STYLE_NOT_REGISTERED);
+        }
+        return memberStyle;
+    }
+
+    public MemberAuth getMemberAuth() {
+        if (memberAuth == null) {
+            throw new BaseException(MemberAuthExceptionType.MEMBER_AUTH_NOT_FOUND);
+        }
+        return memberAuth;
+    }
 }

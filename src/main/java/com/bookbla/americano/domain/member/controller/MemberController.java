@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -40,7 +39,8 @@ public class MemberController {
 
     @GetMapping
     public ResponseEntity<MemberResponse> readMember(
-        @Parameter(hidden = true) @User LoginUser loginUser) {
+        @Parameter(hidden = true) @User LoginUser loginUser
+    ) {
         MemberResponse memberResponse = memberService.readMember(loginUser.getMemberId());
         return ResponseEntity.ok(memberResponse);
     }

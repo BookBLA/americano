@@ -1,6 +1,10 @@
 package com.bookbla.americano.domain.member.service.impl;
 
-import com.bookbla.americano.base.exception.BaseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
@@ -10,7 +14,6 @@ import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
-import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
@@ -21,14 +24,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 @Service
 @RequiredArgsConstructor
 public class MemberProfileServiceImpl implements MemberProfileService {
@@ -37,16 +32,18 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
     @Override
     @Transactional
-    public MemberProfileResponse createMemberProfile(Long memberId,
-        MemberProfileDto memberProfileDto) {
+    public MemberProfileResponse createMemberProfile(
+            Long memberId,
+            MemberProfileDto memberProfileDto
+    ) {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
         member.updateMemberProfile(memberProfileDto.toEntity());
         MemberProfile memberProfile = member.getMemberProfile();
 
         memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING)
-            .updateStudentIdImageStatus(StudentIdImageStatus.PENDING)
-            .updateProfileImageStatus(ProfileImageStatus.PENDING);
+                .updateStudentIdImageStatus(StudentIdImageStatus.PENDING)
+                .updateProfileImageStatus(ProfileImageStatus.PENDING);
 
         // 프로필 정보 입력이 완료되면 가입 승인 상태로 변경
         member.updateMemberStatus(MemberStatus.APPROVAL);
@@ -59,9 +56,6 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     public MemberProfileResponse readMemberProfile(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
-        if (memberProfile == null) {
-            throw new BaseException(MemberExceptionType.PROFILE_NOT_REGISTERED);
-        }
 
         return MemberProfileResponse.from(member, memberProfile);
     }
@@ -69,17 +63,25 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     @Override
     @Transactional
     public MemberProfileResponse updateMemberProfile(Long memberId,
-        MemberProfileUpdateRequest memberProfileUpdateRequest) {
+                                                     MemberProfileUpdateRequest memberProfileUpdateRequest) {
 
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
-        if (memberProfile == null) {
-            throw new BaseException(MemberExceptionType.PROFILE_NOT_REGISTERED);
-        }
 
         updateEntity(memberProfile, memberProfileUpdateRequest);
 
         return MemberProfileResponse.from(member, memberProfile);
+    }
+
+    private void updateEntity(MemberProfile memberProfile, MemberProfileUpdateRequest request) {
+        memberProfile.updateName(request.getName())
+                .updateBirthDate(request.getBirthDate())
+                .updateGender(request.getGender())
+                .updateSchoolName(request.getSchoolName())
+                .updatePhoneNumber(request.getPhoneNumber())
+                .updateProfileImageUrl(request.getProfileImageUrl())
+                .updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl())
+                .updateStudentIdImageUrl(request.getStudentIdImageUrl());
     }
 
     @Override
@@ -87,21 +89,15 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     public MemberProfileStatusResponse readMemberProfileStatus(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
-        if (memberProfile == null) {
-            throw new BaseException(MemberExceptionType.PROFILE_NOT_REGISTERED);
-        }
         return MemberProfileStatusResponse.from(memberProfile);
     }
 
     @Override
     @Transactional
     public MemberProfileStatusResponse updateMemberProfileStatus(Long memberId,
-        MemberProfileStatusDto memberProfileStatusDto) {
+                                                                 MemberProfileStatusDto memberProfileStatusDto) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
-        if (memberProfile == null) {
-            throw new BaseException(MemberExceptionType.PROFILE_NOT_REGISTERED);
-        }
 
         updateStatusEntity(memberProfile, memberProfileStatusDto);
 
@@ -109,27 +105,16 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     }
 
 
-    private void updateEntity(MemberProfile memberProfile, MemberProfileUpdateRequest request) {
-        memberProfile.updateName(request.getName())
-            .updateBirthDate(request.getBirthDate())
-            .updateGender(request.getGender())
-            .updateSchoolName(request.getSchoolName())
-            .updatePhoneNumber(request.getPhoneNumber())
-            .updateProfileImageUrl(request.getProfileImageUrl())
-            .updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl())
-            .updateStudentIdImageUrl(request.getStudentIdImageUrl());
-    }
-
-    private void updateStatusEntity(MemberProfile memberprofile,
-        MemberProfileStatusDto dto) {
+    private void updateStatusEntity(MemberProfile memberprofile, MemberProfileStatusDto dto) {
         memberprofile.updateProfileImageStatus(dto.getProfileImageStatus())
-            .updateOpenKakaoRoomStatus(dto.getOpenKakaoRoomStatus())
-            .updateStudentIdImageStatus(dto.getStudentIdImageStatus());
+                .updateOpenKakaoRoomStatus(dto.getOpenKakaoRoomStatus())
+                .updateStudentIdImageStatus(dto.getStudentIdImageStatus());
     }
 
     @Override
-    public List<MemberBookProfileResponseDto> findSameBookMembers(Long memberId,
-        MemberBookProfileRequestDto memberBookProfileRequestDto) {
+    public List<MemberBookProfileResponseDto> findSameBookMembers(
+            Long memberId, MemberBookProfileRequestDto memberBookProfileRequestDto
+    ) {
         return null;
     }
 
@@ -206,35 +191,35 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 //    }
 
     private List<MemberBookProfileResponseDto> findMatches(
-        List<MemberBookProfileResponseDto> userBookProfiles,
-        List<MemberBookProfileResponseDto> otherBookProfiles,
-        Predicate<MemberBookProfileResponseDto> userPredicate,
-        Predicate<MemberBookProfileResponseDto> otherPredicate) {
+            List<MemberBookProfileResponseDto> userBookProfiles,
+            List<MemberBookProfileResponseDto> otherBookProfiles,
+            Predicate<MemberBookProfileResponseDto> userPredicate,
+            Predicate<MemberBookProfileResponseDto> otherPredicate) {
 
         return new ArrayList<>(userBookProfiles.stream()
-            .filter(userPredicate)
-            .flatMap(userBookProfile -> otherBookProfiles.stream()
-                .filter(otherBookProfile -> otherBookProfile.getBookId()
-                    == userBookProfile.getBookId())
-                .filter(otherPredicate)
-            ).collect(Collectors.groupingBy(MemberBookProfileResponseDto::getMemberId,
-                Collectors.collectingAndThen(
-                    Collectors.toList(),
-                    memberBookProfileList -> memberBookProfileList.get(0)
-                )))
-            .values());
+                .filter(userPredicate)
+                .flatMap(userBookProfile -> otherBookProfiles.stream()
+                        .filter(otherBookProfile -> otherBookProfile.getBookId()
+                                == userBookProfile.getBookId())
+                        .filter(otherPredicate)
+                ).collect(Collectors.groupingBy(MemberBookProfileResponseDto::getMemberId,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                memberBookProfileList -> memberBookProfileList.get(0)
+                        )))
+                .values());
     }
 
     private void removeMemberToOtherBookProfiles(
-        List<MemberBookProfileResponseDto> otherBookProfiles,
-        List<MemberBookProfileResponseDto> resultBookProfiles) {
+            List<MemberBookProfileResponseDto> otherBookProfiles,
+            List<MemberBookProfileResponseDto> resultBookProfiles) {
         otherBookProfiles.removeIf(otherBookProfile -> resultBookProfiles.stream()
-            .anyMatch(resultBookProfile -> resultBookProfile.getMemberId()
-                == otherBookProfile.getMemberId()));
+                .anyMatch(resultBookProfile -> resultBookProfile.getMemberId()
+                        == otherBookProfile.getMemberId()));
     }
 
     private void addBookProfileToList(List<MemberBookProfileResponseDto> list,
-        MemberBookProfileResponseDto i) {
+                                      MemberBookProfileResponseDto i) {
         if (i.isBookIsRepresentative()) {
             list.add(0, i);
         } else {

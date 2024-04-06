@@ -14,7 +14,6 @@ import lombok.Getter;
 public class MemberLibraryProfileReadResponse {
 
     private final Long memberId;
-    private final Long memberProfileId;
     private final String name;
     private final int age;
     private final String gender;
@@ -36,7 +35,6 @@ public class MemberLibraryProfileReadResponse {
                 .collect(Collectors.toList());
         return new MemberLibraryProfileReadResponse(
                 member.getId(),
-                memberProfile.getId(),
                 memberProfile.showBlindName(),
                 memberProfile.calculateAge(LocalDate.now()),
                 memberProfile.getGender().name(),

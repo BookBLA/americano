@@ -34,4 +34,15 @@ public enum MemberStatus {
             .orElseThrow(() -> new BaseException(MemberExceptionType.MEMBER_STATUS_NOT_VALID));
     }
 
+    public boolean isProfileEmpty() {
+        return this == PROFILE;
+    }
+
+    public boolean isMemberAuthEmpty() {
+        return this == PROFILE || this == APPROVAL;
+    }
+
+    public boolean isMemberStyleEmpty() {
+        return this == PROFILE || this == STYLE_BOOK;
+    }
 }
