@@ -19,9 +19,8 @@ public class MemberAuthDto {
     private Member member;
     private String schoolEmail;
 
-    public MemberAuth toEntity(Member member, String emailVerifyCode) {
+    public MemberAuth toEntity(String emailVerifyCode) {
         return MemberAuth.builder()
-            .member(member)
             .schoolEmail(schoolEmail)
             .emailVerifyCode(emailVerifyCode)
             .emailVerifyStartTime(LocalDateTime.now())

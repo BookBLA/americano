@@ -31,53 +31,53 @@ public class MemberAuthController {
 
     @GetMapping
     public ResponseEntity<MemberAuthResponse> readMemberAuth(
-        @Parameter(hidden = true) @User LoginUser loginUser) {
+            @Parameter(hidden = true) @User LoginUser loginUser) {
         MemberAuthResponse memberAuthResponse = memberAuthService.readMemberAuth(
-            loginUser.getMemberId());
+                loginUser.getMemberId());
         return ResponseEntity.ok(memberAuthResponse);
     }
 
     @PutMapping
     public ResponseEntity<MemberAuthResponse> updateMemberAuth(
-        @Parameter(hidden = true) @User LoginUser loginUser,
-        @RequestBody @Valid MemberAuthUpdateRequest memberAuthUpdateRequest) {
+            @Parameter(hidden = true) @User LoginUser loginUser,
+            @RequestBody @Valid MemberAuthUpdateRequest memberAuthUpdateRequest) {
 
         MemberAuthResponse memberAuthUpdateResponse =
-            memberAuthService.updateMemberAuth(loginUser.getMemberId(), memberAuthUpdateRequest);
+                memberAuthService.updateMemberAuth(loginUser.getMemberId(), memberAuthUpdateRequest);
 
         return ResponseEntity.ok(memberAuthUpdateResponse);
     }
 
     @PostMapping("/emails")
     public ResponseEntity<MemberAuthResponse> sendMailAndCreateMemberAuth(
-        @Parameter(hidden = true) @User LoginUser loginUser,
-        @RequestBody @Valid MailSendRequest mailSendRequest) {
+            @Parameter(hidden = true) @User LoginUser loginUser,
+            @RequestBody @Valid MailSendRequest mailSendRequest) {
 
         MemberAuthResponse memberAuthResponse =
-            memberAuthService.sendEmailAndCreateMemberAuth(loginUser.getMemberId(),
-                mailSendRequest.toMemberAuthDto());
+                memberAuthService.sendEmailAndCreateMemberAuth(loginUser.getMemberId(),
+                        mailSendRequest.toMemberAuthDto());
 
         return ResponseEntity.ok(memberAuthResponse);
     }
 
     @PostMapping("/emails/verifications")
     public ResponseEntity<MailVerifyResponse> verifyMail(
-        @Parameter(hidden = true) @User LoginUser loginUser,
-        @RequestBody @Valid MailVerifyRequest mailVerifyRequest) {
+            @Parameter(hidden = true) @User LoginUser loginUser,
+            @RequestBody @Valid MailVerifyRequest mailVerifyRequest) {
 
         MailVerifyResponse mailVerifyResponse =
-            memberAuthService.verifyEmail(loginUser.getMemberId(), mailVerifyRequest);
+                memberAuthService.verifyEmail(loginUser.getMemberId(), mailVerifyRequest);
 
         return ResponseEntity.ok(mailVerifyResponse);
     }
 
     @PatchMapping("/emails")
     public ResponseEntity<MemberAuthResponse> resendMail(
-        @Parameter(hidden = true) @User LoginUser loginUser,
-        @RequestBody @Valid MailResendRequest mailResendRequest) {
+            @Parameter(hidden = true) @User LoginUser loginUser,
+            @RequestBody @Valid MailResendRequest mailResendRequest) {
 
         MemberAuthResponse memberAuthResponse =
-            memberAuthService.resendEmail(loginUser.getMemberId(), mailResendRequest);
+                memberAuthService.resendEmail(loginUser.getMemberId(), mailResendRequest);
 
         return ResponseEntity.ok(memberAuthResponse);
     }

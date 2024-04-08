@@ -1,6 +1,5 @@
 package com.bookbla.americano.domain.member.controller.dto.request;
 
-import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
 import com.bookbla.americano.domain.member.enums.ContactType;
 import com.bookbla.americano.domain.member.enums.DateCostType;
@@ -42,9 +41,8 @@ public class MemberStyleCreateRequest {
     @NotNull(message = "개인 질문이 입력되지 않았습니다.")
     private String memberAsk;
 
-    public MemberStyle toMemberStyleWith(Member member) {
+    public MemberStyle toMemberStyle() {
         return MemberStyle.builder()
-                .member(member)
                 .dateStyleType(DateStyleType.from(dateStyleType))
                 .contactType(ContactType.from(contactType))
                 .smokeType(SmokeType.from(smokeType))

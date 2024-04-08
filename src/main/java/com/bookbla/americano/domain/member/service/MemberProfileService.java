@@ -14,10 +14,10 @@ import java.util.List;
 public interface MemberProfileService {
 
     List<MemberBookProfileResponseDto> findSameBookMembers(Long memberId, MemberBookProfileRequestDto memberBookProfileRequestDto);
-    MemberProfileResponse createMemberProfile(Long memberId, MemberProfileDto memberProfileDto);
+
     MemberProfileResponse readMemberProfile(Long memberId);
-    MemberProfileResponse updateMemberProfile(Long memberId,
-        MemberProfileUpdateRequest memberProfileUpdateRequest);
+
+    MemberProfileResponse updateMemberProfile(Long memberId, MemberProfileUpdateRequest memberProfileUpdateRequest);
 
     MemberProfileStatusResponse readMemberProfileStatus(Long memberId);
 

@@ -9,10 +9,10 @@ import lombok.RequiredArgsConstructor;
 public class TestSignUpResponse {
 
     private final String accessToken;
-    private final Long memberId;
+    private final Long memberSignUpInformationId;
 
-    public static TestSignUpResponse of(Member member, String token) {
-        return new TestSignUpResponse(token, member.getId());
+    public static TestSignUpResponse of(Long id, String token) {
+        return new TestSignUpResponse(token, id);
     }
 
 }

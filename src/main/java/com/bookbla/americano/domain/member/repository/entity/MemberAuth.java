@@ -1,41 +1,23 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
-import com.bookbla.americano.base.entity.BaseInsertEntity;
-import com.bookbla.americano.domain.member.Email;
+import java.time.LocalDateTime;
+
 import com.bookbla.americano.domain.member.enums.EmailVerifyStatus;
-import lombok.AccessLevel;
+import javax.persistence.Embeddable;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-
-@Entity
 @Getter
+@Embeddable
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberAuth extends BaseInsertEntity {
+public class MemberAuth {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @OneToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
-
-    @Column(unique = true)
     private String schoolEmail;
 
     private String emailVerifyCode;
@@ -44,7 +26,6 @@ public class MemberAuth extends BaseInsertEntity {
 
     @Enumerated(EnumType.STRING)
     private EmailVerifyStatus emailVerifyStatus;
-
 
     public MemberAuth updateSchoolEmail(String schoolEmail) {
         this.schoolEmail = schoolEmail;

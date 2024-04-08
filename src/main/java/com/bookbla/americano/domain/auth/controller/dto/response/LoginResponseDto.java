@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.auth.controller.dto.response;
 
-import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.auth.repository.entity.MemberSignUpInformation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,12 +11,12 @@ import lombok.Getter;
 public class LoginResponseDto {
     
     private final String accessToken;
-    private final Long memberId;
+    private final Long memberSignUpInformationId;
 
-    public static LoginResponseDto of(String accessToken, Member member) {
+    public static LoginResponseDto of(String accessToken, MemberSignUpInformation member) {
         return LoginResponseDto.builder()
                 .accessToken(accessToken)
-                .memberId(member.getId())
+                .memberSignUpInformationId(member.getId())
                 .build();
     }
 }

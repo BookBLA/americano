@@ -2,7 +2,7 @@ package com.bookbla.americano.domain.member.service.dto;
 
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberPolicy;
-import com.bookbla.americano.domain.policy.Policy;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,13 +16,12 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MemberPolicyDto {
 
-    private List<Boolean> agreedStatuses;
+    private Boolean adAgreementPolicy;
 
-    public MemberPolicy toEntity(Member member, Policy policy, Boolean agreedStatus) {
+    public MemberPolicy toEntity() {
         return MemberPolicy.builder()
-            .member(member)
-            .policy(policy)
-            .agreedStatus(agreedStatus)
+            .adAgreementPolicy(adAgreementPolicy)
+            .adAgreementAt(LocalDateTime.now())
             .build();
     }
 

@@ -43,5 +43,4 @@ class ContactTypeTest {
         assertThatThrownBy(() -> ContactType.from(input))
                 .isInstanceOf(BaseException.class);
     }
-
 }
