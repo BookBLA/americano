@@ -84,7 +84,7 @@ class MemberAuthServiceTest {
                         .build())
                 .memberAuth(MemberAuth.builder()
                         .schoolEmail("학교이메일")
-                        .emailVerifyStartTime(LocalDateTime.now().plusMinutes(5))
+                        .emailVerifyStartTime(LocalDateTime.now().plusMinutes(10))
                         .emailVerifyStatus(PENDING)
                         .emailVerifyCode("12345")
                         .build())
