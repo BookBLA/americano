@@ -1,7 +1,6 @@
 package com.bookbla.americano.domain.member.service.dto;
 
 import com.bookbla.americano.domain.member.enums.EmailVerifyStatus;
-import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberAuth;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -16,7 +15,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MemberAuthDto {
 
-    private Member member;
     private String schoolEmail;
 
     public MemberAuth toEntity(String emailVerifyCode) {

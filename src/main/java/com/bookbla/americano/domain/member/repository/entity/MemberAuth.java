@@ -56,6 +56,4 @@ public class MemberAuth {
         this.emailVerifyStatus = EmailVerifyStatus.DONE;
         return this;
     }
-
-
 }
