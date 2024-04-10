@@ -10,13 +10,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public class MailVerifyResponse {
 
-    private Long id;
     private String schoolEmail;
     private String emailVerifyStatus;
 
     public static MailVerifyResponse from(MemberAuth memberAuth) {
         return MailVerifyResponse.builder()
-            .id(memberAuth.getId())
             .schoolEmail(memberAuth.getSchoolEmail())
             .emailVerifyStatus(memberAuth.getEmailVerifyStatus().name())
             .build();

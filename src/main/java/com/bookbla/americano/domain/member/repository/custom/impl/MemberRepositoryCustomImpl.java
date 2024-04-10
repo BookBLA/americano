@@ -12,7 +12,8 @@ import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.JustFriendType;
 import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.SmokeType;
-import com.bookbla.americano.domain.member.repository.custom.MemberProfileRepositoryCustom;
+import com.bookbla.americano.domain.member.repository.custom.MemberRepositoryCustom;
+import com.bookbla.americano.domain.member.repository.entity.QMember;
 import com.bookbla.americano.domain.member.repository.entity.QMemberBook;
 import com.bookbla.americano.domain.member.repository.entity.QMemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.QMemberStyle;
@@ -28,13 +29,12 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class MemberProfileRepositoryCustomImpl implements MemberProfileRepositoryCustom {
+public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
     public List<MemberBookProfileResponseDto> searchSameBookMember(Long memberId, MemberBookProfileRequestDto requestDto) {
-        QMemberProfile memberProfile = QMemberProfile.memberProfile;
-        QMemberStyle memberStyle = QMemberStyle.memberStyle;
+        QMember member = QMember.member;
         QMemberBook memberBook = QMemberBook.memberBook;
         QBook book = QBook.book;
 
@@ -42,36 +42,35 @@ public class MemberProfileRepositoryCustomImpl implements MemberProfileRepositor
         builder.and(memberBook.book.id.in(
                 JPAExpressions
                         .select(memberBook.book.id)
-                        .from(memberProfile)
-                        .innerJoin(memberBook).on(memberProfile.member.eq(memberBook.member))
-                        .where(memberProfile.member.id.eq(memberId))));
+                        .from(member)
+                        .innerJoin(memberBook).on(member.eq(memberBook.member))
+                        .where(member.id.eq(memberId))));
 
-        builder.and(eqGender(memberProfile, requestDto.getGender()))
-                .and(eqSmokeType(memberStyle, requestDto.getSmokeType()))
-                .and(eqDrinkType(memberStyle, requestDto.getDrinkType()))
-                .and(eqContactType(memberStyle, requestDto.getContactType()))
-                .and(eqDateStyleType(memberStyle, requestDto.getDateStyleType()))
-                .and(eqDateCostType(memberStyle, requestDto.getDateCostType()))
-                .and(eqMbtiType(memberStyle, requestDto.getMbti()))
-                .and(eqJustFriendType(memberStyle, requestDto.getJustFriendType()));
+        builder.and(eqGender(member.memberProfile, requestDto.getGender()))
+                .and(eqSmokeType(member.memberStyle, requestDto.getSmokeType()))
+                .and(eqDrinkType(member.memberStyle, requestDto.getDrinkType()))
+                .and(eqContactType(member.memberStyle, requestDto.getContactType()))
+                .and(eqDateStyleType(member.memberStyle, requestDto.getDateStyleType()))
+                .and(eqDateCostType(member.memberStyle, requestDto.getDateCostType()))
+                .and(eqMbtiType(member.memberStyle, requestDto.getMbti()))
+                .and(eqJustFriendType(member.memberStyle, requestDto.getJustFriendType()));
 
         return queryFactory
                 .select(Projections.fields(MemberBookProfileResponseDto.class
-                        , memberProfile.member.id.as("memberId")
+                        , member.id.as("memberId")
                         , memberBook.book.id.as("bookId")
-                        , memberProfile.nickname.as("memberName")
-                        , memberProfile.birthDate.year().subtract(LocalDate.now().getYear() + 1).abs().as("memberAge")
-                        , memberProfile.gender.as("memberGender")
-                        , memberProfile.schoolName.as("memberSchoolName")
+                        , member.memberProfile.nickname.as("memberName")
+                        , member.memberProfile.birthDate.year().subtract(LocalDate.now().getYear() + 1).abs().as("memberAge")
+                        , member.memberProfile.gender.as("memberGender")
+                        , member.memberProfile.schoolName.as("memberSchoolName")
                         , book.title.as("bookName")
                         , book.imageUrl.as("bookImageUrl")
                         , memberBook.isRepresentative.as("bookIsRepresentative"))
                 )
-                .from(memberProfile)
-                .innerJoin(memberBook).on(memberProfile.member.eq(memberBook.member))
+                .from(member)
+                .innerJoin(memberBook).on(member.eq(memberBook.member))
                 .innerJoin(book).on(memberBook.book.eq(book))
-                .innerJoin(memberStyle).on(memberProfile.member.eq(memberStyle.member))
-                .where(builder.or(memberProfile.member.id.eq(memberId)))
+                .where(builder.or(member.id.eq(memberId)))
                 .fetch();
     }
 

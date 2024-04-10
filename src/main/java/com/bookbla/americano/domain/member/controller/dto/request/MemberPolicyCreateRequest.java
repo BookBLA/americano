@@ -21,11 +21,6 @@ public class MemberPolicyCreateRequest {
     public static class AgreedStatuses {
         private Boolean adAgreementPolicy;
 
-        public List<Boolean> toList() {
-            List<Boolean> agreedStatuses = new ArrayList<>();
-            agreedStatuses.add(adAgreementPolicy);
-            return agreedStatuses;
-        }
     }
 
     @NotNull(message = "선택 약관이 입력되지 않았습니다.")
@@ -33,7 +28,7 @@ public class MemberPolicyCreateRequest {
 
     public MemberPolicyDto toDto() {
         return MemberPolicyDto.builder()
-            .agreedStatuses(agreedStatuses.toList())
+            .adAgreementPolicy(agreedStatuses.adAgreementPolicy)
             .build();
     }
 

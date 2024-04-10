@@ -26,9 +26,8 @@ public class MemberProfileDto {
     private String openKakaoRoomUrl;
     private String studentIdImageUrl;
 
-    public MemberProfile toEntity(Member member) {
+    public MemberProfile toEntity() {
         return MemberProfile.builder()
-            .member(member)
             .name(name)
             .birthDate(birthDate)
             .gender(gender)

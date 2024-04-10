@@ -1,25 +1,22 @@
 package com.bookbla.americano.domain.test.controller;
 
+import java.net.URI;
+import java.util.List;
+
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.base.jwt.JwtProvider;
-import com.bookbla.americano.domain.auth.service.AuthService;
-import com.bookbla.americano.domain.member.enums.MemberType;
-import com.bookbla.americano.domain.member.repository.MemberRepository;
-import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.auth.repository.entity.MemberSignUpInformation;
 import com.bookbla.americano.domain.test.controller.dto.request.TestCreateRequest;
 import com.bookbla.americano.domain.test.controller.dto.request.TestSignUpRequest;
 import com.bookbla.americano.domain.test.controller.dto.response.TestCreateResponse;
 import com.bookbla.americano.domain.test.controller.dto.response.TestReadResponse;
 import com.bookbla.americano.domain.test.controller.dto.response.TestSignUpResponse;
 import com.bookbla.americano.domain.test.service.TestService;
-import java.net.URI;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,8 +56,8 @@ public class TestController {
     public ResponseEntity<TestSignUpResponse> testSignUp(
             @RequestBody TestSignUpRequest testSignUpRequest
     ) {
-        Member member = testService.signUp(testSignUpRequest.getEmail());
-        String token = jwtProvider.createToken(member.getId().toString());
-        return ResponseEntity.ok(TestSignUpResponse.of(member, token));
+        MemberSignUpInformation memberSignUpInformation = testService.signUp(testSignUpRequest.getEmail());
+        String token = jwtProvider.createToken(memberSignUpInformation.getId().toString());
+        return ResponseEntity.ok(TestSignUpResponse.of(memberSignUpInformation.getId(), token));
     }
 }

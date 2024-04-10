@@ -11,7 +11,6 @@ import lombok.Getter;
 public class MemberStyleResponse {
 
     private final Long memberId;
-    private final Long memberStyleId;
     private final String smokeType;
     private final String contactType;
     private final String dateCostType;
@@ -24,7 +23,6 @@ public class MemberStyleResponse {
     public static MemberStyleResponse of(Member member, MemberStyle memberStyle, MemberAsk memberAsk) {
         return new MemberStyleResponse(
                 member.getId(),
-                memberStyle.getId(),
                 memberStyle.getSmokeType().getValue(),
                 memberStyle.getContactType().getValue(),
                 memberStyle.getDateCostType().getValue(),

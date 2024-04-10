@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/library")
+@RequestMapping("/members/library")
 public class MemberLibraryController {
 
     private final MemberLibraryService memberLibraryService;
@@ -24,7 +24,7 @@ public class MemberLibraryController {
     public ResponseEntity<MemberLibraryProfileReadResponse> readMemberProfile(
         @Parameter(hidden = true) @User LoginUser loginUser) {
         MemberLibraryProfileReadResponse memberLibraryProfileReadResponse = memberLibraryService.getLibraryProfile(
-            loginUser.getMemberId());
+loginUser.getMemberId());
         return ResponseEntity.ok(memberLibraryProfileReadResponse);
     }
 

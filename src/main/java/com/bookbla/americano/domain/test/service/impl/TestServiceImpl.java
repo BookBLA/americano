@@ -1,17 +1,17 @@
 package com.bookbla.americano.domain.test.service.impl;
 
-import com.bookbla.americano.domain.member.enums.MemberStatus;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.bookbla.americano.domain.auth.repository.MemberSignUpInformationRepository;
+import com.bookbla.americano.domain.auth.repository.entity.MemberSignUpInformation;
 import com.bookbla.americano.domain.member.enums.MemberType;
-import com.bookbla.americano.domain.member.repository.MemberRepository;
-import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.test.controller.dto.response.TestCreateResponse;
 import com.bookbla.americano.domain.test.controller.dto.response.TestReadResponse;
 import com.bookbla.americano.domain.test.repository.TestRepository;
 import com.bookbla.americano.domain.test.repository.entity.TestEntity;
 import com.bookbla.americano.domain.test.service.TestService;
 import com.bookbla.americano.domain.test.service.dto.TestDto;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TestServiceImpl implements TestService {
 
     private final TestRepository testRepository;
-    private final MemberRepository memberRepository;
+    private final MemberSignUpInformationRepository memberSignUpInformationRepository;
 
     @Override
     @Transactional
@@ -40,13 +40,12 @@ public class TestServiceImpl implements TestService {
 
     @Override
     @Transactional
-    public Member signUp(String email) {
-        return memberRepository.findByMemberTypeAndOauthEmail(MemberType.ADMIN, email)
-                .orElseGet(() -> memberRepository.save(
-                        Member.builder()
+    public MemberSignUpInformation signUp(String email) {
+        return memberSignUpInformationRepository.findByMemberTypeAndEmail(MemberType.ADMIN, email)
+                .orElseGet(() -> memberSignUpInformationRepository.save(
+                        MemberSignUpInformation.builder()
                                 .memberType(MemberType.ADMIN)
-                                .oauthEmail(email)
-                                .memberStatus(MemberStatus.COMPLETED)
+                                .email(email)
                                 .build()));
     }
 }
