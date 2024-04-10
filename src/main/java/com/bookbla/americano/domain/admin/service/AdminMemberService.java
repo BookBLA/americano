@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.admin.service;
 
 import java.util.List;
 
+import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberAuthResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.bookbla.americano.domain.member.enums.MemberStatus.APPROVAL;
 
 
 @RequiredArgsConstructor
@@ -24,5 +27,12 @@ public class AdminMemberService {
         Page<Member> memberPaging = memberRepository.findAll(pageable);
         List<Member> members = memberPaging.getContent();
         return AdminMemberReadResponses.from(members);
+    }
+
+    @Transactional(readOnly = true)
+    public AdminMemberAuthResponses readApprovalStatusMembers(Pageable pageable) {
+        Page<Member> memberPaging = memberRepository.findByMemberStatus(APPROVAL, pageable);
+        List<Member> members = memberPaging.getContent();
+        return AdminMemberAuthResponses.from(members);
     }
 }
