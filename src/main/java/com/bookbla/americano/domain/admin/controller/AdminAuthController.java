@@ -14,19 +14,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
-@RequestMapping("/admin")
+@RequestMapping("/admin/auth")
 @RestController
-public class AdminController {
+public class AdminAuthController {
 
     private final AdminAuthService adminAuthService;
 
-    @PostMapping("/auth/login")
+    @PostMapping("/login")
     public ResponseEntity<AdminLoginResponse> login(@RequestBody @Valid AdminLoginRequest adminLoginRequest) {
         AdminLoginResponse adminLoginResponse = adminAuthService.login(adminLoginRequest);
         return ResponseEntity.ok(adminLoginResponse);
     }
 
-    @DeleteMapping("/auth/logout")
+    @DeleteMapping("/logout")
     public ResponseEntity<Void> login(@RequestBody @Valid AdminLogoutRequest adminLogoutRequest) {
         adminAuthService.logout(adminLogoutRequest);
         return ResponseEntity.noContent().build();
