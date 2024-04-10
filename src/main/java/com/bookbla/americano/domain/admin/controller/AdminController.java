@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.admin.controller;
 
+import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberAuthResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
 import com.bookbla.americano.domain.admin.service.AdminMemberService;
 import lombok.RequiredArgsConstructor;
@@ -22,5 +23,12 @@ public class AdminController {
         PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());
         AdminMemberReadResponses adminMemberReadResponses = adminMemberService.readMembers(pageRequest);
         return ResponseEntity.ok(adminMemberReadResponses);
+    }
+
+    @GetMapping("/members/approve")
+    public ResponseEntity<AdminMemberAuthResponses> readApprovalStatusMembers(Pageable pageable) {
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());
+        AdminMemberAuthResponses adminMemberAuthResponses = adminMemberService.readApprovalStatusMembers(pageRequest);
+        return ResponseEntity.ok(adminMemberAuthResponses);
     }
 }
