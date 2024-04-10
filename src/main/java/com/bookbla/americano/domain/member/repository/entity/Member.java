@@ -8,7 +8,6 @@ import com.bookbla.americano.domain.member.exception.MemberAuthExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.bookbla.americano.domain.member.exception.PolicyExceptionType;
-import javax.persistence.Embedded;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +15,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;

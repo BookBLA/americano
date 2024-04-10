@@ -5,6 +5,6 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberBookPro
 
 import java.util.List;
 
-public interface MemberProfileRepositoryCustom {
+public interface MemberRepositoryCustom {
     List<MemberBookProfileResponseDto> searchSameBookMember(Long memberId, MemberBookProfileRequestDto requestDto);
 }
