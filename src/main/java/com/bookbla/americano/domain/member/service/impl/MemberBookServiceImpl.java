@@ -27,6 +27,8 @@ import static com.bookbla.americano.domain.member.repository.entity.MemberBook.M
 @RequiredArgsConstructor
 public class MemberBookServiceImpl implements MemberBookService {
 
+    private static final int OLD_MEMBER_BOOK = 0;
+
     private final BookRepository bookRepository;
     private final MemberRepository memberRepository;
     private final MemberBookRepository memberBookRepository;
@@ -102,7 +104,7 @@ public class MemberBookServiceImpl implements MemberBookService {
         memberBookRepository.deleteById(memberBookId);
         List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
         if (!memberBooks.isEmpty()) {
-            memberBooks.get(0).represent();
+            memberBooks.get(OLD_MEMBER_BOOK).represent();
         }
     }
 }
