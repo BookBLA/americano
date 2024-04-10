@@ -62,7 +62,7 @@ public class MemberBookServiceImpl implements MemberBookService {
     @Transactional(readOnly = true)
     public MemberBookReadResponses readMemberBooks(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        List<MemberBook> memberBooks = memberBookRepository.findByMember(member);
+        List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
         return MemberBookReadResponses.from(memberBooks);
     }
 
@@ -94,6 +94,15 @@ public class MemberBookServiceImpl implements MemberBookService {
 
         memberBook.validateOwner(member);
 
+        if (!memberBook.isRepresentative()) {
+            memberBookRepository.deleteById(memberBookId);
+            return;
+        }
+
         memberBookRepository.deleteById(memberBookId);
+        List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
+        if (!memberBooks.isEmpty()) {
+            memberBooks.get(0).represent();
+        }
     }
 }

@@ -29,7 +29,7 @@ public class MemberLibraryServiceImpl implements MemberLibraryService {
     public MemberLibraryProfileReadResponse getLibraryProfile(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
-        List<MemberBook> memberBooks = memberBookRepository.findByMember(member);
+        List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
 
         return MemberLibraryProfileReadResponse.of(member, memberProfile, memberBooks);
     }
@@ -39,7 +39,7 @@ public class MemberLibraryServiceImpl implements MemberLibraryService {
     public MemberTargetLibraryProfileReadResponse getTargetLibraryProfile(Long memberId, Long targetMemberId) {
         Member targetMember = memberRepository.getByIdOrThrow(targetMemberId);
         MemberProfile memberProfile = targetMember.getMemberProfile();
-        List<MemberBook> memberBooks = memberBookRepository.findByMember(targetMember);
+        List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(targetMember);
 
         boolean isMatched = false;
 

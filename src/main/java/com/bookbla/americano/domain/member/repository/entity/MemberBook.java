@@ -43,7 +43,8 @@ public class MemberBook extends BaseInsertEntity {
 
     private String review;
 
-    private boolean isRepresentative;
+    @Builder.Default
+    private boolean isRepresentative = false;
 
     public void validateOwner(Member other) {
         if (!this.member.equals(other)) {
@@ -60,5 +61,9 @@ public class MemberBook extends BaseInsertEntity {
             throw new BaseException(MemberBookExceptionType.REVIEW_LENGTH_NOT_VALID);
         }
         this.review = review;
+    }
+
+    public void represent() {
+        this.isRepresentative = true;
     }
 }
