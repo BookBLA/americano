@@ -5,6 +5,7 @@ import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberRea
 import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
+import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberAuth;
@@ -143,5 +144,24 @@ class AdminMemberServiceTest {
         // then
         MemberProfile memberProfile = memberRepository.getByIdOrThrow(member.getId()).getMemberProfile();
         assertThat(memberProfile.getProfileImageStatus()).isEqualTo(ProfileImageStatus.DONE);
+    }
+
+    @Test
+    void 회원의_학생증_인증_상태를_변경할_수_있다() {
+        // given
+        Member member = memberRepository.save(Member.builder()
+                .memberType(ADMIN)
+                .oauthEmail("bookbla@bookbla.com")
+                .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
+                .memberProfile(MemberProfile.builder().name("문성진").studentIdImageUrl("학생증사진링크").profileImageStatus(ProfileImageStatus.PENDING).profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").build())
+                .build());
+        StatusUpdateDto statusUpdateDto = new StatusUpdateDto(member.getId(), "denial");
+
+        // when
+        adminMemberService.updateMemberStudentIdStatus(statusUpdateDto);
+
+        // then
+        MemberProfile memberProfile = memberRepository.getByIdOrThrow(member.getId()).getMemberProfile();
+        assertThat(memberProfile.getStudentIdImageStatus()).isEqualTo(StudentIdImageStatus.DENIAL);
     }
 }

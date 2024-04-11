@@ -32,8 +32,12 @@ public class AdminMemberAuthResponses {
         private final Long memberId;
         private final String name;
         private final String openKakaoRoomUrl;
+        private final String kakaoRoomUrlStatus;
         private final String profileImageUrl;
-        private final String status;
+        private final String profileImageUrlStatus;
+        private final String studentIdImageUrl;
+        private final String studentIdImageUrlStatus;
+        private final String authStatus;
 
         public static AdminMemberAuthResponse from(Member member) {
             MemberProfile memberProfile = member.getMemberProfile();
@@ -42,8 +46,12 @@ public class AdminMemberAuthResponses {
                     .memberId(member.getId())
                     .name(memberProfile.getName())
                     .openKakaoRoomUrl(memberProfile.getOpenKakaoRoomUrl())
+                    .kakaoRoomUrlStatus(memberProfile.getOpenKakaoRoomStatus().name())
                     .profileImageUrl(memberProfile.getProfileImageUrl())
-                    .status(member.getMemberStatus().name())
+                    .profileImageUrlStatus(memberProfile.getProfileImageStatus().name())
+                    .studentIdImageUrl(memberProfile.getStudentIdImageUrl())
+                    .studentIdImageUrlStatus(memberProfile.getStudentIdImageStatus().name())
+                    .authStatus(member.getMemberStatus().name())
                     .build();
         }
     }
