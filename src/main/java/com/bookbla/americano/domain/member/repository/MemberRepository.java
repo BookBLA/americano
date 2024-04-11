@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
+import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.custom.MemberRepositoryCustom;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -22,4 +23,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     Optional<Member> findByMemberAuthSchoolEmail(String schoolEmail);
 
     Page<Member> findByMemberStatus(MemberStatus memberStatus, Pageable pageable);
+
+    Page<Member> findByMemberProfileProfileImageStatus(ProfileImageStatus profileImageStatus, Pageable pageable);
 }

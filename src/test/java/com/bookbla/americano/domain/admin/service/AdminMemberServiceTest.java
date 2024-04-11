@@ -128,6 +128,44 @@ class AdminMemberServiceTest {
     }
 
     @Test
+    void 프로필_이미지_승인_대기중인_회원들을_조회할_수_있다() {
+        // given
+        Member pendingMember = Member.builder()
+                .memberType(ADMIN)
+                .memberStatus(APPROVAL)
+                .oauthEmail("bookbla@bookbla.com")
+                .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
+                .memberProfile(MemberProfile.builder().profileImageStatus(ProfileImageStatus.PENDING).name("이준희").profileImageUrl("프사1").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").name("이준희").build())
+                .build();
+        memberRepository.save(pendingMember);
+
+        Member denialMember = Member.builder()
+                .memberType(ADMIN)
+                .memberStatus(APPROVAL)
+                .oauthEmail("bookbla@bookbla.com")
+                .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
+                .memberProfile(MemberProfile.builder().name("김진호").profileImageStatus(ProfileImageStatus.DENIAL).profileImageUrl("프사2").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").name("이준희").build())
+                .build();
+        memberRepository.save(denialMember);
+
+        Member completedMember = Member.builder()
+                .memberType(ADMIN)
+                .memberStatus(COMPLETED)
+                .oauthEmail("bookbla@bookbla.com")
+                .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
+                .memberProfile(MemberProfile.builder().name("문성진").profileImageStatus(ProfileImageStatus.DONE).profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").name("이준희").build())
+                .build();
+        memberRepository.save(completedMember);
+        PageRequest pageRequest = PageRequest.of(0, 10);
+
+        // when
+        AdminMemberProfileImageResponses adminMemberProfileImageResponses = adminMemberService.readProfileImagePendingMembers(pageRequest);
+
+        // then
+        assertThat(adminMemberProfileImageResponses.getDatas()).hasSize(1);
+    }
+
+    @Test
     void 회원의_프로필_사진_인증_상태를_변경할_수_있다() {
         // given
         Member member = memberRepository.save(Member.builder()
