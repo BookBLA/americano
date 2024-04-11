@@ -27,7 +27,7 @@ public class AdminMemberAuthResponses {
     @AllArgsConstructor
     @Builder
     @Getter
-    public static class AdminMemberAuthResponse {
+    static class AdminMemberAuthResponse {
 
         private final Long memberId;
         private final String name;

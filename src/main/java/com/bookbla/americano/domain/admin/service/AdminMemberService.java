@@ -6,6 +6,7 @@ import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberAut
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKakaoRoomResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
+import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
 import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
@@ -75,6 +76,13 @@ public class AdminMemberService {
 
         memberProfile.updateProfileImageStatus(profileImageStatus);
         // FCM 붙인 이후엔 성공/실패 푸시알림?
+    }
+
+    @Transactional(readOnly = true)
+    public AdminMemberStudentIdResponses readStudentIdImagePendingMembers(Pageable pageable) {
+        Page<Member> memberPaging = memberRepository.findByMemberProfileStudentIdImageStatus(StudentIdImageStatus.PENDING, pageable);
+        List<Member> members = memberPaging.getContent();
+        return AdminMemberStudentIdResponses.from(members);
     }
 
     public void updateMemberStudentIdStatus(StatusUpdateDto statusUpdateDto) {
