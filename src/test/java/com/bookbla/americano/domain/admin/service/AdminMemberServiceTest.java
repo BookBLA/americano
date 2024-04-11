@@ -4,6 +4,7 @@ import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberAut
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
 import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
+import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberAuth;
@@ -118,10 +119,29 @@ class AdminMemberServiceTest {
         StatusUpdateDto statusUpdateDto = new StatusUpdateDto(member.getId(), "done");
 
         // when
-        adminMemberService.updateMemberProfileKakaoRoomStatus(statusUpdateDto);
+        adminMemberService.updateMemberKakaoRoomStatus(statusUpdateDto);
 
         // then
         MemberProfile memberProfile = memberRepository.getByIdOrThrow(member.getId()).getMemberProfile();
         assertThat(memberProfile.getOpenKakaoRoomStatus()).isEqualTo(OpenKakaoRoomStatus.DONE);
+    }
+
+    @Test
+    void 회원의_프로필_사진_인증_상태를_변경할_수_있다() {
+        // given
+        Member member = memberRepository.save(Member.builder()
+                .memberType(ADMIN)
+                .oauthEmail("bookbla@bookbla.com")
+                .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
+                .memberProfile(MemberProfile.builder().name("문성진").profileImageStatus(ProfileImageStatus.PENDING).profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").build())
+                .build());
+        StatusUpdateDto statusUpdateDto = new StatusUpdateDto(member.getId(), "done");
+
+        // when
+        adminMemberService.updateMemberImageStatus(statusUpdateDto);
+
+        // then
+        MemberProfile memberProfile = memberRepository.getByIdOrThrow(member.getId()).getMemberProfile();
+        assertThat(memberProfile.getProfileImageStatus()).isEqualTo(ProfileImageStatus.DONE);
     }
 }
