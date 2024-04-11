@@ -63,7 +63,11 @@ public class MemberBook extends BaseInsertEntity {
         this.review = review;
     }
 
-    public void represent() {
+    public boolean isNotRepresentative() {
+        return this.isRepresentative == false;
+    }
+
+    public void updateRepresentative() {
         this.isRepresentative = true;
     }
 }

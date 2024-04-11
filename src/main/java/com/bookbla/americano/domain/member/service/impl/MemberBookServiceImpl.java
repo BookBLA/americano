@@ -96,7 +96,7 @@ public class MemberBookServiceImpl implements MemberBookService {
 
         memberBook.validateOwner(member);
 
-        if (!memberBook.isRepresentative()) {
+        if (memberBook.isNotRepresentative()) {
             memberBookRepository.deleteById(memberBookId);
             return;
         }
@@ -104,7 +104,7 @@ public class MemberBookServiceImpl implements MemberBookService {
         memberBookRepository.deleteById(memberBookId);
         List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
         if (!memberBooks.isEmpty()) {
-            memberBooks.get(OLD_MEMBER_BOOK).represent();
+            memberBooks.get(OLD_MEMBER_BOOK).updateRepresentative();
         }
     }
 }
