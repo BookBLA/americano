@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.admin.service;
 import java.util.List;
 
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberAuthResponses;
+import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKakaoRoomResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
 import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
@@ -43,10 +44,10 @@ public class AdminMemberService {
     }
 
     @Transactional(readOnly = true)
-    public AdminMemberProfileImageResponses readProfileImagePendingMembers(Pageable pageable) {
-        Page<Member> memberPaging = memberRepository.findByMemberProfileProfileImageStatus(ProfileImageStatus.PENDING, pageable);
+    public AdminMemberKakaoRoomResponses readKakaoRoomPendingMembers(Pageable pageable) {
+        Page<Member> memberPaging = memberRepository.findByMemberProfileOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING, pageable);
         List<Member> members = memberPaging.getContent();
-        return AdminMemberProfileImageResponses.from(members);
+        return AdminMemberKakaoRoomResponses.from(members);
     }
 
     public void updateMemberKakaoRoomStatus(StatusUpdateDto statusUpdateDto) {
