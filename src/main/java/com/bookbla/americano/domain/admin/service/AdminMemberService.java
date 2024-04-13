@@ -2,7 +2,6 @@ package com.bookbla.americano.domain.admin.service;
 
 import java.util.List;
 
-import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberAuthResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKakaoRoomResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
@@ -20,8 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.bookbla.americano.domain.member.enums.MemberStatus.APPROVAL;
-
 
 @RequiredArgsConstructor
 @Transactional
@@ -37,12 +34,12 @@ public class AdminMemberService {
         return AdminMemberReadResponses.from(members);
     }
 
-    @Transactional(readOnly = true)
-    public AdminMemberAuthResponses readApprovalStatusMembers(Pageable pageable) {
-        Page<Member> memberPaging = memberRepository.findByMemberStatus(APPROVAL, pageable);
-        List<Member> members = memberPaging.getContent();
-        return AdminMemberAuthResponses.from(members);
-    }
+//    @Transactional(readOnly = true)
+//    public AdminMemberAuthResponses readApprovalStatusMembers(Pageable pageable) {
+//        Page<Member> memberPaging = memberRepository.findByMemberStatus(APPROVAL, pageable);
+//        List<Member> members = memberPaging.getContent();
+//        return AdminMemberAuthResponses.from(members);
+//    }
 
     @Transactional(readOnly = true)
     public AdminMemberKakaoRoomResponses readKakaoRoomPendingMembers(Pageable pageable) {
