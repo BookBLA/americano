@@ -34,13 +34,6 @@ public class AdminMemberService {
         return AdminMemberReadResponses.from(members);
     }
 
-//    @Transactional(readOnly = true)
-//    public AdminMemberAuthResponses readApprovalStatusMembers(Pageable pageable) {
-//        Page<Member> memberPaging = memberRepository.findByMemberStatus(APPROVAL, pageable);
-//        List<Member> members = memberPaging.getContent();
-//        return AdminMemberAuthResponses.from(members);
-//    }
-
     @Transactional(readOnly = true)
     public AdminMemberKakaoRoomResponses readKakaoRoomPendingMembers(Pageable pageable) {
         Page<Member> memberPaging = memberRepository.findByMemberProfileOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING, pageable);
