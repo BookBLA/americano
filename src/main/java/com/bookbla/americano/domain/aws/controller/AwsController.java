@@ -3,7 +3,7 @@ package com.bookbla.americano.domain.aws.controller;
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.aws.controller.dto.response.S3PresignedUrlResponse;
-import com.bookbla.americano.domain.aws.controller.enums.UploadType;
+import com.bookbla.americano.domain.aws.enums.UploadType;
 import com.bookbla.americano.domain.aws.service.S3Service;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;

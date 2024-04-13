@@ -1,7 +1,7 @@
-package com.bookbla.americano.domain.aws.controller.enums;
+package com.bookbla.americano.domain.aws.enums;
 
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.aws.exception.UploadTypeNotValidException;
+import com.bookbla.americano.domain.aws.exception.AwsException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +21,6 @@ public enum UploadType {
         return Arrays.stream(values())
                 .filter(value -> value.getType().equalsIgnoreCase(type))
                 .findFirst()
-                .orElseThrow(() -> new BaseException(UploadTypeNotValidException.UPLOAD_TYPE_NOT_VALID));
+                .orElseThrow(() -> new BaseException(AwsException.UPLOAD_TYPE_NOT_VALID));
     }
 }

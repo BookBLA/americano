@@ -1,11 +1,14 @@
 package com.bookbla.americano.domain.aws.service.impl;
 
 import com.amazonaws.HttpMethod;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.Headers;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.bookbla.americano.domain.aws.controller.enums.UploadType;
+import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.aws.enums.UploadType;
+import com.bookbla.americano.domain.aws.exception.AwsException;
 import com.bookbla.americano.domain.aws.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,9 +31,8 @@ public class S3ServiceImpl implements S3Service {
     public String getPreSignedUrl(UploadType type, String fileName) {
         String objectKey = createPath(type.getType(), fileName);
         GeneratePresignedUrlRequest generatePresignedUrlRequest = getGeneratePreSignedUrlRequest(bucket, objectKey);
-        URL url = amazonS3.generatePresignedUrl(generatePresignedUrlRequest);
 
-        return url.toString();
+        return requestPresignedUrl(generatePresignedUrlRequest);
     }
 
     private GeneratePresignedUrlRequest getGeneratePreSignedUrlRequest(String bucket, String objectKey) {
@@ -44,6 +46,15 @@ public class S3ServiceImpl implements S3Service {
                 CannedAccessControlList.PublicRead.toString());
 
         return generatePresignedUrlRequest;
+    }
+
+    private String requestPresignedUrl(GeneratePresignedUrlRequest request) {
+        try {
+            URL url = amazonS3.generatePresignedUrl(request);
+            return url.toString();
+        } catch (SdkClientException e) {
+            throw new BaseException(AwsException.AWS_COMMUNICATION_ERROR);
+        }
     }
 
     private Date getPreSignedUrlExpiration() {
