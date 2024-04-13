@@ -11,10 +11,12 @@ import com.bookbla.americano.domain.member.enums.SmokeType;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
+@Getter
 public class MemberStyleCreateRequest {
 
     @NotNull(message = "mbti가 입력되지 않았습니다.")
@@ -51,9 +53,5 @@ public class MemberStyleCreateRequest {
                 .justFriendType(JustFriendType.from(justFriendType))
                 .dateCostType(DateCostType.from(dateCostType))
                 .build();
-    }
-
-    public String getMemberAsk() {
-        return memberAsk;
     }
 }
