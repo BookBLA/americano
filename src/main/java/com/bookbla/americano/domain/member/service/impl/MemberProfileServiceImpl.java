@@ -2,17 +2,22 @@ package com.bookbla.americano.domain.member.service.impl;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
+import com.bookbla.americano.domain.member.enums.EmailVerifyStatus;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
+import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
+import com.bookbla.americano.domain.member.repository.MemberEmailRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberEmail;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
@@ -35,12 +40,21 @@ import java.util.stream.Stream;
 public class MemberProfileServiceImpl implements MemberProfileService {
 
     private final MemberRepository memberRepository;
+    private final MemberEmailRepository memberEmailRepository;
 
     @Override
-    public MemberProfileResponse createMemberProfile(Long memberId,
-        MemberProfileDto memberProfileDto) {
+    @Transactional
+    public MemberProfileResponse createMemberProfile(Long memberId, MemberProfileDto memberProfileDto) {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
+        MemberEmail memberEmail = memberEmailRepository.findByMember(member)
+            .orElseThrow(() -> new BaseException(MemberEmailExceptionType.EMAIL_NOT_REGISTERED));
+
+        if (memberEmail.getEmailVerifyStatus() == EmailVerifyStatus.PENDING) {
+            throw new BaseException(MemberEmailExceptionType.STILL_PENDING);
+        }
+
+//        MemberProfile memberProfile = member.getMemberProfile();
         MemberProfile memberProfile = memberProfileDto.toEntity();
         memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING)
             .updateStudentIdImageStatus(StudentIdImageStatus.PENDING)
@@ -75,11 +89,16 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         return MemberProfileResponse.from(memberProfile);
     }
 
+//    private void createMemberProfile(MemberProfile memberProfile, MemberProfileCreateRequest req) {
+//        memberProfile
+//    }
+
     private void updateEntity(MemberProfile memberProfile, MemberProfileUpdateRequest request) {
         memberProfile.updateName(request.getName())
                 .updateBirthDate(request.getBirthDate())
                 .updateGender(request.getGender())
                 .updateSchoolName(request.getSchoolName())
+                .updateSchoolEmail(request.getSchoolEmail())
                 .updatePhoneNumber(request.getPhoneNumber())
                 .updateProfileImageUrl(request.getProfileImageUrl())
                 .updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl())

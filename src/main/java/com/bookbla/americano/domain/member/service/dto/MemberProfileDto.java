@@ -21,6 +21,7 @@ public class MemberProfileDto {
     private LocalDate birthDate;
     private Gender gender;
     private String schoolName;
+    private String schoolEmail;
     private String phoneNumber;
     private String profileImageUrl;
     private String openKakaoRoomUrl;
@@ -32,6 +33,7 @@ public class MemberProfileDto {
             .birthDate(birthDate)
             .gender(gender)
             .schoolName(schoolName)
+            .schoolEmail(schoolEmail)
             .phoneNumber(phoneNumber)
             .profileImageUrl(profileImageUrl)
             .openKakaoRoomUrl(openKakaoRoomUrl)

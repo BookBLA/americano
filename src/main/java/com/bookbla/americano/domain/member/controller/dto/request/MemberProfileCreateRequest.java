@@ -55,6 +55,7 @@ public class MemberProfileCreateRequest {
             .birthDate(getBirthDate())
             .gender(getGender())
             .schoolName(schoolName)
+            .schoolEmail(schoolEmail)
             .phoneNumber(phoneNumber)
             .profileImageUrl(profileImageUrl)
             .openKakaoRoomUrl(openKakaoRoomUrl)
