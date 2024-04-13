@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Configuration;
         servers = {
                 @Server(url = "http://localhost:8080/api"),
                 @Server(url = "https://dev.bookbla.shop/api"),
-                @Server(url = "http://ec2-54-180-115-173.ap-northeast-2.compute.amazonaws.com:8080/api")
+                @Server(url = "http://ec2-54-180-25-90.ap-northeast-2.compute.amazonaws.com:8080/api")
         },
 
         info = @Info(
