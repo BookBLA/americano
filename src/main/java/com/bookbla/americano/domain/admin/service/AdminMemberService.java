@@ -58,6 +58,7 @@ public class AdminMemberService {
         MemberProfile memberProfile = member.getMemberProfile();
 
         memberProfile.updateOpenKakaoRoomStatus(openKakaoRoomStatus);
+        member.updateMemberStatus();
         // FCM 붙인 이후엔 성공/실패 푸시알림?
     }
 
@@ -75,6 +76,7 @@ public class AdminMemberService {
         MemberProfile memberProfile = member.getMemberProfile();
 
         memberProfile.updateProfileImageStatus(profileImageStatus);
+        member.updateMemberStatus();
         // FCM 붙인 이후엔 성공/실패 푸시알림?
     }
 
@@ -92,6 +94,7 @@ public class AdminMemberService {
         MemberProfile memberProfile = member.getMemberProfile();
 
         memberProfile.updateStudentIdImageStatus(studentIdImageStatus);
+        member.updateMemberStatus();
         // FCM 붙인 이후엔 성공/실패 푸시알림?
     }
 }

@@ -123,4 +123,9 @@ public class MemberProfile {
         return this;
     }
 
+    public boolean isAllStatusesDone() {
+        return studentIdImageStatus == StudentIdImageStatus.DONE
+                && openKakaoRoomStatus == OpenKakaoRoomStatus.DONE
+                && profileImageStatus == ProfileImageStatus.DONE;
+    }
 }
