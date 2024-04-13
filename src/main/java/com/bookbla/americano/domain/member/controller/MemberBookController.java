@@ -50,9 +50,11 @@ public class MemberBookController {
     }
 
     @GetMapping("/{memberBookId}")
-    public ResponseEntity<MemberBookReadResponse> readMemberBook(@PathVariable Long memberBookId) {
-        MemberBookReadResponse memberBookReadResponse = memberBookService.readMemberBook(
-            memberBookId);
+    public ResponseEntity<MemberBookReadResponse> readMemberBook(
+            @Parameter(hidden = true) @User LoginUser loginUser,
+            @PathVariable Long memberBookId
+    ) {
+        MemberBookReadResponse memberBookReadResponse = memberBookService.readMemberBook(loginUser.getMemberId(), memberBookId);
         return ResponseEntity.ok(memberBookReadResponse);
     }
 

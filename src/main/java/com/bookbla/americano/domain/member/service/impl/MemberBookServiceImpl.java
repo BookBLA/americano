@@ -70,8 +70,12 @@ public class MemberBookServiceImpl implements MemberBookService {
 
     @Override
     @Transactional(readOnly = true)
-    public MemberBookReadResponse readMemberBook(Long memberBookId) {
+    public MemberBookReadResponse readMemberBook(Long memberId, Long memberBookId) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
         MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
+
+        memberBook.validateOwner(member);
+
         return MemberBookReadResponse.of(memberBook);
     }
 

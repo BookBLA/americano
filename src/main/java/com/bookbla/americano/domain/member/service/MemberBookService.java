@@ -12,7 +12,7 @@ public interface MemberBookService {
 
     MemberBookReadResponses readMemberBooks(Long memberId);
 
-    MemberBookReadResponse readMemberBook(Long memberBookId);
+    MemberBookReadResponse readMemberBook(Long memberId, Long memberBookId);
 
     void deleteMemberBook(Long memberId, Long memberBookId);
 
