@@ -7,6 +7,7 @@ import com.bookbla.americano.domain.member.enums.DrinkType;
 import com.bookbla.americano.domain.member.enums.JustFriendType;
 import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.SmokeType;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -37,7 +38,7 @@ public class MemberStyleUpdateRequest {
     @NotNull(message = "데이트 스타일이 입력되지 않았습니다.")
     private String dateStyleType;
 
-    @NotNull(message = "개인 질문이 입력되지 않았습니다.")
+    @NotBlank(message = "개인 질문이 입력되지 않았습니다.")
     private String memberAsk;
 
     public Mbti getMbti() {
