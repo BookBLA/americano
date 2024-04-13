@@ -75,5 +75,4 @@ public class MemberBookController {
         memberBookService.deleteMemberBook(loginUser.getMemberId(), memberBookId);
         return ResponseEntity.noContent().build();
     }
-
 }
