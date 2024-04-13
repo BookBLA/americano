@@ -1,7 +1,7 @@
 package com.bookbla.americano.domain.member.enums;
 
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.member.exception.MailExceptionType;
+import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
 import java.util.Arrays;
 
 public enum EmailVerifyStatus {
@@ -13,7 +13,7 @@ public enum EmailVerifyStatus {
         return Arrays.stream(values())
             .filter(it -> it.name().equalsIgnoreCase(name))
             .findFirst()
-            .orElseThrow(() -> new BaseException(MailExceptionType.MAIL_VERIFY_STATUS_NOT_VALID));
+            .orElseThrow(() -> new BaseException(MemberEmailExceptionType.MAIL_VERIFY_STATUS_NOT_VALID));
     }
 
 }
