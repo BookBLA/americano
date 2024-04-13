@@ -47,7 +47,7 @@ public class KakaoBookResponse {
                 .map(it -> new BookSearchResponse(it.title, it.authors, it.isbn, it.thumbnail))
                 .collect(Collectors.toList());
         return BookSearchResponses.builder()
-                .totalCount(getMeta().totalCount)
+                .totalCount(getMeta().pageableCount)
                 .page(page)
                 .isEnd(getMeta().isEnd())
                 .bookSearchResponses(bookSearchResponses)
