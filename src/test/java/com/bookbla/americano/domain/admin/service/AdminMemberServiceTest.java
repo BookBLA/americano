@@ -12,6 +12,7 @@ import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberAuth;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -245,5 +246,10 @@ class AdminMemberServiceTest {
         // then
         MemberProfile memberProfile = memberRepository.getByIdOrThrow(member.getId()).getMemberProfile();
         assertThat(memberProfile.getStudentIdImageStatus()).isEqualTo(StudentIdImageStatus.DENIAL);
+    }
+
+    @AfterEach
+    void tearDown() {
+        memberRepository.deleteAll();
     }
 }

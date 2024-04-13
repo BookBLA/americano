@@ -42,7 +42,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
     @Override
     @Transactional
     public MemberAuthResponse sendEmailAndCreateMemberAuth(Long memberId,
-        MemberAuthDto memberAuthDto) {
+                                                           MemberAuthDto memberAuthDto) {
         String schoolEmail = memberAuthDto.getSchoolEmail();
 
         checkDuplicatedEmail(schoolEmail);
@@ -104,8 +104,8 @@ public class MemberAuthServiceImpl implements MemberAuthService {
         String emailVerifyCode = sendEmail(schoolEmail);
 
         memberAuth.updateEmailVerifyCode(emailVerifyCode)
-            .updateEmailVerifyStartTime(LocalDateTime.now())
-            .updateEmailVerifyPending();
+                .updateEmailVerifyStartTime(LocalDateTime.now())
+                .updateEmailVerifyPending();
 
         return MemberAuthResponse.from(member, memberAuth);
     }
@@ -129,7 +129,7 @@ public class MemberAuthServiceImpl implements MemberAuthService {
     @Override
     @Transactional
     public MemberAuthResponse updateMemberAuth(Long memberId,
-        MemberAuthUpdateRequest memberAuthUpdateRequest) {
+                                               MemberAuthUpdateRequest memberAuthUpdateRequest) {
 
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberAuth memberAuth = member.getMemberAuth();

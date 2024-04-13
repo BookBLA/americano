@@ -14,6 +14,7 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberAuth;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.service.dto.MemberAuthDto;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -174,5 +175,10 @@ class MemberAuthServiceTest {
                 () -> assertThat(memberAuthResponse.getSchoolEmail()).isEqualTo("바뀐이메일"),
                 () -> assertThat(memberAuthResponse.getEmailVerifyStatus()).isEqualToIgnoringCase("done")
         );
+    }
+
+    @AfterEach
+    void tearDown() {
+        memberRepository.deleteAll();
     }
 }

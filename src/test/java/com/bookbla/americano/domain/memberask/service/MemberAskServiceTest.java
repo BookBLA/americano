@@ -12,6 +12,7 @@ import com.bookbla.americano.domain.memberask.controller.dto.request.MemberAskUp
 import com.bookbla.americano.domain.memberask.controller.dto.response.MemberAskResponse;
 import com.bookbla.americano.domain.memberask.repository.MemberAskRepository;
 import com.bookbla.americano.domain.memberask.repository.entity.MemberAsk;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
@@ -135,4 +136,9 @@ class MemberAskServiceTest {
                 .hasMessageContaining("개인 질문은 공백 포함 80자 이하로만 작성가능합니다");
     }
 
+    @AfterEach
+    void tearDown() {
+        memberAskRepository.deleteAll();
+        memberRepository.deleteAll();
+    }
 }
