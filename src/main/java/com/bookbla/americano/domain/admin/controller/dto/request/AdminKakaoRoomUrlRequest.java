@@ -16,7 +16,9 @@ public class AdminKakaoRoomUrlRequest {
     @NotBlank(message = "변경할 생태가 입력되지 않았습니다")
     private String updateStatus;
 
+    private String result;
+
     public StatusUpdateDto toDto(Long memberId) {
-        return new StatusUpdateDto(memberId, updateStatus);
+        return new StatusUpdateDto(memberId, updateStatus, result);
     }
 }

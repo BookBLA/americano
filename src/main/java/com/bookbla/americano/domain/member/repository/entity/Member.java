@@ -72,12 +72,12 @@ public class Member extends BaseInsertEntity {
         return this;
     }
 
-    public Member updateMemberStatus(MemberStatus memberStatus) {
+    public Member checkMemberStatus(MemberStatus memberStatus) {
         this.memberStatus = memberStatus;
         return this;
     }
 
-    public void updateMemberStatus() {
+    public void checkMemberStatus() {
         if (memberProfile.isAllStatusesDone()) {
             memberStatus = MemberStatus.COMPLETED;
         }

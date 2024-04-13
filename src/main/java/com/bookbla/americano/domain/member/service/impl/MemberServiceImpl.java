@@ -77,7 +77,7 @@ public class MemberServiceImpl implements MemberService {
     private void update(Member member, MemberUpdateRequest request) {
         member.updateOauthEmail(request.getOauthEmail())
                 .updateMemberType(request.getMemberType())
-                .updateMemberStatus(request.getMemberStatus())
+                .checkMemberStatus(request.getMemberStatus())
                 .updateMemberType(request.getMemberType());
     }
 }

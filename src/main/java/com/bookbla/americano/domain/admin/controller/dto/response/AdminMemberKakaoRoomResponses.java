@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
+import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,9 +18,9 @@ public class AdminMemberKakaoRoomResponses {
 
     private final List<AdminMemberKakaoRoomResponse> datas;
 
-    public static AdminMemberKakaoRoomResponses from(List<Member> members) {
+    public static AdminMemberKakaoRoomResponses from(List<Member> members, List<MemberVerify> verifies) {
         List<AdminMemberKakaoRoomResponse> adminMemberKakaoRoomResponses = members.stream()
-                .map(AdminMemberKakaoRoomResponse::from)
+                .map(it -> AdminMemberKakaoRoomResponse.from(it, verifies))
                 .collect(Collectors.toList());
 
         return new AdminMemberKakaoRoomResponses(adminMemberKakaoRoomResponses);
@@ -35,13 +36,19 @@ public class AdminMemberKakaoRoomResponses {
         private final String openKakaoRoomUrl;
         private final String openKakaoRoomUrlStatus;
 
-        public static AdminMemberKakaoRoomResponse from(Member member) {
+        public static AdminMemberKakaoRoomResponse from(Member member, List<MemberVerify> memberVerifies) {
             MemberProfile memberProfile = member.getMemberProfile();
+
+            String openKakaoRoomUrl = memberVerifies.stream()
+                    .map(MemberVerify::getValue)
+                    .filter(it -> it.equals(member.getId()))
+                    .findFirst()
+                    .orElse("존재하지 않아요~");
 
             return AdminMemberKakaoRoomResponse.builder()
                     .memberId(member.getId())
                     .name(memberProfile.getName())
-                    .openKakaoRoomUrl(memberProfile.getOpenKakaoRoomUrl())
+                    .openKakaoRoomUrl(openKakaoRoomUrl)
                     .openKakaoRoomUrlStatus(memberProfile.getOpenKakaoRoomStatus().name())
                     .build();
         }

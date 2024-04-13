@@ -9,5 +9,6 @@ public class StatusUpdateDto {
 
     private final Long memberId;
     private final String status;
+    private final String result;
 
 }

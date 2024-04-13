@@ -124,7 +124,7 @@ class AdminMemberServiceTest {
                 .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
                 .memberProfile(MemberProfile.builder().name("문성진").profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").name("이준희").build())
                 .build());
-        StatusUpdateDto statusUpdateDto = new StatusUpdateDto(member.getId(), "done");
+        StatusUpdateDto statusUpdateDto = new StatusUpdateDto(member.getId(), "done","success");
 
         // when
         adminMemberService.updateMemberKakaoRoomStatus(statusUpdateDto);
@@ -181,7 +181,7 @@ class AdminMemberServiceTest {
                 .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
                 .memberProfile(MemberProfile.builder().name("문성진").profileImageStatus(ProfileImageStatus.PENDING).profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").build())
                 .build());
-        StatusUpdateDto statusUpdateDto = new StatusUpdateDto(member.getId(), "done");
+        StatusUpdateDto statusUpdateDto = new StatusUpdateDto(member.getId(), "done", "success");
 
         // when
         adminMemberService.updateMemberImageStatus(statusUpdateDto);
@@ -238,7 +238,7 @@ class AdminMemberServiceTest {
                 .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
                 .memberProfile(MemberProfile.builder().name("문성진").studentIdImageUrl("학생증사진링크").profileImageStatus(ProfileImageStatus.PENDING).profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").build())
                 .build());
-        StatusUpdateDto statusUpdateDto = new StatusUpdateDto(member.getId(), "denial");
+        StatusUpdateDto statusUpdateDto = new StatusUpdateDto(member.getId(), "denial", "success");
 
         // when
         adminMemberService.updateMemberStudentIdStatus(statusUpdateDto);
