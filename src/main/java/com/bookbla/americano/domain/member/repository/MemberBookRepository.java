@@ -22,6 +22,5 @@ public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
 
     long countByMember(Member member);
 
-    List<MemberBook> findByMember(Member member);
-
+    List<MemberBook> findByMemberOrderByCreatedAt(Member member);
 }

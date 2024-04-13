@@ -4,6 +4,7 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
@@ -41,6 +42,8 @@ public class MemberStyleServiceImpl implements MemberStyleService {
     @Override
     public MemberStyleResponse createMemberStyle(Long memberId, MemberStyleCreateRequest memberStyleCreateRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
+        member.validateStyleRegistered();
+
         member.updateMemberStyle(memberStyleCreateRequest.toMemberStyle());
 
         MemberAsk memberAsk = MemberAsk.builder()

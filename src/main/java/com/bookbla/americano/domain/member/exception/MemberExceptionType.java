@@ -25,7 +25,7 @@ public enum MemberExceptionType implements ExceptionType {
     GENDER_NOT_VALID(HttpStatus.BAD_REQUEST, "member_012", "유효하지 않은 성별입니다."),
     AUTH_NOT_REGISTERED(HttpStatus.BAD_REQUEST, "member_013", "인증이 등록되지 않은 회원입니다."),
     PROFILE_NOT_REGISTERED(HttpStatus.BAD_REQUEST, "member_014", "프로필이 등록되지 않은 회원입니다."),
-    ;
+    STYLE_ALREADY_REGISTERD(HttpStatus.BAD_REQUEST, "membrt_015", "스타일이 이미 등록된 회원입니다.");
 
     private final HttpStatus httpStatus;
     private final String errorCode;
