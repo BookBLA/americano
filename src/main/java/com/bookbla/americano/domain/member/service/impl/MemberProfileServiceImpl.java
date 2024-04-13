@@ -6,11 +6,16 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileU
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
+import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
+import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
+import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
+import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileStatusDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +35,23 @@ import java.util.stream.Stream;
 public class MemberProfileServiceImpl implements MemberProfileService {
 
     private final MemberRepository memberRepository;
+
+    @Override
+    public MemberProfileResponse createMemberProfile(Long memberId,
+        MemberProfileDto memberProfileDto) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+
+        MemberProfile memberProfile = memberProfileDto.toEntity();
+        memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING)
+            .updateStudentIdImageStatus(StudentIdImageStatus.PENDING)
+            .updateProfileImageStatus(ProfileImageStatus.PENDING);
+
+        member.updateMemberProfile(memberProfile)
+            .updateMemberStatus(MemberStatus.APPROVAL);
+
+        return MemberProfileResponse.from(memberProfile);
+    }
+
 
     @Override
     @Transactional(readOnly = true)
@@ -164,6 +186,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
+
 
     private List<MemberBookProfileResponseDto> findMatches(
             List<MemberBookProfileResponseDto> userBookProfiles,

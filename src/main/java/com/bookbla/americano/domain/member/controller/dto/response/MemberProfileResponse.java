@@ -20,6 +20,7 @@ public class MemberProfileResponse {
     private String name;
     private String birthDate;
     private String schoolName;
+    private String schoolEmail;
     private String gender;
     private String profileImageUrl;
     private String openKakaoRoomUrl;
@@ -30,6 +31,7 @@ public class MemberProfileResponse {
             .name(memberProfile.getName())
             .birthDate(memberProfile.getBirthDate().toString())
             .schoolName(memberProfile.getSchoolName())
+            .schoolEmail(memberProfile.getSchoolEmail())
             .gender(memberProfile.getGender().name())
             .profileImageUrl(memberProfile.getProfileImageUrl())
             .openKakaoRoomUrl(memberProfile.getOpenKakaoRoomUrl())
