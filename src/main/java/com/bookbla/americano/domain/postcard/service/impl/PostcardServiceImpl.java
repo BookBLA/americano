@@ -79,7 +79,6 @@ public class PostcardServiceImpl implements PostcardService {
         }
 
         if (isCorrectFlag) {
-            System.out.println(targetMember.getId());
             Postcard postcard = Postcard.builder()
                     .sendMember(member)
                     .receiveMember(targetMember)
