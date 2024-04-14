@@ -12,10 +12,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum DrinkType {
 
-    NONE("안마심"),
+    NONE("X"),
     ONCE_A_MONTH("월 1~2회"),
     ONCE_A_WEEK("주 1회"),
-    OVER_ONCE_A_WEEK("주 1회 이상"),
+    OVER_TWICE_A_WEEK("주 2회 이상"),
     EVERYDAY("매일"),
     ;
 

@@ -21,13 +21,13 @@ class DrinkTypeTest {
         List<String> result = DrinkType.getValues();
 
         // then
-        assertThat(result).containsExactly("안마심", "월 1~2회", "주 1회", "주 1회 이상", "매일");
+        assertThat(result).containsExactly("X", "월 1~2회", "주 1회", "주 2회 이상", "매일");
     }
 
     @Test
     void 이름을_받아_음주_유형을_찾을_수_있다() {
         // given
-        String expected = "안마심";
+        String expected = "X";
 
         // when
         DrinkType actual = DrinkType.from(expected);
