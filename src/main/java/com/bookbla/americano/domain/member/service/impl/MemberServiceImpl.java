@@ -26,32 +26,6 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
 
     @Override
-    @Transactional
-    public MemberResponse createMember(
-            Long memberSignUpInformationId,
-            MemberProfileDto memberProfileDto
-    ) {
-        MemberSignUpInformation memberSignUpInformation = memberSignUpInformationRepository.findById(memberSignUpInformationId).orElseThrow();
-
-        MemberProfile memberProfile = memberProfileDto.toEntity();
-
-        memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING)
-                .updateStudentIdImageStatus(StudentIdImageStatus.PENDING)
-                .updateProfileImageStatus(ProfileImageStatus.PENDING);
-
-        Member member = Member.builder()
-                .oauthEmail(memberSignUpInformation.getEmail())
-                .memberType(memberSignUpInformation.getMemberType())
-                .memberProfile(memberProfile)
-                .memberStatus(MemberStatus.APPROVAL)
-                .build();
-
-        Member savedMember = memberRepository.save(member);
-        memberSignUpInformationRepository.deleteById(memberSignUpInformationId);
-        return MemberResponse.from(savedMember);
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public MemberResponse readMember(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);

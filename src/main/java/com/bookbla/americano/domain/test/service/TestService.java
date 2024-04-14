@@ -13,5 +13,5 @@ public interface TestService {
 
     List<TestReadResponse> findTestsByContents(String contents);
 
-    MemberSignUpInformation signUp(String email);
+    Member signUp(String email);
 }

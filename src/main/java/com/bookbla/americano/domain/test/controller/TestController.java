@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.test.controller;
 
+import com.bookbla.americano.domain.member.repository.entity.Member;
 import java.net.URI;
 import java.util.List;
 
@@ -56,8 +57,8 @@ public class TestController {
     public ResponseEntity<TestSignUpResponse> testSignUp(
             @RequestBody TestSignUpRequest testSignUpRequest
     ) {
-        MemberSignUpInformation memberSignUpInformation = testService.signUp(testSignUpRequest.getEmail());
-        String token = jwtProvider.createToken(memberSignUpInformation.getId().toString());
-        return ResponseEntity.ok(TestSignUpResponse.of(memberSignUpInformation.getId(), token));
+        Member member = testService.signUp(testSignUpRequest.getEmail());
+        String token = jwtProvider.createToken(member.getId().toString());
+        return ResponseEntity.ok(TestSignUpResponse.of(member.getId(), token));
     }
 }

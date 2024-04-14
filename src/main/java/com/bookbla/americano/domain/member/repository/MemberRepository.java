@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.repository;
 
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.member.enums.MemberType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.custom.MemberRepositoryCustom;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -16,5 +17,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
                 .orElseThrow(() -> new BaseException(MemberExceptionType.MEMBER_NOT_FOUND));
     }
 
-    Optional<Member> findByMemberAuthSchoolEmail(String schoolEmail);
+    Optional<Member> findByMemberTypeAndOauthEmail(MemberType memberType, String email);
+
+    Optional<Member> findByMemberProfileSchoolEmail(String schoolEmail);
 }

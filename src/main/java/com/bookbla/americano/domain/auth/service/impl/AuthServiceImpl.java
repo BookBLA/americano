@@ -9,6 +9,8 @@ import com.bookbla.americano.domain.auth.service.AuthService;
 import com.bookbla.americano.domain.auth.service.OAuth2Provider;
 import com.bookbla.americano.domain.auth.service.dto.OAuth2MemberResponse;
 import com.bookbla.americano.domain.member.enums.MemberType;
+import com.bookbla.americano.domain.member.repository.MemberRepository;
+import com.bookbla.americano.domain.member.repository.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +18,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final MemberSignUpInformationRepository memberSignUpInformationRepository;
+    private final MemberRepository memberRepository;
     private final OAuth2Providers oAuth2Providers;
     private final JwtProvider jwtProvider;
 
@@ -26,11 +28,11 @@ public class AuthServiceImpl implements AuthService {
         OAuth2Provider oAuth2Provider = oAuth2Providers.getProvider(memberType);
         OAuth2MemberResponse oAuth2MemberResponse = oAuth2Provider.getMemberResponse(loginRequestDto.getAuthCode());
 
-        MemberSignUpInformation memberSignUpInformation = memberSignUpInformationRepository.findByMemberTypeAndEmail(memberType, oAuth2MemberResponse.getEmail())
-                .orElseGet(() -> memberSignUpInformationRepository.save(oAuth2MemberResponse.toMemberSignUpInformation()));
+        Member member = memberRepository.findByMemberTypeAndOauthEmail(memberType, oAuth2MemberResponse.getEmail())
+            .orElseGet(() -> memberRepository.save(oAuth2MemberResponse.toMember()));
 
-        String accessToken = jwtProvider.createToken(memberSignUpInformation.getId().toString());
-        return LoginResponseDto.of(accessToken, memberSignUpInformation);
+        String accessToken = jwtProvider.createToken(member.getId().toString());
+        return LoginResponseDto.of(accessToken, member);
     }
   
 }

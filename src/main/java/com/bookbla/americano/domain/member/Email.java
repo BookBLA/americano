@@ -1,8 +1,7 @@
 package com.bookbla.americano.domain.member;
 
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.member.exception.MailExceptionType;
-import com.bookbla.americano.domain.member.exception.MemberExceptionType;
+import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
 import java.util.regex.Pattern;
 import javax.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -28,7 +27,7 @@ public class Email {
 
     private void validate(String value) {
         if (!REGEX_EMAIL.matcher(value).matches()) {
-            throw new BaseException(MailExceptionType.EMAIL_NOT_VALID);
+            throw new BaseException(MemberEmailExceptionType.EMAIL_NOT_VALID);
         }
     }
 }

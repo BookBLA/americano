@@ -1,5 +1,7 @@
 package com.bookbla.americano.domain.test.service.impl;
 
+import com.bookbla.americano.domain.member.repository.MemberRepository;
+import com.bookbla.americano.domain.member.repository.entity.Member;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TestServiceImpl implements TestService {
 
     private final TestRepository testRepository;
-    private final MemberSignUpInformationRepository memberSignUpInformationRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     @Transactional
@@ -40,12 +42,12 @@ public class TestServiceImpl implements TestService {
 
     @Override
     @Transactional
-    public MemberSignUpInformation signUp(String email) {
-        return memberSignUpInformationRepository.findByMemberTypeAndEmail(MemberType.ADMIN, email)
-                .orElseGet(() -> memberSignUpInformationRepository.save(
-                        MemberSignUpInformation.builder()
+    public Member signUp(String email) {
+        return memberRepository.findByMemberTypeAndOauthEmail(MemberType.ADMIN, email)
+                .orElseGet(() -> memberRepository.save(
+                        Member.builder()
                                 .memberType(MemberType.ADMIN)
-                                .email(email)
+                                .oauthEmail(email)
                                 .build()));
     }
 }
