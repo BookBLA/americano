@@ -2,10 +2,9 @@ package com.bookbla.americano.domain.aws.enums;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.aws.exception.AwsException;
+import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Arrays;
 
 @Getter
 @RequiredArgsConstructor
@@ -13,7 +12,9 @@ public enum UploadType {
 
     IMAGE("image"),
     CERTIFICATION("certification"),
-    PROFILE("profile");
+    PROFILE("profile"),
+    UPDATE_CERTIFICATION("update/certification"),
+    UPDATE_PROFILE("update/profile");
 
     private final String type;
 
