@@ -1,8 +1,10 @@
 package com.bookbla.americano.domain.postcard.service.impl;
 
 
+import com.bookbla.americano.domain.member.repository.MemberPostcardRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberPostcard;
 import com.bookbla.americano.domain.memberask.repository.MemberAskRepository;
 import com.bookbla.americano.domain.memberask.repository.MemberReplyRepository;
 import com.bookbla.americano.domain.memberask.repository.entity.MemberAsk;
@@ -35,6 +37,7 @@ public class PostcardServiceImpl implements PostcardService {
     private final QuizQuestionRepository quizQuestionRepository;
     private final MemberRepository memberRepository;
     private final PostcardTypeRepository postcardTypeRepository;
+    private final MemberPostcardRepository memberPostcardRepository;
 
     @Override
     public SendPostcardResponse send(Long memberId, SendPostcardRequest sendPostcardRequest) {
@@ -49,11 +52,17 @@ public class PostcardServiceImpl implements PostcardService {
 
         memberReplyRepository.save(memberReply);
 
-        Boolean isCorrectFlag = false;
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 memberId 입니다."));
-        Member targetMember = memberRepository.findById(memberAsk.getMember().getId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 memberId 입니다."));
+        boolean isCorrectFlag = false;
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberPostcard memberPostcard = memberPostcardRepository.findMemberPostcardByMemberId(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("memberPostcard가 존재하지 않습니다."));
+
+        if (memberPostcard.getFreePostcardCount() == 0) {
+            return SendPostcardResponse.builder().isSendSuccess(false).build();
+        }
+
+        Member targetMember = memberRepository.getByIdOrThrow(memberAsk.getMember().getId());
+
         for (SendPostcardRequest.QuizAnswer quizAnswer : sendPostcardRequest.getQuizAnswerList()) {
             QuizQuestion quizQuestion = quizQuestionRepository.findById(quizAnswer.getQuizId())
                     .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 quizId 입니다."));
@@ -79,6 +88,8 @@ public class PostcardServiceImpl implements PostcardService {
         }
 
         if (isCorrectFlag) {
+            memberPostcard.updateFreePostcardCount(memberPostcard.getFreePostcardCount() - 1);
+
             Postcard postcard = Postcard.builder()
                     .sendMember(member)
                     .receiveMember(targetMember)

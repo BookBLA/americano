@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -14,14 +15,20 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class SendPostcardRequest {
+
+    @NotNull(message = "퀴즈가 입력되지 않았습니다.")
     private List<QuizAnswer> quizAnswerList;
 
+    @NotNull(message = "postcardTypeId가 입력되지 않았습니다.")
     private Long postcardTypeId;
+
+    @NotNull(message = "imageUrl이 입력되지 않았습니다.")
     private String imageUrl;
 
+    @NotNull(message = "memberAskId가 입력되지 않았습니다.")
     private Long memberAskId;
 
-    @NotBlank
+    @NotNull(message = "memberReply가 입력되지 않았습니다.")
     @Size(max = 150)
     private String memberReply;
 

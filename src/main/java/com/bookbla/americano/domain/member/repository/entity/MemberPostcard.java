@@ -37,4 +37,9 @@ public class MemberPostcard extends BaseUpdateEntity {
     @Column
     @Builder.Default
     private int freePostcardCount = 1;
+
+    public MemberPostcard updateFreePostcardCount(int freePostcardCount) {
+        this.freePostcardCount = freePostcardCount;
+        return this;
+    }
 }
