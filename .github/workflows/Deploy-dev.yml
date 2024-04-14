@@ -125,7 +125,7 @@ jobs:
           echo 'sudo docker rm -f ${{ env.CONTAINER_NAME }}' >> deploy.sh
           echo 'sudo docker rmi ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}' >> deploy.sh
           echo 'sudo docker pull ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}' >> deploy.sh
-          echo 'sudo docker run -d -p 8080:8080 --restart=unless-stopped --log-opt max-size=10m --log-opt max-file=3 --name ${{ env.CONTAINER_NAME }} ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}' >> deploy.sh
+          echo 'sudo docker run -d -p 8080:8080 --add-host host.docker.internal:host-gateway --restart=unless-stopped --log-opt max-size=10m --log-opt max-file=3 --name ${{ env.CONTAINER_NAME }} ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}' >> deploy.sh
 
       - name: Transfer Deploy Script use SCP
         uses: appleboy/scp-action@master
