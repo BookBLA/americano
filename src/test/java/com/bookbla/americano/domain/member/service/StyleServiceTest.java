@@ -26,8 +26,8 @@ class StyleServiceTest {
         // then
         assertAll(
                 () -> assertThat(stylesResponse.getSmokeTypes()).containsExactly("흡연", "비흡연", "가끔"),
-                () -> assertThat(stylesResponse.getDrinkTypes()).containsExactly("안마심", "월 1~2회",
-                        "주 1회", "주 1회 이상", "매일"),
+                () -> assertThat(stylesResponse.getDrinkTypes()).containsExactly("X", "월 1~2회",
+                        "주 1회", "주 2회 이상", "매일"),
                 () -> assertThat(stylesResponse.getContactTypes()).containsExactly("느긋이", "칼답"),
                 () -> assertThat(stylesResponse.getDateStyleTypes()).containsExactly("집 데이트",
                         "야외 데이트"),
