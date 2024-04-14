@@ -37,6 +37,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
     // openfeign
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
