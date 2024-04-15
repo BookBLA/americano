@@ -42,6 +42,18 @@ public class Postcard extends BaseInsertEntity {
     private Member receiveMember;
 
     @OneToOne
+    @JoinColumn(name = "quiz_reply_id_1")
+    private QuizReply quizReply1;
+
+    @OneToOne
+    @JoinColumn(name = "quiz_reply_id_2")
+    private QuizReply quizReply2;
+
+    @OneToOne
+    @JoinColumn(name = "quiz_reply_id_3")
+    private QuizReply quizReply3;
+
+    @OneToOne
     @JoinColumn(name = "member_reply_id")
     private MemberReply memberReply;
 

@@ -25,6 +25,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -41,69 +44,63 @@ public class PostcardServiceImpl implements PostcardService {
 
     @Override
     public SendPostcardResponse send(Long memberId, SendPostcardRequest sendPostcardRequest) {
-
-        MemberAsk memberAsk =  memberAskRepository.findById(sendPostcardRequest.getMemberAskId())
+        MemberAsk memberAsk = memberAskRepository.findById(sendPostcardRequest.getMemberAskId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 memberAskId 입니다."));
 
         MemberReply memberReply = MemberReply.builder()
                 .memberAsk(memberAsk)
                 .content(sendPostcardRequest.getMemberReply())
                 .build();
-
         memberReplyRepository.save(memberReply);
 
-        boolean isCorrectFlag = false;
-        Member member = memberRepository.getByIdOrThrow(memberId);
+        List<QuizReply> correctReplies = new ArrayList<>();
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
         MemberPostcard memberPostcard = memberPostcardRepository.findMemberPostcardByMemberId(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("memberPostcard가 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("MemberPostcard not found"));
 
         if (memberPostcard.getFreePostcardCount() == 0) {
             return SendPostcardResponse.builder().isSendSuccess(false).build();
         }
 
-        Member targetMember = memberRepository.getByIdOrThrow(memberAsk.getMember().getId());
+        Member targetMember = memberRepository.findById(memberAsk.getMember().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Target member not found"));
 
         for (SendPostcardRequest.QuizAnswer quizAnswer : sendPostcardRequest.getQuizAnswerList()) {
             QuizQuestion quizQuestion = quizQuestionRepository.findById(quizAnswer.getQuizId())
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 quizId 입니다."));
+                    .orElseThrow(() -> new IllegalArgumentException("QuizQuestion not found"));
 
-            if (quizQuestion.getFirstChoice().equals(quizAnswer.getQuizAnswer())) {
-                QuizReply quizReply = QuizReply.builder()
-                        .quizQuestion(quizQuestion)
-                        .answer(quizAnswer.getQuizAnswer())
-                        .member(member)
-                        .correctStatus(CorrectStatus.CORRECT)
-                        .build();
-                quizReplyRepository.save(quizReply);
-                isCorrectFlag = true;
-            } else {
-                QuizReply quizReply = QuizReply.builder()
-                        .quizQuestion(quizQuestion)
-                        .answer(quizAnswer.getQuizAnswer())
-                        .member(member)
-                        .correctStatus(CorrectStatus.WRONG)
-                        .build();
-                quizReplyRepository.save(quizReply);
+            CorrectStatus status = quizQuestion.getFirstChoice().equals(quizAnswer.getQuizAnswer()) ? CorrectStatus.CORRECT : CorrectStatus.WRONG;
+            QuizReply quizReply = QuizReply.builder()
+                    .quizQuestion(quizQuestion)
+                    .answer(quizAnswer.getQuizAnswer())
+                    .member(member)
+                    .correctStatus(status)
+                    .build();
+            quizReplyRepository.save(quizReply);
+
+            if (status == CorrectStatus.CORRECT) {
+                correctReplies.add(quizReply);
             }
         }
 
-        if (isCorrectFlag) {
+        if (!correctReplies.isEmpty()) {
             memberPostcard.updateFreePostcardCount(memberPostcard.getFreePostcardCount() - 1);
-
             Postcard postcard = Postcard.builder()
                     .sendMember(member)
                     .receiveMember(targetMember)
                     .postcardStatus(PostcardStatus.PENDING)
                     .memberReply(memberReply)
+                    .quizReply1(correctReplies.get(0))
+                    .quizReply2(correctReplies.size() > 1 ? correctReplies.get(1) : null)
+                    .quizReply3(correctReplies.size() > 2 ? correctReplies.get(2) : null)
                     .postcardType(postcardTypeRepository.findById(sendPostcardRequest.getPostcardTypeId())
-                            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 postcardTypeId 입니다."))
-                    )
+                            .orElseThrow(() -> new IllegalArgumentException("PostcardType not found")))
                     .imageUrl(sendPostcardRequest.getImageUrl())
                     .build();
             postcardRepository.save(postcard);
 
             return SendPostcardResponse.builder().isSendSuccess(true).build();
-
         } else {
             return SendPostcardResponse.builder().isSendSuccess(false).build();
         }
