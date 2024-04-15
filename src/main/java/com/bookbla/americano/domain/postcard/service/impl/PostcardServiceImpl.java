@@ -13,8 +13,10 @@ import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.PostcardRepository;
 import com.bookbla.americano.domain.postcard.repository.PostcardTypeRepository;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
+import com.bookbla.americano.domain.postcard.repository.entity.PostcardType;
 import com.bookbla.americano.domain.postcard.service.PostcardService;
 import com.bookbla.americano.domain.postcard.service.dto.request.SendPostcardRequest;
+import com.bookbla.americano.domain.postcard.service.dto.response.PostcardTypeResponse;
 import com.bookbla.americano.domain.postcard.service.dto.response.SendPostcardResponse;
 import com.bookbla.americano.domain.quiz.enums.CorrectStatus;
 import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
@@ -27,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -105,4 +108,14 @@ public class PostcardServiceImpl implements PostcardService {
             return SendPostcardResponse.builder().isSendSuccess(false).build();
         }
     }
+
+    @Override
+    public PostcardTypeResponse getPostcardTypeList() {
+        List<PostcardType> postcardTypes = postcardTypeRepository.findAll();
+        List<PostcardTypeResponse.PostcardTypeDto> postcardTypeDtos = postcardTypes.stream()
+                .map(type -> new PostcardTypeResponse.PostcardTypeDto(type.getId(), type.getName(), String.valueOf(type.getPrice())))
+                .collect(Collectors.toList());
+        return new PostcardTypeResponse(postcardTypeDtos);
+    }
+
 }
