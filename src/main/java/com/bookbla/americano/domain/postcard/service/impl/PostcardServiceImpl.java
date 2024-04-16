@@ -62,13 +62,14 @@ public class PostcardServiceImpl implements PostcardService {
         MemberPostcard memberPostcard = memberPostcardRepository.findMemberPostcardByMemberId(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("MemberPostcard not found"));
 
-        if (memberPostcard.getFreePostcardCount() == 0) {
+        if (memberPostcard.getFreePostcardCount() + memberPostcard.getPayPostcardCount()  == 0) {
             return SendPostcardResponse.builder().isSendSuccess(false).build();
         }
 
         Member targetMember = memberRepository.findById(memberAsk.getMember().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Target member not found"));
 
+        boolean isCorrect = false;
         for (SendPostcardRequest.QuizAnswer quizAnswer : sendPostcardRequest.getQuizAnswerList()) {
             QuizQuestion quizQuestion = quizQuestionRepository.findById(quizAnswer.getQuizId())
                     .orElseThrow(() -> new IllegalArgumentException("QuizQuestion not found"));
@@ -80,33 +81,33 @@ public class PostcardServiceImpl implements PostcardService {
                     .member(member)
                     .correctStatus(status)
                     .build();
-            quizReplyRepository.save(quizReply);
+            correctReplies.add(quizReply);
 
             if (status == CorrectStatus.CORRECT) {
-                correctReplies.add(quizReply);
+                isCorrect = true;
             }
         }
 
-        if (!correctReplies.isEmpty()) {
-            memberPostcard.updateFreePostcardCount(memberPostcard.getFreePostcardCount() - 1);
-            Postcard postcard = Postcard.builder()
-                    .sendMember(member)
-                    .receiveMember(targetMember)
-                    .postcardStatus(PostcardStatus.PENDING)
-                    .memberReply(memberReply)
-                    .quizReply1(correctReplies.get(0))
-                    .quizReply2(correctReplies.size() > 1 ? correctReplies.get(1) : null)
-                    .quizReply3(correctReplies.size() > 2 ? correctReplies.get(2) : null)
-                    .postcardType(postcardTypeRepository.findById(sendPostcardRequest.getPostcardTypeId())
-                            .orElseThrow(() -> new IllegalArgumentException("PostcardType not found")))
-                    .imageUrl(sendPostcardRequest.getImageUrl())
-                    .build();
-            postcardRepository.save(postcard);
+        PostcardStatus status = isCorrect ? PostcardStatus.PENDING : PostcardStatus.ALL_WRONG;
 
-            return SendPostcardResponse.builder().isSendSuccess(true).build();
-        } else {
-            return SendPostcardResponse.builder().isSendSuccess(false).build();
+        memberPostcard.updateFreePostcardCount(memberPostcard.getFreePostcardCount() - 1);
+        Postcard postcard = Postcard.builder()
+                .sendMember(member)
+                .receiveMember(targetMember)
+                .postcardStatus(status)
+                .memberReply(memberReply)
+                .postcardType(postcardTypeRepository.findById(sendPostcardRequest.getPostcardTypeId())
+                        .orElseThrow(() -> new IllegalArgumentException("PostcardType not found")))
+                .imageUrl(sendPostcardRequest.getImageUrl())
+                .build();
+        postcardRepository.save(postcard);
+
+        for (QuizReply quizReply : correctReplies) {
+            quizReply.updatePostcard(postcard);
+            quizReplyRepository.save(quizReply);
         }
+
+        return SendPostcardResponse.builder().isSendSuccess(isCorrect).build();
     }
 
     @Override
