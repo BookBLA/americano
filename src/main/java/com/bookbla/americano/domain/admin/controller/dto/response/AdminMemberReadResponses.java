@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.bookbla.americano.domain.member.repository.entity.MemberAuth;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,12 +42,11 @@ public class AdminMemberReadResponses {
 
         public static AdminMemberReadResponse from(Member member) {
             MemberProfile memberProfile = member.getMemberProfile();
-            MemberAuth memberAuth = member.getMemberAuth();
 
             return AdminMemberReadResponse.builder()
                     .name(memberProfile.getName())
                     .birthDate(memberProfile.getBirthDate())
-                    .email(memberAuth.getSchoolEmail())
+                    .email(member.getOauthEmail())
                     .gender(memberProfile.getGender().name())
                     .school(memberProfile.getSchoolName())
                     .phone(memberProfile.getPhoneNumber())

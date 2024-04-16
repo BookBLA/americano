@@ -1,12 +1,12 @@
 package com.bookbla.americano.domain.test.controller;
 
+import com.bookbla.americano.domain.member.repository.entity.Member;
 import java.net.URI;
 import java.util.List;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.base.jwt.JwtProvider;
-import com.bookbla.americano.domain.auth.repository.entity.MemberSignUpInformation;
 import com.bookbla.americano.domain.test.controller.dto.request.TestCreateRequest;
 import com.bookbla.americano.domain.test.controller.dto.request.TestSignUpRequest;
 import com.bookbla.americano.domain.test.controller.dto.response.TestCreateResponse;
@@ -56,8 +56,8 @@ public class TestController {
     public ResponseEntity<TestSignUpResponse> testSignUp(
             @RequestBody TestSignUpRequest testSignUpRequest
     ) {
-        MemberSignUpInformation memberSignUpInformation = testService.signUp(testSignUpRequest.getEmail());
-        String token = jwtProvider.createToken(memberSignUpInformation.getId().toString());
-        return ResponseEntity.ok(TestSignUpResponse.of(memberSignUpInformation.getId(), token));
+        Member member = testService.signUp(testSignUpRequest.getEmail());
+        String token = jwtProvider.createToken(member.getId().toString());
+        return ResponseEntity.ok(TestSignUpResponse.of(member.getId(), token));
     }
 }

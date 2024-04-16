@@ -16,9 +16,9 @@ public class AdminMemberStudentIdResponses {
 
     private final List<AdminMemberStudentIdResponse> datas;
 
-    public static AdminMemberStudentIdResponses from(List<Member> members, List<MemberVerify> memberVerifies) {
+    public static AdminMemberStudentIdResponses from(List<Member> members) {
         List<AdminMemberStudentIdResponse> adminMemberStudentIdResponses = members.stream()
-                .map(it -> AdminMemberStudentIdResponse.from(it, memberVerifies))
+                .map(it -> AdminMemberStudentIdResponse.from(it))
                 .collect(Collectors.toList());
 
         return new AdminMemberStudentIdResponses(adminMemberStudentIdResponses);
@@ -37,21 +37,21 @@ public class AdminMemberStudentIdResponses {
         private final String studentIdImageUrl;
         private final String studentIdImageUrlStatus;
 
-        public static AdminMemberStudentIdResponse from(Member member, List<MemberVerify> memberVerifies) {
+        public static AdminMemberStudentIdResponse from(Member member) {
             MemberProfile memberProfile = member.getMemberProfile();
 
-            String studentIdImageUrl = memberVerifies.stream()
-                    .map(MemberVerify::getValue)
-                    .filter(it -> it.equals(member.getId()))
-                    .findFirst()
-                    .orElse("링크가 존재하지 않아요~");
+//            String studentIdImageUrl = memberVerifies.stream()
+//                    .map(MemberVerify::getValue)
+//                    .filter(it -> it.equals(member.getId()))
+//                    .findFirst()
+//                    .orElse("링크가 존재하지 않아요~");
 
             return AdminMemberStudentIdResponse.builder()
                     .memberId(member.getId())
                     .name(memberProfile.getName())
                     .schoolName(memberProfile.getSchoolName())
                     .major(memberProfile.getMajor())
-                    .studentIdImageUrl(studentIdImageUrl)
+                    .studentIdImageUrl(memberProfile.getStudentIdImageUrl())
                     .studentIdImageUrlStatus(memberProfile.getStudentIdImageStatus().name())
                     .build();
         }

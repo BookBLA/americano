@@ -10,7 +10,6 @@ import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.bookbla.americano.domain.member.repository.entity.MemberAuth;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -47,7 +46,6 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(COMPLETED)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
                 .memberProfile(MemberProfile.builder().phoneNumber("01012345678").gender(MALE).schoolName("가천대").name("이준희").build())
                 .build();
         memberRepository.save(member1);
@@ -56,7 +54,6 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(STYLE_BOOK)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
                 .memberProfile(MemberProfile.builder().phoneNumber("01012345678").gender(MALE).schoolName("가천대").name("이준희").build())
                 .build();
         memberRepository.save(member2);
@@ -65,7 +62,6 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
                 .memberProfile(MemberProfile.builder().phoneNumber("01012345678").gender(MALE).schoolName("가천대").name("이준희").build())
                 .build();
         memberRepository.save(member3);
@@ -84,7 +80,6 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
                 .memberProfile(MemberProfile.builder().openKakaoRoomStatus(OpenKakaoRoomStatus.PENDING).name("이준희").profileImageUrl("프사1").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").name("이준희").build())
                 .build();
         memberRepository.save(pendingMember);
@@ -93,7 +88,6 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
                 .memberProfile(MemberProfile.builder().name("김진호").openKakaoRoomStatus(OpenKakaoRoomStatus.NOT_DEFAULT).profileImageUrl("프사2").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").name("이준희").build())
                 .build();
         memberRepository.save(notDefaultMember);
@@ -102,7 +96,6 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(COMPLETED)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
                 .memberProfile(MemberProfile.builder().name("문성진").openKakaoRoomStatus(OpenKakaoRoomStatus.DONE).profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").name("이준희").build())
                 .build();
         memberRepository.save(completedMember);
@@ -121,7 +114,6 @@ class AdminMemberServiceTest {
         Member member = memberRepository.save(Member.builder()
                 .memberType(ADMIN)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
                 .memberProfile(MemberProfile.builder().name("문성진").profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").name("이준희").build())
                 .build());
         StatusUpdateDto statusUpdateDto = new StatusUpdateDto(member.getId(), "done","success");
@@ -141,7 +133,6 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
                 .memberProfile(MemberProfile.builder().profileImageStatus(ProfileImageStatus.PENDING).name("이준희").profileImageUrl("프사1").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").name("이준희").build())
                 .build();
         memberRepository.save(pendingMember);
@@ -150,7 +141,6 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
                 .memberProfile(MemberProfile.builder().name("김진호").profileImageStatus(ProfileImageStatus.DENIAL).profileImageUrl("프사2").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").name("이준희").build())
                 .build();
         memberRepository.save(denialMember);
@@ -159,7 +149,6 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(COMPLETED)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
                 .memberProfile(MemberProfile.builder().name("문성진").profileImageStatus(ProfileImageStatus.DONE).profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").name("이준희").build())
                 .build();
         memberRepository.save(completedMember);
@@ -178,7 +167,6 @@ class AdminMemberServiceTest {
         Member member = memberRepository.save(Member.builder()
                 .memberType(ADMIN)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
                 .memberProfile(MemberProfile.builder().name("문성진").profileImageStatus(ProfileImageStatus.PENDING).profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").build())
                 .build());
         StatusUpdateDto statusUpdateDto = new StatusUpdateDto(member.getId(), "done", "success");
@@ -198,7 +186,6 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
                 .memberProfile(MemberProfile.builder().studentIdImageStatus(StudentIdImageStatus.PENDING).name("이준희").studentIdImageUrl("학생증사진").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").build())
                 .build();
         memberRepository.save(pendingMember);
@@ -207,7 +194,6 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
                 .memberProfile(MemberProfile.builder().studentIdImageStatus(StudentIdImageStatus.DENIAL).name("김진호").studentIdImageUrl("학생증사진").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").build())
                 .build();
         memberRepository.save(denialMember);
@@ -216,7 +202,6 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(COMPLETED)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
                 .memberProfile(MemberProfile.builder().studentIdImageStatus(StudentIdImageStatus.DONE).name("문성진").studentIdImageUrl("학생증사진").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("명예가천대").build())
                 .build();
         memberRepository.save(completedMember);
@@ -235,7 +220,6 @@ class AdminMemberServiceTest {
         Member member = memberRepository.save(Member.builder()
                 .memberType(ADMIN)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberAuth(MemberAuth.builder().schoolEmail("email.com").build())
                 .memberProfile(MemberProfile.builder().name("문성진").studentIdImageUrl("학생증사진링크").profileImageStatus(ProfileImageStatus.PENDING).profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").build())
                 .build());
         StatusUpdateDto statusUpdateDto = new StatusUpdateDto(member.getId(), "denial", "success");

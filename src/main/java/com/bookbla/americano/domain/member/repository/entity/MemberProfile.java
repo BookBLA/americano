@@ -7,6 +7,7 @@ import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -29,6 +30,9 @@ public class MemberProfile {
     private Gender gender;
 
     private String schoolName;
+
+    @Column(unique = true)
+    private String schoolEmail;
 
     private String phoneNumber;
 
@@ -85,6 +89,11 @@ public class MemberProfile {
 
     public MemberProfile updateSchoolName(String schoolName) {
         this.schoolName = schoolName;
+        return this;
+    }
+
+    public MemberProfile updateSchoolEmail(String schoolEmail) {
+        this.schoolEmail = schoolEmail;
         return this;
     }
 

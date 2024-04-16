@@ -12,5 +12,4 @@ public interface MemberVerifyRepository extends JpaRepository<MemberVerify, Long
 
     List<MemberVerify> findByMemberVerifyStatusAndMemberVerifyType(MemberVerifyStatus memberVerifyStatus, MemberVerifyType memberVerifyType);
 
-    Optional<MemberVerify> findByMemberId(Long memberId);
 }

@@ -50,7 +50,7 @@ public class MemberStyleServiceImpl implements MemberStyleService {
                 .contents(memberStyleCreateRequest.getMemberAsk())
                 .build();
         MemberAsk savedMemberAsk = memberAskRepository.save(memberAsk);
-        member.checkMemberStatus(COMPLETED);
+        member.updateMemberStatus(COMPLETED);
 
         return MemberStyleResponse.of(member, member.getMemberStyle(), savedMemberAsk);
     }

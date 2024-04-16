@@ -4,7 +4,6 @@ import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.MemberType;
-import com.bookbla.americano.domain.member.exception.MemberAuthExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.bookbla.americano.domain.member.exception.PolicyExceptionType;
@@ -48,10 +47,6 @@ public class Member extends BaseInsertEntity {
 
     @Embedded
     @Getter(AccessLevel.NONE)
-    private MemberAuth memberAuth;
-
-    @Embedded
-    @Getter(AccessLevel.NONE)
     private MemberProfile memberProfile;
 
     @Embedded
@@ -72,19 +67,8 @@ public class Member extends BaseInsertEntity {
         return this;
     }
 
-    public Member checkMemberStatus(MemberStatus memberStatus) {
+    public Member updateMemberStatus(MemberStatus memberStatus) {
         this.memberStatus = memberStatus;
-        return this;
-    }
-
-    public void checkMemberStatus() {
-        if (memberProfile.isAllStatusesDone()) {
-            memberStatus = MemberStatus.COMPLETED;
-        }
-    }
-
-    public Member updateMemberAuth(MemberAuth memberAuth) {
-        this.memberAuth = memberAuth;
         return this;
     }
 
@@ -117,13 +101,6 @@ public class Member extends BaseInsertEntity {
         return memberStyle;
     }
 
-    public MemberAuth getMemberAuth() {
-        if (memberAuth == null) {
-            throw new BaseException(MemberAuthExceptionType.MEMBER_AUTH_NOT_FOUND);
-        }
-        return memberAuth;
-    }
-
     public MemberPolicy getMemberPolicy() {
         if (memberPolicy == null) {
             throw new BaseException(PolicyExceptionType.MEMBER_NOT_REGISTERED);
@@ -134,6 +111,12 @@ public class Member extends BaseInsertEntity {
     public void validateStyleRegistered() {
         if (this.memberStyle != null) {
             throw new BaseException(MemberExceptionType.STYLE_ALREADY_REGISTERD);
+        }
+    }
+
+    public void checkMemberStatus() {
+        if (memberProfile.isAllStatusesDone()) {
+            this.memberStatus =  MemberStatus.COMPLETED;
         }
     }
 }

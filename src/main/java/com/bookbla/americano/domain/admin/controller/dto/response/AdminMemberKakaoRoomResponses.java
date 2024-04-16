@@ -18,9 +18,9 @@ public class AdminMemberKakaoRoomResponses {
 
     private final List<AdminMemberKakaoRoomResponse> datas;
 
-    public static AdminMemberKakaoRoomResponses from(List<Member> members, List<MemberVerify> verifies) {
+    public static AdminMemberKakaoRoomResponses from(List<Member> members) {
         List<AdminMemberKakaoRoomResponse> adminMemberKakaoRoomResponses = members.stream()
-                .map(it -> AdminMemberKakaoRoomResponse.from(it, verifies))
+                .map(it -> AdminMemberKakaoRoomResponse.from(it))
                 .collect(Collectors.toList());
 
         return new AdminMemberKakaoRoomResponses(adminMemberKakaoRoomResponses);
@@ -36,19 +36,19 @@ public class AdminMemberKakaoRoomResponses {
         private final String openKakaoRoomUrl;
         private final String openKakaoRoomUrlStatus;
 
-        public static AdminMemberKakaoRoomResponse from(Member member, List<MemberVerify> memberVerifies) {
+        public static AdminMemberKakaoRoomResponse from(Member member) {
             MemberProfile memberProfile = member.getMemberProfile();
 
-            String openKakaoRoomUrl = memberVerifies.stream()
-                    .map(MemberVerify::getValue)
-                    .filter(it -> it.equals(member.getId()))
-                    .findFirst()
-                    .orElse("존재하지 않아요~");
+//            String openKakaoRoomUrl = memberVerifies.stream()
+//                    .map(MemberVerify::getValue)
+//                    .filter(it -> it.equals(member.getId()))
+//                    .findFirst()
+//                    .orElse("존재하지 않아요~");
 
             return AdminMemberKakaoRoomResponse.builder()
                     .memberId(member.getId())
                     .name(memberProfile.getName())
-                    .openKakaoRoomUrl(openKakaoRoomUrl)
+                    .openKakaoRoomUrl(memberProfile.getOpenKakaoRoomUrl())
                     .openKakaoRoomUrlStatus(memberProfile.getOpenKakaoRoomStatus().name())
                     .build();
         }

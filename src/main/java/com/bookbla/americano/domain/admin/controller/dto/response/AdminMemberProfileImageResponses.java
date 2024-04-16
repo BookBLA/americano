@@ -18,9 +18,9 @@ public class AdminMemberProfileImageResponses {
 
     private final List<AdminMemberProfileImageResponse> datas;
 
-    public static AdminMemberProfileImageResponses from(List<Member> members, List<MemberVerify> memberVerifies) {
+    public static AdminMemberProfileImageResponses from(List<Member> members) {
         List<AdminMemberProfileImageResponse> pendingMemberProfileResponses = members.stream()
-                .map(it -> AdminMemberProfileImageResponse.from(it, memberVerifies))
+                .map(it -> AdminMemberProfileImageResponse.from(it))
                 .collect(toList());
 
         return new AdminMemberProfileImageResponses(pendingMemberProfileResponses);
@@ -40,14 +40,14 @@ public class AdminMemberProfileImageResponses {
         private final String profileImageUrl;
         private final String profileImageStatus;
 
-        public static AdminMemberProfileImageResponse from(Member member, List<MemberVerify> memberVerifies) {
+        public static AdminMemberProfileImageResponse from(Member member) {
             MemberProfile memberProfile = member.getMemberProfile();
 
-            String profileImageUrl = memberVerifies.stream()
-                    .map(MemberVerify::getValue)
-                    .filter(it -> it.equals(member.getId()))
-                    .findFirst()
-                    .orElse("존재하지 않아요~");
+//            String profileImageUrl = memberVerifies.stream()
+//                    .map(MemberVerify::getValue)
+//                    .filter(it -> it.equals(member.getId()))
+//                    .findFirst()
+//                    .orElse("존재하지 않아요~");
 
             return AdminMemberProfileImageResponse.builder()
                     .memberId(member.getId())
@@ -57,7 +57,7 @@ public class AdminMemberProfileImageResponses {
                     .gender(memberProfile.getGender().name())
                     .schoolName(memberProfile.getSchoolName())
                     .phoneNumber(memberProfile.getPhoneNumber())
-                    .profileImageUrl(profileImageUrl)
+                    .profileImageUrl(memberProfile.getProfileImageUrl())
                     .profileImageStatus(memberProfile.getProfileImageStatus().name())
                     .build();
         }
