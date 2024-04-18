@@ -11,6 +11,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,18 +35,25 @@ public class MemberProfile {
     @Column(unique = true)
     private String schoolEmail;
 
+
     private String phoneNumber;
 
+    @Size(max = 1000)
+    @Column(length = 1000)
     private String profileImageUrl;
 
     @Enumerated(EnumType.STRING)
     private ProfileImageStatus profileImageStatus;
 
+    @Size(max = 1000)
+    @Column(length = 1000)
     private String openKakaoRoomUrl;
 
     @Enumerated(EnumType.STRING)
     private OpenKakaoRoomStatus openKakaoRoomStatus;
 
+    @Size(max = 1000)
+    @Column(length = 1000)
     private String studentIdImageUrl;
 
     @Enumerated(EnumType.STRING)
