@@ -16,6 +16,9 @@ import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import com.bookbla.americano.domain.member.service.MemberBookService;
+import com.bookbla.americano.domain.quiz.exception.QuizQuestionExceptionType;
+import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
+import com.bookbla.americano.domain.quiz.repository.entity.QuizQuestion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +35,7 @@ public class MemberBookServiceImpl implements MemberBookService {
     private final BookRepository bookRepository;
     private final MemberRepository memberRepository;
     private final MemberBookRepository memberBookRepository;
+    private final QuizQuestionRepository quizQuestionRepository;
 
     @Override
     public MemberBookCreateResponse addMemberBook(Long memberId, MemberBookCreateRequest memberBookCreateRequest) {
@@ -101,10 +105,12 @@ public class MemberBookServiceImpl implements MemberBookService {
         memberBook.validateOwner(member);
 
         if (memberBook.isNotRepresentative()) {
+            quizQuestionRepository.deleteByMemberBook(memberBook);
             memberBookRepository.deleteById(memberBookId);
             return;
         }
 
+        quizQuestionRepository.deleteByMemberBook(memberBook);
         memberBookRepository.deleteById(memberBookId);
         List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
         if (!memberBooks.isEmpty()) {
