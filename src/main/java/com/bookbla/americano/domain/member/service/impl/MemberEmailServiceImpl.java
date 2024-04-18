@@ -58,24 +58,22 @@ public class MemberEmailServiceImpl implements MemberEmailService {
         sendEmailMessage(schoolEmail, verifyCode);
 
         // 5분 뒤에 redis 만료
-        // TODO: 고민사항 36^6의 확률로 키값(검증코드)이 겹치는 상황도 고려를 해야되는지???
         redisUtil.setDataExpire(verifyCode, schoolEmail, 5 * 60);
         redisUtil.setDataExpire(schoolEmail, verifyCode, 5 * 60);
 
         Member member = memberRepository.getByIdOrThrow(memberId);
 
         MemberEmail memberEmail = memberEmailRepository.findByMember(member)
-            .map(existingMemberEmail -> {
-                existingMemberEmail.updateSchoolEmail(schoolEmail)
-                    .updateEmailVerifyPending();
-                return existingMemberEmail;
-            })
-            .orElse(
-                memberEmailRepository.save(MemberEmail.builder()
-                    .member(member)
-                    .schoolEmail(schoolEmail)
-                    .emailVerifyStatus(EmailVerifyStatus.PENDING)
-                    .build()));
+            .orElseGet(() -> MemberEmail.builder()
+                .member(member)
+                .schoolEmail(schoolEmail)
+                .emailVerifyStatus(EmailVerifyStatus.PENDING)
+                .build());
+
+        memberEmail.updateSchoolEmail(schoolEmail)
+            .updateEmailVerifyPending();
+
+        memberEmailRepository.save(memberEmail);
 
         return EmailResponse.from(memberEmail);
     }
@@ -137,7 +135,6 @@ public class MemberEmailServiceImpl implements MemberEmailService {
         sendEmailMessage(schoolEmail, verifyCode);
 
         // 5분 뒤에 redis 만료
-        // TODO: 고민사항 36^6의 확률로 키값(검증코드)이 겹치는 상황도 고려를 해야되는지???
         redisUtil.setDataExpire(verifyCode, schoolEmail, 5 * 60);
         redisUtil.setDataExpire(schoolEmail, verifyCode, 5 * 60);
 
