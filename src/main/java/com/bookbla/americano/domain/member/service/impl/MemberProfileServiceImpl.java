@@ -54,7 +54,6 @@ public class MemberProfileServiceImpl implements MemberProfileService {
             throw new BaseException(MemberEmailExceptionType.STILL_PENDING);
         }
 
-//        MemberProfile memberProfile = member.getMemberProfile();
         MemberProfile memberProfile = memberProfileDto.toEntity();
         memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING)
             .updateStudentIdImageStatus(StudentIdImageStatus.PENDING)
@@ -63,7 +62,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         member.updateMemberProfile(memberProfile)
             .updateMemberStatus(MemberStatus.APPROVAL);
 
-        return MemberProfileResponse.from(memberProfile);
+        return MemberProfileResponse.from(member, memberProfile);
     }
 
 
@@ -73,7 +72,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
 
-        return MemberProfileResponse.from(memberProfile);
+        return MemberProfileResponse.from(member, memberProfile);
     }
 
     @Override
@@ -86,12 +85,8 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
         updateEntity(memberProfile, memberProfileUpdateRequest);
 
-        return MemberProfileResponse.from(memberProfile);
+        return MemberProfileResponse.from(member, memberProfile);
     }
-
-//    private void createMemberProfile(MemberProfile memberProfile, MemberProfileCreateRequest req) {
-//        memberProfile
-//    }
 
     private void updateEntity(MemberProfile memberProfile, MemberProfileUpdateRequest request) {
         memberProfile.updateName(request.getName())
