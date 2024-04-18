@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Long> {
 
     Optional<QuizQuestion> findByMemberBook(MemberBook memberBook);
+
+    void deleteByMemberBook(MemberBook memberBook);
 }
