@@ -1,19 +1,23 @@
 package com.bookbla.americano.domain.member.service.impl;
 
+import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.auth.repository.MemberSignUpInformationRepository;
 import com.bookbla.americano.domain.auth.repository.entity.MemberSignUpInformation;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberUpdateRequest;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberDeleteResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStatusResponse;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
+import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.service.MemberService;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +50,20 @@ public class MemberServiceImpl implements MemberService {
         update(member, memberUpdateRequest);
 
         return MemberResponse.from(member);
+    }
+
+    @Override
+    @Transactional
+    public MemberDeleteResponse deleteMember(Long memberId) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+
+        if (member.getMemberStatus() == MemberStatus.DELETED) {
+            throw new BaseException(MemberExceptionType.MEMBER_STATUS_NOT_VALID);
+        }
+        member.updateDeleteAt(LocalDateTime.now())
+            .updateMemberStatus(MemberStatus.DELETED);
+
+        return MemberDeleteResponse.from(member);
     }
 
     private void update(Member member, MemberUpdateRequest request) {

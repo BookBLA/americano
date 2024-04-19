@@ -5,18 +5,22 @@ import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberDeleteResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStatusResponse;
 import com.bookbla.americano.domain.member.service.MemberPostcardService;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
 import com.bookbla.americano.domain.member.service.MemberService;
+import com.sun.source.tree.MemberReferenceTree;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,6 +55,14 @@ public class MemberController {
         MemberResponse memberResponse = memberService.updateMember(loginUser.getMemberId(),
             memberUpdateRequest);
         return ResponseEntity.ok(memberResponse);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<MemberDeleteResponse> deleteMember(
+        @Parameter(hidden = true) @User LoginUser loginUser) {
+        MemberDeleteResponse memberDeleteResponse = memberService.deleteMember(
+            loginUser.getMemberId());
+        return ResponseEntity.ok(memberDeleteResponse);
     }
 
     @GetMapping("/statuses")

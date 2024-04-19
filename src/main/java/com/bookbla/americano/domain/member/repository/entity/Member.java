@@ -9,6 +9,7 @@ import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.bookbla.americano.domain.member.exception.PolicyExceptionType;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,6 +48,8 @@ public class Member extends BaseInsertEntity {
     @Enumerated(EnumType.STRING)
     private MemberStatus memberStatus;
 
+    private LocalDateTime deleteAt;
+
     @Embedded
     @Getter(AccessLevel.NONE)
     private MemberProfile memberProfile;
@@ -71,6 +74,11 @@ public class Member extends BaseInsertEntity {
 
     public Member updateMemberStatus(MemberStatus memberStatus) {
         this.memberStatus = memberStatus;
+        return this;
+    }
+
+    public Member updateDeleteAt(LocalDateTime deleteAt) {
+        this.deleteAt = deleteAt;
         return this;
     }
 
