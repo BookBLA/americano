@@ -1,7 +1,9 @@
 package com.bookbla.americano.domain.auth.controller;
 
 import com.bookbla.americano.domain.auth.controller.dto.request.LoginRequestDto;
+import com.bookbla.americano.domain.auth.controller.dto.request.RejoinRequest;
 import com.bookbla.americano.domain.auth.controller.dto.response.LoginResponseDto;
+import com.bookbla.americano.domain.auth.controller.dto.response.RejoinResponse;
 import com.bookbla.americano.domain.auth.service.AuthService;
 import com.bookbla.americano.domain.auth.service.impl.AuthServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,15 @@ public class AuthController {
     ) {
         LoginResponseDto loginResponseDto = authService.login(loginRequestDto, oAuthType);
         return ResponseEntity.ok(loginResponseDto);
-
     }
+
+    @PostMapping("/rejoin/{oAuthType}")
+    public ResponseEntity<RejoinResponse> rejoin(
+        @RequestBody RejoinRequest rejoinRequest,
+        @PathVariable String oAuthType
+    ) {
+        RejoinResponse rejoinResponse = authService.rejoin(rejoinRequest, oAuthType);
+        return ResponseEntity.ok(rejoinResponse);
+    }
+
 }
