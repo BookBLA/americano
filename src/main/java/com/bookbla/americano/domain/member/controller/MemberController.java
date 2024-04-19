@@ -39,41 +39,43 @@ public class MemberController {
 
     @GetMapping
     public ResponseEntity<MemberResponse> readMember(
-        @Parameter(hidden = true) @User LoginUser loginUser
-    ) {
+        @Parameter(hidden = true) @User LoginUser loginUser) {
         MemberResponse memberResponse = memberService.readMember(loginUser.getMemberId());
         return ResponseEntity.ok(memberResponse);
     }
 
     @PutMapping
     public ResponseEntity<MemberResponse> updateMember(
-            @Parameter(hidden = true) @User LoginUser loginUser,
-            @RequestBody @Valid MemberUpdateRequest memberUpdateRequest
-    ) {
-        MemberResponse memberResponse = memberService.updateMember(loginUser.getMemberId(), memberUpdateRequest);
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MemberUpdateRequest memberUpdateRequest) {
+        MemberResponse memberResponse = memberService.updateMember(loginUser.getMemberId(),
+            memberUpdateRequest);
         return ResponseEntity.ok(memberResponse);
     }
 
     @GetMapping("/statuses")
     public ResponseEntity<MemberStatusResponse> readMemberStatus(
         @Parameter(hidden = true) @User LoginUser loginUser) {
-        MemberStatusResponse memberStatusResponse = memberService.readMemberStatus(loginUser.getMemberId());
+        MemberStatusResponse memberStatusResponse = memberService.readMemberStatus(
+            loginUser.getMemberId());
         return ResponseEntity.ok(memberStatusResponse);
     }
 
-    @GetMapping("/{memberId}/postcards")
-    public ResponseEntity<Integer> memberPostcardCount(@PathVariable Long memberId) {
-        Integer memberPostcardCount = memberPostcardService.getMemberPostcardCount(memberId);
+    @GetMapping("/postcards")
+    public ResponseEntity<Integer> memberPostcardCount(
+        @Parameter(hidden = true) @User LoginUser loginUser) {
+        Integer memberPostcardCount = memberPostcardService.getMemberPostcardCount(
+            loginUser.getMemberId());
         return ResponseEntity.ok(memberPostcardCount);
     }
 
-    @GetMapping("/{memberId}/same-book-members")
+    @GetMapping("/same-book-members")
     public ResponseEntity<Page<MemberBookProfileResponseDto>> sameBookMembersPage(
-        @PathVariable Long memberId,
+        @Parameter(hidden = true) @User LoginUser loginUser,
         @ModelAttribute MemberBookProfileRequestDto memberBookProfileRequestDto,
         Pageable pageable) {
         List<MemberBookProfileResponseDto> memberBookProfileResponseList = memberProfileService.findSameBookMembers(
-            memberId, memberBookProfileRequestDto);
+            loginUser.getMemberId(), memberBookProfileRequestDto);
         if (pageable == null) {
             pageable = PageRequest.of(0, 0);
         }
