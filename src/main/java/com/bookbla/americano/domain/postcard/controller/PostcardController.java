@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/postcard")
 @RequiredArgsConstructor
@@ -22,7 +24,7 @@ public class PostcardController {
     @PostMapping("/send")
     public ResponseEntity<SendPostcardResponse> sendPostcard(
             @Parameter(hidden = true) @User LoginUser loginUser,
-            @RequestBody SendPostcardRequest sendPostcardRequest
+            @RequestBody @Valid SendPostcardRequest sendPostcardRequest
     ) {
         Long memberId = loginUser.getMemberId();
         SendPostcardResponse sendSearchResponses = postcardService.send(memberId, sendPostcardRequest);
