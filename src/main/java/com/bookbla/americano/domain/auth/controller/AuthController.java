@@ -6,6 +6,7 @@ import com.bookbla.americano.domain.auth.controller.dto.response.LoginResponseDt
 import com.bookbla.americano.domain.auth.controller.dto.response.RejoinResponse;
 import com.bookbla.americano.domain.auth.service.AuthService;
 import com.bookbla.americano.domain.auth.service.impl.AuthServiceImpl;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +24,7 @@ public class AuthController {
 
     @PostMapping("/login/{oAuthType}")
     public ResponseEntity<LoginResponseDto> login(
-            @RequestBody LoginRequestDto loginRequestDto,
+            @RequestBody @Valid LoginRequestDto loginRequestDto,
             @PathVariable String oAuthType
     ) {
         LoginResponseDto loginResponseDto = authService.login(loginRequestDto, oAuthType);
@@ -32,7 +33,7 @@ public class AuthController {
 
     @PostMapping("/rejoin/{oAuthType}")
     public ResponseEntity<RejoinResponse> rejoin(
-        @RequestBody RejoinRequest rejoinRequest,
+        @RequestBody @Valid RejoinRequest rejoinRequest,
         @PathVariable String oAuthType
     ) {
         RejoinResponse rejoinResponse = authService.rejoin(rejoinRequest, oAuthType);
