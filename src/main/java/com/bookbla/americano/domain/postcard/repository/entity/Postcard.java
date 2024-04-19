@@ -49,9 +49,6 @@ public class Postcard extends BaseInsertEntity {
     @JoinColumn(name = "postcard_type_id")
     private PostcardType postcardType;
 
-    @OneToOne
-    @JoinColumn(name = "quiz_reply_id")
-    private QuizReply quizReply;
 
     private String imageUrl;
 
