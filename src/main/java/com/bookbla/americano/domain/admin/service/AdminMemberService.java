@@ -5,9 +5,11 @@ import java.util.List;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKakaoRoomResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
+import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
 import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
+import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
@@ -63,6 +65,24 @@ public class AdminMemberService {
         MemberProfile memberProfile = member.getMemberProfile();
 
         memberProfile.updateProfileImageStatus(profileImageStatus);
+        member.updateMemberCertifyStatus();
+        // FCM 붙인 이후엔 성공/실패 푸시알림?
+    }
+
+    @Transactional(readOnly = true)
+    public AdminMemberStudentIdResponses readStudentIdImagePendingMembers(Pageable pageable) {
+        Page<Member> memberPaging = memberRepository.findByMemberProfileStudentIdImageStatus(StudentIdImageStatus.PENDING, pageable);
+        List<Member> members = memberPaging.getContent();
+        return AdminMemberStudentIdResponses.from(members);
+    }
+
+    public void updateMemberStudentIdStatus(StatusUpdateDto statusUpdateDto) {
+        StudentIdImageStatus studentIdImageStatus = StudentIdImageStatus.from(statusUpdateDto.getStatus());
+
+        Member member = memberRepository.getByIdOrThrow(statusUpdateDto.getMemberId());
+        MemberProfile memberProfile = member.getMemberProfile();
+
+        memberProfile.updateStudentIdImageStatus(studentIdImageStatus);
         member.updateMemberCertifyStatus();
         // FCM 붙인 이후엔 성공/실패 푸시알림?
     }
