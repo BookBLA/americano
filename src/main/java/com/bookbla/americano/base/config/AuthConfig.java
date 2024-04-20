@@ -23,13 +23,15 @@ public class AuthConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         // 사용자 인터셉터
         registry.addInterceptor(authInterceptor)
-            .excludePathPatterns("/tests/**")
-            .excludePathPatterns("/auth/**")
-            .excludePathPatterns("/swagger-ui/**")
-            .excludePathPatterns("/api-docs/**")
-            .excludePathPatterns("/styles/**")
-             // 어드민 전용 인터셉터 제외
-            .excludePathPatterns("/admin/**");
+                .excludePathPatterns("/tests/**")
+                .excludePathPatterns("/auth/**")
+                .excludePathPatterns("/swagger-ui/**")
+                .excludePathPatterns("/api-docs/**")
+                .excludePathPatterns("/styles/**")
+                .excludePathPatterns("/admin/**")
+                .excludePathPatterns("/aws/s3/**")
+                .excludePathPatterns("/error/**")
+        ;
 
         // 어드민 인터셉터
         registry.addInterceptor(adminInterceptor)

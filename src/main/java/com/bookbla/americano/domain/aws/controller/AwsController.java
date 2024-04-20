@@ -1,14 +1,15 @@
 package com.bookbla.americano.domain.aws.controller;
 
-import com.bookbla.americano.base.resolver.LoginUser;
-import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.aws.controller.dto.response.S3PresignedUrlResponse;
 import com.bookbla.americano.domain.aws.enums.UploadType;
 import com.bookbla.americano.domain.aws.service.S3Service;
-import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
@@ -19,7 +20,6 @@ public class AwsController {
 
     @GetMapping("/s3/presigned-url/{uploadType}")
     public ResponseEntity<S3PresignedUrlResponse> getS3PresignedUrl(
-            @Parameter(hidden = true) @User LoginUser loginUser,
             @PathVariable String uploadType,
             @RequestParam String fileName
     ) {
