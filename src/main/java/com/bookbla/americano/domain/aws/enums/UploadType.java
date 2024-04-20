@@ -13,8 +13,8 @@ public enum UploadType {
     IMAGE("image"),
     CERTIFICATION("certification"),
     PROFILE("profile"),
-    UPDATE_CERTIFICATION("update/certification"),
-    UPDATE_PROFILE("update/profile");
+    UPDATE_CERTIFICATION("update-certification"),
+    UPDATE_PROFILE("update-profile");
 
     private final String type;
 
