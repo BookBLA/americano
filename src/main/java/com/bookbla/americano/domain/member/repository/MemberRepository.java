@@ -4,6 +4,7 @@ package com.bookbla.americano.domain.member.repository;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
+import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.custom.MemberRepositoryCustom;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -26,4 +27,5 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
 
     Page<Member> findByMemberProfileOpenKakaoRoomStatus(OpenKakaoRoomStatus openKakaoRoomStatus, Pageable pageable);
 
+    Page<Member> findByMemberProfileProfileImageStatus(ProfileImageStatus profileImageStatus, Pageable pageable);
 }
