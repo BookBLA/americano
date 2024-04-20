@@ -10,8 +10,10 @@ import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
+import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,12 +21,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.bookbla.americano.domain.member.enums.MemberVerifyStatus.*;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyType.*;
+
 @RequiredArgsConstructor
 @Transactional
 @Service
 public class AdminMemberService {
 
     private final MemberRepository memberRepository;
+    private final MemberVerifyRepository memberVerifyRepository;
 
     @Transactional(readOnly = true)
     public AdminMemberReadResponses readMembers(Pageable pageable) {
@@ -35,9 +41,9 @@ public class AdminMemberService {
 
     @Transactional(readOnly = true)
     public AdminMemberKakaoRoomResponses readKakaoRoomPendingMembers(Pageable pageable) {
-        Page<Member> memberPaging = memberRepository.findByMemberProfileOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING, pageable);
-        List<Member> members = memberPaging.getContent();
-        return AdminMemberKakaoRoomResponses.from(members);
+        Page<MemberVerify> paging = memberVerifyRepository.findByTypeAndStatus(OPEN_KAKAO_ROOM_URL, PENDING, pageable);
+        List<MemberVerify> memberVerifies = paging.getContent();
+        return AdminMemberKakaoRoomResponses.from(memberVerifies);
     }
 
     public void updateMemberKakaoRoomStatus(StatusUpdateDto statusUpdateDto) {
@@ -53,9 +59,9 @@ public class AdminMemberService {
 
     @Transactional(readOnly = true)
     public AdminMemberProfileImageResponses readProfileImagePendingMembers(Pageable pageable) {
-        Page<Member> memberPaging = memberRepository.findByMemberProfileProfileImageStatus(ProfileImageStatus.PENDING, pageable);
-        List<Member> members = memberPaging.getContent();
-        return AdminMemberProfileImageResponses.from(members);
+        Page<MemberVerify> paging = memberVerifyRepository.findByTypeAndStatus(PROFILE_IMAGE, PENDING, pageable);
+        List<MemberVerify> memberVerifies = paging.getContent();
+        return AdminMemberProfileImageResponses.from(memberVerifies);
     }
 
     public void updateMemberImageStatus(StatusUpdateDto statusUpdateDto) {
@@ -71,9 +77,9 @@ public class AdminMemberService {
 
     @Transactional(readOnly = true)
     public AdminMemberStudentIdResponses readStudentIdImagePendingMembers(Pageable pageable) {
-        Page<Member> memberPaging = memberRepository.findByMemberProfileStudentIdImageStatus(StudentIdImageStatus.PENDING, pageable);
-        List<Member> members = memberPaging.getContent();
-        return AdminMemberStudentIdResponses.from(members);
+        Page<MemberVerify> paging = memberVerifyRepository.findByTypeAndStatus(STUDENT_ID, PENDING, pageable);
+        List<MemberVerify> memberVerifies = paging.getContent();
+        return AdminMemberStudentIdResponses.from(memberVerifies);
     }
 
     public void updateMemberStudentIdStatus(StatusUpdateDto statusUpdateDto) {

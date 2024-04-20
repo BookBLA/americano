@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
+import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,8 +18,8 @@ public class AdminMemberProfileImageResponses {
 
     private final List<AdminMemberProfileImageResponse> datas;
 
-    public static AdminMemberProfileImageResponses from(List<Member> members) {
-        List<AdminMemberProfileImageResponse> pendingMemberProfileResponses = members.stream()
+    public static AdminMemberProfileImageResponses from(List<MemberVerify> memberVerifies) {
+        List<AdminMemberProfileImageResponse> pendingMemberProfileResponses = memberVerifies.stream()
                 .map(AdminMemberProfileImageResponse::from)
                 .collect(toList());
 
@@ -31,27 +32,14 @@ public class AdminMemberProfileImageResponses {
     static class AdminMemberProfileImageResponse {
 
         private final Long memberId;
-        private final String name;
-        private final LocalDate birthDate;
         private final String gender;
-        private final String schoolName;
-        private final String phoneNumber;
         private final String profileImageUrl;
-        private final String profileImageStatus;
 
-        public static AdminMemberProfileImageResponse from(Member member) {
-            MemberProfile memberProfile = member.getMemberProfile();
-
+        public static AdminMemberProfileImageResponse from(MemberVerify memberVerify) {
             return AdminMemberProfileImageResponse.builder()
-                    .memberId(member.getId())
-                    .name(memberProfile.getName())
-                    .birthDate(memberProfile.getBirthDate())
-                    .name(memberProfile.getName())
-                    .gender(memberProfile.getGender().name())
-                    .schoolName(memberProfile.getSchoolName())
-                    .phoneNumber(memberProfile.getPhoneNumber())
-                    .profileImageUrl(memberProfile.getProfileImageUrl())
-                    .profileImageStatus(memberProfile.getProfileImageStatus().name())
+                    .memberId(memberVerify.getMemberId())
+                    .gender(memberVerify.getDescription())
+                    .profileImageUrl(memberVerify.getValue())
                     .build();
         }
     }

@@ -1,5 +1,5 @@
 package com.bookbla.americano.domain.member.enums;
 
-public enum MemberAuthVerifyStatus {
+public enum MemberVerifyStatus {
     PENDING, SUCCESS, FAIL
 }

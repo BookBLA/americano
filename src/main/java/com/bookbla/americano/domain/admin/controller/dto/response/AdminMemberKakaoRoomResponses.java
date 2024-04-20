@@ -3,8 +3,7 @@ package com.bookbla.americano.domain.admin.controller.dto.response;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
+import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,8 +15,8 @@ public class AdminMemberKakaoRoomResponses {
 
     private final List<AdminMemberKakaoRoomResponse> datas;
 
-    public static AdminMemberKakaoRoomResponses from(List<Member> members) {
-        List<AdminMemberKakaoRoomResponse> adminMemberKakaoRoomResponses = members.stream()
+    public static AdminMemberKakaoRoomResponses from(List<MemberVerify> memberVerifies) {
+        List<AdminMemberKakaoRoomResponse> adminMemberKakaoRoomResponses = memberVerifies.stream()
                 .map(AdminMemberKakaoRoomResponse::from)
                 .collect(Collectors.toList());
 
@@ -32,16 +31,13 @@ public class AdminMemberKakaoRoomResponses {
         private final Long memberId;
         private final String name;
         private final String openKakaoRoomUrl;
-        private final String openKakaoRoomUrlStatus;
 
-        public static AdminMemberKakaoRoomResponse from(Member member) {
-            MemberProfile memberProfile = member.getMemberProfile();
+        public static AdminMemberKakaoRoomResponse from(MemberVerify memberVerify) {
 
             return AdminMemberKakaoRoomResponse.builder()
-                    .memberId(member.getId())
-                    .name(memberProfile.getName())
-                    .openKakaoRoomUrl(memberProfile.getOpenKakaoRoomUrl())
-                    .openKakaoRoomUrlStatus(memberProfile.getOpenKakaoRoomStatus().name())
+                    .memberId(memberVerify.getMemberId())
+                    .name(memberVerify.getDescription())
+                    .openKakaoRoomUrl(memberVerify.getValue())
                     .build();
         }
     }

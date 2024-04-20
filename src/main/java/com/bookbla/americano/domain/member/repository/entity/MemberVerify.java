@@ -1,8 +1,8 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
-import com.bookbla.americano.domain.member.enums.MemberAuthVerifyStatus;
-import com.bookbla.americano.domain.member.enums.MemberAuthVerifyType;
+import com.bookbla.americano.domain.member.enums.MemberVerifyStatus;
+import com.bookbla.americano.domain.member.enums.MemberVerifyType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -15,16 +15,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import static com.bookbla.americano.domain.member.enums.MemberAuthVerifyStatus.FAIL;
-import static com.bookbla.americano.domain.member.enums.MemberAuthVerifyStatus.PENDING;
-import static com.bookbla.americano.domain.member.enums.MemberAuthVerifyStatus.SUCCESS;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyStatus.FAIL;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyStatus.PENDING;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyStatus.SUCCESS;
 
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberAuthVerifyRequest extends BaseInsertEntity {
+public class MemberVerify extends BaseInsertEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,23 +35,22 @@ public class MemberAuthVerifyRequest extends BaseInsertEntity {
     // 이미지 혹은 카카오톡방 링크
     private String value;
 
-    @Builder.Default
-    private String failReason = "대기 중";
+    private String description;
 
     @Enumerated(EnumType.STRING)
-    private MemberAuthVerifyType type;
+    private MemberVerifyType type;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private MemberAuthVerifyStatus status = PENDING;
+    private MemberVerifyStatus status = PENDING;
 
     public void success() {
         this.status = SUCCESS;
-        this.failReason = "성공한 요청입니다.";
+        this.description = "성공";
     }
 
     public void fail(String failReason) {
         this.status = FAIL;
-        this.failReason = failReason;
+        this.description = failReason;
     }
 }
