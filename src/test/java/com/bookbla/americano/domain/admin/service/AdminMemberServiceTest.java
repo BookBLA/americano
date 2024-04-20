@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.bookbla.americano.domain.member.enums.Gender.MALE;
 import static com.bookbla.americano.domain.member.enums.MemberStatus.APPROVAL;
@@ -29,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @SuppressWarnings("NonAsciiCharacters")
 @SpringBootTest
+@Transactional
 class AdminMemberServiceTest {
 
     @Autowired
