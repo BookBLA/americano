@@ -4,8 +4,6 @@ import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.MemberType;
-import com.bookbla.americano.domain.member.exception.MemberAuthExceptionType;
-import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.bookbla.americano.domain.member.exception.PolicyExceptionType;
@@ -45,8 +43,9 @@ public class Member extends BaseInsertEntity {
     @Enumerated(EnumType.STRING)
     private MemberType memberType;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private MemberStatus memberStatus;
+    private MemberStatus memberStatus = MemberStatus.PROFILE;
 
     private LocalDateTime deleteAt;
 
@@ -61,6 +60,12 @@ public class Member extends BaseInsertEntity {
     @Embedded
     @Getter(AccessLevel.NONE)
     private MemberStyle memberStyle;
+
+    public void updateMemberCertifyStatus() {
+        if (memberProfile.isCertified()) {
+            this.memberStatus = MemberStatus.COMPLETED; 
+        }
+    }
 
     public Member updateOauthEmail(String oauthEmail) {
         this.oauthEmail = oauthEmail;
