@@ -1,7 +1,9 @@
 package com.bookbla.americano.domain.admin.controller;
 
 import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberKakaoRoomStatusUpdateRequest;
+import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberProfileImageStatusUpdateRequest;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKakaoRoomResponses;
+import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
 import com.bookbla.americano.domain.admin.service.AdminMemberService;
 import javax.validation.Valid;
@@ -43,6 +45,22 @@ public class AdminController {
             @RequestBody @Valid AdminMemberKakaoRoomStatusUpdateRequest request
     ) {
         adminMemberService.updateMemberKakaoRoomStatus(request.toDto(memberId));
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/members/pending/image")
+    public ResponseEntity<AdminMemberProfileImageResponses> readProfileImagePendingMembers(Pageable pageable) {
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());
+        AdminMemberProfileImageResponses adminMemberProfileImageResponses = adminMemberService.readProfileImagePendingMembers(pageRequest);
+        return ResponseEntity.ok(adminMemberProfileImageResponses);
+    }
+
+    @PatchMapping("/members/{memberId}/pending/image")
+    public ResponseEntity<Void> updateProfileImagePendingMemberStatus(
+            @PathVariable Long memberId,
+            @RequestBody @Valid AdminMemberProfileImageStatusUpdateRequest request
+    ) {
+        adminMemberService.updateMemberImageStatus(request.toDto(memberId));
         return ResponseEntity.ok().build();
     }
 }

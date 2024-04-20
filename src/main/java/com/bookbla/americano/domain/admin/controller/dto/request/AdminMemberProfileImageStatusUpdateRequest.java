@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @Getter
-public class AdminMemberKakaoRoomStatusUpdateRequest {
+public class AdminMemberProfileImageStatusUpdateRequest {
 
     @NotBlank(message = "변경할 상태가 입력되지 않았습니다")
     private String status;
