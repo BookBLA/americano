@@ -5,6 +5,7 @@ import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberProf
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKakaoRoomResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
+import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
 import com.bookbla.americano.domain.admin.service.AdminMemberService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,12 +40,12 @@ public class AdminController {
         return ResponseEntity.ok(adminMemberKakaoRoomResponses);
     }
 
-    @PatchMapping("/members/{memberId}/pending/kakao")
+    @PatchMapping("/member-verifies/{memberVerifyId}/pending/kakao")
     public ResponseEntity<Void> updateKakaoRoomUrlPendingMemberStatus(
-            @PathVariable Long memberId,
+            @PathVariable Long memberVerifyId,
             @RequestBody @Valid AdminMemberKakaoRoomStatusUpdateRequest request
     ) {
-        adminMemberService.updateMemberKakaoRoomStatus(request.toDto(memberId));
+        adminMemberService.updateMemberKakaoRoomStatus(request.toDto(memberVerifyId));
         return ResponseEntity.ok().build();
     }
 
@@ -55,12 +56,28 @@ public class AdminController {
         return ResponseEntity.ok(adminMemberProfileImageResponses);
     }
 
-    @PatchMapping("/members/{memberId}/pending/image")
+    @PatchMapping("/member-verifies/{memberVerifyId}/pending/image")
     public ResponseEntity<Void> updateProfileImagePendingMemberStatus(
-            @PathVariable Long memberId,
+            @PathVariable Long memberVerifyId,
             @RequestBody @Valid AdminMemberProfileImageStatusUpdateRequest request
     ) {
-        adminMemberService.updateMemberImageStatus(request.toDto(memberId));
+        adminMemberService.updateMemberImageStatus(request.toDto(memberVerifyId));
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/members/pending/student-id/image")
+    public ResponseEntity<AdminMemberStudentIdResponses> readStudentIdPendingMembers(Pageable pageable) {
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());
+        AdminMemberStudentIdResponses adminMemberStudentIdResponses = adminMemberService.readStudentIdImagePendingMembers(pageRequest);
+        return ResponseEntity.ok(adminMemberStudentIdResponses);
+    }
+
+    @PatchMapping("/member-verifies/{memberVerifyId}/pending/studentId/image")
+    public ResponseEntity<Void> updateStudentIdPendingMemberStatus(
+            @PathVariable Long memberVerifyId,
+            @RequestBody @Valid AdminMemberProfileImageStatusUpdateRequest request
+    ) {
+        adminMemberService.updateMemberStudentIdStatus(request.toDto(memberVerifyId));
         return ResponseEntity.ok().build();
     }
 }
