@@ -1,6 +1,8 @@
 package com.bookbla.americano.domain.member.controller.dto.request;
 
 import com.bookbla.americano.domain.book.repository.entity.Book;
+
+import java.util.List;
 import java.util.Set;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -19,7 +21,7 @@ public class MemberBookCreateRequest {
     private String title;
 
     @NotNull(message = "책 작가가 입력되지 않았습니다.")
-    private Set<String> authors;
+    private List<String> authors;
 
     @NotNull(message = "도서번호가 입력되지 않았습니다.")
     private String isbn;
@@ -32,7 +34,7 @@ public class MemberBookCreateRequest {
                 .title(title)
                 .isbn(isbn)
                 .authors(authors)
-                .imageUrl(isbn)
+                .imageUrl(thumbnail)
                 .build();
     }
 

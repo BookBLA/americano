@@ -23,7 +23,7 @@ public class MemberBookReadResponses {
         private final boolean isRepresentative;
         private final String title;
         private final String thumbnail;
-        private final Set<String> authors;
+        private final List<String> authors;
 
     }
 

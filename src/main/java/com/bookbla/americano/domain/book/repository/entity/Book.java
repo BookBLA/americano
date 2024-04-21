@@ -1,8 +1,9 @@
 package com.bookbla.americano.domain.book.repository.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.bookbla.americano.base.entity.BaseInsertEntity;
-import java.util.HashSet;
-import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -34,7 +35,7 @@ public class Book extends BaseInsertEntity {
 
     @Builder.Default
     @ElementCollection(fetch = FetchType.LAZY)
-    private Set<String> authors = new HashSet<>();
+    private List<String> authors = new ArrayList<>();
 
     private String imageUrl;
 
