@@ -16,6 +16,7 @@ import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import com.bookbla.americano.domain.member.service.MemberBookService;
+import com.bookbla.americano.domain.quiz.exception.QuizQuestionExceptionType;
 import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
 import com.bookbla.americano.domain.quiz.repository.entity.QuizQuestion;
 import lombok.RequiredArgsConstructor;
@@ -85,7 +86,7 @@ public class MemberBookServiceImpl implements MemberBookService {
 
     @Override
     public void updateMemberBook(
-            MemberBookUpdateRequest memberBookUpdateRequest,
+            MemberBookUpdateRequest request,
             Long memberBookId, Long memberId
     ) {
         Member member = memberRepository.getByIdOrThrow(memberId);
@@ -93,7 +94,14 @@ public class MemberBookServiceImpl implements MemberBookService {
 
         memberBook.validateOwner(member);
 
-        memberBook.updateReview(memberBookUpdateRequest.getContents());
+        QuizQuestion quizQuestion = quizQuestionRepository.findByMemberBook(memberBook)
+                .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
+
+        memberBook.updateReview(request.getContents());
+        quizQuestion.updateContents(request.getContents())
+                .updateCorrectAnswer(request.getQuiz())
+                .updateFirstWrongAnswer(request.getFirstWrongChoice())
+                .updateSecondWrongAnswer(request.getSecondWrongChoice());
     }
 
 
