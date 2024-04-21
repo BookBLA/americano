@@ -51,6 +51,19 @@ jobs:
           distribution: 'zulu'
           cache: 'gradle'
 
+      # Firebase secret JSON 생성
+      - name: Create Json File
+        id: create-json
+        uses: jsdaniell/create-json@1.1.2
+        with:
+          name: "bookbla-2024-firebase.json"
+          json: ${{ secrets.FIREBASE_SECRET }}
+
+      # JSON 파일 이동
+      - name: Move Json File
+        run: |
+          mv bookbla-2024-firebase.json ./src/main/resources/
+
       # Gradle Package Caching
       - name: Caching Gradle packages
         uses: actions/cache@v3
@@ -85,18 +98,6 @@ jobs:
       # 소스코드 가져오기
       - name: Checkout source code
         uses: actions/checkout@v4
-
-      # Firebase secret JSON 생성
-      - name: Create json
-        id: create-json
-        uses: jsdaniell/create-json@1.1.2
-        with:
-          name: "bookbla-2024-firebase.json"
-          json: ${{ secrets.FIREBASE_SECRET }}
-
-      - name: Move Json file
-        run: |
-          mv bookbla-2024-firebase.json ./src/main/resources/
 
       # 이전 Job에서 업로드한 Jar file 다운로드
       - name : Download a built Jar File
