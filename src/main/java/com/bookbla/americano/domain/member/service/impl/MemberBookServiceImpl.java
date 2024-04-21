@@ -98,8 +98,8 @@ public class MemberBookServiceImpl implements MemberBookService {
                 .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
 
         memberBook.updateReview(request.getContents());
-        quizQuestion.updateContents(request.getContents())
-                .updateCorrectAnswer(request.getQuiz())
+        quizQuestion.updateContents(request.getQuiz())
+                .updateCorrectAnswer(request.getQuizAnswer())
                 .updateFirstWrongAnswer(request.getFirstWrongChoice())
                 .updateSecondWrongAnswer(request.getSecondWrongChoice());
     }
