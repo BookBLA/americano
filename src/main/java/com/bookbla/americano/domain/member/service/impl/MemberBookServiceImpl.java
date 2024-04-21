@@ -16,7 +16,6 @@ import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import com.bookbla.americano.domain.member.service.MemberBookService;
-import com.bookbla.americano.domain.quiz.exception.QuizQuestionExceptionType;
 import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
 import com.bookbla.americano.domain.quiz.repository.entity.QuizQuestion;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +50,8 @@ public class MemberBookServiceImpl implements MemberBookService {
                 .member(member)
                 .build();
         MemberBook savedMemberBook = memberBookRepository.save(memberBook);
-        return MemberBookCreateResponse.from(savedMemberBook);
+        QuizQuestion savedQuizQuestion = quizQuestionRepository.save(memberBookCreateRequest.toQuizQuestion(savedMemberBook));
+        return MemberBookCreateResponse.from(savedMemberBook, savedQuizQuestion);
     }
 
     private void validateAddMemberBook(Member member, Book book) {
