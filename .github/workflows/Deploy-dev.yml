@@ -86,6 +86,15 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
+      # Firebase secret JSON 생성
+      - name: Create json
+        id: create-json
+        uses: jsdaniell/create-json@1.1.2
+        with:
+          name: "bookbla-2024-firebase.json"
+          json: ${{ secrets.FIREBASE_SECRET }}
+          dir: 'src/main/resources'
+
       # 이전 Job에서 업로드한 Jar file 다운로드
       - name : Download a built Jar File
         uses: actions/download-artifact@v1
