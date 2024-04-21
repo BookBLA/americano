@@ -10,19 +10,21 @@ import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
-import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
+import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
+import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.bookbla.americano.domain.member.enums.MemberVerifyStatus.*;
-import static com.bookbla.americano.domain.member.enums.MemberVerifyType.*;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyStatus.PENDING;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyType.OPEN_KAKAO_ROOM_URL;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyType.PROFILE_IMAGE;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT_ID;
 
 @RequiredArgsConstructor
 @Transactional
@@ -41,55 +43,82 @@ public class AdminMemberService {
 
     @Transactional(readOnly = true)
     public AdminMemberKakaoRoomResponses readKakaoRoomPendingMembers(Pageable pageable) {
-        Page<MemberVerify> paging = memberVerifyRepository.findByTypeAndStatus(OPEN_KAKAO_ROOM_URL, PENDING, pageable);
+        Page<MemberVerify> paging = memberVerifyRepository.findByVerifyTypeAndVerifyStatus(OPEN_KAKAO_ROOM_URL, PENDING, pageable);
         List<MemberVerify> memberVerifies = paging.getContent();
         return AdminMemberKakaoRoomResponses.from(memberVerifies);
     }
 
-    public void updateMemberKakaoRoomStatus(StatusUpdateDto statusUpdateDto) {
-        OpenKakaoRoomStatus openKakaoRoomStatus = OpenKakaoRoomStatus.from(statusUpdateDto.getStatus());
+    public void updateMemberKakaoRoomStatus(StatusUpdateDto dto) {
+        OpenKakaoRoomStatus status = OpenKakaoRoomStatus.from(dto.getStatus());
 
-        Member member = memberRepository.getByIdOrThrow(statusUpdateDto.getMemberId());
+        MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
+        Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
+
         MemberProfile memberProfile = member.getMemberProfile();
+        memberProfile.updateOpenKakaoRoomStatus(status);
 
-        memberProfile.updateOpenKakaoRoomStatus(openKakaoRoomStatus);
+        if (status.isDone()) {
+            memberVerify.success();
+
+            memberProfile.updateOpenKakaoRoomUrl(memberVerify.getContents());
+        } else {
+            memberVerify.fail(dto.getReason());
+        }
+
         member.updateMemberCertifyStatus();
-        // FCM 붙인 이후엔 성공/실패 푸시알림?
     }
 
     @Transactional(readOnly = true)
     public AdminMemberProfileImageResponses readProfileImagePendingMembers(Pageable pageable) {
-        Page<MemberVerify> paging = memberVerifyRepository.findByTypeAndStatus(PROFILE_IMAGE, PENDING, pageable);
+        Page<MemberVerify> paging = memberVerifyRepository.findByVerifyTypeAndVerifyStatus(PROFILE_IMAGE, PENDING, pageable);
         List<MemberVerify> memberVerifies = paging.getContent();
         return AdminMemberProfileImageResponses.from(memberVerifies);
     }
 
-    public void updateMemberImageStatus(StatusUpdateDto statusUpdateDto) {
-        ProfileImageStatus profileImageStatus = ProfileImageStatus.from(statusUpdateDto.getStatus());
+    public void updateMemberImageStatus(StatusUpdateDto dto) {
+        ProfileImageStatus status = ProfileImageStatus.from(dto.getStatus());
 
-        Member member = memberRepository.getByIdOrThrow(statusUpdateDto.getMemberId());
+        MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
+        Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
+
         MemberProfile memberProfile = member.getMemberProfile();
+        memberProfile.updateProfileImageStatus(status);
 
-        memberProfile.updateProfileImageStatus(profileImageStatus);
+        if (status.isDone()) {
+            memberVerify.success();
+
+            memberProfile.updateProfileImageUrl(memberVerify.getContents());
+        } else {
+            memberVerify.fail(dto.getReason());
+        }
+
         member.updateMemberCertifyStatus();
-        // FCM 붙인 이후엔 성공/실패 푸시알림?
     }
 
     @Transactional(readOnly = true)
     public AdminMemberStudentIdResponses readStudentIdImagePendingMembers(Pageable pageable) {
-        Page<MemberVerify> paging = memberVerifyRepository.findByTypeAndStatus(STUDENT_ID, PENDING, pageable);
+        Page<MemberVerify> paging = memberVerifyRepository.findByVerifyTypeAndVerifyStatus(STUDENT_ID, PENDING, pageable);
         List<MemberVerify> memberVerifies = paging.getContent();
         return AdminMemberStudentIdResponses.from(memberVerifies);
     }
 
-    public void updateMemberStudentIdStatus(StatusUpdateDto statusUpdateDto) {
-        StudentIdImageStatus studentIdImageStatus = StudentIdImageStatus.from(statusUpdateDto.getStatus());
+    public void updateMemberStudentIdStatus(StatusUpdateDto dto) {
+        StudentIdImageStatus status = StudentIdImageStatus.from(dto.getStatus());
 
-        Member member = memberRepository.getByIdOrThrow(statusUpdateDto.getMemberId());
+        MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
+        Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
+
         MemberProfile memberProfile = member.getMemberProfile();
+        memberProfile.updateStudentIdImageStatus(status);
 
-        memberProfile.updateStudentIdImageStatus(studentIdImageStatus);
+        if (status.isDone()) {
+            memberVerify.success();
+
+            memberProfile.updateStudentIdImageUrl(memberVerify.getContents());
+        } else {
+            memberVerify.fail(dto.getReason());
+        }
+
         member.updateMemberCertifyStatus();
-        // FCM 붙인 이후엔 성공/실패 푸시알림?
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MemberVerifyRepository extends JpaRepository<MemberVerify, Long> {
 
-    Page<MemberVerify> findByTypeAndStatus(MemberVerifyType type, MemberVerifyStatus status, Pageable pageable);
+    Page<MemberVerify> findByVerifyTypeAndVerifyStatus(MemberVerifyType verifyType, MemberVerifyStatus verifyStatus, Pageable pageable);
 
     default MemberVerify getByIdOrThrow(Long memberVerifyId) {
         return findById(memberVerifyId)

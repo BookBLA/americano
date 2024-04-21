@@ -7,7 +7,8 @@ import lombok.Getter;
 @Getter
 public class StatusUpdateDto {
 
-    private final Long memberId;
+    private final Long memberVerifyId;
     private final String status;
+    private final String reason;
 
 }

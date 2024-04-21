@@ -37,7 +37,7 @@ public class AdminMemberKakaoRoomResponses {
             return AdminMemberKakaoRoomResponse.builder()
                     .memberId(memberVerify.getMemberId())
                     .name(memberVerify.getDescription())
-                    .openKakaoRoomUrl(memberVerify.getValue())
+                    .openKakaoRoomUrl(memberVerify.getContents())
                     .build();
         }
     }

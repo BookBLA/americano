@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.bookbla.americano.base.utils.ConvertUtil;
-import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,7 +46,7 @@ public class AdminMemberStudentIdResponses {
                     .schoolName(descriptions.get("schoolName"))
                     .major(descriptions.get("major"))
                     .studentId("studetId")
-                    .studentIdImageUrl(memberVerify.getValue())
+                    .studentIdImageUrl(memberVerify.getContents())
                     .build();
         }
     }

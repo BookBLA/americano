@@ -1,10 +1,7 @@
 package com.bookbla.americano.domain.admin.controller.dto.response;
 
-import java.time.LocalDate;
 import java.util.List;
 
-import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,7 +36,7 @@ public class AdminMemberProfileImageResponses {
             return AdminMemberProfileImageResponse.builder()
                     .memberId(memberVerify.getMemberId())
                     .gender(memberVerify.getDescription())
-                    .profileImageUrl(memberVerify.getValue())
+                    .profileImageUrl(memberVerify.getContents())
                     .build();
         }
     }

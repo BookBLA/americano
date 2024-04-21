@@ -33,24 +33,25 @@ public class MemberVerify extends BaseInsertEntity {
     private Long memberId;
 
     // 이미지 혹은 카카오톡방 링크
-    private String value;
+    private String contents;
 
+    // 부가정보
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private MemberVerifyType type;
+    private MemberVerifyType verifyType;
 
-    @Enumerated(EnumType.STRING)
     @Builder.Default
-    private MemberVerifyStatus status = PENDING;
+    @Enumerated(EnumType.STRING)
+    private MemberVerifyStatus verifyStatus = PENDING;
 
     public void success() {
-        this.status = SUCCESS;
+        this.verifyStatus = SUCCESS;
         this.description = "성공";
     }
 
     public void fail(String failReason) {
-        this.status = FAIL;
+        this.verifyStatus = FAIL;
         this.description = failReason;
     }
 }

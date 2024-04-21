@@ -17,4 +17,8 @@ public enum ProfileImageStatus {
             .findFirst()
             .orElseThrow(() -> new BaseException(MemberProfileException.OKA_STATUS_NOT_VALID));
     }
+
+    public boolean isDone() {
+        return this == DONE;
+    }
 }
