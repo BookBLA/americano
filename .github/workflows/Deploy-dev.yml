@@ -93,7 +93,10 @@ jobs:
         with:
           name: "bookbla-2024-firebase.json"
           json: ${{ secrets.FIREBASE_SECRET }}
-          dir: 'src/main/resources'
+
+      - name: Move Json file
+        run: |
+          mv bookbla-2024-firebase.json ./src/main/resources/
 
       # 이전 Job에서 업로드한 Jar file 다운로드
       - name : Download a built Jar File
