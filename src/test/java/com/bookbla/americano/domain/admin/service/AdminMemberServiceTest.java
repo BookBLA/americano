@@ -224,6 +224,7 @@ class AdminMemberServiceTest {
                 .build());
         MemberVerify memberVerify = MemberVerify.builder()
                 .memberId(member.getId())
+                .contents("프로필 사진 링크입니다.")
                 .verifyType(PROFILE_IMAGE)
                 .verifyStatus(PENDING)
                 .build();
@@ -239,6 +240,7 @@ class AdminMemberServiceTest {
         MemberProfile memberProfile = memberRepository.getByIdOrThrow(member.getId()).getMemberProfile();
         MemberVerify findMemberVerify = memberVerifyRepository.getByIdOrThrow(memberVerify.getId());
         assertAll(
+                () -> assertThat(memberProfile.getProfileImageUrl()).isEqualTo("프로필 사진 링크입니다."),
                 () -> assertThat(memberProfile.getProfileImageStatus()).isEqualTo(ProfileImageStatus.DONE),
                 () -> assertThat(findMemberVerify.getVerifyStatus()).isEqualTo(SUCCESS)
         );
@@ -289,7 +291,7 @@ class AdminMemberServiceTest {
         Member member = memberRepository.save(Member.builder()
                 .memberType(ADMIN)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().name("문성진").studentIdImageUrl("학생증사진링크").profileImageStatus(ProfileImageStatus.PENDING).profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").build())
+                .memberProfile(MemberProfile.builder().studentIdImageStatus(StudentIdImageStatus.PENDING).build())
                 .build());
         MemberVerify memberVerify = memberVerifyRepository.save(MemberVerify.builder()
                 .memberId(member.getId())
