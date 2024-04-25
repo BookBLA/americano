@@ -14,17 +14,24 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.security.PrivateKey;
 import java.security.Security;
 import java.util.Base64;
+import java.util.Date;
+
 import lombok.RequiredArgsConstructor;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.springframework.stereotype.Component;
 
+import static java.lang.System.currentTimeMillis;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.MINUTES;
+
 @Component
 @RequiredArgsConstructor
 public class AppleOAuth2Provider implements OAuth2Provider {
 
     private static final String GRANT_TYPE = "authorization_code";
+    private static final String AUDIENCE = "https://appleid.apple.com";
     private static final String APPLE_TOKEN_DELIMITER = "\\.";
     private static final int TOKEN_INDEX = 1;
 
@@ -33,17 +40,26 @@ public class AppleOAuth2Provider implements OAuth2Provider {
 
     @Override
     public OAuth2MemberResponse getMemberResponse(String authCode) {
-        AppleTokenResponse response = appleOAuth2Client.getToken(appleOAuth2Properties.getClientId(), generateClientSecret(), GRANT_TYPE, authCode);
-
+        AppleTokenResponse response = appleOAuth2Client.getToken(
+                appleOAuth2Properties.getClientId(),
+                generateClientSecret(),
+                GRANT_TYPE,
+                authCode
+        );
         String email = decodeToken(response.getIdToken());
-
         return new AppleOAuth2MemberResponse(email);
     }
 
+    // https://developer.apple.com/documentation/accountorganizationaldatasharing/creating-a-client-secret
     private String generateClientSecret() {
+        long expiration = MILLISECONDS.convert(5, MINUTES);
+
         return Jwts.builder()
                 .setHeaderParam(JwsHeader.KEY_ID, appleOAuth2Properties.getKeyId())
                 .setIssuer(appleOAuth2Properties.getTeamId())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(expiration + currentTimeMillis()))
+                .setAudience(AUDIENCE)
                 .setSubject(appleOAuth2Properties.getClientId())
                 .signWith(generatePrivateKey(), SignatureAlgorithm.ES256)
                 .compact();
