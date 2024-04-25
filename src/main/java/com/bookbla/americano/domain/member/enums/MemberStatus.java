@@ -35,8 +35,4 @@ public enum MemberStatus {
             .orElseThrow(() -> new BaseException(MemberExceptionType.MEMBER_STATUS_NOT_VALID));
     }
 
-
-    public boolean isMemberStyleUnregistrated() {
-        return this == STYLE_BOOK;
-    }
 }

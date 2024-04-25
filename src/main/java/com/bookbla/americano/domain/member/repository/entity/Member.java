@@ -1,22 +1,14 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
+import java.time.LocalDateTime;
+
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.MemberType;
-import com.bookbla.americano.domain.member.exception.MemberAuthExceptionType;
-import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.bookbla.americano.domain.member.exception.PolicyExceptionType;
-import java.time.LocalDateTime;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -24,6 +16,12 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -105,14 +103,14 @@ public class Member extends BaseInsertEntity {
     }
 
     public MemberProfile getMemberProfile() {
-        if (memberProfile == null) {
+        if (memberProfile == null || memberStatus == MemberStatus.PROFILE) {
             throw new BaseException(MemberProfileExceptionType.PROFILE_NOT_FOUND);
         }
         return memberProfile;
     }
 
     public MemberStyle getMemberStyle() {
-        if (memberStyle == null || memberStatus.isMemberStyleUnregistrated()) {
+        if (memberStyle == null || memberStatus == MemberStatus.STYLE_BOOK) {
             throw new BaseException(MemberExceptionType.STYLE_NOT_REGISTERED);
         }
         return memberStyle;
