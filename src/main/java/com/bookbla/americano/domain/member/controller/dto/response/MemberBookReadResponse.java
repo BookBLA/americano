@@ -2,6 +2,8 @@ package com.bookbla.americano.domain.member.controller.dto.response;
 
 import com.bookbla.americano.domain.book.repository.entity.Book;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
+
+import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +13,7 @@ import lombok.Getter;
 public class MemberBookReadResponse {
 
     private final String title;
-    private final Set<String> authors;
+    private final List<String> authors;
     private final String imageUrl;
     private final String review;
 

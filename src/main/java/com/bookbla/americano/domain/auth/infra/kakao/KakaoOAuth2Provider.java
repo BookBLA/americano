@@ -70,7 +70,7 @@ public class KakaoOAuth2Provider implements OAuth2Provider {
     private ResponseEntity<KakaoMemberResponse> getMemberResource(String accessToken) {
         String resourceUri = kakaoConfig.getResourceUri();
 
-        HttpHeaders headers = new HttpHeaders();
+        HttpHeaders headers = createRequestHeader();
         headers.setBearerAuth(accessToken);
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
 

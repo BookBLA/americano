@@ -51,7 +51,8 @@ public class MemberBookServiceImpl implements MemberBookService {
                 .member(member)
                 .build();
         MemberBook savedMemberBook = memberBookRepository.save(memberBook);
-        return MemberBookCreateResponse.from(savedMemberBook);
+        QuizQuestion savedQuizQuestion = quizQuestionRepository.save(memberBookCreateRequest.toQuizQuestion(savedMemberBook));
+        return MemberBookCreateResponse.from(savedMemberBook, savedQuizQuestion);
     }
 
     private void validateAddMemberBook(Member member, Book book) {
@@ -85,7 +86,7 @@ public class MemberBookServiceImpl implements MemberBookService {
 
     @Override
     public void updateMemberBook(
-            MemberBookUpdateRequest memberBookUpdateRequest,
+            MemberBookUpdateRequest request,
             Long memberBookId, Long memberId
     ) {
         Member member = memberRepository.getByIdOrThrow(memberId);
@@ -93,7 +94,14 @@ public class MemberBookServiceImpl implements MemberBookService {
 
         memberBook.validateOwner(member);
 
-        memberBook.updateReview(memberBookUpdateRequest.getContents());
+        QuizQuestion quizQuestion = quizQuestionRepository.findByMemberBook(memberBook)
+                .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
+
+        memberBook.updateReview(request.getContents());
+        quizQuestion.updateContents(request.getQuiz())
+                .updateCorrectAnswer(request.getQuizAnswer())
+                .updateFirstWrongAnswer(request.getFirstWrongChoice())
+                .updateSecondWrongAnswer(request.getSecondWrongChoice());
     }
 
 
