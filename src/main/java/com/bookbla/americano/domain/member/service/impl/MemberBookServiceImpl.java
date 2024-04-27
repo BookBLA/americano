@@ -80,8 +80,10 @@ public class MemberBookServiceImpl implements MemberBookService {
         MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
 
         memberBook.validateOwner(member);
+        QuizQuestion quizQuestion = quizQuestionRepository.findByMemberBook(memberBook)
+                .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
 
-        return MemberBookReadResponse.of(memberBook);
+        return MemberBookReadResponse.of(memberBook, quizQuestion);
     }
 
     @Override
