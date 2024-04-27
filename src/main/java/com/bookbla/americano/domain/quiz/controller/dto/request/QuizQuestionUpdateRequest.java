@@ -23,4 +23,7 @@ public class QuizQuestionUpdateRequest {
     @NotBlank(message = "퀴즈 답안이 입력되지 않았습니다.")
     private String secondWrongChoice;
 
+    @NotBlank(message = "한 줄 감상문이 입력되지 않았습니다.")
+    private String review;
+
 }
