@@ -25,13 +25,14 @@ public class MemberLibraryProfileReadResponse {
     @AllArgsConstructor
     public static class BookResponse {
         private final Long memberBookId;
+        private final boolean isRepresentative;
         private final String bookImageUrl;
 
     }
 
     public static MemberLibraryProfileReadResponse of(Member member, MemberProfile memberProfile, List<MemberBook> memberBooks) {
         List<BookResponse> bookResponses = memberBooks.stream()
-                .map(it -> new BookResponse(it.getId(), it.getBook().getImageUrl()))
+                .map(it -> new BookResponse(it.getId(), it.isRepresentative(), it.getBook().getImageUrl()))
                 .collect(Collectors.toList());
         return new MemberLibraryProfileReadResponse(
                 member.getId(),
