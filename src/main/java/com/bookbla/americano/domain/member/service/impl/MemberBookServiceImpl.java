@@ -6,6 +6,8 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.book.repository.BookRepository;
 import com.bookbla.americano.domain.book.repository.entity.Book;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookCreateRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberBookQuizUpdateRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberBookReviewUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookCreateResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponse;
@@ -106,6 +108,31 @@ public class MemberBookServiceImpl implements MemberBookService {
                 .updateSecondWrongAnswer(request.getSecondWrongChoice());
     }
 
+    @Override
+    public void updateMemberBookReview(MemberBookReviewUpdateRequest request, Long memberBookId, Long memberId) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
+
+        memberBook.validateOwner(member);
+
+        memberBook.updateReview(request.getContents());
+    }
+
+    @Override
+    public void updateMemberBookQuiz(MemberBookQuizUpdateRequest request, Long memberBookId, Long memberId) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
+
+        memberBook.validateOwner(member);
+
+        QuizQuestion quizQuestion = quizQuestionRepository.findByMemberBook(memberBook)
+                .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
+
+        quizQuestion.updateContents(request.getQuiz())
+                .updateCorrectAnswer(request.getQuizAnswer())
+                .updateFirstWrongAnswer(request.getFirstWrongChoice())
+                .updateSecondWrongAnswer(request.getSecondWrongChoice());
+    }
 
     @Override
     public void deleteMemberBook(Long memberId, Long memberBookId) {
