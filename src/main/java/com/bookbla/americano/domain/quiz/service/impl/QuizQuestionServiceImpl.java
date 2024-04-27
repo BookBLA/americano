@@ -50,9 +50,9 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
                 .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
 
         if (!memberBook.isOwner(member)) {
-            return QuizQuestionReadResponse.fromShuffledChoices(quizQuestion);
+            return QuizQuestionReadResponse.fromShuffledChoices(quizQuestion, memberBook);
         }
-        return QuizQuestionReadResponse.from(quizQuestion);
+        return QuizQuestionReadResponse.from(quizQuestion, memberBook);
     }
 
 
