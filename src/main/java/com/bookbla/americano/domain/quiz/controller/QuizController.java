@@ -10,7 +10,13 @@ import java.net.URI;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,7 +31,8 @@ public class QuizController {
             @User LoginUser loginUser, @PathVariable Long memberBookId,
             @RequestBody @Valid QuizQuestionCreateRequest quizQuestionCreateRequest
     ) {
-        Long quizQuestionId = quizQuestionService.createQuizQuestion(loginUser.getMemberId(), memberBookId, quizQuestionCreateRequest);
+        Long quizQuestionId = quizQuestionService.createQuizQuestion(loginUser.getMemberId(),
+                memberBookId, quizQuestionCreateRequest);
         return ResponseEntity
                 .created(URI.create("/quizzes/" + quizQuestionId.toString()))
                 .build();
@@ -35,16 +42,18 @@ public class QuizController {
     public ResponseEntity<QuizQuestionReadResponse> createQuizQuestion(
             @User LoginUser loginUser, @PathVariable Long memberBookId
     ) {
-        QuizQuestionReadResponse quizQuestionReadResponse = quizQuestionService.getQuizQuestion(loginUser.getMemberId(), memberBookId);
+        QuizQuestionReadResponse quizQuestionReadResponse = quizQuestionService.getQuizQuestion(
+                loginUser.getMemberId(), memberBookId);
         return ResponseEntity.ok(quizQuestionReadResponse);
     }
 
     @PutMapping("/{memberBookId}")
-    public ResponseEntity<Void> createQuizQuestion(
+    public ResponseEntity<Void> updateQuizQuestion(
             @User LoginUser loginUser, @PathVariable Long memberBookId,
             @RequestBody @Valid QuizQuestionUpdateRequest quizQuestionUpdateRequest
     ) {
-        quizQuestionService.updateQuizQuestion(loginUser.getMemberId(), memberBookId, quizQuestionUpdateRequest);
+        quizQuestionService.updateQuizQuestion(loginUser.getMemberId(), memberBookId,
+                quizQuestionUpdateRequest);
         return ResponseEntity.noContent().build();
     }
 

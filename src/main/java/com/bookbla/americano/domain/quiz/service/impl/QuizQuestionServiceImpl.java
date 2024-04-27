@@ -5,12 +5,12 @@ import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
-import com.bookbla.americano.domain.quiz.repository.entity.QuizQuestion;
 import com.bookbla.americano.domain.quiz.controller.dto.request.QuizQuestionCreateRequest;
 import com.bookbla.americano.domain.quiz.controller.dto.request.QuizQuestionUpdateRequest;
 import com.bookbla.americano.domain.quiz.controller.dto.response.QuizQuestionReadResponse;
 import com.bookbla.americano.domain.quiz.exception.QuizQuestionExceptionType;
 import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
+import com.bookbla.americano.domain.quiz.repository.entity.QuizQuestion;
 import com.bookbla.americano.domain.quiz.service.QuizQuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -47,7 +47,8 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
 
         QuizQuestion quizQuestion = quizQuestionRepository.findByMemberBook(memberBook)
-                .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
+                .orElseThrow(() -> new BaseException(
+                        QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
 
         if (!memberBook.isOwner(member)) {
             return QuizQuestionReadResponse.fromShuffledChoices(quizQuestion, memberBook);
@@ -65,8 +66,10 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
 
         memberBook.validateOwner(member);
         QuizQuestion quizQuestion = quizQuestionRepository.findByMemberBook(memberBook)
-                .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
+                .orElseThrow(() -> new BaseException(
+                        QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
 
+        memberBook.updateReview(quizQuestionUpdateRequest.getReview());
         update(quizQuestion, quizQuestionUpdateRequest);
     }
 
