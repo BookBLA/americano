@@ -1,16 +1,25 @@
 package com.bookbla.americano.base.jwt;
 
+import java.security.Key;
+import java.util.Base64;
+import java.util.Date;
+
 import com.bookbla.americano.base.config.JwtConfig;
 import com.bookbla.americano.base.exception.AuthExceptionType;
 import com.bookbla.americano.base.exception.BaseException;
-import io.jsonwebtoken.*;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.security.Key;
-import java.util.Date;
 
 @Component
 public class JwtProvider {
@@ -55,5 +64,18 @@ public class JwtProvider {
                 .setSigningKey(generateKey(jwtConfig.getSecret()))
                 .build()
                 .parseClaimsJws(token);
+    }
+
+    public static <T> T decodePayload(String token, Class<T> clazz) {
+        String jwtPayload = token.split("\\.")[1];
+        Base64.Decoder base64Decoder = Base64.getUrlDecoder();
+        String payload = new String(base64Decoder.decode(jwtPayload));
+        ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        try {
+            return objectMapper.readValue(payload, clazz);
+        } catch (Exception e) {
+            throw new IllegalStateException("토큰의 페이로드 추출 중 예외가 발생했습니다.", e);
+        }
     }
 }
