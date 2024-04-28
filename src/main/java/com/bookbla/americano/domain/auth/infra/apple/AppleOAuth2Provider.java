@@ -5,7 +5,9 @@ import java.security.Security;
 import java.util.Base64;
 import java.util.Date;
 
+import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.jwt.JwtProvider;
+import com.bookbla.americano.domain.auth.exception.AppleExceptionType;
 import com.bookbla.americano.domain.auth.infra.apple.dto.AppleOAuth2MemberResponse;
 import com.bookbla.americano.domain.auth.infra.apple.dto.AppleOAuth2Properties;
 import com.bookbla.americano.domain.auth.infra.apple.dto.AppleTokenIdPayload;
@@ -39,13 +41,18 @@ public class AppleOAuth2Provider implements OAuth2Provider {
 
     @Override
     public OAuth2MemberResponse getMemberResponse(String authCode) {
-        AppleTokenResponse response = appleOAuth2Client.getToken(
-                appleOAuth2Properties.getClientId(),
-                generateClientSecret(),
-                GRANT_TYPE,
-                authCode
-        );
-        String idToken = response.getIdToken();
+        AppleTokenResponse tokenResponse;
+        try {
+            tokenResponse = appleOAuth2Client.getToken(
+                    appleOAuth2Properties.getClientId(),
+                    generateClientSecret(),
+                    GRANT_TYPE,
+                    authCode
+            );
+        } catch (Exception e) {
+            throw new BaseException(AppleExceptionType.TOKEN_ERROR, e);
+        }
+        String idToken = tokenResponse.getIdToken();
         AppleTokenIdPayload appleTokenIdPayload = jwtProvider.decodePayload(idToken, AppleTokenIdPayload.class);
         return new AppleOAuth2MemberResponse(appleTokenIdPayload.getEmail());
     }
