@@ -66,8 +66,7 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
 
         memberBook.validateOwner(member);
         QuizQuestion quizQuestion = quizQuestionRepository.findByMemberBook(memberBook)
-                .orElseThrow(() -> new BaseException(
-                        QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
+                .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
 
         memberBook.updateReview(quizQuestionUpdateRequest.getReview());
         update(quizQuestion, quizQuestionUpdateRequest);
