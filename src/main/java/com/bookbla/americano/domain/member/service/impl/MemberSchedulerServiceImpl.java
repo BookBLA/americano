@@ -21,6 +21,7 @@ public class MemberSchedulerServiceImpl implements MemberSchedulerService {
 
     @Transactional
     @Scheduled(cron = "0 0 6 * * *", zone = "Asia/Seoul")
+    @Override
     public void initMemberFreePostcardSchedule() {
         try {
             memberPostcardRepository.initMemberFreePostcardCount();
@@ -35,6 +36,7 @@ public class MemberSchedulerServiceImpl implements MemberSchedulerService {
 
     @Transactional
     @Scheduled(cron = "0 0 4 * * *", zone = "Asia/Seoul")
+    @Override
     public void deleteMemberEmailSchedule() {
         try {
             LocalDateTime currentDate = LocalDateTime.now();
