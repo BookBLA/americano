@@ -35,7 +35,6 @@ public class MemberProfile {
     @Column(unique = true)
     private String schoolEmail;
 
-
     private String phoneNumber;
 
     @Size(max = 1000)
@@ -78,6 +77,12 @@ public class MemberProfile {
         }
 
         return age;
+    }
+
+    public boolean isCertified() {
+        return profileImageStatus == ProfileImageStatus.DONE
+                && openKakaoRoomStatus == OpenKakaoRoomStatus.DONE
+                && studentIdImageStatus == StudentIdImageStatus.DONE;
     }
 
     public MemberProfile updateName(String name) {

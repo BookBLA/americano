@@ -16,4 +16,8 @@ public enum StudentIdImageStatus {
             .findFirst()
             .orElseThrow(() -> new BaseException(MemberAuthExceptionType.STATUS_IMAGE_ID_NOT_VALID));
     }
+
+    public boolean isDone() {
+        return this == DONE;
+    }
 }

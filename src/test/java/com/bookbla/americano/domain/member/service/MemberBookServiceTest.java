@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.member.service.impl;
+package com.bookbla.americano.domain.member.service;
 
 import java.util.List;
 
@@ -10,6 +10,7 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.service.MemberBookService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -61,5 +62,12 @@ class MemberBookServiceTest {
                 () -> assertThat(memberBooks.get(0).isRepresentative()).isTrue(),
                 () -> assertThat(memberBooks.get(1).isRepresentative()).isFalse()
         );
+    }
+
+    @AfterEach
+    void tearDown() {
+        bookRepository.deleteAll();
+        memberRepository.deleteAll();
+        memberBookRepository.deleteAll();
     }
 }

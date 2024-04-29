@@ -6,8 +6,6 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.bookbla.americano.domain.auth.repository.MemberSignUpInformationRepository;
-import com.bookbla.americano.domain.auth.repository.entity.MemberSignUpInformation;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import com.bookbla.americano.domain.test.controller.dto.response.TestCreateResponse;
 import com.bookbla.americano.domain.test.controller.dto.response.TestReadResponse;
