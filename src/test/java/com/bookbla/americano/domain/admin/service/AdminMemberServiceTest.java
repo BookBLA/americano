@@ -292,6 +292,7 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .oauthEmail("bookbla@bookbla.com")
                 .memberProfile(MemberProfile.builder().studentIdImageStatus(StudentIdImageStatus.PENDING).build())
+                .memberStatus(APPROVAL)
                 .build());
         MemberVerify memberVerify = memberVerifyRepository.save(MemberVerify.builder()
                 .memberId(member.getId())
