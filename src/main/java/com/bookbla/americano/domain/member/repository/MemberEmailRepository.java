@@ -13,7 +13,7 @@ public interface MemberEmailRepository extends JpaRepository<MemberEmail, Long> 
 
     Optional<MemberEmail> findByMember(Member member);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("DELETE MemberEmail me WHERE me.createdAt <= :twoDaysAgo")
     void deleteMemberEmailSchedule(@Param("twoDaysAgo") LocalDateTime twoDaysAgo);
 }
