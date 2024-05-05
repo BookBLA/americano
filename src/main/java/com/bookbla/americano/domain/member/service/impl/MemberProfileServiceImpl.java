@@ -2,9 +2,8 @@ package com.bookbla.americano.domain.member.service.impl;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
 import com.bookbla.americano.domain.member.enums.EmailVerifyStatus;
@@ -131,18 +130,18 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MemberBookProfileResponseDto> findSameBookMembers(Long memberId,
-                                                                  MemberBookProfileRequestDto requestDto) {
-        List<MemberBookProfileResponseDto> allResult = memberRepository.searchSameBookMember(
+    public List<MemberBookProfileResponse> findSameBookMembers(Long memberId,
+                                                               MemberBookProfileRequestDto requestDto) {
+        List<MemberBookProfileResponse> allResult = memberRepository.searchSameBookMember(
                 memberId, requestDto);
         // 탐색 결과가 없을 때, EMPTY_MEMBER_BOOK Exception(해당 사용자의 선호 책도 없음)
         if (allResult.isEmpty()) {
             throw new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOK);
         }
         // 해당 사용자의 선호 책
-        List<MemberBookProfileResponseDto> userBookProfiles = new ArrayList<>();
-        List<MemberBookProfileResponseDto> otherBookProfiles = new ArrayList<>(allResult);
-        for (MemberBookProfileResponseDto i : allResult) {
+        List<MemberBookProfileResponse> userBookProfiles = new ArrayList<>();
+        List<MemberBookProfileResponse> otherBookProfiles = new ArrayList<>(allResult);
+        for (MemberBookProfileResponse i : allResult) {
             if (i.getMemberId() == memberId) {
                 addBookProfileToList(userBookProfiles, i);
                 otherBookProfiles.remove(i);
@@ -154,21 +153,21 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         }
 
         // 1순위 : 대표책 - 대표책
-        List<MemberBookProfileResponseDto> firstResults = findMatches(
+        List<MemberBookProfileResponse> firstResults = findMatches(
                 userBookProfiles,
                 otherBookProfiles,
-                MemberBookProfileResponseDto::isBookIsRepresentative,
-                MemberBookProfileResponseDto::isBookIsRepresentative
+                MemberBookProfileResponse::isBookIsRepresentative,
+                MemberBookProfileResponse::isBookIsRepresentative
         );
 
         Collections.shuffle(firstResults);
         removeMemberToOtherBookProfiles(otherBookProfiles, firstResults);
 
         // 2순위 : 대표책 - 선호책
-        List<MemberBookProfileResponseDto> secondResults = findMatches(
+        List<MemberBookProfileResponse> secondResults = findMatches(
                 userBookProfiles,
                 otherBookProfiles,
-                MemberBookProfileResponseDto::isBookIsRepresentative,
+                MemberBookProfileResponse::isBookIsRepresentative,
                 otherBookProfile -> !otherBookProfile.isBookIsRepresentative()
         );
 
@@ -176,18 +175,18 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         removeMemberToOtherBookProfiles(otherBookProfiles, secondResults);
 
         // 3순위 : 선호책 - 대표책
-        List<MemberBookProfileResponseDto> thirdResults = findMatches(
+        List<MemberBookProfileResponse> thirdResults = findMatches(
                 userBookProfiles,
                 otherBookProfiles,
                 userBookProfile -> !userBookProfile.isBookIsRepresentative(),
-                MemberBookProfileResponseDto::isBookIsRepresentative
+                MemberBookProfileResponse::isBookIsRepresentative
         );
 
         Collections.shuffle(thirdResults);
         removeMemberToOtherBookProfiles(otherBookProfiles, thirdResults);
 
         // 4순위 : 선호책 - 선호책
-        List<MemberBookProfileResponseDto> fourthResults = findMatches(
+        List<MemberBookProfileResponse> fourthResults = findMatches(
                 userBookProfiles,
                 otherBookProfiles,
                 userBookProfile -> !userBookProfile.isBookIsRepresentative(),
@@ -202,11 +201,22 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     }
 
 
-    private List<MemberBookProfileResponseDto> findMatches(
-            List<MemberBookProfileResponseDto> userBookProfiles,
-            List<MemberBookProfileResponseDto> otherBookProfiles,
-            Predicate<MemberBookProfileResponseDto> userPredicate,
-            Predicate<MemberBookProfileResponseDto> otherPredicate) {
+    @Override
+    public List<MemberBookProfileResponse> getAllMembers(Long memberId, MemberBookProfileRequestDto requestDto) {
+        List<MemberBookProfileResponse> allResult = memberRepository.getAllMembers(
+                memberId, requestDto);
+        // 탐색 결과가 없을 때, EMPTY_MEMBER_BOOK Exception(해당 사용자의 선호 책도 없음)
+        if (allResult.isEmpty()) {
+            throw new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOK);
+        }
+        return allResult;
+    }
+
+    private List<MemberBookProfileResponse> findMatches(
+            List<MemberBookProfileResponse> userBookProfiles,
+            List<MemberBookProfileResponse> otherBookProfiles,
+            Predicate<MemberBookProfileResponse> userPredicate,
+            Predicate<MemberBookProfileResponse> otherPredicate) {
 
         return new ArrayList<>(userBookProfiles.stream()
                 .filter(userPredicate)
@@ -214,7 +224,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
                         .filter(otherBookProfile -> otherBookProfile.getBookId()
                                 == userBookProfile.getBookId())
                         .filter(otherPredicate)
-                ).collect(Collectors.groupingBy(MemberBookProfileResponseDto::getMemberId,
+                ).collect(Collectors.groupingBy(MemberBookProfileResponse::getMemberId,
                         Collectors.collectingAndThen(
                                 Collectors.toList(),
                                 memberBookProfileList -> memberBookProfileList.get(0)
@@ -223,15 +233,15 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     }
 
     private void removeMemberToOtherBookProfiles(
-            List<MemberBookProfileResponseDto> otherBookProfiles,
-            List<MemberBookProfileResponseDto> resultBookProfiles) {
+            List<MemberBookProfileResponse> otherBookProfiles,
+            List<MemberBookProfileResponse> resultBookProfiles) {
         otherBookProfiles.removeIf(otherBookProfile -> resultBookProfiles.stream()
                 .anyMatch(resultBookProfile -> resultBookProfile.getMemberId()
                         == otherBookProfile.getMemberId()));
     }
 
-    private void addBookProfileToList(List<MemberBookProfileResponseDto> list,
-                                      MemberBookProfileResponseDto i) {
+    private void addBookProfileToList(List<MemberBookProfileResponse> list,
+                                      MemberBookProfileResponse i) {
         if (i.isBookIsRepresentative()) {
             list.add(0, i);
         } else {

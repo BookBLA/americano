@@ -14,7 +14,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class MemberBookProfileResponseDto {
+public class MemberBookProfileResponse {
 
     private long memberId;
 
