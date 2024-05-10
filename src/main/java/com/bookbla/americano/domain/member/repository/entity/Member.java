@@ -40,7 +40,7 @@ public class Member extends BaseInsertEntity {
 
     private String oauthProfileImageUrl;
 
-    private String fcmToken;
+    private String pushToken;
 
     @Enumerated(EnumType.STRING)
     private MemberType memberType;
@@ -67,8 +67,8 @@ public class Member extends BaseInsertEntity {
         return this;
     }
 
-    public Member updateFcmToken(String fcmToken) {
-        this.fcmToken = fcmToken;
+    public Member updatePushToken(String pushToken) {
+        this.pushToken = pushToken;
         return this;
     }
 
