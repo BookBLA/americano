@@ -1,12 +1,15 @@
 package com.bookbla.americano.base.handler;
 
-import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.base.exception.BaseExceptionType;
-import com.bookbla.americano.base.exception.ExceptionType;
-import com.bookbla.americano.base.response.ExceptionResponse;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.stream.Collectors;
+
+import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.base.exception.BaseExceptionType;
+import com.bookbla.americano.base.exception.ExceptionType;
+import com.bookbla.americano.base.log.LogLevel;
+import com.bookbla.americano.base.log.discord.DiscordAlarm;
+import com.bookbla.americano.base.response.ExceptionResponse;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -26,6 +29,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final String DELIMITER = ", ";
 
+    @DiscordAlarm(level = LogLevel.WARN)
     @ExceptionHandler(BaseException.class)
     ResponseEntity<ExceptionResponse> handleBaseException(HttpServletRequest request,
                                                           BaseException e) {
@@ -35,6 +39,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(new ExceptionResponse(exceptionType));
     }
 
+    @DiscordAlarm(level = LogLevel.ERROR)
     @ExceptionHandler(Exception.class)
     ResponseEntity<ExceptionResponse> handleException(HttpServletRequest request, Exception e) {
         log.error("예상하지 못한 예외가 발생했습니다. URI: {}, 내용: {}", request.getRequestURI(), convertToString(e));
@@ -49,6 +54,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return sw.toString();
     }
 
+    @DiscordAlarm(level = LogLevel.WARN)
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException e,
