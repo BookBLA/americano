@@ -4,7 +4,6 @@ import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.memberask.repository.entity.MemberReply;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
-import com.bookbla.americano.domain.quiz.repository.entity.QuizReply;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,7 +47,6 @@ public class Postcard extends BaseInsertEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "postcard_type_id")
     private PostcardType postcardType;
-
 
     private String imageUrl;
 
