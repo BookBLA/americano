@@ -3,7 +3,6 @@ package com.bookbla.americano.base.log.discord;
 import com.bookbla.americano.base.log.LogLevel;
 import com.bookbla.americano.base.log.RequestStorage;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 @Aspect
-@Slf4j
 public class ExceptionAppender {
 
     private final RequestStorage requestStorage;
