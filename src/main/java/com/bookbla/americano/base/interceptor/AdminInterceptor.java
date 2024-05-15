@@ -14,7 +14,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
 
-    private static final String ADMIN_AUTH = "xxx-three-idiots";
+    private static final String ADMIN_AUTH = "xxx-three-idiots-xxx";
 
     private final AdminAuthService adminAuthService;
 
