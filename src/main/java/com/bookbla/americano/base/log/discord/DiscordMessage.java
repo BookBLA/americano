@@ -22,14 +22,14 @@ import static org.apache.http.HttpHeaders.AUTHORIZATION;
 @Component
 public class DiscordMessage {
 
-    private static final int MAX_MESSAGE_LENGTH = 2_000;
-
     private static final String CRLF = "\n";
     private static final String EXTRACTION_ERROR_MESSAGE = "메시지 추출중 예외가 발생했습니다.\nmessage : %s";
     private static final String EXCEPTION_MESSAGE_FORMAT = "_%s_ %s.%s:%d - %s";
-    private static final String MESSAGE_FORMAT = "*[요청한 멤버 id]*\n%s\n\n" +
-            "*[REQUEST TIME]*\n%s\n\n" +
-            "*[ERROR LOG]*\n%s\n*%s* %s\n\n%s";
+    private static final String MESSAGE_FORMAT = "\n\n**[요청한 멤버 id]**\n%s\n\n" +
+            "**[요청 시간]**\n%s\n\n" +
+            "**[에러 로그]**\n%s\n[%s] %s\n\n" +
+            "*[Header]*\n%s\n\n" +
+            "*[Body]*\n%s\n\n";
 
     private final JwtProvider jwtProvider;
 
