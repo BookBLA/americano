@@ -5,7 +5,6 @@ import com.bookbla.americano.domain.admin.excpetion.AdminExceptionType;
 import com.bookbla.americano.domain.admin.service.AdminAuthService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsUtils;
@@ -15,7 +14,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
 
-    private static final String SESSION = "SESSION";
+    private static final String ADMIN_AUTH = "xxx-three-idiots-xxx";
 
     private final AdminAuthService adminAuthService;
 
@@ -24,13 +23,13 @@ public class AdminInterceptor implements HandlerInterceptor {
         if (CorsUtils.isPreFlightRequest(request)) {
             return true;
         }
-        HttpSession session = request.getSession(false);
-        if (session == null) {
+
+        String sessionId = request.getHeader(ADMIN_AUTH);
+        if (sessionId == null) {
             throw new BaseException(AdminExceptionType.ADMIN_AUTH_FAIL);
         }
 
-        String uuid = (String) session.getAttribute(SESSION);
-        adminAuthService.validateSession(uuid);
+        adminAuthService.validateSession(sessionId);
         return true;
     }
 }
