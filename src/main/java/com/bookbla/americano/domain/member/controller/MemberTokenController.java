@@ -21,7 +21,7 @@ public class MemberTokenController {
 
     private final MemberTokenService memberTokenService;
 
-    @PostMapping("/tokens")
+    @PostMapping
     public ResponseEntity<MemberTokenCreateResponse> createPushToken(
         @Parameter(hidden = true) @User LoginUser loginUser,
         @RequestBody @Valid MemberTokenCreateRequest memberTokenCreateRequest
