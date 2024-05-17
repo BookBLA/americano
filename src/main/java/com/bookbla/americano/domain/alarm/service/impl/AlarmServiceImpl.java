@@ -4,9 +4,7 @@ import static org.hibernate.tool.schema.SchemaToolingLogging.LOGGER;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.alarm.controller.dto.request.PushAlarmCreateRequest;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberTokenCreateRequest;
 import com.bookbla.americano.domain.alarm.controller.dto.response.PushAlarmCreateResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberTokenCreateResponse;
 import com.bookbla.americano.domain.alarm.exception.PushAlarmExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberPushAlarmRepository;
 import com.bookbla.americano.domain.member.repository.entity.MemberPushAlarm;
@@ -61,6 +59,7 @@ public class AlarmServiceImpl implements AlarmService {
             pushAlarmCreateRequest.getBody());
     }
 
+    @Override
     @Transactional
     public void sendPushAlarm(Member member, String title, String body) {
 
