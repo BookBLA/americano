@@ -9,7 +9,9 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum PushAlarmExceptionType implements ExceptionType {
 
-    TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST, "push_alarm_01", "존재하지 않은 토큰 코드입니다."),
+    NOT_FOUND_TOKEN(HttpStatus.BAD_REQUEST, "push_alarm_01", "존재하지 않은 토큰 코드입니다."),
+    INVALID_EXPO_TOKEN(HttpStatus.BAD_REQUEST, "push_alarm_02", "유효하지 않는 EXPO 푸쉬 토큰입니다."),
+    FAIL_TO_SEND_EXPO_SERVER(HttpStatus.BAD_REQUEST, "push_alarm_03", "EXPO 서버에 보내는데 실패하였습니다.")
     ;
 
     private final HttpStatus httpStatus;

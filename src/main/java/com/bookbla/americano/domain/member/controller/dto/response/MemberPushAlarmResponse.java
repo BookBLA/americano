@@ -20,6 +20,7 @@ public class MemberPushAlarmResponse {
     @Builder
     @AllArgsConstructor
     public static class PushAlarmInfo {
+        private final Long memberPushAlarmId;
         private final String title;
         private final String body;
     }
@@ -28,6 +29,7 @@ public class MemberPushAlarmResponse {
         List<MemberPushAlarm> memberPushAlarms) {
         List<PushAlarmInfo> pushAlarmInfos = memberPushAlarms.stream()
             .map(alarm -> PushAlarmInfo.builder()
+                .memberPushAlarmId(alarm.getId())
                 .title(alarm.getTitle())
                 .body(alarm.getBody())
                 .build())
