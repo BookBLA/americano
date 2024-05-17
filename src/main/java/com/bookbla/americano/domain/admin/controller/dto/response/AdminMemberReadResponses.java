@@ -48,7 +48,6 @@ public class AdminMemberReadResponses {
         public static AdminMemberReadResponse from(Member member) {
             if (member.hasProfile()) {
                 MemberProfile memberProfile = member.getMemberProfile();
-
                 return AdminMemberReadResponse.builder()
                         .memberId(member.getId())
                         .authEmail(member.getOauthEmail())

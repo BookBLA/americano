@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.repository;
 
 
+import java.util.List;
 import java.util.Optional;
 
 import com.bookbla.americano.base.exception.BaseException;
@@ -25,4 +26,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     Optional<Member> findByMemberTypeAndOauthEmail(MemberType memberType, String email);
 
     Optional<Member> findByMemberProfileSchoolEmail(String schoolEmail);
+
+    List<Member> findByMemberPolicyAdAgreementPolicy(Boolean isAgree);
 }

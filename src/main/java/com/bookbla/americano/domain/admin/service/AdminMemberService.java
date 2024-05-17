@@ -7,8 +7,11 @@ import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberPro
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminPendingMemberResponses;
+import com.bookbla.americano.domain.admin.service.dto.AlarmDto;
 import com.bookbla.americano.domain.admin.service.dto.MemberStatusUpdateDto;
 import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
+import com.bookbla.americano.domain.alarm.service.AlarmClient;
+import com.bookbla.americano.domain.alarm.service.AlarmService;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
@@ -34,6 +37,8 @@ import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT
 @Service
 public class AdminMemberService {
 
+    private final AlarmClient alarmClient;
+    private final AlarmService alarmService;
     private final MemberRepository memberRepository;
     private final MemberVerifyRepository memberVerifyRepository;
 
@@ -49,6 +54,25 @@ public class AdminMemberService {
         Page<Member> pendingMemberPaging = memberRepository.findByMemberStatus(MemberStatus.APPROVAL, pageable);
         List<Member> members = pendingMemberPaging.getContent();
         return AdminPendingMemberResponses.from(members);
+    }
+
+    public void updatePendingMemberStatus(MemberStatusUpdateDto dto) {
+        Member member = memberRepository.getByIdOrThrow(dto.getMemberId());
+        MemberProfile memberProfile = member.getMemberProfile();
+
+        memberProfile.updateStudentIdImageStatus(dto.getStudentIdImageStatus())
+                .updateProfileImageStatus(dto.getProfileImageStatus())
+                .updateOpenKakaoRoomStatus(dto.getOpenKakaoRoomStatus());
+
+        member.updateMemberStatus();
+    }
+
+    @Transactional(readOnly = true)
+    public void sendPushAlarm(AlarmDto alarmDto) {
+        List<Member> members = memberRepository.findByMemberPolicyAdAgreementPolicy(true);
+        members.forEach(member ->
+                alarmService.sendPushAlarm(member, alarmDto.getTitle(), alarmDto.getContents())
+        );
     }
 
     @Transactional(readOnly = true)
@@ -130,17 +154,5 @@ public class AdminMemberService {
         }
 
         member.updateMemberStatus();
-    }
-
-    public void updatePendingMemberStatus(MemberStatusUpdateDto dto) {
-        Member member = memberRepository.getByIdOrThrow(dto.getMemberId());
-        MemberProfile memberProfile = member.getMemberProfile();
-
-        memberProfile.updateStudentIdImageStatus(dto.getStudentIdImageStatus())
-                .updateProfileImageStatus(dto.getProfileImageStatus())
-                .updateOpenKakaoRoomStatus(dto.getOpenKakaoRoomStatus());
-
-        member.updateMemberStatus();
-        // 푸쉬알림?
     }
 }

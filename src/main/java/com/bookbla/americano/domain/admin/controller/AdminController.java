@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.admin.controller;
 
 import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberKakaoRoomStatusUpdateRequest;
 import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberProfileImageStatusUpdateRequest;
+import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberPushAlarmRequest;
 import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberStatusUpdateRequest;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKakaoRoomResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
@@ -9,6 +10,7 @@ import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberRea
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminPendingMemberResponses;
 import com.bookbla.americano.domain.admin.service.AdminMemberService;
+import com.bookbla.americano.domain.alarm.service.AlarmService;
 import io.swagger.v3.oas.annotations.Operation;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,6 +48,24 @@ public class AdminController {
         return ResponseEntity.ok(adminPendingMemberResponses);
     }
 
+    @Operation(summary = "회원 상태 업데이트 API")
+    @PatchMapping("/members/{memberId}/profile/status")
+    public ResponseEntity<Void> updateMemberStatus(
+            @PathVariable Long memberId,
+            @RequestBody @Valid AdminMemberStatusUpdateRequest request
+    ) {
+        adminMemberService.updatePendingMemberStatus(request.toDto(memberId));
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "광고 동의 회원 대상 푸시 알림 전송 API")
+    @PostMapping("/alarm")
+    public ResponseEntity<Void> pushAlarm(
+            @RequestBody @Valid AdminMemberPushAlarmRequest request
+    ) {
+        adminMemberService.sendPushAlarm(request.toDto());
+        return ResponseEntity.ok().build();
+    }
 
     @GetMapping("/members/pending/kakao")
     public ResponseEntity<AdminMemberKakaoRoomResponses> readKakaoOpenRoomUrlPendingMembers(Pageable pageable) {
@@ -91,16 +112,6 @@ public class AdminController {
             @RequestBody @Valid AdminMemberProfileImageStatusUpdateRequest request
     ) {
         adminMemberService.updateMemberStudentIdStatus(request.toDto(memberVerifyId));
-        return ResponseEntity.ok().build();
-    }
-
-    @Operation(summary = "회원 상태 업데이트 API")
-    @PatchMapping("/members/{memberId}/profile/status")
-    public ResponseEntity<Void> updateMemberStatus(
-            @PathVariable Long memberId,
-            @RequestBody @Valid AdminMemberStatusUpdateRequest request
-    ) {
-        adminMemberService.updatePendingMemberStatus(request.toDto(memberId));
         return ResponseEntity.ok().build();
     }
 }
