@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.alarm.controller.dto.response;
+package com.bookbla.americano.domain.member.controller.dto.response;
 
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import lombok.AllArgsConstructor;
@@ -8,13 +8,13 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class PushTokenCreateResponse {
+public class MemberTokenCreateResponse {
 
     private final Long memberId;
     private final String token;
 
-    public static PushTokenCreateResponse from(Member member) {
-        return PushTokenCreateResponse.builder()
+    public static MemberTokenCreateResponse from(Member member) {
+        return MemberTokenCreateResponse.builder()
             .memberId(member.getId())
             .token(member.getPushToken())
             .build();
