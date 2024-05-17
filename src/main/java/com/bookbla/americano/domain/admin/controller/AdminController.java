@@ -29,6 +29,7 @@ public class AdminController {
 
     private final AdminMemberService adminMemberService;
 
+    @Operation(summary = "회원 전체 조회")
     @GetMapping("/members")
     public ResponseEntity<AdminMemberReadResponses> readMembers(Pageable pageable) {
         PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());

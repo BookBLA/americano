@@ -109,6 +109,10 @@ public class Member extends BaseInsertEntity {
         return this;
     }
 
+    public boolean hasProfile() {
+        return memberProfile != null;
+    }
+
     public MemberProfile getMemberProfile() {
         if (memberProfile == null || memberStatus == MemberStatus.PROFILE) {
             throw new BaseException(MemberProfileExceptionType.PROFILE_NOT_FOUND);
