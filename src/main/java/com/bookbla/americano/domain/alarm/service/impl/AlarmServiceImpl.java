@@ -38,8 +38,7 @@ public class AlarmServiceImpl implements AlarmService {
 
     @Override
     @Transactional
-    public PushAlarmCreateResponse sendPushAlarm(PushAlarmCreateRequest pushAlarmCreateRequest)
-        throws PushClientException {
+    public PushAlarmCreateResponse sendPushAlarm(PushAlarmCreateRequest pushAlarmCreateRequest) {
 
         Member member = memberRepository.getByIdOrThrow(pushAlarmCreateRequest.getMemberId());
 
@@ -63,7 +62,7 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     @Transactional
-    public void sendPushAlarm(Member member, String title, String body) throws PushClientException {
+    public void sendPushAlarm(Member member, String title, String body) {
 
         if (member.getPushToken() == null) {
             throw new BaseException(PushAlarmExceptionType.NOT_FOUND_TOKEN);
@@ -82,8 +81,7 @@ public class AlarmServiceImpl implements AlarmService {
 
 
     // https://stackoverflow.com/questions/71298367/send-push-notification-using-java-springboot-server-and-expo-react-native-client
-    public void sendPushAlarmToExpo(String token, String title, String body)
-        throws PushClientException {
+    public void sendPushAlarmToExpo(String token, String title, String body) {
 
         String exponentPushToken = "ExponentPushToken[" + token + "]";
 
@@ -99,7 +97,12 @@ public class AlarmServiceImpl implements AlarmService {
         List<ExpoPushMessage> expoPushMessages = new ArrayList<>();
         expoPushMessages.add(expoPushMessage);
 
-        PushClient client = new PushClient();
+        PushClient client = null;
+        try {
+            client = new PushClient();
+        } catch (PushClientException e) {
+            throw new BaseException(PushAlarmExceptionType.INVALID_PUSH_CLIENT);
+        }
         List<List<ExpoPushMessage>> chunks = client.chunkPushNotifications(expoPushMessages);
 
         List<CompletableFuture<List<ExpoPushTicket>>> messageRepliesFutures = new ArrayList<>();
