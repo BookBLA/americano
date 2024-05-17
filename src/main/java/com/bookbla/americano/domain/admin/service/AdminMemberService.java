@@ -7,6 +7,7 @@ import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberPro
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminPendingMemberResponses;
+import com.bookbla.americano.domain.admin.service.dto.MemberStatusUpdateDto;
 import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
@@ -129,5 +130,17 @@ public class AdminMemberService {
         }
 
         member.updateMemberStatus();
+    }
+
+    public void updatePendingMemberStatus(MemberStatusUpdateDto dto) {
+        Member member = memberRepository.getByIdOrThrow(dto.getMemberId());
+        MemberProfile memberProfile = member.getMemberProfile();
+
+        memberProfile.updateStudentIdImageStatus(dto.getStudentIdImageStatus())
+                .updateProfileImageStatus(dto.getProfileImageStatus())
+                .updateOpenKakaoRoomStatus(dto.getOpenKakaoRoomStatus());
+
+        member.updateMemberStatus();
+        // 푸쉬알림?
     }
 }
