@@ -4,16 +4,15 @@ import static org.hibernate.tool.schema.SchemaToolingLogging.LOGGER;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.alarm.controller.dto.request.PushAlarmCreateRequest;
-import com.bookbla.americano.domain.alarm.controller.dto.request.PushTokenCreateRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberTokenCreateRequest;
 import com.bookbla.americano.domain.alarm.controller.dto.response.PushAlarmCreateResponse;
-import com.bookbla.americano.domain.alarm.controller.dto.response.PushTokenCreateResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberTokenCreateResponse;
 import com.bookbla.americano.domain.alarm.exception.PushAlarmExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberPushAlarmRepository;
 import com.bookbla.americano.domain.member.repository.entity.MemberPushAlarm;
 import com.bookbla.americano.domain.alarm.service.AlarmService;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.fasterxml.jackson.databind.ser.Serializers.Base;
 import io.github.jav.exposerversdk.ExpoPushMessage;
 import io.github.jav.exposerversdk.ExpoPushMessageTicketPair;
 import io.github.jav.exposerversdk.ExpoPushTicket;
@@ -45,7 +44,7 @@ public class AlarmServiceImpl implements AlarmService {
         Member member = memberRepository.getByIdOrThrow(pushAlarmCreateRequest.getMemberId());
 
         if (member.getPushToken() == null) {
-            throw new BaseException(PushAlarmExceptionType.TOKEN_NOT_FOUND);
+            throw new BaseException(PushAlarmExceptionType.NOT_FOUND_TOKEN);
         }
 
         sendPushAlarmToExpo(member.getPushToken(), pushAlarmCreateRequest.getTitle(),
@@ -63,16 +62,22 @@ public class AlarmServiceImpl implements AlarmService {
             pushAlarmCreateRequest.getBody());
     }
 
-    @Override
     @Transactional
-    public PushTokenCreateResponse createPushToken(Long memberId,
-        PushTokenCreateRequest pushTokenCreateRequest) {
-        Member member = memberRepository.getByIdOrThrow(memberId);
-        log.info(pushTokenCreateRequest.getToken());
-        member.updatePushToken(pushTokenCreateRequest.getToken());
+    public void sendPushAlarm(Member member, String title, String body) throws PushClientException {
 
-        log.info(member.getPushToken());
-        return PushTokenCreateResponse.from(member);
+        if (member.getPushToken() == null) {
+            throw new BaseException(PushAlarmExceptionType.NOT_FOUND_TOKEN);
+        }
+
+        sendPushAlarmToExpo(member.getPushToken(), title, body);
+
+        MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
+            .member(member)
+            .title(title)
+            .body(body)
+            .build();
+
+        memberPushAlarmRepository.save(memberPushAlarm);
     }
 
 
@@ -83,7 +88,7 @@ public class AlarmServiceImpl implements AlarmService {
         String exponentPushToken = "ExponentPushToken[" + token + "]";
 
         if (!PushClient.isExponentPushToken(exponentPushToken)) {
-            throw new Error("Token:" + exponentPushToken + " is not a valid token.");
+            throw new BaseException(PushAlarmExceptionType.INVALID_EXPO_TOKEN);
         }
 
         ExpoPushMessage expoPushMessage = new ExpoPushMessage();
@@ -109,7 +114,7 @@ public class AlarmServiceImpl implements AlarmService {
             try {
                 allTickets.addAll(messageReplyFuture.get());
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                throw new BaseException(PushAlarmExceptionType.FAIL_TO_SEND_EXPO_SERVER);
             }
         }
 
