@@ -1,6 +1,8 @@
-package com.bookbla.americano.base.log;
+package com.bookbla.americano.base.log.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.base.log.enums.PushAlarmStatus;
+import com.bookbla.americano.base.log.enums.PushAlarmType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,11 +24,13 @@ public class PushAlarmLog extends BaseInsertEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String type;
+    private String token;
 
-    private String userId;
+    private PushAlarmType pushAlarmType;
 
-    private String contents;
+    private PushAlarmStatus pushAlarmStatus;
 
-    private String status;
+    private String title;
+
+    private String body;
 }

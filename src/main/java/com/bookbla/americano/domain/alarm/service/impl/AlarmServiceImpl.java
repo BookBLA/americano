@@ -3,6 +3,10 @@ package com.bookbla.americano.domain.alarm.service.impl;
 import static org.hibernate.tool.schema.SchemaToolingLogging.LOGGER;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.base.log.enums.PushAlarmStatus;
+import com.bookbla.americano.base.log.enums.PushAlarmType;
+import com.bookbla.americano.base.log.repository.PushAlarmLogRepository;
+import com.bookbla.americano.base.log.repository.entity.PushAlarmLog;
 import com.bookbla.americano.domain.alarm.controller.dto.request.PushAlarmCreateRequest;
 import com.bookbla.americano.domain.alarm.controller.dto.response.PushAlarmCreateResponse;
 import com.bookbla.americano.domain.alarm.exception.PushAlarmExceptionType;
@@ -33,6 +37,7 @@ public class AlarmServiceImpl implements AlarmService {
 
     private final MemberRepository memberRepository;
     private final MemberPushAlarmRepository memberPushAlarmRepository;
+    private final PushAlarmLogRepository pushAlarmLogRepository;
 
     @Override
     @Transactional
@@ -78,8 +83,7 @@ public class AlarmServiceImpl implements AlarmService {
         memberPushAlarmRepository.save(memberPushAlarm);
     }
 
-
-    // https://stackoverflow.com/questions/71298367/send-push-notification-using-java-springboot-server-and-expo-react-native-client
+    @Transactional
     public void sendPushAlarmToExpo(String token, String title, String body) {
 
         String exponentPushToken = "ExponentPushToken[" + token + "]";
@@ -120,27 +124,20 @@ public class AlarmServiceImpl implements AlarmService {
             }
         }
 
-        List<ExpoPushMessageTicketPair<ExpoPushMessage>> zippedMessagesTickets = client.zipMessagesTickets(
-            expoPushMessages, allTickets);
+        for (int i = 0; i < allTickets.size(); i++) {
+            if (allTickets.get(i).getStatus().toString().equals("error")) {
+                PushAlarmLog pushAlarmLog = PushAlarmLog.builder()
+                    .token(token)
+                    .pushAlarmType(PushAlarmType.EXPO)
+                    .title(title)
+                    .body(body)
+                    .pushAlarmStatus(PushAlarmStatus.FAIL)
+                    .build();
 
-        List<ExpoPushMessageTicketPair<ExpoPushMessage>> okTicketMessages = client.filterAllSuccessfulMessages(
-            zippedMessagesTickets);
-        String okTicketMessagesString = okTicketMessages.stream()
-            .map(p -> "Title: " + p.message.getTitle() + ", Id:" + p.ticket.getId())
-            .collect(Collectors.joining(","));
-        LOGGER.info("Recieved OK ticket for " + okTicketMessages.size() + " messages: "
-            + okTicketMessagesString);
-
-        List<ExpoPushMessageTicketPair<ExpoPushMessage>> errorTicketMessages = client.filterAllMessagesWithError(
-            zippedMessagesTickets);
-        String errorTicketMessagesString = errorTicketMessages.stream().map(
-                p -> "Title: " + p.message.getTitle() + ", Error: " + p.ticket.getDetails().getError())
-            .collect(Collectors.joining(","));
-        LOGGER.error("Recieved ERROR ticket for " + errorTicketMessages.size() + " messages: "
-            + errorTicketMessagesString);
-
+                pushAlarmLogRepository.save(pushAlarmLog);
+            }
+        }
     }
-
 
 }
 
