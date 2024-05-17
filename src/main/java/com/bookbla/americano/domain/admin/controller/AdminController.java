@@ -6,7 +6,9 @@ import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKak
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
+import com.bookbla.americano.domain.admin.controller.dto.response.AdminPendingMemberResponses;
 import com.bookbla.americano.domain.admin.service.AdminMemberService;
+import io.swagger.v3.oas.annotations.Operation;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -32,6 +34,15 @@ public class AdminController {
         AdminMemberReadResponses adminMemberReadResponses = adminMemberService.readMembers(pageRequest);
         return ResponseEntity.ok(adminMemberReadResponses);
     }
+
+    @Operation(summary = "회원 승인 대기중인 목록 조회 API")
+    @GetMapping("/members/approval")
+    public ResponseEntity<AdminPendingMemberResponses> readPendingMembers(Pageable pageable) {
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());
+        AdminPendingMemberResponses adminPendingMemberResponses = adminMemberService.readPendingMembers(pageRequest);
+        return ResponseEntity.ok(adminPendingMemberResponses);
+    }
+
 
     @GetMapping("/members/pending/kakao")
     public ResponseEntity<AdminMemberKakaoRoomResponses> readKakaoOpenRoomUrlPendingMembers(Pageable pageable) {

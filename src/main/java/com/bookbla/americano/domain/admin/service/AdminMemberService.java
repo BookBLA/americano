@@ -6,7 +6,9 @@ import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKak
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
+import com.bookbla.americano.domain.admin.controller.dto.response.AdminPendingMemberResponses;
 import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
@@ -42,6 +44,13 @@ public class AdminMemberService {
     }
 
     @Transactional(readOnly = true)
+    public AdminPendingMemberResponses readPendingMembers(Pageable pageable) {
+        Page<Member> pendingMemberPaging = memberRepository.findByMemberStatus(MemberStatus.APPROVAL, pageable);
+        List<Member> members = pendingMemberPaging.getContent();
+        return AdminPendingMemberResponses.from(members);
+    }
+
+    @Transactional(readOnly = true)
     public AdminMemberKakaoRoomResponses readKakaoRoomPendingMembers(Pageable pageable) {
         Page<MemberVerify> paging = memberVerifyRepository.findByVerifyTypeAndVerifyStatus(OPEN_KAKAO_ROOM_URL, PENDING, pageable);
         List<MemberVerify> memberVerifies = paging.getContent();
@@ -65,7 +74,7 @@ public class AdminMemberService {
             memberVerify.fail(dto.getReason());
         }
 
-        member.updateMemberCertifyStatus();
+        member.updateMemberStatus();
     }
 
     @Transactional(readOnly = true)
@@ -92,7 +101,7 @@ public class AdminMemberService {
             memberVerify.fail(dto.getReason());
         }
 
-        member.updateMemberCertifyStatus();
+        member.updateMemberStatus();
     }
 
     @Transactional(readOnly = true)
@@ -119,6 +128,6 @@ public class AdminMemberService {
             memberVerify.fail(dto.getReason());
         }
 
-        member.updateMemberCertifyStatus();
+        member.updateMemberStatus();
     }
 }

@@ -144,5 +144,4 @@ public class MemberProfile {
         this.studentIdImageStatus = studentIdImageStatus;
         return this;
     }
-
 }
