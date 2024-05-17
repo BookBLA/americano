@@ -70,8 +70,12 @@ public class AdminMemberService {
     @Transactional(readOnly = true)
     public void sendPushAlarm(AlarmDto alarmDto) {
         List<Member> members = memberRepository.findByMemberPolicyAdAgreementPolicy(true);
-        members.forEach(member ->
-                alarmService.sendPushAlarm(member, alarmDto.getTitle(), alarmDto.getContents())
+        List<Member> possibleMembers = members.stream()
+                .filter(Member::canSendAdvertisementAlarm)
+                .collect(Collectors.toList());
+
+        possibleMembers.forEach(possibleMember ->
+                alarmService.sendPushAlarm(possibleMember, alarmDto.getTitle(), alarmDto.getContents())
         );
     }
 

@@ -33,7 +33,7 @@ public class AdminMemberReadResponses {
     @AllArgsConstructor
     @Builder
     @Getter
-    static class AdminMemberReadResponse {
+    public static class AdminMemberReadResponse {
 
         private final Long memberId;
         private final String authEmail;

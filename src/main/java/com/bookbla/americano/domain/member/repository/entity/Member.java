@@ -109,6 +109,10 @@ public class Member extends BaseInsertEntity {
         return this;
     }
 
+    public boolean canSendAdvertisementAlarm() {
+        return pushToken != null && memberPolicy.getAdAgreementPolicy();
+    }
+
     public boolean hasProfile() {
         return memberProfile != null;
     }
