@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.fcm.controller.dto.request;
+package com.bookbla.americano.domain.alarm.controller.dto.request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,8 +8,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class FcmRequest {
-    private String targetToken;
+public class PushAlarmCreateRequest {
+
+    private Long memberId;
     private String title;
     private String body;
 }

@@ -31,6 +31,8 @@ public class AuthConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/admin/**")
                 .excludePathPatterns("/aws/s3/**")
                 .excludePathPatterns("/error/**")
+                .excludePathPatterns("/expoes/**")
+            .excludePathPatterns("/alarms/sends")
         ;
 
         // 어드민 인터셉터
