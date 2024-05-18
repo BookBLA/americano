@@ -74,6 +74,14 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "탈퇴 회원 목록 조회 API")
+    @GetMapping("/members/deleted")
+    public ResponseEntity<AdminMemberReadResponses> readDeletedMembers(Pageable pageable) {
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());
+        AdminMemberReadResponses adminMemberReadResponses = adminMemberService.readDeletedMembers(pageRequest);
+        return ResponseEntity.ok(adminMemberReadResponses);
+    }
+
     @GetMapping("/members/pending/kakao")
     public ResponseEntity<AdminMemberKakaoRoomResponses> readKakaoOpenRoomUrlPendingMembers(Pageable pageable) {
         PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());

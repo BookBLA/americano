@@ -89,6 +89,13 @@ public class AdminMemberService {
     }
 
     @Transactional(readOnly = true)
+    public AdminMemberReadResponses readDeletedMembers(Pageable pageable) {
+        Page<Member> memberPaging = memberRepository.findByMemberStatus(MemberStatus.DELETED, pageable);
+        List<Member> members = memberPaging.getContent();
+        return AdminMemberReadResponses.from(members);
+    }
+
+    @Transactional(readOnly = true)
     public AdminMemberKakaoRoomResponses readKakaoRoomPendingMembers(Pageable pageable) {
         Page<MemberVerify> paging = memberVerifyRepository.findByVerifyTypeAndVerifyStatus(OPEN_KAKAO_ROOM_URL, PENDING, pageable);
         List<MemberVerify> memberVerifies = paging.getContent();
