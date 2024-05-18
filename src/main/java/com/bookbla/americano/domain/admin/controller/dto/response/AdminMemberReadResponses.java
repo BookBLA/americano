@@ -44,6 +44,7 @@ public class AdminMemberReadResponses {
         private final String gender;
         private final String school;
         private final String phone;
+        private final String status;
 
         public static AdminMemberReadResponse from(Member member) {
             if (member.hasProfile()) {
@@ -55,9 +56,10 @@ public class AdminMemberReadResponses {
                         .name(memberProfile.getName())
                         .birthDate(memberProfile.getBirthDate())
                         .schoolEmail(memberProfile.getSchoolEmail())
-                        .gender(memberProfile.getGender().name())
+                        .gender(memberProfile.getGenderName())
                         .school(memberProfile.getSchoolName())
                         .phone(memberProfile.getPhoneNumber())
+                        .status(member.getMemberStatus().name())
                         .build();
             }
 

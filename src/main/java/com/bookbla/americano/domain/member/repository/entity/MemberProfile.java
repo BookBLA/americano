@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.repository.entity;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Objects;
 
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
@@ -143,5 +144,12 @@ public class MemberProfile {
     public MemberProfile updateStudentIdImageStatus(StudentIdImageStatus studentIdImageStatus) {
         this.studentIdImageStatus = studentIdImageStatus;
         return this;
+    }
+
+    public String getGenderName() {
+        if (Objects.isNull(gender)) {
+            return "등록되지 않음";
+        }
+        return getGender().name();
     }
 }

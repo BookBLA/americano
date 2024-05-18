@@ -65,7 +65,7 @@ public class Member extends BaseInsertEntity {
 
     public void updateMemberStatus() {
         if (memberProfile.isCertified()) {
-            this.memberStatus = MemberStatus.COMPLETED; 
+            this.memberStatus = MemberStatus.COMPLETED;
         }
     }
 
@@ -118,14 +118,14 @@ public class Member extends BaseInsertEntity {
     }
 
     public MemberProfile getMemberProfile() {
-        if (memberProfile == null || memberStatus == MemberStatus.PROFILE) {
+        if (memberProfile == null) {
             throw new BaseException(MemberProfileExceptionType.PROFILE_NOT_FOUND);
         }
         return memberProfile;
     }
 
     public MemberStyle getMemberStyle() {
-        if (memberStyle == null || memberStatus == MemberStatus.STYLE_BOOK) {
+        if (memberStyle == null) {
             throw new BaseException(MemberExceptionType.STYLE_NOT_REGISTERED);
         }
         return memberStyle;
