@@ -50,6 +50,7 @@ public class MemberBookServiceImpl implements MemberBookService {
         MemberBook memberBook = MemberBook.builder()
                 .book(book)
                 .isRepresentative(memberBookCreateRequest.getIsRepresentative())
+                .review(memberBookCreateRequest.getReview())
                 .member(member)
                 .build();
         MemberBook savedMemberBook = memberBookRepository.save(memberBook);
