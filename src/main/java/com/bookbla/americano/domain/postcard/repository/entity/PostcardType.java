@@ -26,4 +26,6 @@ public class PostcardType extends BaseInsertEntity {
 
     private String name;
 
+    private String imageUrl;
+
 }
