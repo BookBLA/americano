@@ -36,6 +36,9 @@ public class AdminPendingMemberResponses {
         private final String major;
         private final String studentId;
         private final String studentIdImageUrl;
+        private final String profileImageStatus;
+        private final String openKakaoRoomStatus;
+        private final String studentIdImageStatus;
 
         public static AdminPendingMemberResponse from(Member member) {
             MemberProfile memberProfile = member.getMemberProfile();
@@ -50,6 +53,9 @@ public class AdminPendingMemberResponses {
                     .major(memberProfile.getMajor())
                     .studentId(memberProfile.getStudentNumber())
                     .studentIdImageUrl(memberProfile.getStudentIdImageUrl())
+                    .profileImageStatus(memberProfile.getProfileImageStatus().name())
+                    .openKakaoRoomStatus(memberProfile.getOpenKakaoRoomStatus().name())
+                    .studentIdImageStatus(memberProfile.getStudentIdImageStatus().name())
                     .build();
         }
     }
