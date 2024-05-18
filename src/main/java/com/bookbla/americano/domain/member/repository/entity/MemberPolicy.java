@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
 import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Embeddable;
@@ -33,5 +34,4 @@ public class MemberPolicy {
         this.adAgreementAt = adAgreementAt;
         return this;
     }
-
 }

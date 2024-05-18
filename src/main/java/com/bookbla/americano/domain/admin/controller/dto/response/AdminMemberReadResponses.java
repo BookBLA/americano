@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class AdminMemberReadResponses {
 
+    private static final String NOT_REGISTERED = "등록되지 않았습니다";
+
     private final List<AdminMemberReadResponse> data;
 
     public static AdminMemberReadResponses from(List<Member> members) {
@@ -31,25 +33,46 @@ public class AdminMemberReadResponses {
     @AllArgsConstructor
     @Builder
     @Getter
-    static class AdminMemberReadResponse {
+    public static class AdminMemberReadResponse {
 
+        private final Long memberId;
+        private final String authEmail;
+        private final String memberType;
         private final String name;
         private final LocalDate birthDate;
-        private final String email;
+        private final String schoolEmail;
         private final String gender;
         private final String school;
         private final String phone;
+        private final String status;
 
         public static AdminMemberReadResponse from(Member member) {
-            MemberProfile memberProfile = member.getMemberProfile();
+            if (member.hasProfile()) {
+                MemberProfile memberProfile = member.getMemberProfile();
+                return AdminMemberReadResponse.builder()
+                        .memberId(member.getId())
+                        .authEmail(member.getOauthEmail())
+                        .memberType(member.getMemberType().name())
+                        .name(memberProfile.getName())
+                        .birthDate(memberProfile.getBirthDate())
+                        .schoolEmail(memberProfile.getSchoolEmail())
+                        .gender(memberProfile.getGenderName())
+                        .school(memberProfile.getSchoolName())
+                        .phone(memberProfile.getPhoneNumber())
+                        .status(member.getMemberStatus().name())
+                        .build();
+            }
 
             return AdminMemberReadResponse.builder()
-                    .name(memberProfile.getName())
-                    .birthDate(memberProfile.getBirthDate())
-                    .email(memberProfile.getSchoolEmail())
-                    .gender(memberProfile.getGender().name())
-                    .school(memberProfile.getSchoolName())
-                    .phone(memberProfile.getPhoneNumber())
+                    .memberId(member.getId())
+                    .authEmail(member.getOauthEmail())
+                    .memberType(member.getMemberType().name())
+                    .name(NOT_REGISTERED)
+                    .birthDate(LocalDate.now())
+                    .schoolEmail(NOT_REGISTERED)
+                    .gender(NOT_REGISTERED)
+                    .school(NOT_REGISTERED)
+                    .phone(NOT_REGISTERED)
                     .build();
         }
     }

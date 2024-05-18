@@ -3,7 +3,6 @@ package com.bookbla.americano.domain.alarm.controller;
 import com.bookbla.americano.domain.alarm.controller.dto.request.PushAlarmCreateRequest;
 import com.bookbla.americano.domain.alarm.controller.dto.response.PushAlarmCreateResponse;
 import com.bookbla.americano.domain.alarm.service.AlarmService;
-import io.github.jav.exposerversdk.PushClientException;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +21,8 @@ public class AlarmController {
     @PostMapping("/sends")
     public ResponseEntity<PushAlarmCreateResponse> sendPushAlarm(
         @RequestBody @Valid PushAlarmCreateRequest pushAlarmCreateRequest
-    ) throws PushClientException {
-
-        PushAlarmCreateResponse pushAlarmCreateResponse = alarmService.sendPushAlarm(
-            pushAlarmCreateRequest);
+    ) {
+        PushAlarmCreateResponse pushAlarmCreateResponse = alarmService.sendPushAlarm(pushAlarmCreateRequest);
         return ResponseEntity.ok(pushAlarmCreateResponse);
     }
 

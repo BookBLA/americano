@@ -1,12 +1,20 @@
 package com.bookbla.americano.domain.admin.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKakaoRoomResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
+import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileStatusResponse;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
+import com.bookbla.americano.domain.admin.controller.dto.response.AdminPendingMemberResponses;
+import com.bookbla.americano.domain.admin.service.dto.AlarmDto;
+import com.bookbla.americano.domain.admin.service.dto.MemberStatusUpdateDto;
 import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
+import com.bookbla.americano.domain.alarm.service.AlarmClient;
+import com.bookbla.americano.domain.alarm.service.AlarmService;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
@@ -31,12 +39,58 @@ import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT
 @Service
 public class AdminMemberService {
 
+    private final AlarmClient alarmClient;
+    private final AlarmService alarmService;
     private final MemberRepository memberRepository;
     private final MemberVerifyRepository memberVerifyRepository;
 
     @Transactional(readOnly = true)
     public AdminMemberReadResponses readMembers(Pageable pageable) {
         Page<Member> memberPaging = memberRepository.findAll(pageable);
+        List<Member> members = memberPaging.getContent();
+        return AdminMemberReadResponses.from(members);
+    }
+
+    @Transactional(readOnly = true)
+    public AdminPendingMemberResponses readPendingMembers(Pageable pageable) {
+        Page<Member> pendingMemberPaging = memberRepository.findByMemberStatus(MemberStatus.APPROVAL, pageable);
+        List<Member> members = pendingMemberPaging.getContent();
+        return AdminPendingMemberResponses.from(members);
+    }
+
+    public AdminMemberProfileStatusResponse readProfileStatuses() {
+        return AdminMemberProfileStatusResponse.of(
+                ProfileImageStatus.getValues(),
+                OpenKakaoRoomStatus.getValues(),
+                StudentIdImageStatus.getValues()
+        );
+    }
+
+    public void updatePendingMemberStatus(MemberStatusUpdateDto dto) {
+        Member member = memberRepository.getByIdOrThrow(dto.getMemberId());
+        MemberProfile memberProfile = member.getMemberProfile();
+
+        memberProfile.updateStudentIdImageStatus(dto.getStudentIdImageStatus())
+                .updateProfileImageStatus(dto.getProfileImageStatus())
+                .updateOpenKakaoRoomStatus(dto.getOpenKakaoRoomStatus());
+
+        member.updateMemberStatus();
+    }
+
+    public void sendPushAlarm(AlarmDto alarmDto) {
+        List<Member> members = memberRepository.findByMemberPolicyAdAgreementPolicy(true);
+        List<Member> possibleMembers = members.stream()
+                .filter(Member::canSendAdvertisementAlarm)
+                .collect(Collectors.toList());
+
+        possibleMembers.forEach(possibleMember ->
+                alarmService.sendPushAlarm(possibleMember, alarmDto.getTitle(), alarmDto.getContents())
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public AdminMemberReadResponses readDeletedMembers(Pageable pageable) {
+        Page<Member> memberPaging = memberRepository.findByMemberStatus(MemberStatus.DELETED, pageable);
         List<Member> members = memberPaging.getContent();
         return AdminMemberReadResponses.from(members);
     }
@@ -65,7 +119,7 @@ public class AdminMemberService {
             memberVerify.fail(dto.getReason());
         }
 
-        member.updateMemberCertifyStatus();
+        member.updateMemberStatus();
     }
 
     @Transactional(readOnly = true)
@@ -92,7 +146,7 @@ public class AdminMemberService {
             memberVerify.fail(dto.getReason());
         }
 
-        member.updateMemberCertifyStatus();
+        member.updateMemberStatus();
     }
 
     @Transactional(readOnly = true)
@@ -119,6 +173,6 @@ public class AdminMemberService {
             memberVerify.fail(dto.getReason());
         }
 
-        member.updateMemberCertifyStatus();
+        member.updateMemberStatus();
     }
 }
