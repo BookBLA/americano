@@ -6,11 +6,11 @@ import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberPush
 import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberStatusUpdateRequest;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKakaoRoomResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
+import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileStatusResponse;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminPendingMemberResponses;
 import com.bookbla.americano.domain.admin.service.AdminMemberService;
-import com.bookbla.americano.domain.alarm.service.AlarmService;
 import io.swagger.v3.oas.annotations.Operation;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +56,13 @@ public class AdminController {
     ) {
         adminMemberService.updatePendingMemberStatus(request.toDto(memberId));
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "회원 프로필의 상태 목록 조회 API")
+    @GetMapping("/member/profile/status")
+    public ResponseEntity<AdminMemberProfileStatusResponse> getMemberStatuses() {
+        AdminMemberProfileStatusResponse adminMemberProfileStatusResponse = adminMemberService.readProfileStatuses();
+        return ResponseEntity.ok(adminMemberProfileStatusResponse);
     }
 
     @Operation(summary = "광고 동의 회원 대상 푸시 알림 전송 API")

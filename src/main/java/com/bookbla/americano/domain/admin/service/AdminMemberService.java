@@ -56,6 +56,14 @@ public class AdminMemberService {
         return AdminPendingMemberResponses.from(members);
     }
 
+    public AdminMemberProfileStatusResponse readProfileStatuses() {
+        return AdminMemberProfileStatusResponse.of(
+                ProfileImageStatus.getValues(),
+                OpenKakaoRoomStatus.getValues(),
+                StudentIdImageStatus.getValues()
+        );
+    }
+
     public void updatePendingMemberStatus(MemberStatusUpdateDto dto) {
         Member member = memberRepository.getByIdOrThrow(dto.getMemberId());
         MemberProfile memberProfile = member.getMemberProfile();
