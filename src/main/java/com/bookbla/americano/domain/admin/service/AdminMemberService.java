@@ -1,9 +1,11 @@
 package com.bookbla.americano.domain.admin.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKakaoRoomResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
+import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileStatusResponse;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminPendingMemberResponses;
@@ -75,7 +77,6 @@ public class AdminMemberService {
         member.updateMemberStatus();
     }
 
-    @Transactional(readOnly = true)
     public void sendPushAlarm(AlarmDto alarmDto) {
         List<Member> members = memberRepository.findByMemberPolicyAdAgreementPolicy(true);
         List<Member> possibleMembers = members.stream()
