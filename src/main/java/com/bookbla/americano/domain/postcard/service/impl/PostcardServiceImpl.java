@@ -206,12 +206,14 @@ public class PostcardServiceImpl implements PostcardService {
                     nowScore++;
             }
         }
+        if (!nowBookTitles.isEmpty()) {
+            nowResponse.setBookTitles(nowBookTitles);
+            nowResponse.setCorrectStatuses(nowCorrectStatuses);
+            nowResponse.setQuizScore(nowScore);
 
-        nowResponse.setBookTitles(nowBookTitles);
-        nowResponse.setCorrectStatuses(nowCorrectStatuses);
-        nowResponse.setQuizScore(nowScore);
-        // 리스트에 추가
-        memberPostcardToResponseList.add(nowResponse);
+            // 리스트에 추가
+            memberPostcardToResponseList.add(nowResponse);
+        }
         return memberPostcardToResponseList;
     }
 
