@@ -19,8 +19,10 @@ public class MemberStyleResponse {
     private final String drinkType;
     private final String mbti;
     private final String memberAsk;
+    private final Long memberAskId;
 
-    public static MemberStyleResponse of(Member member, MemberStyle memberStyle, MemberAsk memberAsk) {
+    public static MemberStyleResponse of(Member member, MemberStyle memberStyle,
+                                         MemberAsk memberAsk) {
         return new MemberStyleResponse(
                 member.getId(),
                 memberStyle.getSmokeType().getValue(),
@@ -30,7 +32,8 @@ public class MemberStyleResponse {
                 memberStyle.getJustFriendType().getValue(),
                 memberStyle.getDrinkType().getValue(),
                 memberStyle.getMbti().name(),
-                memberAsk.getContents()
+                memberAsk.getContents(),
+                memberAsk.getId()
         );
     }
 }
