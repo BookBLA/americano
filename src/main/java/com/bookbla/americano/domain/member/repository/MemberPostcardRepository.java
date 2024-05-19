@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface MemberPostcardRepository extends JpaRepository<MemberPostcard, Long> {
     Optional<MemberPostcard> findMemberPostcardByMemberId(@Param("memberId") Long memberId);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE MemberPostcard mp SET mp.freePostcardCount = 1")
     void initMemberFreePostcardCount();
 }

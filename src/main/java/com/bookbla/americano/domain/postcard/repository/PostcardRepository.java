@@ -11,15 +11,15 @@ import org.springframework.data.jpa.repository.Query;
 public interface PostcardRepository extends JpaRepository<Postcard, Long>, PostcardRepositoryCustom {
     boolean existsBySendMemberIdAndReceiveMemberIdAndPostcardStatus(Long sendMemberId, Long receiveMemberId, PostcardStatus status);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("update MemberPostcard mp set mp.freePostcardCount = mp.freePostcardCount - 1 where mp.member.id = :memberId")
     void useMemberFreePostcard(@Param("memberId") Long memberId);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("update MemberPostcard mp set mp.payPostcardCount = mp.payPostcardCount - 1 where mp.member.id = :memberId")
     void useMemberPayPostcard(@Param("memberId") Long memberId);
 
-    @Modifying(clearAutomatically = true)
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("update Postcard p set p.postcardStatus = :status where p.id = :postcardId")
     void updatePostcardStatus(@Param("status") PostcardStatus status, @Param("postcardId") Long postcardId);
 }

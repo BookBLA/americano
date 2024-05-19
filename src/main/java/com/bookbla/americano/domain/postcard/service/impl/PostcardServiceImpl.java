@@ -42,6 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -160,7 +161,7 @@ public class PostcardServiceImpl implements PostcardService {
     }
 
     private int getAge(LocalDate birthDay) {
-        return LocalDate.now().getYear() - birthDay.getYear();
+        return Period.between(birthDay, LocalDate.now()).getYears();
     }
 
     @Override // 받은 엽서
@@ -220,8 +221,6 @@ public class PostcardServiceImpl implements PostcardService {
             postcardRepository.useMemberFreePostcard(memberId);
         else if (type == PostcardPayType.PAY)
             postcardRepository.useMemberPayPostcard(memberId);
-        else
-            throw new BaseException(PostcardExceptionType.INVALID_TYPE);
     }
 
     @Override

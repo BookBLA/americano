@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.postcard.controller;
 
+import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.service.MemberPostcardService;
@@ -8,6 +9,7 @@ import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostc
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardToResponse;
 import com.bookbla.americano.domain.postcard.enums.PostcardPayType;
+import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
 import com.bookbla.americano.domain.postcard.service.PostcardService;
 import com.bookbla.americano.domain.postcard.service.dto.request.SendPostcardRequest;
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardTypeResponse;
@@ -16,7 +18,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,7 +30,6 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@Transactional
 @RequestMapping("/postcard")
 @RequiredArgsConstructor
 public class PostcardController {
@@ -56,8 +56,14 @@ public class PostcardController {
 
     @Operation(summary = "엽서 사용", description = "{payType}에 따라 무료 엽서 또는 유료 엽서 1개 사용. payType : FREE / PAY")
     @PatchMapping("/{payType}")
-    public void usePostcard(@Parameter(hidden = true) @User LoginUser loginUser, @PathVariable PostcardPayType payType) {
-        postcardService.useMemberPostcard(loginUser.getMemberId(), payType);
+    public void usePostcard(@Parameter(hidden = true) @User LoginUser loginUser, @PathVariable String payType) {
+        try{
+            PostcardPayType postcardPayType = PostcardPayType.valueOf(payType.toUpperCase());
+            postcardService.useMemberPostcard(loginUser.getMemberId(), postcardPayType);
+        } catch (IllegalArgumentException e){
+            throw new BaseException(PostcardExceptionType.INVALID_PAY_TYPE);
+        }
+
     }
 
     @Operation(summary = "Postcard 상태 업데이트", description = "{postcardId}를 가진 엽서의 상태 업데이트. Body의 status 값으로 해당 엽서의 상태(PostcardStatus)를 변경함.")
