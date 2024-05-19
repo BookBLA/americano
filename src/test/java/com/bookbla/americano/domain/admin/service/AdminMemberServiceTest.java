@@ -95,6 +95,7 @@ class AdminMemberServiceTest {
         AdminMemberReadResponses.AdminMemberReadResponse adminMemberReadResponse = adminMemberReadResponses.getData().get(0);
         // then
         assertAll(
+                () -> assertThat(adminMemberReadResponses.getTotalCount()).isEqualTo(3),
                 () -> assertThat(adminMemberReadResponses.getData()).hasSize(3),
                 () -> assertThat(adminMemberReadResponse.getMemberType()).isEqualToIgnoringCase("kakao"),
                 () -> assertThat(adminMemberReadResponse.getAuthEmail()).isEqualTo("bookbla@bookbla.com"),
