@@ -19,14 +19,15 @@ public class AdminMemberReadResponses {
 
     private static final String NOT_REGISTERED = "등록되지 않았습니다";
 
+    private final long totalCount;
     private final List<AdminMemberReadResponse> data;
 
-    public static AdminMemberReadResponses from(List<Member> members) {
+    public static AdminMemberReadResponses from(long totalCount, List<Member> members) {
         List<AdminMemberReadResponse> adminMemberReadResponses = members.stream()
                 .map(AdminMemberReadResponse::from)
                 .collect(Collectors.toList());
 
-        return new AdminMemberReadResponses(adminMemberReadResponses);
+        return new AdminMemberReadResponses(totalCount, adminMemberReadResponses);
     }
 
 

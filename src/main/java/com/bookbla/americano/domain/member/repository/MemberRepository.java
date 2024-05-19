@@ -28,4 +28,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     Optional<Member> findByMemberProfileSchoolEmail(String schoolEmail);
 
     List<Member> findByMemberPolicyAdAgreementPolicy(Boolean isAgree);
+
+    long countByMemberStatus(MemberStatus memberStatus);
 }
