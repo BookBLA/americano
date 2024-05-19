@@ -46,16 +46,18 @@ public class AdminMemberService {
 
     @Transactional(readOnly = true)
     public AdminMemberReadResponses readMembers(Pageable pageable) {
+        long count = memberRepository.count();
         Page<Member> memberPaging = memberRepository.findAll(pageable);
         List<Member> members = memberPaging.getContent();
-        return AdminMemberReadResponses.from(members);
+        return AdminMemberReadResponses.from(count, members);
     }
 
     @Transactional(readOnly = true)
     public AdminPendingMemberResponses readPendingMembers(Pageable pageable) {
+        long count = memberRepository.countByMemberStatus(MemberStatus.APPROVAL);
         Page<Member> pendingMemberPaging = memberRepository.findByMemberStatus(MemberStatus.APPROVAL, pageable);
         List<Member> members = pendingMemberPaging.getContent();
-        return AdminPendingMemberResponses.from(members);
+        return AdminPendingMemberResponses.from(count, members);
     }
 
     public AdminMemberProfileStatusResponse readProfileStatuses() {
@@ -90,9 +92,10 @@ public class AdminMemberService {
 
     @Transactional(readOnly = true)
     public AdminMemberReadResponses readDeletedMembers(Pageable pageable) {
+        long count = memberRepository.countByMemberStatus(MemberStatus.DELETED);
         Page<Member> memberPaging = memberRepository.findByMemberStatus(MemberStatus.DELETED, pageable);
         List<Member> members = memberPaging.getContent();
-        return AdminMemberReadResponses.from(members);
+        return AdminMemberReadResponses.from(count, members);
     }
 
     @Transactional(readOnly = true)

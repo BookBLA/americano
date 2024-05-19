@@ -13,13 +13,14 @@ import lombok.Getter;
 @Getter
 public class AdminPendingMemberResponses {
 
+    private final long totalCount;
     private final List<AdminPendingMemberResponse> data;
 
-    public static AdminPendingMemberResponses from(List<Member> members) {
+    public static AdminPendingMemberResponses from(long count, List<Member> members) {
         List<AdminPendingMemberResponse> data = members.stream()
                 .map(AdminPendingMemberResponse::from)
                 .collect(Collectors.toList());
-        return new AdminPendingMemberResponses(data);
+        return new AdminPendingMemberResponses(count, data);
     }
 
     @AllArgsConstructor
