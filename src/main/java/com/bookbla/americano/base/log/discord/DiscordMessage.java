@@ -22,6 +22,7 @@ import static org.apache.http.HttpHeaders.AUTHORIZATION;
 @Component
 public class DiscordMessage {
 
+    private static final int MAX_MESSAGE_SIZE = 2_000;
     private static final String CRLF = "\n";
     private static final String EXTRACTION_ERROR_MESSAGE = "메시지 추출중 예외가 발생했습니다.\nmessage : %s";
     private static final String EXCEPTION_MESSAGE_FORMAT = "_%s_ %s.%s:%d - %s";
@@ -107,9 +108,11 @@ public class DiscordMessage {
             String currentTime, String memberId, String errorMessage,
             String method, String requestURI, String headers, String body
     ) {
-        return String.format(
+        String message = String.format(
                 MESSAGE_FORMAT, memberId, currentTime,
                 errorMessage, method, requestURI, headers, body
         );
+        return message.length() < MAX_MESSAGE_SIZE
+                ? message : message.substring(0, MAX_MESSAGE_SIZE - 1);
     }
 }

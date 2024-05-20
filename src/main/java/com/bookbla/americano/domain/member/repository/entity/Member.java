@@ -65,7 +65,7 @@ public class Member extends BaseInsertEntity {
 
     public void updateMemberStatus() {
         if (memberProfile.isCertified()) {
-            this.memberStatus = MemberStatus.COMPLETED;
+            this.memberStatus = MemberStatus.STYLE;
         }
     }
 

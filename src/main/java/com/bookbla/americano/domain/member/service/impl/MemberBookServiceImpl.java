@@ -25,7 +25,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.bookbla.americano.domain.member.enums.MemberStatus.COMPLETED;
 import static com.bookbla.americano.domain.member.repository.entity.MemberBook.MAX_MEMBER_BOOK_COUNT;
+import static com.bookbla.americano.domain.member.repository.entity.MemberBook.MEMBER_BOOK_REMOVABLE_COUNT;
 
 @Service
 @Transactional
@@ -40,21 +42,19 @@ public class MemberBookServiceImpl implements MemberBookService {
     private final QuizQuestionRepository quizQuestionRepository;
 
     @Override
-    public MemberBookCreateResponse addMemberBook(Long memberId, MemberBookCreateRequest memberBookCreateRequest) {
+    public MemberBookCreateResponse addMemberBook(Long memberId, MemberBookCreateRequest request) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        Book book = bookRepository.findByIsbn(memberBookCreateRequest.getIsbn())
-                .orElseGet(() -> bookRepository.save(memberBookCreateRequest.toBook()));
+        Book book = bookRepository.findByIsbn(request.getIsbn())
+                .orElseGet(() -> bookRepository.save(request.toBook()));
 
         validateAddMemberBook(member, book);
 
-        MemberBook memberBook = MemberBook.builder()
-                .book(book)
-                .isRepresentative(memberBookCreateRequest.getIsRepresentative())
-                .review(memberBookCreateRequest.getReview())
-                .member(member)
-                .build();
-        MemberBook savedMemberBook = memberBookRepository.save(memberBook);
-        QuizQuestion savedQuizQuestion = quizQuestionRepository.save(memberBookCreateRequest.toQuizQuestion(savedMemberBook));
+        MemberBook savedMemberBook = memberBookRepository.save(request.toMemberBook(book, member));
+        QuizQuestion savedQuizQuestion = quizQuestionRepository.save(request.toQuizQuestion(savedMemberBook));
+
+        if (request.getIsRepresentative()) {
+            member.updateMemberStatus(COMPLETED);
+        }
         return MemberBookCreateResponse.from(savedMemberBook, savedQuizQuestion);
     }
 
@@ -140,14 +140,25 @@ public class MemberBookServiceImpl implements MemberBookService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
 
-        memberBook.validateOwner(member);
+        validateDeleteMemberBook(memberBook, member);
 
         if (memberBook.isNotRepresentative()) {
             quizQuestionRepository.deleteByMemberBook(memberBook);
             memberBookRepository.deleteById(memberBookId);
             return;
         }
+        deleteRepresentativeBook(memberBookId, memberBook, member);
+    }
 
+    private void validateDeleteMemberBook(MemberBook memberBook, Member member) {
+        memberBook.validateOwner(member);
+        long memberBookCounts = memberBookRepository.countByMember(member);
+        if (memberBookCounts < MEMBER_BOOK_REMOVABLE_COUNT) {
+            throw new BaseException(MemberBookExceptionType.MIN_MEMBER_REMOVABLE_BOOK_COUNT);
+        }
+    }
+
+    private void deleteRepresentativeBook(Long memberBookId, MemberBook memberBook, Member member) {
         quizQuestionRepository.deleteByMemberBook(memberBook);
         memberBookRepository.deleteById(memberBookId);
         List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
