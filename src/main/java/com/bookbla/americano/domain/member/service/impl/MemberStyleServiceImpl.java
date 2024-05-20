@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.bookbla.americano.domain.member.enums.MemberStatus.BOOK;
 import static com.bookbla.americano.domain.member.enums.MemberStatus.COMPLETED;
 
 
@@ -51,7 +52,7 @@ public class MemberStyleServiceImpl implements MemberStyleService {
                 .contents(memberStyleCreateRequest.getMemberAsk())
                 .build();
         MemberAsk savedMemberAsk = memberAskRepository.save(memberAsk);
-        member.updateMemberStatus(COMPLETED);
+        member.updateMemberStatus(BOOK);
 
         return MemberStyleResponse.of(member, member.getMemberStyle(), savedMemberAsk);
     }

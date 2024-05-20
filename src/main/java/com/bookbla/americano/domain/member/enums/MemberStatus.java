@@ -14,9 +14,11 @@ public enum MemberStatus {
     
     PROFILE("p", "회원 정보 입력이 필요"),
     APPROVAL("a", "회원 승인이 필요"),
-    STYLE_BOOK("s", "스타일과 내 서재 입력이 필요"),
+    STYLE("s", "스타일 입력이 필요"),
+    BOOK("bo", "서재 입력이 필요"),
     COMPLETED("c", "회원 가입 모두 완료"),
-    DELETED("d", "회원 탈퇴 상태")
+    DELETED("d", "회원 탈퇴 상태"),
+    BLOCKED("bl", "차단된 회원"),
     ;
 
     private final String value;
