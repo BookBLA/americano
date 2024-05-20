@@ -1,6 +1,7 @@
-package com.bookbla.americano.domain.member.controller.dto.response;
+package com.bookbla.americano.domain.postcard.service.dto.response;
 
 import com.bookbla.americano.domain.member.enums.Gender;
+import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,29 +9,30 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class MemberBookProfileResponseDto {
-
+public class PostcardFromResponse {
+    // Member 정보
     private long memberId;
-
-    private long bookId;
 
     private String memberName;
 
-    private int memberAge;
+    private LocalDate memberBirthDate;
 
     private Gender memberGender;
 
     private String memberSchoolName;
 
-    private String bookName;
+    private String memberProfileImageUrl;
 
-    private String bookImageUrl;
+    private String memberOpenKakaoRoomUrl;
 
-    private boolean bookIsRepresentative;
+    // 엽서 정보
+    private PostcardStatus postcardStatus;
 }

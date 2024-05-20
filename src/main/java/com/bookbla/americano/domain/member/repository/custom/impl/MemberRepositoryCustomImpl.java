@@ -3,7 +3,7 @@ package com.bookbla.americano.domain.member.repository.custom.impl;
 
 import com.bookbla.americano.domain.book.repository.entity.QBook;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponseDto;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
 import com.bookbla.americano.domain.member.enums.ContactType;
 import com.bookbla.americano.domain.member.enums.DateCostType;
 import com.bookbla.americano.domain.member.enums.DateStyleType;
@@ -33,7 +33,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<MemberBookProfileResponseDto> searchSameBookMember(Long memberId, MemberBookProfileRequestDto requestDto) {
+    public List<MemberBookProfileResponse> searchSameBookMember(Long memberId, MemberBookProfileRequestDto requestDto) {
         QMember member = QMember.member;
         QMemberBook memberBook = QMemberBook.memberBook;
         QBook book = QBook.book;
@@ -56,7 +56,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .and(eqJustFriendType(member.memberStyle, requestDto.getJustFriendType()));
 
         return queryFactory
-                .select(Projections.fields(MemberBookProfileResponseDto.class
+                .select(Projections.fields(MemberBookProfileResponse.class
                         , member.id.as("memberId")
                         , memberBook.book.id.as("bookId")
                         , member.memberProfile.nickname.as("memberName")
@@ -71,6 +71,44 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .innerJoin(memberBook).on(member.eq(memberBook.member))
                 .innerJoin(book).on(memberBook.book.eq(book))
                 .where(builder.or(member.id.eq(memberId)))
+                .fetch();
+    }
+
+    @Override
+    public List<MemberBookProfileResponse> getAllMembers(Long memberId, MemberBookProfileRequestDto requestDto) {
+        QMember member = QMember.member;
+        QMemberBook memberBook = QMemberBook.memberBook;
+        QBook book = QBook.book;
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        builder.and(eqGender(member.memberProfile, requestDto.getGender()))
+                .and(eqSmokeType(member.memberStyle, requestDto.getSmokeType()))
+                .and(eqDrinkType(member.memberStyle, requestDto.getDrinkType()))
+                .and(eqContactType(member.memberStyle, requestDto.getContactType()))
+                .and(eqDateStyleType(member.memberStyle, requestDto.getDateStyleType()))
+                .and(eqDateCostType(member.memberStyle, requestDto.getDateCostType()))
+                .and(eqMbtiType(member.memberStyle, requestDto.getMbti()))
+                .and(eqJustFriendType(member.memberStyle, requestDto.getJustFriendType()))
+                .and(new BooleanBuilder(memberBook.isRepresentative.eq(Boolean.TRUE)));
+
+        return queryFactory
+                .select(Projections.fields(MemberBookProfileResponse.class
+                        , member.id.as("memberId")
+                        , memberBook.book.id.as("bookId")
+                        , member.memberProfile.nickname.as("memberName")
+                        , member.memberProfile.birthDate.year().subtract(LocalDate.now().getYear() + 1).abs().as("memberAge")
+                        , member.memberProfile.gender.as("memberGender")
+                        , member.memberProfile.schoolName.as("memberSchoolName")
+                        , book.title.as("bookName")
+                        , book.imageUrl.as("bookImageUrl")
+                        , memberBook.isRepresentative.as("bookIsRepresentative"))
+                )
+                .from(member)
+                .innerJoin(memberBook).on(member.eq(memberBook.member))
+                .innerJoin(book).on(memberBook.book.eq(book))
+                .where(builder.andNot(member.id.eq(memberId)))
+                .orderBy(member.createdAt.desc())
                 .fetch();
     }
 
