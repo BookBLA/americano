@@ -145,9 +145,9 @@ public class MemberBookServiceImpl implements MemberBookService {
         if (memberBook.isNotRepresentative()) {
             quizQuestionRepository.deleteByMemberBook(memberBook);
             memberBookRepository.deleteById(memberBookId);
-        } else {
-            deleteRepresentativeBook(memberBookId, memberBook, member);
+            return;
         }
+        deleteRepresentativeBook(memberBookId, memberBook, member);
     }
 
     private void validateDeleteMemberBook(MemberBook memberBook, Member member) {
