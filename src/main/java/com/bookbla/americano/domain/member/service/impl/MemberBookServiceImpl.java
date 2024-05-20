@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.bookbla.americano.domain.member.enums.MemberStatus.COMPLETED;
 import static com.bookbla.americano.domain.member.repository.entity.MemberBook.MAX_MEMBER_BOOK_COUNT;
+import static com.bookbla.americano.domain.member.repository.entity.MemberBook.MEMBER_BOOK_REMOVABLE_COUNT;
 
 @Service
 @Transactional
@@ -139,14 +140,25 @@ public class MemberBookServiceImpl implements MemberBookService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
 
-        memberBook.validateOwner(member);
+        validateDeleteMemberBook(memberBook, member);
 
         if (memberBook.isNotRepresentative()) {
             quizQuestionRepository.deleteByMemberBook(memberBook);
             memberBookRepository.deleteById(memberBookId);
-            return;
+        } else {
+            deleteRepresentativeBook(memberBookId, memberBook, member);
         }
+    }
 
+    private void validateDeleteMemberBook(MemberBook memberBook, Member member) {
+        memberBook.validateOwner(member);
+        long memberBookCounts = memberBookRepository.countByMember(member);
+        if (memberBookCounts < MEMBER_BOOK_REMOVABLE_COUNT) {
+            throw new BaseException(MemberBookExceptionType.MIN_MEMBER_REMOVABLE_BOOK_COUNT);
+        }
+    }
+
+    private void deleteRepresentativeBook(Long memberBookId, MemberBook memberBook, Member member) {
         quizQuestionRepository.deleteByMemberBook(memberBook);
         memberBookRepository.deleteById(memberBookId);
         List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
