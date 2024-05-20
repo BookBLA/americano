@@ -1,9 +1,9 @@
 package com.bookbla.americano.domain.member.controller.dto.request;
 
-import com.bookbla.americano.domain.book.repository.entity.Book;
-
 import java.util.List;
 
+import com.bookbla.americano.domain.book.repository.entity.Book;
+import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import com.bookbla.americano.domain.quiz.repository.entity.QuizQuestion;
 import javax.validation.constraints.NotBlank;
@@ -63,6 +63,15 @@ public class MemberBookCreateRequest {
                 .firstChoice(quizAnswer)
                 .secondChoice(firstWrongChoice)
                 .thirdChoice(secondWrongChoice)
+                .build();
+    }
+
+    public MemberBook toMemberBook(Book book, Member member) {
+        return MemberBook.builder()
+                .book(book)
+                .isRepresentative(isRepresentative)
+                .review(review)
+                .member(member)
                 .build();
     }
 }

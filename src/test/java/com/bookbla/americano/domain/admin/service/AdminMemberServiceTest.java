@@ -29,7 +29,7 @@ import org.springframework.data.domain.PageRequest;
 import static com.bookbla.americano.domain.member.enums.Gender.MALE;
 import static com.bookbla.americano.domain.member.enums.MemberStatus.APPROVAL;
 import static com.bookbla.americano.domain.member.enums.MemberStatus.COMPLETED;
-import static com.bookbla.americano.domain.member.enums.MemberStatus.STYLE_BOOK;
+import static com.bookbla.americano.domain.member.enums.MemberStatus.STYLE;
 import static com.bookbla.americano.domain.member.enums.MemberType.ADMIN;
 import static com.bookbla.americano.domain.member.enums.MemberType.KAKAO;
 import static com.bookbla.americano.domain.member.enums.MemberVerifyStatus.PENDING;
@@ -76,7 +76,7 @@ class AdminMemberServiceTest {
 
         Member member2 = Member.builder()
                 .memberType(KAKAO)
-                .memberStatus(STYLE_BOOK)
+                .memberStatus(STYLE)
                 .oauthEmail("bookbla@bookbla.com")
                 .memberProfile(MemberProfile.builder().birthDate(LocalDate.of(1999, 3, 3)).phoneNumber("01012345678").gender(MALE).schoolName("가천대").name("이준희").build())
                 .build();

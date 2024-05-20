@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.bookbla.americano.domain.member.enums.MemberStatus.COMPLETED;
 import static com.bookbla.americano.domain.member.repository.entity.MemberBook.MAX_MEMBER_BOOK_COUNT;
 
 @Service
@@ -40,21 +41,19 @@ public class MemberBookServiceImpl implements MemberBookService {
     private final QuizQuestionRepository quizQuestionRepository;
 
     @Override
-    public MemberBookCreateResponse addMemberBook(Long memberId, MemberBookCreateRequest memberBookCreateRequest) {
+    public MemberBookCreateResponse addMemberBook(Long memberId, MemberBookCreateRequest request) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        Book book = bookRepository.findByIsbn(memberBookCreateRequest.getIsbn())
-                .orElseGet(() -> bookRepository.save(memberBookCreateRequest.toBook()));
+        Book book = bookRepository.findByIsbn(request.getIsbn())
+                .orElseGet(() -> bookRepository.save(request.toBook()));
 
         validateAddMemberBook(member, book);
 
-        MemberBook memberBook = MemberBook.builder()
-                .book(book)
-                .isRepresentative(memberBookCreateRequest.getIsRepresentative())
-                .review(memberBookCreateRequest.getReview())
-                .member(member)
-                .build();
-        MemberBook savedMemberBook = memberBookRepository.save(memberBook);
-        QuizQuestion savedQuizQuestion = quizQuestionRepository.save(memberBookCreateRequest.toQuizQuestion(savedMemberBook));
+        MemberBook savedMemberBook = memberBookRepository.save(request.toMemberBook(book, member));
+        QuizQuestion savedQuizQuestion = quizQuestionRepository.save(request.toQuizQuestion(savedMemberBook));
+
+        if (request.getIsRepresentative()) {
+            member.updateMemberStatus(COMPLETED);
+        }
         return MemberBookCreateResponse.from(savedMemberBook, savedQuizQuestion);
     }
 
