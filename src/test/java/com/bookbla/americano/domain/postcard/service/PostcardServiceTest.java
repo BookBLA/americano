@@ -63,7 +63,7 @@ class PostcardServiceTest {
         PostcardSendValidateResponse response = postcardService.validateSendPostcard(sendMember.getId(), reciveMember.getId());
 
         // then
-        assertThat(response.isRefused()).isFalse();
+        assertThat(response.getIsRefused()).isFalse();
     }
 
     @Test
@@ -82,6 +82,6 @@ class PostcardServiceTest {
         PostcardSendValidateResponse response = postcardService.validateSendPostcard(sendMember.getId(), reciveMember.getId());
 
         // then
-        assertThat(response.isRefused()).isTrue();
+        assertThat(response.getIsRefused()).isTrue();
     }
 }

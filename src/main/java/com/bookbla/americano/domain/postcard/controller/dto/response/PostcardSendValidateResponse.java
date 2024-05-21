@@ -1,10 +1,8 @@
 package com.bookbla.americano.domain.postcard.controller.dto.response;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-@Getter
 public class PostcardSendValidateResponse {
 
     private final boolean isRefused;
@@ -13,4 +11,7 @@ public class PostcardSendValidateResponse {
         return new PostcardSendValidateResponse(isRefused);
     }
 
+    public boolean getIsRefused() {
+        return isRefused;
+    }
 }
