@@ -7,6 +7,7 @@ import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSen
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.PostcardRepository;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -83,5 +84,11 @@ class PostcardServiceTest {
 
         // then
         assertThat(response.getIsRefused()).isTrue();
+    }
+
+    @AfterEach
+    void tearDown() {
+        postcardRepository.deleteAll();
+        memberRepository.deleteAll();
     }
 }
