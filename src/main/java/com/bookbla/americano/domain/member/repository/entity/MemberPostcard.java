@@ -65,7 +65,7 @@ public class MemberPostcard extends BaseUpdateEntity {
     }
 
     private void validatePayPostcardCount() {
-        if (freePostcardCount <= 0) {
+        if (payPostcardCount <= 0) {
             throw new BaseException(PostcardExceptionType.POSTCARD_TYPE_NOT_VALID);
         }
     }
