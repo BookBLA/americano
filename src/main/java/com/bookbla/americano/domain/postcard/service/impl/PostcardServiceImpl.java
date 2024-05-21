@@ -62,13 +62,16 @@ public class PostcardServiceImpl implements PostcardService {
     private final MemberBookService memberBookService;
 
     @Override
-    public SendPostcardResponse send(Long memberId, SendPostcardRequest sendPostcardRequest) {
-        MemberAsk memberAsk = memberAskRepository.findById(sendPostcardRequest.getMemberAskId())
+    public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
+        List<Postcard> sentPostcards = postcardRepository.findBySendMemberIdAndReceiveMemberId(memberId, request.getReceiveMemberId());
+        sentPostcards.forEach(Postcard::validateSendPostcard);
+
+        MemberAsk memberAsk = memberAskRepository.findById(request.getMemberAskId())
                 .orElseThrow(() -> new BaseException(MemberAskExceptionType.NOT_REGISTERED_MEMBER));
 
         MemberReply memberReply = MemberReply.builder()
                 .memberAsk(memberAsk)
-                .content(sendPostcardRequest.getMemberReply())
+                .content(request.getMemberReply())
                 .build();
         memberReplyRepository.save(memberReply);
 
@@ -112,9 +115,8 @@ public class PostcardServiceImpl implements PostcardService {
                 .receiveMember(targetMember)
                 .postcardStatus(status)
                 .memberReply(memberReply)
-                .postcardType(postcardTypeRepository.findById(sendPostcardRequest.getPostcardTypeId())
-                        .orElseThrow(() -> new BaseException(PostcardExceptionType.POSTCARD_TYPE_NOT_VALID)))
-                .imageUrl(sendPostcardRequest.getImageUrl())
+                .postcardType(postcardTypeRepository.getById(request.getPostcardTypeId()))
+                .imageUrl(request.getImageUrl())
                 .build();
         postcardRepository.save(postcard);
 
