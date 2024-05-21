@@ -1,5 +1,10 @@
 package com.bookbla.americano.domain.postcard.enums;
 
 public enum PostcardStatus {
-    PENDING, ACCEPT, REFUSED, EXPIRED, ALL_WRONG
+
+    PENDING, ACCEPT, REFUSED, ALL_WRONG;
+
+    public boolean isRefused() {
+        return this == REFUSED;
+    }
 }
