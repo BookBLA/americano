@@ -84,9 +84,7 @@ public class PostcardServiceImpl implements PostcardService {
         List<QuizReply> correctReplies = new ArrayList<>();
         boolean isCorrect = false;
         for (SendPostcardRequest.QuizAnswer quizAnswer : request.getQuizAnswerList()) {
-            QuizQuestion quizQuestion = quizQuestionRepository.findById(quizAnswer.getQuizId())
-                    .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
-
+            QuizQuestion quizQuestion = quizQuestionRepository.getByIdOrThrow(quizAnswer.getQuizId());
             CorrectStatus status = quizQuestion.solve(quizAnswer.getQuizAnswer());
 
             QuizReply quizReply = QuizReply.builder()
@@ -106,7 +104,7 @@ public class PostcardServiceImpl implements PostcardService {
 
         memberPostcard.use(payType);
 
-        PostcardType postCardType = postcardTypeRepository.getById(request.getPostcardTypeId());
+        PostcardType postCardType = postcardTypeRepository.getByIdOrThrow(request.getPostcardTypeId());
         Postcard postcard = Postcard.builder()
                 .sendMember(member)
                 .receiveMember(targetMember)

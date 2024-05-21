@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PostcardTypeRepository extends JpaRepository<PostcardType, Long> {
 
-    default PostcardType getById(Long postCardTypeId) {
+    default PostcardType getByIdOrThrow(Long postCardTypeId) {
         return findById(postCardTypeId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.POSTCARD_TYPE_NOT_VALID));
     }
