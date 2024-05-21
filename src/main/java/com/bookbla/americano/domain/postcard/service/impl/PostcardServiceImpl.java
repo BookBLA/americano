@@ -87,7 +87,8 @@ public class PostcardServiceImpl implements PostcardService {
             QuizQuestion quizQuestion = quizQuestionRepository.findById(quizAnswer.getQuizId())
                     .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
 
-            CorrectStatus status = quizQuestion.getFirstChoice().equals(quizAnswer.getQuizAnswer()) ? CorrectStatus.CORRECT : CorrectStatus.WRONG;
+            CorrectStatus status = quizQuestion.solve(quizAnswer.getQuizAnswer());
+
             QuizReply quizReply = QuizReply.builder()
                     .quizQuestion(quizQuestion)
                     .answer(quizAnswer.getQuizAnswer())

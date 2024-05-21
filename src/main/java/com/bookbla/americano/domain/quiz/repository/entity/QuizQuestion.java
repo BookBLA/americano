@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.quiz.repository.entity;
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import com.bookbla.americano.domain.quiz.enums.AnswerChoice;
+import com.bookbla.americano.domain.quiz.enums.CorrectStatus;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -60,5 +61,10 @@ public class QuizQuestion extends BaseInsertEntity {
     public QuizQuestion updateSecondWrongAnswer(String secondWrongAnswer) {
         this.thirdChoice = secondWrongAnswer;
         return this;
+    }
+
+    public CorrectStatus solve(String answer) {
+        return answer.equals(firstChoice)
+                ? CorrectStatus.CORRECT : CorrectStatus.WRONG;
     }
 }
