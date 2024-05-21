@@ -5,9 +5,11 @@ import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.service.MemberPostcardService;
 import com.bookbla.americano.domain.postcard.controller.dto.request.PostcardStatusUpdateRequest;
+import com.bookbla.americano.domain.postcard.controller.dto.request.PostcardSendValidationRequest;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardFromResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardToResponse;
+import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
 import com.bookbla.americano.domain.postcard.enums.PostcardPayType;
 import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
 import com.bookbla.americano.domain.postcard.service.PostcardService;
@@ -80,6 +82,15 @@ public class PostcardController {
         Long memberId = loginUser.getMemberId();
         SendPostcardResponse sendSearchResponses = postcardService.send(memberId, sendPostcardRequest);
         return ResponseEntity.ok(sendSearchResponses);
+    }
+
+    @PostMapping("/send/validation")
+    public ResponseEntity<PostcardSendValidateResponse> sendPostcard(
+            @Parameter(hidden = true) @User LoginUser loginUser,
+            @RequestBody PostcardSendValidationRequest request
+    ) {
+        PostcardSendValidateResponse response = postcardService.validateSendPostcard(loginUser.getMemberId(), request.getTargetMemberId());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/type-list")
