@@ -110,13 +110,14 @@ public class PostcardServiceImpl implements PostcardService {
         PostcardStatus status = isCorrect ? PostcardStatus.PENDING : PostcardStatus.ALL_WRONG;
 
         memberPostcard.updateFreePostcardCount(memberPostcard.getFreePostcardCount() - 1);
+        PostcardType postCardType = postcardTypeRepository.getById(request.getPostcardTypeId());
         Postcard postcard = Postcard.builder()
                 .sendMember(member)
                 .receiveMember(targetMember)
                 .postcardStatus(status)
                 .memberReply(memberReply)
-                .postcardType(postcardTypeRepository.getById(request.getPostcardTypeId()))
-                .imageUrl(request.getImageUrl())
+                .postcardType(postCardType)
+                .imageUrl(postCardType.getImageUrl())
                 .build();
         postcardRepository.save(postcard);
 

@@ -21,9 +21,6 @@ public class SendPostcardRequest {
     @NotNull(message = "postcardTypeId가 입력되지 않았습니다.")
     private Long postcardTypeId;
 
-    @NotNull(message = "imageUrl이 입력되지 않았습니다.")
-    private String imageUrl;
-
     @NotBlank(message = "엽서를 보낼 상대방의 식별자가 입력되지 않았습니다")
     private Long receiveMemberId;
 
