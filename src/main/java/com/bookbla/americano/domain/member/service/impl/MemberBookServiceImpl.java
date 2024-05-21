@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.service.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.book.repository.BookRepository;
@@ -143,11 +144,10 @@ public class MemberBookServiceImpl implements MemberBookService {
         validateDeleteMemberBook(memberBook, member);
 
         if (memberBook.isNotRepresentative()) {
-            quizQuestionRepository.deleteByMemberBook(memberBook);
             memberBookRepository.deleteById(memberBookId);
             return;
         }
-        deleteRepresentativeBook(memberBookId, memberBook, member);
+        deleteRepresentativeBook(memberBookId, member);
     }
 
     private void validateDeleteMemberBook(MemberBook memberBook, Member member) {
@@ -158,8 +158,7 @@ public class MemberBookServiceImpl implements MemberBookService {
         }
     }
 
-    private void deleteRepresentativeBook(Long memberBookId, MemberBook memberBook, Member member) {
-        quizQuestionRepository.deleteByMemberBook(memberBook);
+    private void deleteRepresentativeBook(Long memberBookId, Member member) {
         memberBookRepository.deleteById(memberBookId);
         List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
         if (!memberBooks.isEmpty()) {

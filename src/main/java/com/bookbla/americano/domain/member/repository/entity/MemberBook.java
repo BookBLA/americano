@@ -4,12 +4,6 @@ import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.book.repository.entity.Book;
 import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -17,12 +11,21 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "update member_book set is_deleted = true where id = ?")
+@Where(clause = "is_deleted = false")
 public class MemberBook extends BaseInsertEntity {
 
     public static final int MEMBER_BOOK_REMOVABLE_COUNT = 2;
@@ -45,6 +48,9 @@ public class MemberBook extends BaseInsertEntity {
 
     @Builder.Default
     private boolean isRepresentative = false;
+
+    @Builder.Default
+    private boolean isDeleted = false;
 
     public void validateOwner(Member other) {
         if (!this.member.equals(other)) {
