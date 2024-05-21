@@ -220,7 +220,8 @@ public class PostcardServiceImpl implements PostcardService {
     }
 
     @Override
-    public void useMemberPostcard(Long memberId, PostcardPayType type) {
+    public void useMemberPostcard(Long memberId, String payType) {
+        PostcardPayType type = PostcardPayType.from(payType);
         if (type == PostcardPayType.FREE)
             postcardRepository.useMemberFreePostcard(memberId);
         else if (type == PostcardPayType.PAY)
