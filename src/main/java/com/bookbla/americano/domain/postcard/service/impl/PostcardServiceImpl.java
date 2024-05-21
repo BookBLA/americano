@@ -18,9 +18,9 @@ import com.bookbla.americano.domain.memberask.repository.entity.MemberReply;
 import com.bookbla.americano.domain.postcard.controller.dto.request.PostcardStatusUpdateRequest;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardFromResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardToResponse;
+import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
 import com.bookbla.americano.domain.postcard.enums.PostcardPayType;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
-import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
 import com.bookbla.americano.domain.postcard.repository.PostcardRepository;
 import com.bookbla.americano.domain.postcard.repository.PostcardTypeRepository;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
@@ -86,7 +86,7 @@ public class PostcardServiceImpl implements PostcardService {
                 .orElseThrow(() -> new BaseException(MemberAuthExceptionType.MEMBER_AUTH_NOT_FOUND));
 
         boolean isCorrect = false;
-        for (SendPostcardRequest.QuizAnswer quizAnswer : sendPostcardRequest.getQuizAnswerList()) {
+        for (SendPostcardRequest.QuizAnswer quizAnswer : request.getQuizAnswerList()) {
             QuizQuestion quizQuestion = quizQuestionRepository.findById(quizAnswer.getQuizId())
                     .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
 
@@ -228,5 +228,17 @@ public class PostcardServiceImpl implements PostcardService {
     @Override
     public void updatePostcardStatus(Long postcardId, PostcardStatusUpdateRequest request) {
         postcardRepository.updatePostcardStatus(request.getStatus(), postcardId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PostcardSendValidateResponse validateSendPostcard(Long sendMemberId, Long targetMemberId) {
+        List<Postcard> sendPostcards = postcardRepository.findBySendMemberIdAndReceiveMemberId(sendMemberId, targetMemberId);
+        sendPostcards.forEach(Postcard::validateSendPostcard);
+
+        return PostcardSendValidateResponse.from(
+                sendPostcards.stream()
+                        .anyMatch(Postcard::isRefused)
+        );
     }
 }
