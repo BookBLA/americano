@@ -1,6 +1,9 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseUpdateEntity;
+import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.postcard.enums.PostcardPayType;
+import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,8 +41,32 @@ public class MemberPostcard extends BaseUpdateEntity {
     @Builder.Default
     private int freePostcardCount = 1;
 
-    public MemberPostcard updateFreePostcardCount(int freePostcardCount) {
-        this.freePostcardCount = freePostcardCount;
-        return this;
+    public void use(PostcardPayType payType) {
+        validate(payType);
+        if (payType == PostcardPayType.FREE) {
+            freePostcardCount -= 1;
+        } else {
+            payPostcardCount -= 1;
+        }
+    }
+
+    public void validate(PostcardPayType payType) {
+        if (payType == PostcardPayType.FREE) {
+            validateFreePostcardCount();
+        } else {
+            validatePayPostcardCount();
+        }
+    }
+
+    private void validateFreePostcardCount() {
+        if (freePostcardCount <= 0) {
+            throw new BaseException(PostcardExceptionType.POSTCARD_TYPE_NOT_VALID);
+        }
+    }
+
+    private void validatePayPostcardCount() {
+        if (freePostcardCount <= 0) {
+            throw new BaseException(PostcardExceptionType.POSTCARD_TYPE_NOT_VALID);
+        }
     }
 }
