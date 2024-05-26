@@ -1,9 +1,11 @@
 package com.bookbla.americano.domain.postcard.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.memberask.repository.entity.MemberReply;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
+import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +22,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+
+import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.PENDING;
+import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.ACCEPT;
+import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.ALL_WRONG;
 
 @Entity
 @Getter
@@ -53,4 +59,19 @@ public class Postcard extends BaseInsertEntity {
     @Enumerated(EnumType.STRING)
     private PostcardStatus postcardStatus;
 
+    public void validateSendPostcard() {
+        if (postcardStatus == PENDING) {
+            throw new BaseException(PostcardExceptionType.PENDING_POSTCARD_EXISTS);
+        }
+        if (postcardStatus == ACCEPT) {
+            throw new BaseException(PostcardExceptionType.ACCEPTED_POSTCARD_EXISTS);
+        }
+        if (postcardStatus == ALL_WRONG) {
+            throw new BaseException(PostcardExceptionType.ALL_WRONG_POSTCARD_EXISTS);
+        }
+    }
+
+    public boolean isRefused() {
+        return postcardStatus.isRefused();
+    }
 }

@@ -1,5 +1,7 @@
 package com.bookbla.americano.domain.postcard.repository;
 
+import java.util.List;
+
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.custom.PostcardRepositoryCustom;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
@@ -9,6 +11,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 public interface PostcardRepository extends JpaRepository<Postcard, Long>, PostcardRepositoryCustom {
+
     boolean existsBySendMemberIdAndReceiveMemberIdAndPostcardStatus(Long sendMemberId, Long receiveMemberId, PostcardStatus status);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
@@ -22,4 +25,6 @@ public interface PostcardRepository extends JpaRepository<Postcard, Long>, Postc
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("update Postcard p set p.postcardStatus = :status where p.id = :postcardId")
     void updatePostcardStatus(@Param("status") PostcardStatus status, @Param("postcardId") Long postcardId);
+
+    List<Postcard> findBySendMemberIdAndReceiveMemberId(@Param("sendMemberId") Long sendMemberId, @Param("receiveMemberId") Long receiveMemberId);
 }

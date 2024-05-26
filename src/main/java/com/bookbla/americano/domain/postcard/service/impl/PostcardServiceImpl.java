@@ -3,7 +3,6 @@ package com.bookbla.americano.domain.postcard.service.impl;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
-import com.bookbla.americano.domain.member.exception.MemberAuthExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberPostcardRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
@@ -18,9 +17,9 @@ import com.bookbla.americano.domain.memberask.repository.entity.MemberReply;
 import com.bookbla.americano.domain.postcard.controller.dto.request.PostcardStatusUpdateRequest;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardFromResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardToResponse;
+import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
 import com.bookbla.americano.domain.postcard.enums.PostcardPayType;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
-import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
 import com.bookbla.americano.domain.postcard.repository.PostcardRepository;
 import com.bookbla.americano.domain.postcard.repository.PostcardTypeRepository;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
@@ -62,35 +61,32 @@ public class PostcardServiceImpl implements PostcardService {
     private final MemberBookService memberBookService;
 
     @Override
-    public SendPostcardResponse send(Long memberId, SendPostcardRequest sendPostcardRequest) {
-        MemberAsk memberAsk = memberAskRepository.findById(sendPostcardRequest.getMemberAskId())
-                .orElseThrow(() -> new BaseException(MemberAskExceptionType.NOT_REGISTERED_MEMBER));
+    public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
+        MemberPostcard memberPostcard = memberPostcardRepository.findMemberPostcardByMemberId(memberId)
+                .orElseThrow(() -> new BaseException(MemberExceptionType.EMPTY_MEMBER_POSTCARD_INFO));
+        PostcardPayType payType = PostcardPayType.from(request.getPostcardPayType());
+        memberPostcard.validate(payType);
 
+        List<Postcard> sentPostcards = postcardRepository.findBySendMemberIdAndReceiveMemberId(memberId, request.getReceiveMemberId());
+        sentPostcards.forEach(Postcard::validateSendPostcard);
+
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        Member targetMember = memberRepository.getByIdOrThrow(request.getReceiveMemberId());
+
+        MemberAsk memberAsk = memberAskRepository.findByMember(member)
+                .orElseThrow(() -> new BaseException(MemberAskExceptionType.NOT_REGISTERED_MEMBER));
         MemberReply memberReply = MemberReply.builder()
                 .memberAsk(memberAsk)
-                .content(sendPostcardRequest.getMemberReply())
+                .content(request.getMemberReply())
                 .build();
         memberReplyRepository.save(memberReply);
 
         List<QuizReply> correctReplies = new ArrayList<>();
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BaseException(MemberAuthExceptionType.MEMBER_AUTH_NOT_FOUND));
-        MemberPostcard memberPostcard = memberPostcardRepository.findMemberPostcardByMemberId(memberId)
-                .orElseThrow(() -> new BaseException(MemberExceptionType.EMPTY_MEMBER_POSTCARD_INFO));
-
-        if (memberPostcard.getFreePostcardCount() + memberPostcard.getPayPostcardCount() == 0) {
-            return SendPostcardResponse.builder().isSendSuccess(false).build();
-        }
-
-        Member targetMember = memberRepository.findById(memberAsk.getMember().getId())
-                .orElseThrow(() -> new BaseException(MemberAuthExceptionType.MEMBER_AUTH_NOT_FOUND));
-
         boolean isCorrect = false;
-        for (SendPostcardRequest.QuizAnswer quizAnswer : sendPostcardRequest.getQuizAnswerList()) {
-            QuizQuestion quizQuestion = quizQuestionRepository.findById(quizAnswer.getQuizId())
-                    .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
+        for (SendPostcardRequest.QuizAnswer quizAnswer : request.getQuizAnswerList()) {
+            QuizQuestion quizQuestion = quizQuestionRepository.getByIdOrThrow(quizAnswer.getQuizId());
+            CorrectStatus status = quizQuestion.solve(quizAnswer.getQuizAnswer());
 
-            CorrectStatus status = quizQuestion.getFirstChoice().equals(quizAnswer.getQuizAnswer()) ? CorrectStatus.CORRECT : CorrectStatus.WRONG;
             QuizReply quizReply = QuizReply.builder()
                     .quizQuestion(quizQuestion)
                     .answer(quizAnswer.getQuizAnswer())
@@ -106,15 +102,16 @@ public class PostcardServiceImpl implements PostcardService {
 
         PostcardStatus status = isCorrect ? PostcardStatus.PENDING : PostcardStatus.ALL_WRONG;
 
-        memberPostcard.updateFreePostcardCount(memberPostcard.getFreePostcardCount() - 1);
+        memberPostcard.use(payType);
+
+        PostcardType postCardType = postcardTypeRepository.getByIdOrThrow(request.getPostcardTypeId());
         Postcard postcard = Postcard.builder()
                 .sendMember(member)
                 .receiveMember(targetMember)
                 .postcardStatus(status)
                 .memberReply(memberReply)
-                .postcardType(postcardTypeRepository.findById(sendPostcardRequest.getPostcardTypeId())
-                        .orElseThrow(() -> new BaseException(PostcardExceptionType.POSTCARD_TYPE_NOT_VALID)))
-                .imageUrl(sendPostcardRequest.getImageUrl())
+                .postcardType(postCardType)
+                .imageUrl(postCardType.getImageUrl())
                 .build();
         postcardRepository.save(postcard);
 
@@ -218,7 +215,8 @@ public class PostcardServiceImpl implements PostcardService {
     }
 
     @Override
-    public void useMemberPostcard(Long memberId, PostcardPayType type) {
+    public void useMemberPostcard(Long memberId, String payType) {
+        PostcardPayType type = PostcardPayType.from(payType);
         if (type == PostcardPayType.FREE)
             postcardRepository.useMemberFreePostcard(memberId);
         else if (type == PostcardPayType.PAY)
@@ -228,5 +226,17 @@ public class PostcardServiceImpl implements PostcardService {
     @Override
     public void updatePostcardStatus(Long postcardId, PostcardStatusUpdateRequest request) {
         postcardRepository.updatePostcardStatus(request.getStatus(), postcardId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PostcardSendValidateResponse validateSendPostcard(Long sendMemberId, Long targetMemberId) {
+        List<Postcard> sendPostcards = postcardRepository.findBySendMemberIdAndReceiveMemberId(sendMemberId, targetMemberId);
+        sendPostcards.forEach(Postcard::validateSendPostcard);
+
+        return PostcardSendValidateResponse.from(
+                sendPostcards.stream()
+                        .anyMatch(Postcard::isRefused)
+        );
     }
 }

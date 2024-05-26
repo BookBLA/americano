@@ -1,15 +1,15 @@
 package com.bookbla.americano.domain.postcard.service.dto.request;
 
-import com.bookbla.americano.domain.quiz.repository.entity.QuizReply;
+import java.util.List;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -22,20 +22,23 @@ public class SendPostcardRequest {
     @NotNull(message = "postcardTypeId가 입력되지 않았습니다.")
     private Long postcardTypeId;
 
-    @NotNull(message = "imageUrl이 입력되지 않았습니다.")
-    private String imageUrl;
+    @NotBlank(message = "엽서를 보낼 상대방의 식별자가 입력되지 않았습니다")
+    private Long receiveMemberId;
 
-    @NotNull(message = "memberAskId가 입력되지 않았습니다.")
     private Long memberAskId;
 
     @NotNull(message = "memberReply가 입력되지 않았습니다.")
     @Size(max = 150)
     private String memberReply;
 
+    @Schema(description = "엽서의 유료/무료 타입", example = "Free/Pay")
+    private String postcardPayType;
+
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
     public static class QuizAnswer {
+
         private Long quizId;
         private String quizAnswer;
     }

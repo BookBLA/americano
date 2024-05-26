@@ -5,9 +5,11 @@ import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.service.MemberPostcardService;
 import com.bookbla.americano.domain.postcard.controller.dto.request.PostcardStatusUpdateRequest;
+import com.bookbla.americano.domain.postcard.controller.dto.request.PostcardSendValidationRequest;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardFromResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardToResponse;
+import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
 import com.bookbla.americano.domain.postcard.enums.PostcardPayType;
 import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
 import com.bookbla.americano.domain.postcard.service.PostcardService;
@@ -57,13 +59,7 @@ public class PostcardController {
     @Operation(summary = "엽서 사용", description = "{payType}에 따라 무료 엽서 또는 유료 엽서 1개 사용. payType : FREE / PAY")
     @PatchMapping("/{payType}")
     public void usePostcard(@Parameter(hidden = true) @User LoginUser loginUser, @PathVariable String payType) {
-        try{
-            PostcardPayType postcardPayType = PostcardPayType.valueOf(payType.toUpperCase());
-            postcardService.useMemberPostcard(loginUser.getMemberId(), postcardPayType);
-        } catch (IllegalArgumentException e){
-            throw new BaseException(PostcardExceptionType.INVALID_PAY_TYPE);
-        }
-
+        postcardService.useMemberPostcard(loginUser.getMemberId(), payType);
     }
 
     @Operation(summary = "Postcard 상태 업데이트", description = "{postcardId}를 가진 엽서의 상태 업데이트. Body의 status 값으로 해당 엽서의 상태(PostcardStatus)를 변경함.")
@@ -80,6 +76,15 @@ public class PostcardController {
         Long memberId = loginUser.getMemberId();
         SendPostcardResponse sendSearchResponses = postcardService.send(memberId, sendPostcardRequest);
         return ResponseEntity.ok(sendSearchResponses);
+    }
+
+    @PostMapping("/send/validation")
+    public ResponseEntity<PostcardSendValidateResponse> sendPostcard(
+            @Parameter(hidden = true) @User LoginUser loginUser,
+            @RequestBody PostcardSendValidationRequest request
+    ) {
+        PostcardSendValidateResponse response = postcardService.validateSendPostcard(loginUser.getMemberId(), request.getTargetMemberId());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/type-list")
