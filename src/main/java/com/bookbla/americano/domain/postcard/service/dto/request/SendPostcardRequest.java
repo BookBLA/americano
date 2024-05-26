@@ -1,9 +1,7 @@
 package com.bookbla.americano.domain.postcard.service.dto.request;
 
-import java.util.List;
-
 import io.swagger.v3.oas.annotations.media.Schema;
-import javax.validation.constraints.NotBlank;
+import java.util.List;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AccessLevel;
@@ -22,7 +20,7 @@ public class SendPostcardRequest {
     @NotNull(message = "postcardTypeId가 입력되지 않았습니다.")
     private Long postcardTypeId;
 
-    @NotBlank(message = "엽서를 보낼 상대방의 식별자가 입력되지 않았습니다")
+    @NotNull(message = "엽서를 보낼 상대방의 식별자가 입력되지 않았습니다")
     private Long receiveMemberId;
 
     private Long memberAskId;
