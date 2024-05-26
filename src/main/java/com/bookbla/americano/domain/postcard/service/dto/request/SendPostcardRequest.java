@@ -1,7 +1,7 @@
 package com.bookbla.americano.domain.postcard.service.dto.request;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AccessLevel;
@@ -23,14 +23,9 @@ public class SendPostcardRequest {
     @NotNull(message = "엽서를 보낼 상대방의 식별자가 입력되지 않았습니다")
     private Long receiveMemberId;
 
-    private Long memberAskId;
-
     @NotNull(message = "memberReply가 입력되지 않았습니다.")
     @Size(max = 150)
     private String memberReply;
-
-    @Schema(description = "엽서의 유료/무료 타입", example = "Free/Pay")
-    private String postcardPayType;
 
     @Getter
     @AllArgsConstructor

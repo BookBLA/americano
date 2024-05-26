@@ -64,8 +64,7 @@ public class PostcardServiceImpl implements PostcardService {
     public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
         MemberPostcard memberPostcard = memberPostcardRepository.findMemberPostcardByMemberId(memberId)
                 .orElseThrow(() -> new BaseException(MemberExceptionType.EMPTY_MEMBER_POSTCARD_INFO));
-        PostcardPayType payType = PostcardPayType.from(request.getPostcardPayType());
-        memberPostcard.validate(payType);
+        memberPostcard.validate();
 
         List<Postcard> sentPostcards = postcardRepository.findBySendMemberIdAndReceiveMemberId(memberId, request.getReceiveMemberId());
         sentPostcards.forEach(Postcard::validateSendPostcard);
@@ -102,7 +101,7 @@ public class PostcardServiceImpl implements PostcardService {
 
         PostcardStatus status = isCorrect ? PostcardStatus.PENDING : PostcardStatus.ALL_WRONG;
 
-        memberPostcard.use(payType);
+        memberPostcard.use();
 
         PostcardType postCardType = postcardTypeRepository.getByIdOrThrow(request.getPostcardTypeId());
         Postcard postcard = Postcard.builder()
