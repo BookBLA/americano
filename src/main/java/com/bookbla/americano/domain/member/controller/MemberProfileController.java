@@ -11,6 +11,7 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberProfile
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
 import io.swagger.v3.oas.annotations.Parameter;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,8 +22,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-
 @RestController
 @RequestMapping
 @RequiredArgsConstructor
@@ -32,48 +31,48 @@ public class MemberProfileController {
 
     @PostMapping("/member-profiles")
     public ResponseEntity<MemberProfileResponse> createMemberProfile(
-        @Parameter(hidden = true) @User LoginUser loginUser,
-        @RequestBody @Valid MemberProfileCreateRequest memberProfileCreateRequest) {
+            @Parameter(hidden = true) @User LoginUser loginUser,
+            @RequestBody @Valid MemberProfileCreateRequest memberProfileCreateRequest) {
         MemberProfileResponse memberProfileResponse = memberProfileService.createMemberProfile(
-            loginUser.getMemberId(), memberProfileCreateRequest.toMemberProfileDto());
+                loginUser.getMemberId(), memberProfileCreateRequest.toMemberProfileDto());
 
         return ResponseEntity.ok(memberProfileResponse);
     }
 
     @GetMapping("/member-profiles")
     public ResponseEntity<MemberProfileResponse> readMemberProfile(
-        @Parameter(hidden = true) @User LoginUser loginUser) {
+            @Parameter(hidden = true) @User LoginUser loginUser) {
         MemberProfileResponse memberProfileResponse = memberProfileService.readMemberProfile(
-            loginUser.getMemberId());
+                loginUser.getMemberId());
         return ResponseEntity.ok(memberProfileResponse);
     }
 
     @PutMapping("/member-profiles")
     public ResponseEntity<MemberProfileResponse> updateMemberProfile(
-        @Parameter(hidden = true) @User LoginUser loginUser,
-        @RequestBody @Valid MemberProfileUpdateRequest memberProfileUpdateRequest
+            @Parameter(hidden = true) @User LoginUser loginUser,
+            @RequestBody @Valid MemberProfileUpdateRequest memberProfileUpdateRequest
     ) {
         MemberProfileResponse memberProfileResponse = memberProfileService.updateMemberProfile(
-            loginUser.getMemberId(), memberProfileUpdateRequest);
+                loginUser.getMemberId(), memberProfileUpdateRequest);
         return ResponseEntity.ok(memberProfileResponse);
     }
 
     @GetMapping("/member-profiles/statuses")
     public ResponseEntity<MemberProfileStatusResponse> readMemberProfileStatus(
-        @Parameter(hidden = true) @User LoginUser loginUser) {
+            @Parameter(hidden = true) @User LoginUser loginUser) {
         MemberProfileStatusResponse memberProfileStatusResponse = memberProfileService.readMemberProfileStatus(
-            loginUser.getMemberId());
+                loginUser.getMemberId());
 
         return ResponseEntity.ok(memberProfileStatusResponse);
     }
 
     @PatchMapping("/member-profiles/statuses")
     public ResponseEntity<MemberProfileStatusResponse> updateMemberProfileStatus(
-        @Parameter(hidden = true) @User LoginUser loginUser,
-        @RequestBody @Valid MemberProfileStatusUpdateRequest memberProfileStatusUpdateRequest
+            @Parameter(hidden = true) @User LoginUser loginUser,
+            @RequestBody @Valid MemberProfileStatusUpdateRequest memberProfileStatusUpdateRequest
     ) {
         MemberProfileStatusResponse memberProfileStatusResponse = memberProfileService.updateMemberProfileStatus(
-            loginUser.getMemberId(), memberProfileStatusUpdateRequest.toDto());
+                loginUser.getMemberId(), memberProfileStatusUpdateRequest.toDto());
 
         return ResponseEntity.ok(memberProfileStatusResponse);
     }

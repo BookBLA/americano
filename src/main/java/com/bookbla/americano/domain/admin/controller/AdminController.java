@@ -72,7 +72,7 @@ public class AdminController {
     }
 
     @Operation(summary = "프로필 이미지 승인 대기 회원 조회 API")
-    @GetMapping("/members/pending/image")
+    @GetMapping("/members/pending/profile-image")
     public ResponseEntity<AdminMemberProfileImageResponses> readProfileImagePendingMembers(Pageable pageable) {
         PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());
         AdminMemberProfileImageResponses adminMemberProfileImageResponses = adminMemberService.readProfileImagePendingMembers(pageRequest);
@@ -80,7 +80,7 @@ public class AdminController {
     }
 
     @Operation(summary = "프로필 이미지 상태 변경 API")
-    @PatchMapping("/member-verifies/{memberVerifyId}/pending/image")
+    @PatchMapping("/member-verifies/{memberVerifyId}/pending/profile-image")
     public ResponseEntity<Void> updateProfileImagePendingMemberStatus(
             @PathVariable Long memberVerifyId,
             @RequestBody @Valid AdminMemberProfileImageStatusUpdateRequest request
