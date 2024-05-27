@@ -41,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class MemberProfileServiceImpl implements MemberProfileService {
 
@@ -49,10 +50,8 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     private final MemberVerifyRepository memberVerifyRepository;
 
     @Override
-    @Transactional
     public MemberProfileResponse createMemberProfile(Long memberId, MemberProfileDto memberProfileDto) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-
         MemberEmail memberEmail = memberEmailRepository.findByMember(member)
                 .orElseThrow(() -> new BaseException(MemberEmailExceptionType.EMAIL_NOT_REGISTERED));
 
@@ -71,7 +70,6 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         return MemberProfileResponse.from(member, memberProfile);
     }
 
-
     @Override
     @Transactional(readOnly = true)
     public MemberProfileResponse readMemberProfile(Long memberId) {
@@ -82,28 +80,56 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     }
 
     @Override
-    @Transactional
-    public MemberProfileResponse updateMemberProfile(Long memberId,
-                                                     MemberProfileUpdateRequest memberProfileUpdateRequest) {
-
+    public MemberProfileResponse updateMemberProfile(Long memberId, MemberProfileUpdateRequest request) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
 
-        updateEntity(memberProfile, memberProfileUpdateRequest);
+        saveVerifies(member, request);
 
         return MemberProfileResponse.from(member, memberProfile);
     }
 
-    private void updateEntity(MemberProfile memberProfile, MemberProfileUpdateRequest request) {
-        memberProfile.updateName(request.getName())
-                .updateBirthDate(request.getBirthDate())
-                .updateGender(request.getGender())
-                .updateSchoolName(request.getSchoolName())
-                .updateSchoolEmail(request.getSchoolEmail())
-                .updatePhoneNumber(request.getPhoneNumber())
-                .updateProfileImageUrl(request.getProfileImageUrl())
-                .updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl())
-                .updateStudentIdImageUrl(request.getStudentIdImageUrl());
+    private void saveVerifies(Member member, MemberProfileUpdateRequest request) {
+        saveProfileImageVerify(member, request);
+        saveKakaoRoomVerify(member, request);
+        saveStudentIdVerify(member, request);
+    }
+
+    private void saveStudentIdVerify(Member member, MemberProfileUpdateRequest request) {
+        MemberProfile memberProfile = member.getMemberProfile();
+        String major = memberProfile.getMajor();
+        String studentNumber = memberProfile.getStudentNumber();
+
+        String schoolVerifyDescription = ", major: " + major + ", studentNumber: " + studentNumber;
+
+        MemberVerify studentIdVerify = MemberVerify.builder()
+                .memberId(member.getId())
+                .description(request.toVerifyDescription() + schoolVerifyDescription)
+                .contents(request.getProfileImageUrl())
+                .verifyType(MemberVerifyType.STUDENT_ID)
+                .verifyStatus(MemberVerifyStatus.PENDING)
+                .build();
+        memberVerifyRepository.save(studentIdVerify);
+    }
+
+    private void saveProfileImageVerify(Member member, MemberProfileUpdateRequest request) {
+        MemberVerify profileImageVerify = MemberVerify.builder()
+                .memberId(member.getId())
+                .contents(request.getProfileImageUrl())
+                .verifyType(MemberVerifyType.PROFILE_IMAGE)
+                .verifyStatus(MemberVerifyStatus.PENDING)
+                .build();
+        memberVerifyRepository.save(profileImageVerify);
+    }
+
+    private void saveKakaoRoomVerify(Member member, MemberProfileUpdateRequest request) {
+        MemberVerify kakaoRoomVerify = MemberVerify.builder()
+                .memberId(member.getId())
+                .contents(request.getProfileImageUrl())
+                .verifyType(MemberVerifyType.OPEN_KAKAO_ROOM_URL)
+                .verifyStatus(MemberVerifyStatus.PENDING)
+                .build();
+        memberVerifyRepository.save(kakaoRoomVerify);
     }
 
     @Override
@@ -115,7 +141,6 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     }
 
     @Override
-    @Transactional
     public MemberProfileStatusResponse updateMemberProfileStatus(
             Long memberId,
             MemberProfileStatusDto dto
@@ -131,7 +156,6 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     }
 
     @Override
-    @Transactional
     public void updateMemberProfileImage(
             Long memberId, MemberProfileImageUpdateRequest request
     ) {
@@ -151,7 +175,6 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     }
 
     @Override
-    @Transactional
     public void updateMemberProfileKakaoRoom(
             Long memberId, MemberProfileOpenKakaoRoomUrlUpdateRequest request
     ) {
@@ -244,6 +267,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
 
     @Override
+    @Transactional(readOnly = true)
     public List<MemberBookProfileResponse> getAllMembers(Long memberId, MemberBookProfileRequestDto requestDto) {
         List<MemberBookProfileResponse> allResult = memberRepository.getAllMembers(
                 memberId, requestDto);
