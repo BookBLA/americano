@@ -1,14 +1,15 @@
 package com.bookbla.americano.domain.member.service.impl;
 
-import com.bookbla.americano.domain.member.controller.dto.response.MemberLibraryProfileReadResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberTargetLibraryProfileReadResponse;
-import com.bookbla.americano.domain.member.repository.*;
-import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.bookbla.americano.domain.member.repository.entity.MemberBook;
-import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
-import com.bookbla.americano.domain.member.service.MemberLibraryService;
 import java.util.List;
 
+import com.bookbla.americano.domain.member.controller.dto.response.MemberLibraryProfileReadResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberTargetLibraryProfileReadResponse;
+import com.bookbla.americano.domain.member.repository.MemberBookRepository;
+import com.bookbla.americano.domain.member.repository.MemberRepository;
+import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
+import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberBook;
+import com.bookbla.americano.domain.member.service.MemberLibraryService;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.PostcardRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,29 +17,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberLibraryServiceImpl implements MemberLibraryService {
 
     private final MemberRepository memberRepository;
+    private final MemberVerifyRepository memberVerifyRepository;
     private final MemberBookRepository memberBookRepository;
     private final PostcardRepository postcardRepository;
 
     @Override
-    @Transactional(readOnly = true)
     public MemberLibraryProfileReadResponse getLibraryProfile(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = member.getMemberProfile();
         List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
 
-        return MemberLibraryProfileReadResponse.of(member, memberProfile, memberBooks);
+        return memberVerifyRepository.findMemberPendingProfileImage(member.getId())
+                .map(image -> MemberLibraryProfileReadResponse.ofPendingProfileImage(member, memberBooks, image))
+                .orElseGet(() -> MemberLibraryProfileReadResponse.of(member, memberBooks));
     }
 
     @Override
-    @Transactional(readOnly = true)
     public MemberTargetLibraryProfileReadResponse getTargetLibraryProfile(Long memberId, Long targetMemberId) {
         Member targetMember = memberRepository.getByIdOrThrow(targetMemberId);
-        MemberProfile memberProfile = targetMember.getMemberProfile();
         List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(targetMember);
 
         boolean isMatched = false;
@@ -49,6 +49,6 @@ public class MemberLibraryServiceImpl implements MemberLibraryService {
             isMatched = true;
         }
 
-        return MemberTargetLibraryProfileReadResponse.of(targetMember, memberProfile, memberBooks, isMatched);
+        return MemberTargetLibraryProfileReadResponse.of(targetMember, memberBooks, isMatched);
     }
 }

@@ -30,10 +30,27 @@ public class MemberLibraryProfileReadResponse {
 
     }
 
-    public static MemberLibraryProfileReadResponse of(Member member, MemberProfile memberProfile, List<MemberBook> memberBooks) {
+    public static MemberLibraryProfileReadResponse ofPendingProfileImage(Member member, List<MemberBook> memberBooks, String pendingProfileImageUrl) {
         List<BookResponse> bookResponses = memberBooks.stream()
                 .map(it -> new BookResponse(it.getId(), it.isRepresentative(), it.getBook().getImageUrl()))
                 .collect(Collectors.toList());
+        MemberProfile memberProfile = member.getMemberProfile();
+        return new MemberLibraryProfileReadResponse(
+                member.getId(),
+                memberProfile.showBlindName(),
+                memberProfile.calculateAge(LocalDate.now()),
+                memberProfile.getGender().name(),
+                memberProfile.getSchoolName(),
+                pendingProfileImageUrl,
+                bookResponses
+        );
+    }
+
+    public static MemberLibraryProfileReadResponse of(Member member, List<MemberBook> memberBooks) {
+        List<BookResponse> bookResponses = memberBooks.stream()
+                .map(it -> new BookResponse(it.getId(), it.isRepresentative(), it.getBook().getImageUrl()))
+                .collect(Collectors.toList());
+        MemberProfile memberProfile = member.getMemberProfile();
         return new MemberLibraryProfileReadResponse(
                 member.getId(),
                 memberProfile.showBlindName(),
