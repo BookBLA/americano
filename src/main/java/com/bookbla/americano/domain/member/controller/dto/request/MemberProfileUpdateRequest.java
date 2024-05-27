@@ -1,7 +1,10 @@
 package com.bookbla.americano.domain.member.controller.dto.request;
 
 import com.bookbla.americano.domain.member.enums.Gender;
+
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -46,6 +49,13 @@ public class MemberProfileUpdateRequest {
 
     public Gender getGender() {
         return Gender.from(gender);
+    }
+
+    public String toVerifyDescription() {
+        return "name: " + getName() +
+                ", schoolName: " + getSchoolName() +
+                ", birthDate: " + getBirthDate().format(DateTimeFormatter.BASIC_ISO_DATE) +
+                ", gender: " + gender;
     }
 
 }

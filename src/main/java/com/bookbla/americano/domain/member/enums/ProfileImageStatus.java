@@ -8,9 +8,10 @@ import java.util.stream.Collectors;
 
 public enum ProfileImageStatus {
 
-    PENDING,
-    DENIAL,
-    DONE,
+    PENDING, // 첫 등록
+    DENIAL, // 거절 됨
+    DONE, // 완료
+    CHANGING, // 변경 대기
     ;
 
     public static ProfileImageStatus from(String name) {

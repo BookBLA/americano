@@ -26,6 +26,8 @@ import static com.bookbla.americano.domain.member.enums.MemberVerifyStatus.SUCCE
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberVerify extends BaseInsertEntity {
 
+    public static final String DESCRIPTION_PARSING_FAIL = "승인 도중 파싱 실패. 확인 필요";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,7 +37,10 @@ public class MemberVerify extends BaseInsertEntity {
     // 이미지 혹은 카카오톡방 링크
     private String contents;
 
-    // 부가정보
+    // 부가정보,
+    // 학생증 정보 저장시,
+    // "name: 이길여, gender: female, schoolName: 서울대학교, birthDate: 19320612"
+    // 와같이 Map을 String으로 파싱해서 넣은 형태
     private String description;
 
     @Enumerated(EnumType.STRING)

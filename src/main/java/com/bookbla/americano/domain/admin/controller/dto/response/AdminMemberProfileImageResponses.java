@@ -28,12 +28,14 @@ public class AdminMemberProfileImageResponses {
     @Getter
     static class AdminMemberProfileImageResponse {
 
+        private final Long memberVerifyId;
         private final Long memberId;
         private final String gender;
         private final String profileImageUrl;
 
         public static AdminMemberProfileImageResponse from(MemberVerify memberVerify) {
             return AdminMemberProfileImageResponse.builder()
+                    .memberVerifyId(memberVerify.getId())
                     .memberId(memberVerify.getMemberId())
                     .gender(memberVerify.getDescription())
                     .profileImageUrl(memberVerify.getContents())

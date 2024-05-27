@@ -35,6 +35,7 @@ class PostcardServiceTest {
     @Autowired
     private PostcardRepository postcardRepository;
 
+
     @EnumSource(mode = INCLUDE, names = {"PENDING", "ACCEPT", "ALL_WRONG"})
     @ParameterizedTest(name = "엽서를_보낼_수_없다면_예외를_반환한다")
     void 엽서를_보낼_수_없다면_예외를_반환한다(PostcardStatus postcardStatus) {
@@ -89,6 +90,5 @@ class PostcardServiceTest {
     @AfterEach
     void tearDown() {
         postcardRepository.deleteAll();
-        memberRepository.deleteAll();
     }
 }
