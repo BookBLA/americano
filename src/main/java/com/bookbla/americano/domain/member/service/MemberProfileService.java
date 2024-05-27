@@ -31,4 +31,6 @@ public interface MemberProfileService {
 
     void updateMemberProfileImage(Long memberId, MemberProfileImageUpdateRequest request);
 
+    void updateMemberProfileKakaoRoom(Long memberId, MemberProfileOpenKakaoRoomUrlUpdateRequest request);
+
 }

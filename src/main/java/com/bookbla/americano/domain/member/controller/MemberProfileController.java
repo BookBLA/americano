@@ -92,7 +92,7 @@ public class MemberProfileController {
             @Parameter(hidden = true) @User LoginUser loginUser,
             @RequestBody @Valid MemberProfileOpenKakaoRoomUrlUpdateRequest request
     ) {
-        memberProfileService.updateMemberProfileOpenKakaoRoom(loginUser.getMemberId(), request);
+        memberProfileService.updateMemberProfileKakaoRoom(loginUser.getMemberId(), request);
         return ResponseEntity.ok().build();
     }
 

@@ -118,20 +118,16 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     @Transactional
     public MemberProfileStatusResponse updateMemberProfileStatus(
             Long memberId,
-            MemberProfileStatusDto memberProfileStatusDto
+            MemberProfileStatusDto dto
     ) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
 
-        updateStatusEntity(memberProfile, memberProfileStatusDto);
-
-        return MemberProfileStatusResponse.from(memberProfile);
-    }
-
-    private void updateStatusEntity(MemberProfile memberprofile, MemberProfileStatusDto dto) {
-        memberprofile.updateProfileImageStatus(dto.getProfileImageStatus())
+        memberProfile.updateProfileImageStatus(dto.getProfileImageStatus())
                 .updateOpenKakaoRoomStatus(dto.getOpenKakaoRoomStatus())
                 .updateStudentIdImageStatus(dto.getStudentIdImageStatus());
+
+        return MemberProfileStatusResponse.from(memberProfile);
     }
 
     @Override
@@ -151,6 +147,26 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
         MemberProfile memberProfile = member.getMemberProfile();
         memberProfile.updateProfileImageUrl(request.getProfileImageUrl())
+                .updateProfileImageStatus(ProfileImageStatus.CHANGING);
+    }
+
+    @Override
+    @Transactional
+    public void updateMemberProfileKakaoRoom(
+            Long memberId, MemberProfileOpenKakaoRoomUrlUpdateRequest request
+    ) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+
+        MemberVerify memberVerify = MemberVerify.builder()
+                .memberId(member.getId())
+                .contents(request.getOpenKakaoRoomUrl())
+                .verifyType(MemberVerifyType.OPEN_KAKAO_ROOM_URL)
+                .verifyStatus(MemberVerifyStatus.PENDING)
+                .build();
+        memberVerifyRepository.save(memberVerify);
+
+        MemberProfile memberProfile = member.getMemberProfile();
+        memberProfile.updateProfileImageUrl(request.getOpenKakaoRoomUrl())
                 .updateProfileImageStatus(ProfileImageStatus.CHANGING);
     }
 
