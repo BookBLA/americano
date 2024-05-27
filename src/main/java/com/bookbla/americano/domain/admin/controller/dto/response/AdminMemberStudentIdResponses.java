@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import static com.bookbla.americano.domain.member.repository.entity.MemberVerify.DESCRIPTION_PARSING_FAIL;
+
 @AllArgsConstructor
 @Getter
 public class AdminMemberStudentIdResponses {
@@ -30,22 +32,24 @@ public class AdminMemberStudentIdResponses {
     @Getter
     static class AdminMemberStudentIdResponse {
 
+        private final Long memberVerifyId;
         private final Long memberId;
         private final String name;
         private final String schoolName;
         private final String major;
-        private final String studentId;
+        private final String studentNumber;
         private final String studentIdImageUrl;
 
         public static AdminMemberStudentIdResponse from(MemberVerify memberVerify) {
             Map<String, String> descriptions = ConvertUtil.stringToMap(memberVerify.getDescription());
 
             return AdminMemberStudentIdResponse.builder()
+                    .memberVerifyId(memberVerify.getId())
                     .memberId(memberVerify.getMemberId())
-                    .name(descriptions.get("name"))
-                    .schoolName(descriptions.get("schoolName"))
-                    .major(descriptions.get("major"))
-                    .studentId("studetId")
+                    .name(descriptions.getOrDefault("name", DESCRIPTION_PARSING_FAIL))
+                    .schoolName(descriptions.getOrDefault("schoolName", DESCRIPTION_PARSING_FAIL))
+                    .major(descriptions.getOrDefault("major", DESCRIPTION_PARSING_FAIL))
+                    .studentNumber(descriptions.getOrDefault("studentId", DESCRIPTION_PARSING_FAIL))
                     .studentIdImageUrl(memberVerify.getContents())
                     .build();
         }
