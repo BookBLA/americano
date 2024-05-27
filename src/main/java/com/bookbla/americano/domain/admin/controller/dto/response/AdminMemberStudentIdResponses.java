@@ -36,8 +36,8 @@ public class AdminMemberStudentIdResponses {
         private final Long memberId;
         private final String name;
         private final String schoolName;
-        private final String major;
-        private final String studentNumber;
+        private final String birthDate;
+        private final String gender;
         private final String studentIdImageUrl;
 
         public static AdminMemberStudentIdResponse from(MemberVerify memberVerify) {
@@ -48,8 +48,8 @@ public class AdminMemberStudentIdResponses {
                     .memberId(memberVerify.getMemberId())
                     .name(descriptions.getOrDefault("name", DESCRIPTION_PARSING_FAIL))
                     .schoolName(descriptions.getOrDefault("schoolName", DESCRIPTION_PARSING_FAIL))
-                    .major(descriptions.getOrDefault("major", DESCRIPTION_PARSING_FAIL))
-                    .studentNumber(descriptions.getOrDefault("studentId", DESCRIPTION_PARSING_FAIL))
+                    .gender(descriptions.getOrDefault("gender", DESCRIPTION_PARSING_FAIL))
+                    .birthDate(descriptions.getOrDefault("birthDate", DESCRIPTION_PARSING_FAIL))
                     .studentIdImageUrl(memberVerify.getContents())
                     .build();
         }

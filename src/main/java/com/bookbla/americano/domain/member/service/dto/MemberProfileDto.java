@@ -1,10 +1,12 @@
 package com.bookbla.americano.domain.member.service.dto;
 
 import com.bookbla.americano.domain.member.enums.Gender;
-import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +29,7 @@ public class MemberProfileDto {
     private String openKakaoRoomUrl;
     private String studentIdImageUrl;
 
-    public MemberProfile toEntity() {
+    public MemberProfile toMemberProfile() {
         return MemberProfile.builder()
             .name(name)
             .birthDate(birthDate)
@@ -35,9 +37,12 @@ public class MemberProfileDto {
             .schoolName(schoolName)
             .schoolEmail(schoolEmail)
             .phoneNumber(phoneNumber)
-            .profileImageUrl(profileImageUrl)
-            .openKakaoRoomUrl(openKakaoRoomUrl)
-            .studentIdImageUrl(studentIdImageUrl)
             .build();
+    }
+    public String toMemberVerifyDescription() {
+        return "name: " + getName() +
+                ", schoolName: " + getSchoolName() +
+                ", birthDate: " + getBirthDate().format(DateTimeFormatter.BASIC_ISO_DATE) +
+                ", gender: " + gender.name();
     }
 }
