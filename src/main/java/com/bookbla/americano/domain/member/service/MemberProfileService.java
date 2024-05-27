@@ -1,14 +1,16 @@
 package com.bookbla.americano.domain.member.service;
 
+import java.util.List;
+
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileImageUpdateRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileOpenKakaoRoomUrlUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileStatusDto;
-
-import java.util.List;
 
 public interface MemberProfileService {
 
@@ -26,5 +28,7 @@ public interface MemberProfileService {
 
     MemberProfileStatusResponse updateMemberProfileStatus(Long memberId,
                                                           MemberProfileStatusDto memberProfileStatusDto);
+
+    void updateMemberProfileImage(Long memberId, MemberProfileImageUpdateRequest request);
 
 }

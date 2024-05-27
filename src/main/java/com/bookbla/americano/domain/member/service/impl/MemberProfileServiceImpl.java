@@ -1,30 +1,5 @@
 package com.bookbla.americano.domain.member.service.impl;
 
-import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
-import com.bookbla.americano.domain.member.enums.EmailVerifyStatus;
-import com.bookbla.americano.domain.member.enums.MemberStatus;
-import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
-import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
-import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
-import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
-import com.bookbla.americano.domain.member.exception.MemberExceptionType;
-import com.bookbla.americano.domain.member.repository.MemberEmailRepository;
-import com.bookbla.americano.domain.member.repository.MemberRepository;
-import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.bookbla.americano.domain.member.repository.entity.MemberEmail;
-import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
-import com.bookbla.americano.domain.member.service.MemberProfileService;
-import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
-import com.bookbla.americano.domain.member.service.dto.MemberProfileStatusDto;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,6 +8,37 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileImageUpdateRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileOpenKakaoRoomUrlUpdateRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
+import com.bookbla.americano.domain.member.enums.EmailVerifyStatus;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
+import com.bookbla.americano.domain.member.enums.MemberVerifyStatus;
+import com.bookbla.americano.domain.member.enums.MemberVerifyType;
+import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
+import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
+import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
+import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
+import com.bookbla.americano.domain.member.exception.MemberExceptionType;
+import com.bookbla.americano.domain.member.repository.MemberEmailRepository;
+import com.bookbla.americano.domain.member.repository.MemberRepository;
+import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
+import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberEmail;
+import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
+import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
+import com.bookbla.americano.domain.member.service.MemberProfileService;
+import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
+import com.bookbla.americano.domain.member.service.dto.MemberProfileStatusDto;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +46,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
     private final MemberRepository memberRepository;
     private final MemberEmailRepository memberEmailRepository;
+    private final MemberVerifyRepository memberVerifyRepository;
 
     @Override
     @Transactional
@@ -47,7 +54,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
         MemberEmail memberEmail = memberEmailRepository.findByMember(member)
-            .orElseThrow(() -> new BaseException(MemberEmailExceptionType.EMAIL_NOT_REGISTERED));
+                .orElseThrow(() -> new BaseException(MemberEmailExceptionType.EMAIL_NOT_REGISTERED));
 
         if (memberEmail.getEmailVerifyStatus() == EmailVerifyStatus.PENDING) {
             throw new BaseException(MemberEmailExceptionType.STILL_PENDING);
@@ -55,11 +62,11 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
         MemberProfile memberProfile = memberProfileDto.toEntity();
         memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING)
-            .updateStudentIdImageStatus(StudentIdImageStatus.PENDING)
-            .updateProfileImageStatus(ProfileImageStatus.PENDING);
+                .updateStudentIdImageStatus(StudentIdImageStatus.PENDING)
+                .updateProfileImageStatus(ProfileImageStatus.PENDING);
 
         member.updateMemberProfile(memberProfile)
-            .updateMemberStatus(MemberStatus.APPROVAL);
+                .updateMemberStatus(MemberStatus.APPROVAL);
 
         return MemberProfileResponse.from(member, memberProfile);
     }
@@ -121,11 +128,30 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         return MemberProfileStatusResponse.from(memberProfile);
     }
 
-
     private void updateStatusEntity(MemberProfile memberprofile, MemberProfileStatusDto dto) {
         memberprofile.updateProfileImageStatus(dto.getProfileImageStatus())
                 .updateOpenKakaoRoomStatus(dto.getOpenKakaoRoomStatus())
                 .updateStudentIdImageStatus(dto.getStudentIdImageStatus());
+    }
+
+    @Override
+    @Transactional
+    public void updateMemberProfileImage(
+            Long memberId, MemberProfileImageUpdateRequest request
+    ) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+
+        MemberVerify memberVerify = MemberVerify.builder()
+                .memberId(member.getId())
+                .contents(request.getProfileImageUrl())
+                .verifyType(MemberVerifyType.PROFILE_IMAGE)
+                .verifyStatus(MemberVerifyStatus.PENDING)
+                .build();
+        memberVerifyRepository.save(memberVerify);
+
+        MemberProfile memberProfile = member.getMemberProfile();
+        memberProfile.updateProfileImageUrl(request.getProfileImageUrl())
+                .updateProfileImageStatus(ProfileImageStatus.CHANGING);
     }
 
     @Override
