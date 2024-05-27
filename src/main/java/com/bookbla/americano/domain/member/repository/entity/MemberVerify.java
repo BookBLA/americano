@@ -39,7 +39,7 @@ public class MemberVerify extends BaseInsertEntity {
 
     // 부가정보,
     // 학생증 정보 저장시,
-    // "name: 이길여, major: 의학과, schoolName: 서울대학교, studentNumber: 1959xxxx"
+    // "name: 이길여, gender: female, schoolName: 서울대학교, birthDate: 19320612"
     // 와같이 Map을 String으로 파싱해서 넣은 형태
     private String description;
 
