@@ -16,6 +16,7 @@ import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
 import com.bookbla.americano.domain.alarm.service.AlarmService;
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
+import com.bookbla.americano.domain.member.enums.MemberVerifyStatus;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
@@ -57,7 +58,8 @@ public class AdminMemberService {
         return AdminMemberProfileStatusResponse.of(
                 ProfileImageStatus.getValues(),
                 OpenKakaoRoomStatus.getValues(),
-                StudentIdImageStatus.getValues()
+                StudentIdImageStatus.getValues(),
+                MemberVerifyStatus.getValues()
         );
     }
 
@@ -91,8 +93,8 @@ public class AdminMemberService {
     public void updateMemberKakaoRoomStatus(StatusUpdateDto dto) {
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
-        OpenKakaoRoomStatus status = OpenKakaoRoomStatus.from(dto.getStatus());
         MemberProfile memberProfile = member.getMemberProfile();
+        OpenKakaoRoomStatus status = OpenKakaoRoomStatus.from(dto.getStatus());
 
         updateVerification(dto, status, memberVerify, memberProfile);
 
