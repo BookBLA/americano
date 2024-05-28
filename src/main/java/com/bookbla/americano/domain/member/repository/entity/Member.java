@@ -64,8 +64,9 @@ public class Member extends BaseInsertEntity {
     @Getter(AccessLevel.NONE)
     private MemberStyle memberStyle;
 
+    // 첫 가입시 확인용
     public void updateMemberStatus() {
-        if (memberProfile.isCertified()) {
+        if (memberProfile.isCertified() && memberStatus == MemberStatus.APPROVAL) {
             this.memberStatus = MemberStatus.STYLE;
         }
     }

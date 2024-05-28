@@ -89,25 +89,27 @@ public class AdminMemberService {
     }
 
     public void updateMemberKakaoRoomStatus(StatusUpdateDto dto) {
-        OpenKakaoRoomStatus status = OpenKakaoRoomStatus.from(dto.getStatus());
-
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
 
+        OpenKakaoRoomStatus status = OpenKakaoRoomStatus.from(dto.getStatus());
         MemberProfile memberProfile = member.getMemberProfile();
         memberProfile.updateOpenKakaoRoomStatus(status);
 
+        updateVerification(dto, status, memberVerify, memberProfile);
+        member.updateMemberStatus();
+    }
+
+    private void updateVerification(
+            StatusUpdateDto dto, OpenKakaoRoomStatus status,
+            MemberVerify memberVerify, MemberProfile memberProfile
+    ) {
         if (status.isDone()) {
             memberVerify.success();
-
             memberProfile.updateOpenKakaoRoomUrl(memberVerify.getContents());
-        } else {
-            memberVerify.fail(dto.getReason());
+            return;
         }
-
-        if (member.getMemberStatus() == MemberStatus.APPROVAL) {
-            member.updateMemberStatus();
-        }
+        memberVerify.fail(dto.getReason());
     }
 
     @Transactional(readOnly = true)
@@ -119,25 +121,27 @@ public class AdminMemberService {
     }
 
     public void updateMemberImageStatus(StatusUpdateDto dto) {
-        ProfileImageStatus status = ProfileImageStatus.from(dto.getStatus());
-
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
 
         MemberProfile memberProfile = member.getMemberProfile();
+        ProfileImageStatus status = ProfileImageStatus.from(dto.getStatus());
         memberProfile.updateProfileImageStatus(status);
 
+        updateVerification(dto, status, memberVerify, memberProfile);
+        member.updateMemberStatus();
+    }
+
+    private void updateVerification(
+            StatusUpdateDto dto, ProfileImageStatus status,
+            MemberVerify memberVerify, MemberProfile memberProfile
+    ) {
         if (status.isDone()) {
             memberVerify.success();
-
             memberProfile.updateProfileImageUrl(memberVerify.getContents());
-        } else {
-            memberVerify.fail(dto.getReason());
+            return;
         }
-
-        if (member.getMemberStatus() == MemberStatus.APPROVAL) {
-            member.updateMemberStatus();
-        }
+        memberVerify.fail(dto.getReason());
     }
 
     @Transactional(readOnly = true)
@@ -149,27 +153,36 @@ public class AdminMemberService {
     }
 
     public void updateMemberStudentIdStatus(StatusUpdateDto dto) {
-        StudentIdImageStatus status = StudentIdImageStatus.from(dto.getStatus());
-
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
 
         MemberProfile memberProfile = member.getMemberProfile();
+        StudentIdImageStatus status = StudentIdImageStatus.from(dto.getStatus());
         memberProfile.updateStudentIdImageStatus(status);
 
-        if (status.isDone()) {
-            Map<String, String> descriptions = ConvertUtil.stringToMap(memberVerify.getDescription());
-            memberProfile.updateStudentIdImageUrl(memberVerify.getContents())
-                    .updateGender(Gender.from(descriptions.getOrDefault("gender", DESCRIPTION_PARSING_FAIL)))
-                    .updateName(descriptions.getOrDefault("name", DESCRIPTION_PARSING_FAIL))
-                    .updateSchoolName(descriptions.getOrDefault("schoolName", DESCRIPTION_PARSING_FAIL))
-                    .updateBirthDate(LocalDate.parse(descriptions.getOrDefault("birthDate", DESCRIPTION_PARSING_FAIL)));
-
-            memberVerify.success();
-        } else {
-            memberVerify.fail(dto.getReason());
-        }
-
+        updateVerification(dto, status, memberVerify, memberProfile);
         member.updateMemberStatus();
+    }
+
+    private void updateVerification(
+            StatusUpdateDto dto, StudentIdImageStatus status,
+            MemberVerify memberVerify, MemberProfile memberProfile
+    ) {
+        if (status.isDone()) {
+            updateSuccess(memberVerify, memberProfile);
+            return;
+        }
+        memberVerify.fail(dto.getReason());
+    }
+
+    private void updateSuccess(MemberVerify memberVerify, MemberProfile memberProfile) {
+        Map<String, String> descriptions = ConvertUtil.stringToMap(memberVerify.getDescription());
+        memberProfile.updateStudentIdImageUrl(memberVerify.getContents())
+                .updateGender(Gender.from(descriptions.getOrDefault("gender", DESCRIPTION_PARSING_FAIL)))
+                .updateName(descriptions.getOrDefault("name", DESCRIPTION_PARSING_FAIL))
+                .updateSchoolName(descriptions.getOrDefault("schoolName", DESCRIPTION_PARSING_FAIL))
+                .updateBirthDate(LocalDate.parse(descriptions.getOrDefault("birthDate", DESCRIPTION_PARSING_FAIL)));
+
+        memberVerify.success();
     }
 }
