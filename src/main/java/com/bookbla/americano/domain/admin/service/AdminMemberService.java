@@ -13,7 +13,6 @@ import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberRea
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
 import com.bookbla.americano.domain.admin.service.dto.AlarmDto;
 import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
-import com.bookbla.americano.domain.alarm.service.AlarmClient;
 import com.bookbla.americano.domain.alarm.service.AlarmService;
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
@@ -42,7 +41,6 @@ import static com.bookbla.americano.domain.member.repository.entity.MemberVerify
 @Service
 public class AdminMemberService {
 
-    private final AlarmClient alarmClient;
     private final AlarmService alarmService;
     private final MemberRepository memberRepository;
     private final MemberVerifyRepository memberVerifyRepository;
@@ -84,9 +82,10 @@ public class AdminMemberService {
 
     @Transactional(readOnly = true)
     public AdminMemberKakaoRoomResponses readKakaoRoomPendingMembers(Pageable pageable) {
+        long count = memberVerifyRepository.countByVerifyTypeAndVerifyStatus(OPEN_KAKAO_ROOM_URL, PENDING);
         Page<MemberVerify> paging = memberVerifyRepository.findByVerifyTypeAndVerifyStatus(OPEN_KAKAO_ROOM_URL, PENDING, pageable);
         List<MemberVerify> memberVerifies = paging.getContent();
-        return AdminMemberKakaoRoomResponses.from(memberVerifies);
+        return AdminMemberKakaoRoomResponses.from(count, memberVerifies);
     }
 
     public void updateMemberKakaoRoomStatus(StatusUpdateDto dto) {
@@ -113,9 +112,10 @@ public class AdminMemberService {
 
     @Transactional(readOnly = true)
     public AdminMemberProfileImageResponses readProfileImagePendingMembers(Pageable pageable) {
+        long count = memberVerifyRepository.countByVerifyTypeAndVerifyStatus(PROFILE_IMAGE, PENDING);
         Page<MemberVerify> paging = memberVerifyRepository.findByVerifyTypeAndVerifyStatus(PROFILE_IMAGE, PENDING, pageable);
         List<MemberVerify> memberVerifies = paging.getContent();
-        return AdminMemberProfileImageResponses.from(memberVerifies);
+        return AdminMemberProfileImageResponses.from(count, memberVerifies);
     }
 
     public void updateMemberImageStatus(StatusUpdateDto dto) {
@@ -142,9 +142,10 @@ public class AdminMemberService {
 
     @Transactional(readOnly = true)
     public AdminMemberStudentIdResponses readStudentIdImagePendingMembers(Pageable pageable) {
+        long count = memberVerifyRepository.countByVerifyTypeAndVerifyStatus(STUDENT_ID, PENDING);
         Page<MemberVerify> paging = memberVerifyRepository.findByVerifyTypeAndVerifyStatus(STUDENT_ID, PENDING, pageable);
         List<MemberVerify> memberVerifies = paging.getContent();
-        return AdminMemberStudentIdResponses.from(memberVerifies);
+        return AdminMemberStudentIdResponses.from(count, memberVerifies);
     }
 
     public void updateMemberStudentIdStatus(StatusUpdateDto dto) {

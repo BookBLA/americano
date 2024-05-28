@@ -6,21 +6,23 @@ import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import static java.util.stream.Collectors.toList;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 public class AdminMemberProfileImageResponses {
 
+    private final long totalCount;
     private final List<AdminMemberProfileImageResponse> datas;
 
-    public static AdminMemberProfileImageResponses from(List<MemberVerify> memberVerifies) {
+    public static AdminMemberProfileImageResponses from(long totalCount, List<MemberVerify> memberVerifies) {
         List<AdminMemberProfileImageResponse> pendingMemberProfileResponses = memberVerifies.stream()
                 .map(AdminMemberProfileImageResponse::from)
                 .collect(toList());
 
-        return new AdminMemberProfileImageResponses(pendingMemberProfileResponses);
+        return new AdminMemberProfileImageResponses(totalCount, pendingMemberProfileResponses);
     }
 
     @AllArgsConstructor

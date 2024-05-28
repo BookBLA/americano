@@ -6,28 +6,29 @@ import java.util.stream.Collectors;
 
 import com.bookbla.americano.base.utils.ConvertUtil;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import static com.bookbla.americano.domain.member.repository.entity.MemberVerify.DESCRIPTION_PARSING_FAIL;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 public class AdminMemberStudentIdResponses {
 
+    private final long totalCount;
     private final List<AdminMemberStudentIdResponse> datas;
 
-    public static AdminMemberStudentIdResponses from(List<MemberVerify> memberVerifies) {
+    public static AdminMemberStudentIdResponses from(long totalCount, List<MemberVerify> memberVerifies) {
         List<AdminMemberStudentIdResponse> adminMemberStudentIdResponses = memberVerifies.stream()
                 .map(AdminMemberStudentIdResponse::from)
                 .collect(Collectors.toList());
 
-        return new AdminMemberStudentIdResponses(adminMemberStudentIdResponses);
+        return new AdminMemberStudentIdResponses(totalCount, adminMemberStudentIdResponses);
     }
 
 
-    @AllArgsConstructor
+    @RequiredArgsConstructor
     @Builder
     @Getter
     static class AdminMemberStudentIdResponse {

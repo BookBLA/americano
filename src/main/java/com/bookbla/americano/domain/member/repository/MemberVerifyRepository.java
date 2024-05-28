@@ -21,6 +21,8 @@ public interface MemberVerifyRepository extends JpaRepository<MemberVerify, Long
 
     Page<MemberVerify> findByVerifyTypeAndVerifyStatus(MemberVerifyType verifyType, MemberVerifyStatus verifyStatus, Pageable pageable);
 
+    long countByVerifyTypeAndVerifyStatus(MemberVerifyType verifyType, MemberVerifyStatus verifyStatus);
+
     @Query("select mv.contents " +
             "from MemberVerify mv " +
             "where mv.memberId = : memberId " +
