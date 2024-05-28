@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.auth.exception.LoginExceptionType;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
@@ -63,8 +64,9 @@ public class Member extends BaseInsertEntity {
     @Getter(AccessLevel.NONE)
     private MemberStyle memberStyle;
 
+    // 첫 가입시 확인용
     public void updateMemberStatus() {
-        if (memberProfile.isCertified()) {
+        if (memberProfile.isCertified() && memberStatus == MemberStatus.APPROVAL) {
             this.memberStatus = MemberStatus.STYLE;
         }
     }
@@ -141,6 +143,12 @@ public class Member extends BaseInsertEntity {
     public void validateStyleRegistered() {
         if (this.memberStyle != null) {
             throw new BaseException(MemberExceptionType.STYLE_ALREADY_REGISTERD);
+        }
+    }
+
+    public void validateDeleted() {
+        if (this.memberStatus == MemberStatus.DELETED) {
+            throw new BaseException(LoginExceptionType.CANNOT_LOGIN_MEMBER_DELETED);
         }
     }
 }

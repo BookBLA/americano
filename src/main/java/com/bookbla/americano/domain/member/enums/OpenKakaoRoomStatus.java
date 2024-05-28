@@ -9,8 +9,7 @@ import com.bookbla.americano.domain.member.exception.MemberProfileException;
 
 public enum OpenKakaoRoomStatus {
 
-    PENDING, // 첫 등록 대기
-    CHANGING, // 변경 대기
+    PENDING, // 등록 대기
     INACCESSIBLE, // 접근 불가
     NOT_DEFAULT, // 기본 프로필 아님
     DONE, // 변경 대기

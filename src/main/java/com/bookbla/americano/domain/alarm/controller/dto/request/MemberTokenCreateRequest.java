@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.member.controller.dto.request;
+package com.bookbla.americano.domain.alarm.controller.dto.request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

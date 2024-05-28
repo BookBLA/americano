@@ -1,10 +1,10 @@
-package com.bookbla.americano.domain.member.controller;
+package com.bookbla.americano.domain.alarm.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberTokenCreateRequest;
+import com.bookbla.americano.domain.alarm.controller.dto.request.MemberTokenCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberTokenCreateResponse;
-import com.bookbla.americano.domain.member.service.MemberTokenService;
+import com.bookbla.americano.domain.alarm.service.MemberTokenService;
 import io.swagger.v3.oas.annotations.Parameter;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.member.controller.dto.response;
+package com.bookbla.americano.domain.alarm.controller.dto.response;
 
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import lombok.AllArgsConstructor;

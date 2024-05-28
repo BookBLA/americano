@@ -4,7 +4,6 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberUpdateRe
 import com.bookbla.americano.domain.member.controller.dto.response.MemberDeleteResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStatusResponse;
-import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
 
 public interface MemberService {
 

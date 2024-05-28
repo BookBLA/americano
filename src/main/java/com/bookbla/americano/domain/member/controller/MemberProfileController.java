@@ -94,5 +94,4 @@ public class MemberProfileController {
         memberProfileService.updateMemberProfileKakaoRoom(loginUser.getMemberId(), request);
         return ResponseEntity.ok().build();
     }
-
 }

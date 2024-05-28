@@ -13,17 +13,18 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class AdminMemberKakaoRoomResponses {
 
+    private final long totalCount;
     private final List<AdminMemberKakaoRoomResponse> datas;
 
-    public static AdminMemberKakaoRoomResponses from(List<MemberVerify> memberVerifies) {
+    public static AdminMemberKakaoRoomResponses from(long totalCount, List<MemberVerify> memberVerifies) {
         List<AdminMemberKakaoRoomResponse> adminMemberKakaoRoomResponses = memberVerifies.stream()
                 .map(AdminMemberKakaoRoomResponse::from)
                 .collect(Collectors.toList());
 
-        return new AdminMemberKakaoRoomResponses(adminMemberKakaoRoomResponses);
+        return new AdminMemberKakaoRoomResponses(totalCount, adminMemberKakaoRoomResponses);
     }
 
-    @AllArgsConstructor
+    @RequiredArgsConstructor
     @Builder
     @Getter
     static class AdminMemberKakaoRoomResponse {

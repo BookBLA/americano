@@ -13,10 +13,10 @@ import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberRea
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
 import com.bookbla.americano.domain.admin.service.dto.AlarmDto;
 import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
-import com.bookbla.americano.domain.alarm.service.AlarmClient;
 import com.bookbla.americano.domain.alarm.service.AlarmService;
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
+import com.bookbla.americano.domain.member.enums.MemberVerifyStatus;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
@@ -42,7 +42,6 @@ import static com.bookbla.americano.domain.member.repository.entity.MemberVerify
 @Service
 public class AdminMemberService {
 
-    private final AlarmClient alarmClient;
     private final AlarmService alarmService;
     private final MemberRepository memberRepository;
     private final MemberVerifyRepository memberVerifyRepository;
@@ -59,7 +58,8 @@ public class AdminMemberService {
         return AdminMemberProfileStatusResponse.of(
                 ProfileImageStatus.getValues(),
                 OpenKakaoRoomStatus.getValues(),
-                StudentIdImageStatus.getValues()
+                StudentIdImageStatus.getValues(),
+                MemberVerifyStatus.getValues()
         );
     }
 
@@ -84,91 +84,107 @@ public class AdminMemberService {
 
     @Transactional(readOnly = true)
     public AdminMemberKakaoRoomResponses readKakaoRoomPendingMembers(Pageable pageable) {
+        long count = memberVerifyRepository.countByVerifyTypeAndVerifyStatus(OPEN_KAKAO_ROOM_URL, PENDING);
         Page<MemberVerify> paging = memberVerifyRepository.findByVerifyTypeAndVerifyStatus(OPEN_KAKAO_ROOM_URL, PENDING, pageable);
         List<MemberVerify> memberVerifies = paging.getContent();
-        return AdminMemberKakaoRoomResponses.from(memberVerifies);
+        return AdminMemberKakaoRoomResponses.from(count, memberVerifies);
     }
 
     public void updateMemberKakaoRoomStatus(StatusUpdateDto dto) {
-        OpenKakaoRoomStatus status = OpenKakaoRoomStatus.from(dto.getStatus());
-
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
-
         MemberProfile memberProfile = member.getMemberProfile();
-        memberProfile.updateOpenKakaoRoomStatus(status);
+        OpenKakaoRoomStatus status = OpenKakaoRoomStatus.from(dto.getStatus());
 
+        updateVerification(dto, status, memberVerify, memberProfile);
+
+        memberProfile.updateOpenKakaoRoomStatus(status);
+        member.updateMemberStatus();
+    }
+
+    private void updateVerification(
+            StatusUpdateDto dto, OpenKakaoRoomStatus status,
+            MemberVerify memberVerify, MemberProfile memberProfile
+    ) {
         if (status.isDone()) {
             memberVerify.success();
-
             memberProfile.updateOpenKakaoRoomUrl(memberVerify.getContents());
-        } else {
-            memberVerify.fail(dto.getReason());
+            return;
         }
-
-        if (member.getMemberStatus() == MemberStatus.APPROVAL) {
-            member.updateMemberStatus();
-        }
+        memberVerify.fail(dto.getReason());
     }
 
     @Transactional(readOnly = true)
     public AdminMemberProfileImageResponses readProfileImagePendingMembers(Pageable pageable) {
+        long count = memberVerifyRepository.countByVerifyTypeAndVerifyStatus(PROFILE_IMAGE, PENDING);
         Page<MemberVerify> paging = memberVerifyRepository.findByVerifyTypeAndVerifyStatus(PROFILE_IMAGE, PENDING, pageable);
         List<MemberVerify> memberVerifies = paging.getContent();
-        return AdminMemberProfileImageResponses.from(memberVerifies);
+        return AdminMemberProfileImageResponses.from(count, memberVerifies);
     }
 
     public void updateMemberImageStatus(StatusUpdateDto dto) {
-        ProfileImageStatus status = ProfileImageStatus.from(dto.getStatus());
-
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
-
         MemberProfile memberProfile = member.getMemberProfile();
-        memberProfile.updateProfileImageStatus(status);
+        ProfileImageStatus status = ProfileImageStatus.from(dto.getStatus());
 
+        updateVerification(dto, status, memberVerify, memberProfile);
+
+        memberProfile.updateProfileImageStatus(status);
+        member.updateMemberStatus();
+    }
+
+    private void updateVerification(
+            StatusUpdateDto dto, ProfileImageStatus status,
+            MemberVerify memberVerify, MemberProfile memberProfile
+    ) {
         if (status.isDone()) {
             memberVerify.success();
-
             memberProfile.updateProfileImageUrl(memberVerify.getContents());
-        } else {
-            memberVerify.fail(dto.getReason());
+            return;
         }
-
-        if (member.getMemberStatus() == MemberStatus.APPROVAL) {
-            member.updateMemberStatus();
-        }
+        memberVerify.fail(dto.getReason());
     }
 
     @Transactional(readOnly = true)
     public AdminMemberStudentIdResponses readStudentIdImagePendingMembers(Pageable pageable) {
+        long count = memberVerifyRepository.countByVerifyTypeAndVerifyStatus(STUDENT_ID, PENDING);
         Page<MemberVerify> paging = memberVerifyRepository.findByVerifyTypeAndVerifyStatus(STUDENT_ID, PENDING, pageable);
         List<MemberVerify> memberVerifies = paging.getContent();
-        return AdminMemberStudentIdResponses.from(memberVerifies);
+        return AdminMemberStudentIdResponses.from(count, memberVerifies);
     }
 
     public void updateMemberStudentIdStatus(StatusUpdateDto dto) {
-        StudentIdImageStatus status = StudentIdImageStatus.from(dto.getStatus());
-
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
-
         MemberProfile memberProfile = member.getMemberProfile();
+        StudentIdImageStatus status = StudentIdImageStatus.from(dto.getStatus());
+
+        updateVerification(dto, status, memberVerify, memberProfile);
+
         memberProfile.updateStudentIdImageStatus(status);
-
-        if (status.isDone()) {
-            Map<String, String> descriptions = ConvertUtil.stringToMap(memberVerify.getDescription());
-            memberProfile.updateStudentIdImageUrl(memberVerify.getContents())
-                    .updateGender(Gender.from(descriptions.getOrDefault("gender", DESCRIPTION_PARSING_FAIL)))
-                    .updateName(descriptions.getOrDefault("name", DESCRIPTION_PARSING_FAIL))
-                    .updateSchoolName(descriptions.getOrDefault("schoolName", DESCRIPTION_PARSING_FAIL))
-                    .updateBirthDate(LocalDate.parse(descriptions.getOrDefault("birthDate", DESCRIPTION_PARSING_FAIL)));
-
-            memberVerify.success();
-        } else {
-            memberVerify.fail(dto.getReason());
-        }
-
         member.updateMemberStatus();
+    }
+
+    private void updateVerification(
+            StatusUpdateDto dto, StudentIdImageStatus status,
+            MemberVerify memberVerify, MemberProfile memberProfile
+    ) {
+        if (status.isDone()) {
+            updateMemberProfileByStudentIdElements(memberVerify, memberProfile);
+            return;
+        }
+        memberVerify.fail(dto.getReason());
+    }
+
+    private void updateMemberProfileByStudentIdElements(MemberVerify memberVerify, MemberProfile memberProfile) {
+        Map<String, String> descriptions = ConvertUtil.stringToMap(memberVerify.getDescription());
+        memberProfile.updateStudentIdImageUrl(memberVerify.getContents())
+                .updateGender(Gender.from(descriptions.getOrDefault("gender", DESCRIPTION_PARSING_FAIL)))
+                .updateName(descriptions.getOrDefault("name", DESCRIPTION_PARSING_FAIL))
+                .updateSchoolName(descriptions.getOrDefault("schoolName", DESCRIPTION_PARSING_FAIL))
+                .updateBirthDate(LocalDate.parse(descriptions.getOrDefault("birthDate", DESCRIPTION_PARSING_FAIL)));
+
+        memberVerify.success();
     }
 }
