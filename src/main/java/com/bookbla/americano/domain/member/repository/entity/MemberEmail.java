@@ -1,7 +1,9 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.enums.EmailVerifyStatus;
+import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -35,6 +37,12 @@ public class MemberEmail extends BaseInsertEntity {
 
     @Enumerated(EnumType.STRING)
     private EmailVerifyStatus emailVerifyStatus;
+
+    public void validatePending() {
+        if (emailVerifyStatus == EmailVerifyStatus.PENDING) {
+            throw new BaseException(MemberEmailExceptionType.STILL_PENDING);
+        }
+    }
 
     public MemberEmail updateSchoolEmail(String schoolEmail) {
         this.schoolEmail = schoolEmail;

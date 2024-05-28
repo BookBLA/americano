@@ -1,11 +1,11 @@
-package com.bookbla.americano.domain.member.controller;
+package com.bookbla.americano.domain.alarm.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberPushAlarmAllDeleteResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberPushAlarmDeleteResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberPushAlarmResponse;
-import com.bookbla.americano.domain.member.service.MemberPushAlarmService;
+import com.bookbla.americano.domain.alarm.controller.dto.response.MemberPushAlarmAllDeleteResponse;
+import com.bookbla.americano.domain.alarm.controller.dto.response.MemberPushAlarmDeleteResponse;
+import com.bookbla.americano.domain.alarm.controller.dto.response.MemberPushAlarmResponse;
+import com.bookbla.americano.domain.alarm.service.MemberPushAlarmService;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

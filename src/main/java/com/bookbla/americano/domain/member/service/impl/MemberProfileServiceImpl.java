@@ -16,13 +16,10 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileU
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
-import com.bookbla.americano.domain.member.enums.EmailVerifyStatus;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
-import com.bookbla.americano.domain.member.enums.MemberVerifyStatus;
 import com.bookbla.americano.domain.member.enums.MemberVerifyType;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
-import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberEmailRepository;
@@ -54,43 +51,15 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberEmail memberEmail = memberEmailRepository.findByMember(member)
                 .orElseThrow(() -> new BaseException(MemberEmailExceptionType.EMAIL_NOT_REGISTERED));
-
-        if (memberEmail.getEmailVerifyStatus() == EmailVerifyStatus.PENDING) {
-            throw new BaseException(MemberEmailExceptionType.STILL_PENDING);
-        }
+        memberEmail.validatePending();
 
         saveProfileImageVerify(member, memberProfileDto.getProfileImageUrl());
         saveKakaoRoomVerify(member, memberProfileDto.getOpenKakaoRoomUrl());
         saveStudentIdVerify(member, memberProfileDto.toMemberVerifyDescription(), memberProfileDto.getStudentIdImageUrl());
 
         MemberProfile memberProfile = memberProfileDto.toMemberProfile();
-        memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING)
-                .updateStudentIdImageStatus(StudentIdImageStatus.PENDING)
-                .updateProfileImageStatus(ProfileImageStatus.PENDING);
-
         member.updateMemberProfile(memberProfile)
                 .updateMemberStatus(MemberStatus.APPROVAL);
-
-        return MemberProfileResponse.from(member, memberProfile);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public MemberProfileResponse readMemberProfile(Long memberId) {
-        Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = member.getMemberProfile();
-
-        return MemberProfileResponse.from(member, memberProfile);
-    }
-
-    @Override
-    public MemberProfileResponse updateMemberProfile(Long memberId, MemberProfileUpdateRequest request) {
-        Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = member.getMemberProfile();
-
-        saveProfileImageVerify(member, request.getProfileImageUrl());
-        saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
-        saveStudentIdVerify(member, request.toVerifyDescription(), request.getStudentIdImageUrl());
 
         return MemberProfileResponse.from(member, memberProfile);
     }
@@ -121,6 +90,27 @@ public class MemberProfileServiceImpl implements MemberProfileService {
                 .verifyType(MemberVerifyType.OPEN_KAKAO_ROOM_URL)
                 .build();
         memberVerifyRepository.save(kakaoRoomVerify);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MemberProfileResponse readMemberProfile(Long memberId) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberProfile memberProfile = member.getMemberProfile();
+
+        return MemberProfileResponse.from(member, memberProfile);
+    }
+
+    @Override
+    public MemberProfileResponse updateMemberProfile(Long memberId, MemberProfileUpdateRequest request) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberProfile memberProfile = member.getMemberProfile();
+
+        saveProfileImageVerify(member, request.getProfileImageUrl());
+        saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
+        saveStudentIdVerify(member, request.toVerifyDescription(), request.getStudentIdImageUrl());
+
+        return MemberProfileResponse.from(member, memberProfile);
     }
 
     @Override
@@ -167,7 +157,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
 
         MemberProfile memberProfile = member.getMemberProfile();
-        memberProfile.updateProfileImageStatus(ProfileImageStatus.PENDING);
+        memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
     }
 
     @Override

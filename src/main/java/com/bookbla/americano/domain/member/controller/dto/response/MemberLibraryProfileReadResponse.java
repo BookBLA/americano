@@ -1,16 +1,17 @@
 package com.bookbla.americano.domain.member.controller.dto.response;
 
-import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.bookbla.americano.domain.member.repository.entity.MemberBook;
-import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
+
+import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberBook;
+import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MemberLibraryProfileReadResponse {
 
     private final Long memberId;
@@ -18,12 +19,14 @@ public class MemberLibraryProfileReadResponse {
     private final int age;
     private final String gender;
     private final String school;
+    private final String profileImageStatus;
     private final String profileImageUrl;
     private final List<BookResponse> bookResponses;
 
     @Getter
-    @AllArgsConstructor
+    @RequiredArgsConstructor
     public static class BookResponse {
+
         private final Long memberBookId;
         private final boolean isRepresentative;
         private final String bookImageUrl;
@@ -42,6 +45,7 @@ public class MemberLibraryProfileReadResponse {
                 memberProfile.getGender().name(),
                 memberProfile.getSchoolName(),
                 pendingProfileImageUrl,
+                memberProfile.getProfileImageStatus().name(),
                 bookResponses
         );
     }
@@ -58,6 +62,7 @@ public class MemberLibraryProfileReadResponse {
                 memberProfile.getGender().name(),
                 memberProfile.getSchoolName(),
                 memberProfile.getProfileImageUrl(),
+                memberProfile.getProfileImageStatus().name(),
                 bookResponses
         );
     }

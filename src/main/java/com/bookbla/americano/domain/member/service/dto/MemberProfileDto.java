@@ -1,12 +1,13 @@
 package com.bookbla.americano.domain.member.service.dto;
 
-import com.bookbla.americano.domain.member.enums.Gender;
-import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
+import com.bookbla.americano.domain.member.enums.Gender;
+import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
+import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
+import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
+import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,14 +32,18 @@ public class MemberProfileDto {
 
     public MemberProfile toMemberProfile() {
         return MemberProfile.builder()
-            .name(name)
-            .birthDate(birthDate)
-            .gender(gender)
-            .schoolName(schoolName)
-            .schoolEmail(schoolEmail)
-            .phoneNumber(phoneNumber)
-            .build();
+                .name(name)
+                .birthDate(birthDate)
+                .gender(gender)
+                .schoolName(schoolName)
+                .schoolEmail(schoolEmail)
+                .phoneNumber(phoneNumber)
+                .openKakaoRoomStatus(OpenKakaoRoomStatus.PENDING)
+                .studentIdImageStatus(StudentIdImageStatus.PENDING)
+                .profileImageStatus(ProfileImageStatus.PENDING)
+                .build();
     }
+
     public String toMemberVerifyDescription() {
         return "name: " + getName() +
                 ", schoolName: " + getSchoolName() +

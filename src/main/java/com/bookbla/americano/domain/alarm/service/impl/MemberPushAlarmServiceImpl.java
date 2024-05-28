@@ -1,13 +1,13 @@
-package com.bookbla.americano.domain.member.service.impl;
+package com.bookbla.americano.domain.alarm.service.impl;
 
-import com.bookbla.americano.domain.member.controller.dto.response.MemberPushAlarmAllDeleteResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberPushAlarmDeleteResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberPushAlarmResponse;
+import com.bookbla.americano.domain.alarm.controller.dto.response.MemberPushAlarmAllDeleteResponse;
+import com.bookbla.americano.domain.alarm.controller.dto.response.MemberPushAlarmDeleteResponse;
+import com.bookbla.americano.domain.alarm.controller.dto.response.MemberPushAlarmResponse;
 import com.bookbla.americano.domain.member.repository.MemberPushAlarmRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberPushAlarm;
-import com.bookbla.americano.domain.member.service.MemberPushAlarmService;
+import com.bookbla.americano.domain.alarm.service.MemberPushAlarmService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
