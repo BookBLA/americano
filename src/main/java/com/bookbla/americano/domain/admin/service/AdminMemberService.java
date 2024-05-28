@@ -91,12 +91,12 @@ public class AdminMemberService {
     public void updateMemberKakaoRoomStatus(StatusUpdateDto dto) {
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
-
         OpenKakaoRoomStatus status = OpenKakaoRoomStatus.from(dto.getStatus());
         MemberProfile memberProfile = member.getMemberProfile();
-        memberProfile.updateOpenKakaoRoomStatus(status);
 
         updateVerification(dto, status, memberVerify, memberProfile);
+
+        memberProfile.updateOpenKakaoRoomStatus(status);
         member.updateMemberStatus();
     }
 
@@ -123,12 +123,12 @@ public class AdminMemberService {
     public void updateMemberImageStatus(StatusUpdateDto dto) {
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
-
         MemberProfile memberProfile = member.getMemberProfile();
         ProfileImageStatus status = ProfileImageStatus.from(dto.getStatus());
-        memberProfile.updateProfileImageStatus(status);
 
         updateVerification(dto, status, memberVerify, memberProfile);
+
+        memberProfile.updateProfileImageStatus(status);
         member.updateMemberStatus();
     }
 
@@ -155,12 +155,12 @@ public class AdminMemberService {
     public void updateMemberStudentIdStatus(StatusUpdateDto dto) {
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
-
         MemberProfile memberProfile = member.getMemberProfile();
         StudentIdImageStatus status = StudentIdImageStatus.from(dto.getStatus());
-        memberProfile.updateStudentIdImageStatus(status);
 
         updateVerification(dto, status, memberVerify, memberProfile);
+
+        memberProfile.updateStudentIdImageStatus(status);
         member.updateMemberStatus();
     }
 
@@ -169,13 +169,13 @@ public class AdminMemberService {
             MemberVerify memberVerify, MemberProfile memberProfile
     ) {
         if (status.isDone()) {
-            updateSuccess(memberVerify, memberProfile);
+            updateMemberProfileByStudentIdElements(memberVerify, memberProfile);
             return;
         }
         memberVerify.fail(dto.getReason());
     }
 
-    private void updateSuccess(MemberVerify memberVerify, MemberProfile memberProfile) {
+    private void updateMemberProfileByStudentIdElements(MemberVerify memberVerify, MemberProfile memberProfile) {
         Map<String, String> descriptions = ConvertUtil.stringToMap(memberVerify.getDescription());
         memberProfile.updateStudentIdImageUrl(memberVerify.getContents())
                 .updateGender(Gender.from(descriptions.getOrDefault("gender", DESCRIPTION_PARSING_FAIL)))
