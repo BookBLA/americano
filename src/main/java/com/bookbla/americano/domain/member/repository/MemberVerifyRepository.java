@@ -7,6 +7,7 @@ import com.bookbla.americano.domain.member.enums.MemberVerifyStatus;
 import com.bookbla.americano.domain.member.enums.MemberVerifyType;
 import com.bookbla.americano.domain.member.exception.MemberVerifyExceptionType;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
+import feign.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,8 +26,8 @@ public interface MemberVerifyRepository extends JpaRepository<MemberVerify, Long
 
     @Query("select mv.contents " +
             "from MemberVerify mv " +
-            "where mv.memberId = : memberId " +
+            "where mv.memberId = :memberId " +
             "and mv.verifyStatus = com.bookbla.americano.domain.member.enums.MemberVerifyStatus.PENDING " +
             "and mv.verifyType = com.bookbla.americano.domain.member.enums.MemberVerifyType.PROFILE_IMAGE ")
-    Optional<String> findMemberPendingProfileImage(Long memberId);
+    Optional<String> findMemberPendingProfileImage(@Param("memberId") Long memberId);
 }
