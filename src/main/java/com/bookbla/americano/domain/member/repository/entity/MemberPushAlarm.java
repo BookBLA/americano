@@ -1,6 +1,8 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.alarm.exception.MemberPushAlarmExceptionType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -34,5 +36,11 @@ public class MemberPushAlarm extends BaseInsertEntity {
     private String title;
 
     private String body;
+
+    public void validateOwner(Long memberId) {
+        if (this.member.getId() != memberId) {
+            throw new BaseException(MemberPushAlarmExceptionType.ALARAM_MEMBER_MISMATCH);
+        }
+    }
 
 }

@@ -36,7 +36,6 @@ public class AlarmServiceImpl implements AlarmService {
     private final MemberPushAlarmRepository memberPushAlarmRepository;
     private final PushAlarmLogRepository pushAlarmLogRepository;
 
-    @Override
     @Transactional
     public PushAlarmCreateResponse sendPushAlarm(PushAlarmCreateRequest pushAlarmCreateRequest) {
 

@@ -2,8 +2,6 @@ package com.bookbla.americano.domain.alarm.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
-import com.bookbla.americano.domain.alarm.controller.dto.response.MemberPushAlarmAllDeleteResponse;
-import com.bookbla.americano.domain.alarm.controller.dto.response.MemberPushAlarmDeleteResponse;
 import com.bookbla.americano.domain.alarm.controller.dto.response.MemberPushAlarmResponse;
 import com.bookbla.americano.domain.alarm.service.MemberPushAlarmService;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,33 +22,27 @@ public class MemberPushAlarmController {
 
     @GetMapping
     public ResponseEntity<MemberPushAlarmResponse> readPushAlarm(
-        @Parameter(hidden = true) @User LoginUser loginUser) {
-
-        MemberPushAlarmResponse memberPushAlarmResponse = memberPushAlarmService.readPushAlarm(
-            loginUser.getMemberId());
+        @Parameter(hidden = true) @User LoginUser loginUser
+    ) {
+        MemberPushAlarmResponse memberPushAlarmResponse = memberPushAlarmService.readPushAlarm(loginUser.getMemberId());
         return ResponseEntity.ok(memberPushAlarmResponse);
     }
 
     @DeleteMapping("/{memberPushAlarmId}")
-    public ResponseEntity<MemberPushAlarmDeleteResponse> deletePushAlarm(
+    public ResponseEntity<Void> deletePushAlarm(
         @Parameter(hidden = true) @User LoginUser loginuser,
-        @PathVariable("memberPushAlarmId") Long memberPushAlarmId) {
-
-        MemberPushAlarmDeleteResponse memberPushAlarmDeleteResponse = memberPushAlarmService.deletePushAlarm(
-            loginuser.getMemberId(), memberPushAlarmId
-        );
-
-        return ResponseEntity.ok(memberPushAlarmDeleteResponse);
+        @PathVariable("memberPushAlarmId") Long memberPushAlarmId
+    ) {
+        memberPushAlarmService.deletePushAlarm(loginuser.getMemberId(), memberPushAlarmId);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping
-    public ResponseEntity<MemberPushAlarmAllDeleteResponse> deleteAllPushAlarm(
-        @Parameter(hidden = true) @User LoginUser loginUser) {
-
-        MemberPushAlarmAllDeleteResponse memberPushAlarmAllDeleteResponse = memberPushAlarmService.deleteAllPushAlarm(
-            loginUser.getMemberId());
-
-        return ResponseEntity.ok(memberPushAlarmAllDeleteResponse);
+    public ResponseEntity<Void> deleteAllPushAlarm(
+        @Parameter(hidden = true) @User LoginUser loginUser
+    ) {
+        memberPushAlarmService.deleteAllPushAlarm(loginUser.getMemberId());
+        return ResponseEntity.noContent().build();
     }
 
 }
