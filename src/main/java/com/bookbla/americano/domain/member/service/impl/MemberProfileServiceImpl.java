@@ -17,7 +17,6 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberBookPro
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
-import com.bookbla.americano.domain.member.enums.MemberVerifyType;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
@@ -35,6 +34,10 @@ import com.bookbla.americano.domain.member.service.dto.MemberProfileStatusDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.bookbla.americano.domain.member.enums.MemberVerifyType.OPEN_KAKAO_ROOM_URL;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyType.PROFILE_IMAGE;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT_ID;
 
 
 @Service
@@ -65,29 +68,32 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     }
 
     private void saveStudentIdVerify(Member member, String verifyDescription, String studentImageUrl) {
+        memberVerifyRepository.deleteMemberPendingVerifies(member.getId(), STUDENT_ID);
         MemberVerify studentIdVerify = MemberVerify.builder()
                 .memberId(member.getId())
                 .description(verifyDescription)
                 .contents(studentImageUrl)
-                .verifyType(MemberVerifyType.STUDENT_ID)
+                .verifyType(STUDENT_ID)
                 .build();
         memberVerifyRepository.save(studentIdVerify);
     }
 
     private void saveProfileImageVerify(Member member, String imageUrl) {
+        memberVerifyRepository.deleteMemberPendingVerifies(member.getId(), PROFILE_IMAGE);
         MemberVerify profileImageVerify = MemberVerify.builder()
                 .memberId(member.getId())
                 .contents(imageUrl)
-                .verifyType(MemberVerifyType.PROFILE_IMAGE)
+                .verifyType(PROFILE_IMAGE)
                 .build();
         memberVerifyRepository.save(profileImageVerify);
     }
 
     private void saveKakaoRoomVerify(Member member, String kakaoRoomUrl) {
+        memberVerifyRepository.deleteMemberPendingVerifies(member.getId(), OPEN_KAKAO_ROOM_URL);
         MemberVerify kakaoRoomVerify = MemberVerify.builder()
                 .memberId(member.getId())
                 .contents(kakaoRoomUrl)
-                .verifyType(MemberVerifyType.OPEN_KAKAO_ROOM_URL)
+                .verifyType(OPEN_KAKAO_ROOM_URL)
                 .build();
         memberVerifyRepository.save(kakaoRoomVerify);
     }
