@@ -1,7 +1,6 @@
 package com.bookbla.americano.domain.member.service.impl;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.book.repository.BookRepository;
@@ -80,10 +79,7 @@ public class MemberBookServiceImpl implements MemberBookService {
     @Override
     @Transactional(readOnly = true)
     public MemberBookReadResponse readMemberBook(Long memberId, Long memberBookId) {
-        Member member = memberRepository.getByIdOrThrow(memberId);
         MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
-
-        memberBook.validateOwner(member);
         QuizQuestion quizQuestion = quizQuestionRepository.findByMemberBook(memberBook)
                 .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
 
