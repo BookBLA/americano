@@ -32,6 +32,8 @@ public class MemberLibraryServiceImpl implements MemberLibraryService {
         List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
 
         return memberVerifyRepository.findMemberPendingProfileImage(member.getId())
+                .stream()
+                .findFirst()
                 .map(image -> MemberLibraryProfileReadResponse.ofPendingProfileImage(member, memberBooks, image))
                 .orElseGet(() -> MemberLibraryProfileReadResponse.of(member, memberBooks));
     }
