@@ -23,6 +23,7 @@ public class MemberPushAlarmResponse {
         private final Long memberPushAlarmId;
         private final String title;
         private final String body;
+        private final String createdAt;
     }
 
     public static MemberPushAlarmResponse from(Member member,
@@ -32,6 +33,7 @@ public class MemberPushAlarmResponse {
                 .memberPushAlarmId(alarm.getId())
                 .title(alarm.getTitle())
                 .body(alarm.getBody())
+                .createdAt(alarm.getCreatedAt().toString())
                 .build())
             .collect(Collectors.toList());
 
