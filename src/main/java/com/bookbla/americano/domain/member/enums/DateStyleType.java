@@ -30,8 +30,4 @@ public enum DateStyleType {
                 .findFirst()
                 .orElseThrow(() -> new BaseException(MemberExceptionType.DATE_STYLE_NOT_VALID));
     }
-
-    public String getValue(){
-        return value;
-    }
 }

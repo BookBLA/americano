@@ -31,8 +31,4 @@ public enum SmokeType {
                 .findFirst()
                 .orElseThrow(() -> new BaseException(MemberExceptionType.SMOKE_TYPE_NOT_VALID));
     }
-
-    public String getValue(){
-        return value;
-    }
 }

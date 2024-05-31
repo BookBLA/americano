@@ -33,8 +33,4 @@ public enum DrinkType {
                 .findFirst()
                 .orElseThrow(() -> new BaseException(MemberExceptionType.DRINK_TYPE_NOT_VALID));
     }
-
-    public String getValue(){
-        return value;
-    }
 }
