@@ -2,7 +2,7 @@ package com.bookbla.americano.domain.alarm.service.impl;
 
 import com.bookbla.americano.domain.alarm.controller.dto.response.MemberPushAlarmAllDeleteResponse;
 import com.bookbla.americano.domain.alarm.controller.dto.response.MemberPushAlarmDeleteResponse;
-import com.bookbla.americano.domain.alarm.controller.dto.response.MemberPushAlarmResponse;
+import com.bookbla.americano.domain.alarm.controller.dto.response.MemberPushAlarmReadResponse;
 import com.bookbla.americano.domain.member.repository.MemberPushAlarmRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -21,10 +21,10 @@ public class MemberPushAlarmServiceImpl implements MemberPushAlarmService {
     private final MemberPushAlarmRepository memberPushAlarmRepository;
 
     @Override
-    public MemberPushAlarmResponse readPushAlarm(Long memberId) {
+    public MemberPushAlarmReadResponse readPushAlarm(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         List<MemberPushAlarm> memberPushAlarms = memberPushAlarmRepository.findByMember(member);
-        return MemberPushAlarmResponse.from(member, memberPushAlarms);
+        return MemberPushAlarmReadResponse.from(member, memberPushAlarms);
     }
 
     @Override

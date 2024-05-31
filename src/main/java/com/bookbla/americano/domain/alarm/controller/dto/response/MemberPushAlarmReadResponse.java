@@ -11,7 +11,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class MemberPushAlarmResponse {
+public class MemberPushAlarmReadResponse {
 
     private final Long memberId;
     private final List<PushAlarmInfo> pushAlarmInfos;
@@ -26,7 +26,7 @@ public class MemberPushAlarmResponse {
         private final String createdAt;
     }
 
-    public static MemberPushAlarmResponse from(Member member,
+    public static MemberPushAlarmReadResponse from(Member member,
         List<MemberPushAlarm> memberPushAlarms) {
         List<PushAlarmInfo> pushAlarmInfos = memberPushAlarms.stream()
             .map(alarm -> PushAlarmInfo.builder()
@@ -37,7 +37,7 @@ public class MemberPushAlarmResponse {
                 .build())
             .collect(Collectors.toList());
 
-        return MemberPushAlarmResponse.builder()
+        return MemberPushAlarmReadResponse.builder()
             .memberId(member.getId())
             .pushAlarmInfos(pushAlarmInfos)
             .build();
