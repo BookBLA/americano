@@ -32,4 +32,8 @@ public enum DateCostType {
                 .map(it ->it.value)
                 .collect(Collectors.toList());
     }
+
+    public String getValue(){
+        return value;
+    }
 }

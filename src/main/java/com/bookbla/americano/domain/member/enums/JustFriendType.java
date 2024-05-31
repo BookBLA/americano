@@ -33,4 +33,8 @@ public enum JustFriendType {
                 .findFirst()
                 .orElseThrow(() -> new BaseException(MemberExceptionType.JUST_FRIEND_TYPE_NOT_VALID));
     }
+
+    public String getValue(){
+        return value;
+    }
 }

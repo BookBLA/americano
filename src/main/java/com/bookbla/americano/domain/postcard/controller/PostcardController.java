@@ -1,17 +1,15 @@
 package com.bookbla.americano.domain.postcard.controller;
 
-import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.service.MemberPostcardService;
-import com.bookbla.americano.domain.postcard.controller.dto.request.PostcardStatusUpdateRequest;
 import com.bookbla.americano.domain.postcard.controller.dto.request.PostcardSendValidationRequest;
+import com.bookbla.americano.domain.postcard.controller.dto.request.PostcardStatusUpdateRequest;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardFromResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardToResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
-import com.bookbla.americano.domain.postcard.enums.PostcardPayType;
-import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
+import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.service.PostcardService;
 import com.bookbla.americano.domain.postcard.service.dto.request.SendPostcardRequest;
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardTypeResponse;
@@ -21,7 +19,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,16 +53,16 @@ public class PostcardController {
         return ResponseEntity.ok(postcardService.getPostcardsToMember(loginUser.getMemberId()));
     }
 
-    @Operation(summary = "엽서 사용", description = "{payType}에 따라 무료 엽서 또는 유료 엽서 1개 사용. payType : FREE / PAY")
-    @PatchMapping("/{payType}")
-    public void usePostcard(@Parameter(hidden = true) @User LoginUser loginUser, @PathVariable String payType) {
-        postcardService.useMemberPostcard(loginUser.getMemberId(), payType);
+    @Operation(summary = "엽서 읽기", description = "받은 엽서 조회를 위한 엽서 사용 및 엽서 상태 (READ)로 변경")
+    @PostMapping("/read/{postcardId}")
+    public void usePostcard(@Parameter(hidden = true) @User LoginUser loginUser, @PathVariable Long postcardId) {
+        postcardService.readMemberPostcard(loginUser.getMemberId(), postcardId);
     }
 
-    @Operation(summary = "Postcard 상태 업데이트", description = "{postcardId}를 가진 엽서의 상태 업데이트. Body의 status 값으로 해당 엽서의 상태(PostcardStatus)를 변경함.")
-    @PostMapping("/status/{postcardId}")
-    public void updatePostcardStatus(@PathVariable Long postcardId, @RequestBody @Valid PostcardStatusUpdateRequest request) {
-        postcardService.updatePostcardStatus(postcardId, request);
+    @Operation(summary = "Postcard 상태 업데이트", description = "Body의 postcardId를 가진 엽서의 상태 업데이트. Body의 status 값으로 해당 엽서의 상태(PostcardStatus)를 변경함.")
+    @PostMapping("/status")
+    public void updatePostcardStatus(@Parameter(hidden = true) @User LoginUser loginUser, @RequestBody @Valid PostcardStatusUpdateRequest request) {
+        postcardService.updatePostcardStatus(loginUser.getMemberId(), request.getPostcardId(), PostcardStatus.from(request.getStatus()));
     }
 
     @PostMapping("/send")

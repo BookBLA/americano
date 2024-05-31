@@ -34,5 +34,7 @@ public class PostcardFromResponse {
     private String memberOpenKakaoRoomUrl;
 
     // 엽서 정보
+    private long postcardId;
+
     private PostcardStatus postcardStatus;
 }

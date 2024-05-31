@@ -1,6 +1,5 @@
 package com.bookbla.americano.domain.postcard.controller.dto.request;
 
-import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,5 +12,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class PostcardStatusUpdateRequest {
     @NotNull
-    private PostcardStatus status;
+    private Long postcardId;
+    @NotNull
+    private String status;
 }

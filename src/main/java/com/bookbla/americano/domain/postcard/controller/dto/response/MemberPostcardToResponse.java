@@ -8,6 +8,7 @@ import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.JustFriendType;
 import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.SmokeType;
+import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.quiz.enums.CorrectStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,25 +36,29 @@ public class MemberPostcardToResponse {
 
     private int memberAge;
 
-    private Gender memberGender;
+    private String memberGender;
 
-    private DrinkType drinkType;
+    private String drinkType;
 
-    private SmokeType smokeType;
+    private String smokeType;
 
-    private ContactType contactType;
+    private String contactType;
 
-    private DateStyleType dateStyleType;
+    private String dateStyleType;
 
-    private DateCostType dateCostType;
+    private String dateCostType;
 
-    private Mbti mbti;
+    private String mbti;
 
-    private JustFriendType justFriendType;
+    private String justFriendType;
 
     private String memberSchoolName;
 
     private int quizScore;
+
+    private PostcardStatus postcardStatus;
+
+    private String postcardImageUrl;
 
     // 책 제목
     private List<String> bookTitles;
@@ -67,22 +72,25 @@ public class MemberPostcardToResponse {
     public MemberPostcardToResponse(long postcardId, long memberId, String memberName, String memberProfileImageUrl,
                                     int memberAge, Gender memberGender, DrinkType drinkType, SmokeType smokeType,
                                     ContactType contactType, DateStyleType dateStyleType, DateCostType dateCostType,
-                                    Mbti mbti, JustFriendType justFriendType, String memberSchoolName, String memberReplyContent) {
+                                    Mbti mbti, JustFriendType justFriendType, String memberSchoolName, String memberReplyContent,
+                                    PostcardStatus postcardStatus, String postcardImageUrl) {
 
         this.postcardId = postcardId;
         this.memberId = memberId;
         this.memberName = memberName;
         this.memberProfileImageUrl = memberProfileImageUrl;
         this.memberAge = memberAge;
-        this.memberGender = memberGender;
-        this.drinkType = drinkType;
-        this.smokeType = smokeType;
-        this.contactType = contactType;
-        this.dateStyleType = dateStyleType;
-        this.dateCostType = dateCostType;
-        this.mbti = mbti;
-        this.justFriendType = justFriendType;
+        this.memberGender = memberGender.name();
+        this.drinkType = drinkType.getValue();
+        this.smokeType = smokeType.getValue();
+        this.contactType = contactType.getValue();
+        this.dateStyleType = dateStyleType.getValue();
+        this.dateCostType = dateCostType.getValue();
+        this.mbti = mbti.name();
+        this.justFriendType = justFriendType.getValue();
         this.memberSchoolName = memberSchoolName;
         this.memberReplyContent = memberReplyContent;
+        this.postcardStatus = postcardStatus;
+        this.postcardImageUrl = postcardImageUrl;
     }
 }
