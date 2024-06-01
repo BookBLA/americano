@@ -68,6 +68,28 @@ public class MemberServiceImpl implements MemberService {
         return MemberDeleteResponse.from(member);
     }
 
+    @Override
+    @Transactional
+    public MemberStatusResponse updateStatus(Long memberId,
+                                             MemberStatus memberStatus,
+                                             String reason) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+
+        MemberStatusLog.MemberStatusLogBuilder memberStatusLogBuilder = MemberStatusLog.builder()
+            .beforeStatus(member.getMemberStatus())
+            .afterStatus(memberStatus);
+
+        if (memberStatus.isMatchingDisabled()) {
+            memberStatusLogBuilder.description(reason);
+        }
+
+        memberStatusLogRepository.save(memberStatusLogBuilder.build());
+
+        member.updateMemberStatus(memberStatus, LocalDateTime.now());
+
+        return MemberStatusResponse.from(member);
+    }
+
     private void update(Member member, MemberUpdateRequest request) {
         memberStatusLogRepository.save(
             MemberStatusLog.builder()
