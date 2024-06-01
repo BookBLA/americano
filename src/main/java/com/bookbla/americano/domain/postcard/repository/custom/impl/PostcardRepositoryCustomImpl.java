@@ -5,6 +5,7 @@ import com.bookbla.americano.domain.member.repository.entity.QMember;
 import com.bookbla.americano.domain.member.repository.entity.QMemberBook;
 import com.bookbla.americano.domain.memberask.repository.entity.QMemberAsk;
 import com.bookbla.americano.domain.memberask.repository.entity.QMemberReply;
+import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.custom.PostcardRepositoryCustom;
 import com.bookbla.americano.domain.postcard.repository.entity.QPostcard;
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardFromResponse;
@@ -86,7 +87,9 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                 .innerJoin(member).on(memberBook.member.eq(member))
                 .innerJoin(memberAsk).on(member.eq(memberAsk.member))
                 .innerJoin(memberReply).on(postcard.memberReply.eq(memberReply))
-                .where(postcard.receiveMember.id.eq(memberId))
+                .where(postcard.receiveMember.id.eq(memberId)
+                        .and(postcard.postcardStatus.eq(PostcardStatus.REFUSED).not())
+                        .and(postcard.postcardStatus.eq(PostcardStatus.ALL_WRONG).not()))
                 .orderBy(postcard.sendMember.id.asc())
                 .fetch();
     }
