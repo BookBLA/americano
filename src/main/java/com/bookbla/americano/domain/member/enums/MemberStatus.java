@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.enums;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +34,14 @@ public enum MemberStatus {
     public static MemberStatus from(String name) {
         return Arrays.stream(values())
             .filter(it -> it.value.equalsIgnoreCase(name))
+            .findFirst()
+            .orElseThrow(() -> new BaseException(MemberExceptionType.MEMBER_STATUS_NOT_VALID));
+    }
+
+    @JsonCreator
+    public static MemberStatus fromName(String name) {
+        return Arrays.stream(values())
+            .filter(it -> it.name().equalsIgnoreCase(name))
             .findFirst()
             .orElseThrow(() -> new BaseException(MemberExceptionType.MEMBER_STATUS_NOT_VALID));
     }
