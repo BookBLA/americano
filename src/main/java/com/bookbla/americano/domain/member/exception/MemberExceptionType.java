@@ -27,6 +27,7 @@ public enum MemberExceptionType implements ExceptionType {
     PROFILE_NOT_REGISTERED(HttpStatus.BAD_REQUEST, "member_014", "프로필이 등록되지 않은 회원입니다."),
     STYLE_ALREADY_REGISTERD(HttpStatus.BAD_REQUEST, "member_015", "스타일이 이미 등록된 회원입니다."),
     ALREADY_MEMBER_DELETED(HttpStatus.BAD_REQUEST, "member_016", "회원이 이미 탈퇴 상태입니다."),
+    MEMBER_STATUS_LOG_NOT_FOUND(HttpStatus.BAD_REQUEST, "member_017", "저장된 상태 변경 로그가 없습니다."),
     ;
 
     private final HttpStatus httpStatus;
