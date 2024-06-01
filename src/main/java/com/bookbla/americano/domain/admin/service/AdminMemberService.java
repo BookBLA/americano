@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.admin.service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -183,7 +184,7 @@ public class AdminMemberService {
                 .updateGender(Gender.from(descriptions.getOrDefault("gender", DESCRIPTION_PARSING_FAIL)))
                 .updateName(descriptions.getOrDefault("name", DESCRIPTION_PARSING_FAIL))
                 .updateSchoolName(descriptions.getOrDefault("schoolName", DESCRIPTION_PARSING_FAIL))
-                .updateBirthDate(LocalDate.parse(descriptions.getOrDefault("birthDate", DESCRIPTION_PARSING_FAIL)));
+                .updateBirthDate(LocalDate.parse(descriptions.getOrDefault("birthDate", DESCRIPTION_PARSING_FAIL), DateTimeFormatter.ofPattern("yyyyMMdd")));
 
         memberVerify.success();
     }
