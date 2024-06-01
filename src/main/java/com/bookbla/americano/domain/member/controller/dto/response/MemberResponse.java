@@ -22,7 +22,7 @@ public class MemberResponse {
             .oauthEmail(member.getOauthEmail())
             .oauthProfileImageUrl(member.getOauthProfileImageUrl())
             .memberType(member.getMemberType().name())
-            .memberStatus(member.getMemberStatus().getValue())
+            .memberStatus(member.getMemberStatus().name())
             .build();
     }
 
