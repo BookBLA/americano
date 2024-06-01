@@ -1,6 +1,8 @@
 package com.bookbla.americano.domain.member.service.impl;
 
-import java.util.List;
+import static com.bookbla.americano.domain.member.enums.MemberStatus.COMPLETED;
+import static com.bookbla.americano.domain.member.repository.entity.MemberBook.MAX_MEMBER_BOOK_COUNT;
+import static com.bookbla.americano.domain.member.repository.entity.MemberBook.MEMBER_BOOK_REMOVABLE_COUNT;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.book.repository.BookRepository;
@@ -21,13 +23,11 @@ import com.bookbla.americano.domain.member.service.MemberBookService;
 import com.bookbla.americano.domain.quiz.exception.QuizQuestionExceptionType;
 import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
 import com.bookbla.americano.domain.quiz.repository.entity.QuizQuestion;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.bookbla.americano.domain.member.enums.MemberStatus.COMPLETED;
-import static com.bookbla.americano.domain.member.repository.entity.MemberBook.MAX_MEMBER_BOOK_COUNT;
-import static com.bookbla.americano.domain.member.repository.entity.MemberBook.MEMBER_BOOK_REMOVABLE_COUNT;
 
 @Service
 @Transactional
@@ -50,10 +50,11 @@ public class MemberBookServiceImpl implements MemberBookService {
         validateAddMemberBook(member, book);
 
         MemberBook savedMemberBook = memberBookRepository.save(request.toMemberBook(book, member));
-        QuizQuestion savedQuizQuestion = quizQuestionRepository.save(request.toQuizQuestion(savedMemberBook));
+        QuizQuestion savedQuizQuestion = quizQuestionRepository.save(
+                request.toQuizQuestion(savedMemberBook));
 
         if (request.getIsRepresentative()) {
-            member.updateMemberStatus(COMPLETED);
+            member.updateMemberStatus(COMPLETED, LocalDateTime.now());
         }
         return MemberBookCreateResponse.from(savedMemberBook, savedQuizQuestion);
     }
@@ -81,7 +82,8 @@ public class MemberBookServiceImpl implements MemberBookService {
     public MemberBookReadResponse readMemberBook(Long memberId, Long memberBookId) {
         MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
         QuizQuestion quizQuestion = quizQuestionRepository.findByMemberBook(memberBook)
-                .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
+                .orElseThrow(() -> new BaseException(
+                        QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
 
         return MemberBookReadResponse.of(memberBook, quizQuestion);
     }
@@ -97,7 +99,8 @@ public class MemberBookServiceImpl implements MemberBookService {
         memberBook.validateOwner(member);
 
         QuizQuestion quizQuestion = quizQuestionRepository.findByMemberBook(memberBook)
-                .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
+                .orElseThrow(() -> new BaseException(
+                        QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
 
         memberBook.updateReview(request.getContents());
         quizQuestion.updateContents(request.getQuiz())
@@ -107,7 +110,8 @@ public class MemberBookServiceImpl implements MemberBookService {
     }
 
     @Override
-    public void updateMemberBookReview(MemberBookReviewUpdateRequest request, Long memberBookId, Long memberId) {
+    public void updateMemberBookReview(MemberBookReviewUpdateRequest request, Long memberBookId,
+                                       Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
 
@@ -117,14 +121,16 @@ public class MemberBookServiceImpl implements MemberBookService {
     }
 
     @Override
-    public void updateMemberBookQuiz(MemberBookQuizUpdateRequest request, Long memberBookId, Long memberId) {
+    public void updateMemberBookQuiz(MemberBookQuizUpdateRequest request, Long memberBookId,
+                                     Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberBook memberBook = memberBookRepository.getByIdOrThrow(memberBookId);
 
         memberBook.validateOwner(member);
 
         QuizQuestion quizQuestion = quizQuestionRepository.findByMemberBook(memberBook)
-                .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
+                .orElseThrow(() -> new BaseException(
+                        QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
 
         quizQuestion.updateContents(request.getQuiz())
                 .updateCorrectAnswer(request.getQuizAnswer())

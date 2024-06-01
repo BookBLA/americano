@@ -1,12 +1,8 @@
 package com.bookbla.americano.domain.member.service.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyType.OPEN_KAKAO_ROOM_URL;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyType.PROFILE_IMAGE;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT_ID;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
@@ -31,13 +27,17 @@ import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileStatusDto;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.bookbla.americano.domain.member.enums.MemberVerifyType.OPEN_KAKAO_ROOM_URL;
-import static com.bookbla.americano.domain.member.enums.MemberVerifyType.PROFILE_IMAGE;
-import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT_ID;
 
 
 @Service
@@ -50,24 +50,28 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     private final MemberVerifyRepository memberVerifyRepository;
 
     @Override
-    public MemberProfileResponse createMemberProfile(Long memberId, MemberProfileDto memberProfileDto) {
+    public MemberProfileResponse createMemberProfile(Long memberId,
+                                                     MemberProfileDto memberProfileDto) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberEmail memberEmail = memberEmailRepository.findByMember(member)
-                .orElseThrow(() -> new BaseException(MemberEmailExceptionType.EMAIL_NOT_REGISTERED));
+                .orElseThrow(
+                        () -> new BaseException(MemberEmailExceptionType.EMAIL_NOT_REGISTERED));
         memberEmail.validatePending();
 
         saveProfileImageVerify(member, memberProfileDto.getProfileImageUrl());
         saveKakaoRoomVerify(member, memberProfileDto.getOpenKakaoRoomUrl());
-        saveStudentIdVerify(member, memberProfileDto.toMemberVerifyDescription(), memberProfileDto.getStudentIdImageUrl());
+        saveStudentIdVerify(member, memberProfileDto.toMemberVerifyDescription(),
+                memberProfileDto.getStudentIdImageUrl());
 
         MemberProfile memberProfile = memberProfileDto.toMemberProfile();
         member.updateMemberProfile(memberProfile)
-                .updateMemberStatus(MemberStatus.APPROVAL);
+                .updateMemberStatus(MemberStatus.APPROVAL, LocalDateTime.now());
 
         return MemberProfileResponse.from(member, memberProfile);
     }
 
-    private void saveStudentIdVerify(Member member, String verifyDescription, String studentImageUrl) {
+    private void saveStudentIdVerify(Member member, String verifyDescription,
+                                     String studentImageUrl) {
         memberVerifyRepository.deleteMemberPendingVerifies(member.getId(), STUDENT_ID);
         MemberVerify studentIdVerify = MemberVerify.builder()
                 .memberId(member.getId())
@@ -108,7 +112,8 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     }
 
     @Override
-    public MemberProfileResponse updateMemberProfile(Long memberId, MemberProfileUpdateRequest request) {
+    public MemberProfileResponse updateMemberProfile(Long memberId,
+                                                     MemberProfileUpdateRequest request) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
 
@@ -241,7 +246,8 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MemberBookProfileResponse> getAllMembers(Long memberId, MemberBookProfileRequestDto requestDto) {
+    public List<MemberBookProfileResponse> getAllMembers(Long memberId,
+                                                         MemberBookProfileRequestDto requestDto) {
         List<MemberBookProfileResponse> allResult = memberRepository.getAllMembers(
                 memberId, requestDto);
         // 탐색 결과가 없을 때, EMPTY_MEMBER_BOOK Exception(해당 사용자의 선호 책도 없음)
