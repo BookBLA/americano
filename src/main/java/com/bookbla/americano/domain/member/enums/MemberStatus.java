@@ -26,15 +26,19 @@ public enum MemberStatus {
 
     public static List<String> getValues() {
         return Arrays.stream(values())
-                .map(it -> it.value)
-                .collect(Collectors.toList());
+            .map(it -> it.value)
+            .collect(Collectors.toList());
     }
 
     public static MemberStatus from(String name) {
         return Arrays.stream(values())
-                .filter(it -> it.value.equalsIgnoreCase(name))
-                .findFirst()
-                .orElseThrow(() -> new BaseException(MemberExceptionType.MEMBER_STATUS_NOT_VALID));
+            .filter(it -> it.value.equalsIgnoreCase(name))
+            .findFirst()
+            .orElseThrow(() -> new BaseException(MemberExceptionType.MEMBER_STATUS_NOT_VALID));
+    }
+
+    public boolean isMatchingDisabled() {
+        return this == MemberStatus.MATCHING_DISABLED;
     }
 
 }
