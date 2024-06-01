@@ -74,7 +74,7 @@ public class PostcardController {
     }
 
     @Operation(summary = "Postcard 상태 조회", description = "postcardId를 이용하여 엽서 상태를 반환")
-    @PostMapping("/status/{postcardId}")
+    @GetMapping("/status/{postcardId}")
     public PostcardStatusResponse updatePostcardStatus(
             @Parameter(hidden = true) @User LoginUser loginUser,
             @PathVariable Long postcardId) {
