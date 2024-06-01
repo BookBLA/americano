@@ -8,6 +8,7 @@ import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.JustFriendType;
 import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.SmokeType;
+import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.quiz.enums.CorrectStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,6 +54,12 @@ public class PostcardToResponse {
     private Mbti mbti;
 
     private JustFriendType justFriendType;
+
+    // 엽서 상태
+    private PostcardStatus postcardStatus;
+
+    // 엽서 이미지
+    private String postcardImageUrl;
 
     // 책 제목
     private String bookTitle;
