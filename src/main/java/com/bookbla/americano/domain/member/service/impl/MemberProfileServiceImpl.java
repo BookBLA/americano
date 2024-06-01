@@ -1,12 +1,8 @@
 package com.bookbla.americano.domain.member.service.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyType.OPEN_KAKAO_ROOM_URL;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyType.PROFILE_IMAGE;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT_ID;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
@@ -23,21 +19,27 @@ import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberEmailRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
+import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
 import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberEmail;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
+import com.bookbla.americano.domain.member.repository.entity.MemberStatusLog;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileStatusDto;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.bookbla.americano.domain.member.enums.MemberVerifyType.OPEN_KAKAO_ROOM_URL;
-import static com.bookbla.americano.domain.member.enums.MemberVerifyType.PROFILE_IMAGE;
-import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT_ID;
 
 
 @Service
@@ -46,55 +48,67 @@ import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT
 public class MemberProfileServiceImpl implements MemberProfileService {
 
     private final MemberRepository memberRepository;
+    private final MemberStatusLogRepository memberStatusLogRepository;
     private final MemberEmailRepository memberEmailRepository;
     private final MemberVerifyRepository memberVerifyRepository;
 
     @Override
-    public MemberProfileResponse createMemberProfile(Long memberId, MemberProfileDto memberProfileDto) {
+    public MemberProfileResponse createMemberProfile(Long memberId,
+                                                     MemberProfileDto memberProfileDto) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberEmail memberEmail = memberEmailRepository.findByMember(member)
-                .orElseThrow(() -> new BaseException(MemberEmailExceptionType.EMAIL_NOT_REGISTERED));
+            .orElseThrow(
+                () -> new BaseException(MemberEmailExceptionType.EMAIL_NOT_REGISTERED));
         memberEmail.validatePending();
 
         saveProfileImageVerify(member, memberProfileDto.getProfileImageUrl());
         saveKakaoRoomVerify(member, memberProfileDto.getOpenKakaoRoomUrl());
-        saveStudentIdVerify(member, memberProfileDto.toMemberVerifyDescription(), memberProfileDto.getStudentIdImageUrl());
+        saveStudentIdVerify(member, memberProfileDto.toMemberVerifyDescription(),
+            memberProfileDto.getStudentIdImageUrl());
 
         MemberProfile memberProfile = memberProfileDto.toMemberProfile();
+        memberStatusLogRepository.save(
+            MemberStatusLog.builder()
+                .memberId(member.getId())
+                .beforeStatus(member.getMemberStatus())
+                .afterStatus(MemberStatus.APPROVAL)
+                .build()
+        );
         member.updateMemberProfile(memberProfile)
-                .updateMemberStatus(MemberStatus.APPROVAL);
+            .updateMemberStatus(MemberStatus.APPROVAL, LocalDateTime.now());
 
         return MemberProfileResponse.from(member, memberProfile);
     }
 
-    private void saveStudentIdVerify(Member member, String verifyDescription, String studentImageUrl) {
+    private void saveStudentIdVerify(Member member, String verifyDescription,
+                                     String studentImageUrl) {
         memberVerifyRepository.deleteMemberPendingVerifies(member.getId(), STUDENT_ID);
         MemberVerify studentIdVerify = MemberVerify.builder()
-                .memberId(member.getId())
-                .description(verifyDescription)
-                .contents(studentImageUrl)
-                .verifyType(STUDENT_ID)
-                .build();
+            .memberId(member.getId())
+            .description(verifyDescription)
+            .contents(studentImageUrl)
+            .verifyType(STUDENT_ID)
+            .build();
         memberVerifyRepository.save(studentIdVerify);
     }
 
     private void saveProfileImageVerify(Member member, String imageUrl) {
         memberVerifyRepository.deleteMemberPendingVerifies(member.getId(), PROFILE_IMAGE);
         MemberVerify profileImageVerify = MemberVerify.builder()
-                .memberId(member.getId())
-                .contents(imageUrl)
-                .verifyType(PROFILE_IMAGE)
-                .build();
+            .memberId(member.getId())
+            .contents(imageUrl)
+            .verifyType(PROFILE_IMAGE)
+            .build();
         memberVerifyRepository.save(profileImageVerify);
     }
 
     private void saveKakaoRoomVerify(Member member, String kakaoRoomUrl) {
         memberVerifyRepository.deleteMemberPendingVerifies(member.getId(), OPEN_KAKAO_ROOM_URL);
         MemberVerify kakaoRoomVerify = MemberVerify.builder()
-                .memberId(member.getId())
-                .contents(kakaoRoomUrl)
-                .verifyType(OPEN_KAKAO_ROOM_URL)
-                .build();
+            .memberId(member.getId())
+            .contents(kakaoRoomUrl)
+            .verifyType(OPEN_KAKAO_ROOM_URL)
+            .build();
         memberVerifyRepository.save(kakaoRoomVerify);
     }
 
@@ -108,7 +122,8 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     }
 
     @Override
-    public MemberProfileResponse updateMemberProfile(Long memberId, MemberProfileUpdateRequest request) {
+    public MemberProfileResponse updateMemberProfile(Long memberId,
+                                                     MemberProfileUpdateRequest request) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
 
@@ -129,22 +144,22 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
     @Override
     public MemberProfileStatusResponse updateMemberProfileStatus(
-            Long memberId,
-            MemberProfileStatusDto dto
+        Long memberId,
+        MemberProfileStatusDto dto
     ) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
 
         memberProfile.updateProfileImageStatus(dto.getProfileImageStatus())
-                .updateOpenKakaoRoomStatus(dto.getOpenKakaoRoomStatus())
-                .updateStudentIdImageStatus(dto.getStudentIdImageStatus());
+            .updateOpenKakaoRoomStatus(dto.getOpenKakaoRoomStatus())
+            .updateStudentIdImageStatus(dto.getStudentIdImageStatus());
 
         return MemberProfileStatusResponse.from(memberProfile);
     }
 
     @Override
     public void updateMemberProfileImage(
-            Long memberId, MemberProfileImageUpdateRequest request
+        Long memberId, MemberProfileImageUpdateRequest request
     ) {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
@@ -156,7 +171,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
     @Override
     public void updateMemberProfileKakaoRoom(
-            Long memberId, MemberProfileOpenKakaoRoomUrlUpdateRequest request
+        Long memberId, MemberProfileOpenKakaoRoomUrlUpdateRequest request
     ) {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
@@ -171,7 +186,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     public List<MemberBookProfileResponse> findSameBookMembers(Long memberId,
                                                                MemberBookProfileRequestDto requestDto) {
         List<MemberBookProfileResponse> allResult = memberRepository.searchSameBookMember(
-                memberId, requestDto);
+            memberId, requestDto);
         // 탐색 결과가 없을 때, EMPTY_MEMBER_BOOK Exception(해당 사용자의 선호 책도 없음)
         if (allResult.isEmpty()) {
             throw new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOK);
@@ -192,10 +207,10 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
         // 1순위 : 대표책 - 대표책
         List<MemberBookProfileResponse> firstResults = findMatches(
-                userBookProfiles,
-                otherBookProfiles,
-                MemberBookProfileResponse::isBookIsRepresentative,
-                MemberBookProfileResponse::isBookIsRepresentative
+            userBookProfiles,
+            otherBookProfiles,
+            MemberBookProfileResponse::isBookIsRepresentative,
+            MemberBookProfileResponse::isBookIsRepresentative
         );
 
         Collections.shuffle(firstResults);
@@ -203,10 +218,10 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
         // 2순위 : 대표책 - 선호책
         List<MemberBookProfileResponse> secondResults = findMatches(
-                userBookProfiles,
-                otherBookProfiles,
-                MemberBookProfileResponse::isBookIsRepresentative,
-                otherBookProfile -> !otherBookProfile.isBookIsRepresentative()
+            userBookProfiles,
+            otherBookProfiles,
+            MemberBookProfileResponse::isBookIsRepresentative,
+            otherBookProfile -> !otherBookProfile.isBookIsRepresentative()
         );
 
         Collections.shuffle(secondResults);
@@ -214,10 +229,10 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
         // 3순위 : 선호책 - 대표책
         List<MemberBookProfileResponse> thirdResults = findMatches(
-                userBookProfiles,
-                otherBookProfiles,
-                userBookProfile -> !userBookProfile.isBookIsRepresentative(),
-                MemberBookProfileResponse::isBookIsRepresentative
+            userBookProfiles,
+            otherBookProfiles,
+            userBookProfile -> !userBookProfile.isBookIsRepresentative(),
+            MemberBookProfileResponse::isBookIsRepresentative
         );
 
         Collections.shuffle(thirdResults);
@@ -225,25 +240,26 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
         // 4순위 : 선호책 - 선호책
         List<MemberBookProfileResponse> fourthResults = findMatches(
-                userBookProfiles,
-                otherBookProfiles,
-                userBookProfile -> !userBookProfile.isBookIsRepresentative(),
-                otherBookProfile -> !otherBookProfile.isBookIsRepresentative()
+            userBookProfiles,
+            otherBookProfiles,
+            userBookProfile -> !userBookProfile.isBookIsRepresentative(),
+            otherBookProfile -> !otherBookProfile.isBookIsRepresentative()
         );
 
         Collections.shuffle(fourthResults);
 
         return Stream.of(firstResults, secondResults, thirdResults, fourthResults)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
     }
 
 
     @Override
     @Transactional(readOnly = true)
-    public List<MemberBookProfileResponse> getAllMembers(Long memberId, MemberBookProfileRequestDto requestDto) {
+    public List<MemberBookProfileResponse> getAllMembers(Long memberId,
+                                                         MemberBookProfileRequestDto requestDto) {
         List<MemberBookProfileResponse> allResult = memberRepository.getAllMembers(
-                memberId, requestDto);
+            memberId, requestDto);
         // 탐색 결과가 없을 때, EMPTY_MEMBER_BOOK Exception(해당 사용자의 선호 책도 없음)
         if (allResult.isEmpty()) {
             throw new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOK);
@@ -252,31 +268,31 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     }
 
     private List<MemberBookProfileResponse> findMatches(
-            List<MemberBookProfileResponse> userBookProfiles,
-            List<MemberBookProfileResponse> otherBookProfiles,
-            Predicate<MemberBookProfileResponse> userPredicate,
-            Predicate<MemberBookProfileResponse> otherPredicate) {
+        List<MemberBookProfileResponse> userBookProfiles,
+        List<MemberBookProfileResponse> otherBookProfiles,
+        Predicate<MemberBookProfileResponse> userPredicate,
+        Predicate<MemberBookProfileResponse> otherPredicate) {
 
         return new ArrayList<>(userBookProfiles.stream()
-                .filter(userPredicate)
-                .flatMap(userBookProfile -> otherBookProfiles.stream()
-                        .filter(otherBookProfile -> otherBookProfile.getBookId()
-                                == userBookProfile.getBookId())
-                        .filter(otherPredicate)
-                ).collect(Collectors.groupingBy(MemberBookProfileResponse::getMemberId,
-                        Collectors.collectingAndThen(
-                                Collectors.toList(),
-                                memberBookProfileList -> memberBookProfileList.get(0)
-                        )))
-                .values());
+            .filter(userPredicate)
+            .flatMap(userBookProfile -> otherBookProfiles.stream()
+                .filter(otherBookProfile -> otherBookProfile.getBookId()
+                    == userBookProfile.getBookId())
+                .filter(otherPredicate)
+            ).collect(Collectors.groupingBy(MemberBookProfileResponse::getMemberId,
+                Collectors.collectingAndThen(
+                    Collectors.toList(),
+                    memberBookProfileList -> memberBookProfileList.get(0)
+                )))
+            .values());
     }
 
     private void removeMemberToOtherBookProfiles(
-            List<MemberBookProfileResponse> otherBookProfiles,
-            List<MemberBookProfileResponse> resultBookProfiles) {
+        List<MemberBookProfileResponse> otherBookProfiles,
+        List<MemberBookProfileResponse> resultBookProfiles) {
         otherBookProfiles.removeIf(otherBookProfile -> resultBookProfiles.stream()
-                .anyMatch(resultBookProfile -> resultBookProfile.getMemberId()
-                        == otherBookProfile.getMemberId()));
+            .anyMatch(resultBookProfile -> resultBookProfile.getMemberId()
+                == otherBookProfile.getMemberId()));
     }
 
     private void addBookProfileToList(List<MemberBookProfileResponse> list,

@@ -1,7 +1,5 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
-import java.time.LocalDateTime;
-
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.auth.exception.LoginExceptionType;
@@ -10,6 +8,7 @@ import com.bookbla.americano.domain.member.enums.MemberType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.bookbla.americano.domain.member.exception.PolicyExceptionType;
+import java.time.LocalDateTime;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -52,6 +51,8 @@ public class Member extends BaseInsertEntity {
 
     private LocalDateTime deleteAt;
 
+    private LocalDateTime statusModifiedAt;
+
     @Embedded
     @Getter(AccessLevel.NONE)
     private MemberProfile memberProfile;
@@ -86,8 +87,9 @@ public class Member extends BaseInsertEntity {
         return this;
     }
 
-    public Member updateMemberStatus(MemberStatus memberStatus) {
+    public Member updateMemberStatus(MemberStatus memberStatus, LocalDateTime statusModifiedAt) {
         this.memberStatus = memberStatus;
+        this.statusModifiedAt = statusModifiedAt;
         return this;
     }
 

@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.member.controller;
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberStatusUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberDeleteResponse;
@@ -12,6 +13,8 @@ import com.bookbla.americano.domain.member.service.MemberPostcardService;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
 import com.bookbla.americano.domain.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Parameter;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -21,13 +24,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/members")
@@ -52,6 +53,17 @@ public class MemberController {
         MemberResponse memberResponse = memberService.updateMember(loginUser.getMemberId(),
             memberUpdateRequest);
         return ResponseEntity.ok(memberResponse);
+    }
+
+    @PostMapping("/status")
+    public ResponseEntity<MemberStatusResponse> updateMemberStatus(
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MemberStatusUpdateRequest memberStatusUpdateRequest) {
+        MemberStatusResponse memberStatusResponse = memberService.updateStatus(
+            loginUser.getMemberId(), memberStatusUpdateRequest.getMemberStatus(),
+            memberStatusUpdateRequest.getReason());
+
+        return ResponseEntity.ok(memberStatusResponse);
     }
 
     @DeleteMapping
@@ -104,10 +116,11 @@ public class MemberController {
 
     @GetMapping("/all-other-members")
     public ResponseEntity<Page<MemberBookProfileResponse>> getAllMembersProfile(
-            @Parameter(hidden = true) @User LoginUser loginUser,
-            @ModelAttribute MemberBookProfileRequestDto memberBookProfileRequestDto,
-            Pageable pageable) {
-        List<MemberBookProfileResponse> result = memberProfileService.getAllMembers(loginUser.getMemberId(), memberBookProfileRequestDto);
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @ModelAttribute MemberBookProfileRequestDto memberBookProfileRequestDto,
+        Pageable pageable) {
+        List<MemberBookProfileResponse> result = memberProfileService.getAllMembers(
+            loginUser.getMemberId(), memberBookProfileRequestDto);
         if (pageable == null) {
             pageable = PageRequest.of(0, 0);
         }
@@ -119,8 +132,8 @@ public class MemberController {
             memberBookProfileResponsePage = Page.empty();
         } else {
             memberBookProfileResponsePage = new PageImpl<>(
-                    result.subList(start, end), pageable,
-                    result.size());
+                result.subList(start, end), pageable,
+                result.size());
         }
         return ResponseEntity.ok(memberBookProfileResponsePage);
     }
