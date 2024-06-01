@@ -8,7 +8,9 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberStatusR
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
+import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberStatusLog;
 import com.bookbla.americano.domain.member.service.MemberService;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
+    private final MemberStatusLogRepository memberStatusLogRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -52,16 +55,31 @@ public class MemberServiceImpl implements MemberService {
         if (member.getMemberStatus() == MemberStatus.DELETED) {
             throw new BaseException(MemberExceptionType.MEMBER_STATUS_NOT_VALID);
         }
+        memberStatusLogRepository.save(
+            MemberStatusLog.builder()
+                .memberId(member.getId())
+                .beforeStatus(member.getMemberStatus())
+                .afterStatus(MemberStatus.DELETED)
+                .build()
+        );
         member.updateDeleteAt(LocalDateTime.now())
-                .updateMemberStatus(MemberStatus.DELETED, LocalDateTime.now());
+            .updateMemberStatus(MemberStatus.DELETED, LocalDateTime.now());
 
         return MemberDeleteResponse.from(member);
     }
 
     private void update(Member member, MemberUpdateRequest request) {
+        memberStatusLogRepository.save(
+            MemberStatusLog.builder()
+                .memberId(member.getId())
+                .beforeStatus(member.getMemberStatus())
+                .afterStatus(request.getMemberStatus())
+                .build()
+        );
+
         member.updateOauthEmail(request.getOauthEmail())
-                .updateMemberType(request.getMemberType())
-                .updateMemberStatus(request.getMemberStatus(), LocalDateTime.now())
-                .updateMemberType(request.getMemberType());
+            .updateMemberType(request.getMemberType())
+            .updateMemberStatus(request.getMemberStatus(), LocalDateTime.now())
+            .updateMemberType(request.getMemberType());
     }
 }

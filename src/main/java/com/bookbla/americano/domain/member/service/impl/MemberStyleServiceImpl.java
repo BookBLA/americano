@@ -7,7 +7,9 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCre
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
+import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberStatusLog;
 import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
 import com.bookbla.americano.domain.member.service.MemberStyleService;
 import com.bookbla.americano.domain.memberask.exception.MemberAskExceptionType;
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberStyleServiceImpl implements MemberStyleService {
 
     private final MemberRepository memberRepository;
+    private final MemberStatusLogRepository memberStatusLogRepository;
     private final MemberAskRepository memberAskRepository;
 
     @Override
@@ -34,7 +37,7 @@ public class MemberStyleServiceImpl implements MemberStyleService {
         MemberStyle memberStyle = member.getMemberStyle();
 
         MemberAsk memberAsk = memberAskRepository.findByMember(member)
-                .orElseThrow(() -> new BaseException(MemberAskExceptionType.NOT_REGISTERED_MEMBER));
+            .orElseThrow(() -> new BaseException(MemberAskExceptionType.NOT_REGISTERED_MEMBER));
 
         return MemberStyleResponse.of(member, memberStyle, memberAsk);
     }
@@ -48,10 +51,19 @@ public class MemberStyleServiceImpl implements MemberStyleService {
         member.updateMemberStyle(memberStyleCreateRequest.toMemberStyle());
 
         MemberAsk memberAsk = MemberAsk.builder()
-                .member(member)
-                .contents(memberStyleCreateRequest.getMemberAsk())
-                .build();
+            .member(member)
+            .contents(memberStyleCreateRequest.getMemberAsk())
+            .build();
         MemberAsk savedMemberAsk = memberAskRepository.save(memberAsk);
+
+        memberStatusLogRepository.save(
+            MemberStatusLog.builder()
+                .memberId(member.getId())
+                .beforeStatus(member.getMemberStatus())
+                .afterStatus(BOOK)
+                .build()
+        );
+
         member.updateMemberStatus(BOOK, LocalDateTime.now());
 
         return MemberStyleResponse.of(member, member.getMemberStyle(), savedMemberAsk);
@@ -64,7 +76,7 @@ public class MemberStyleServiceImpl implements MemberStyleService {
         MemberStyle memberStyle = member.getMemberStyle();
 
         MemberAsk memberAsk = memberAskRepository.findByMember(member)
-                .orElseThrow(() -> new BaseException(MemberAskExceptionType.NOT_REGISTERED_MEMBER));
+            .orElseThrow(() -> new BaseException(MemberAskExceptionType.NOT_REGISTERED_MEMBER));
 
         memberAsk.updateContent(memberStyleUpdateRequest.getMemberAsk());
         updateMemberStyle(memberStyle, memberStyleUpdateRequest);
@@ -72,11 +84,11 @@ public class MemberStyleServiceImpl implements MemberStyleService {
 
     private void updateMemberStyle(MemberStyle memberStyle, MemberStyleUpdateRequest request) {
         memberStyle.updateMbti(request.getMbti())
-                .updateDrinkType(request.getDrinkType())
-                .updateDateCostType(request.getDateCostType())
-                .updateSmokeType(request.getSmokeType())
-                .updateContactType(request.getContactType())
-                .updateDateStyleType(request.getDateStyleType())
-                .updateJustFriendType(request.getJustFriendType());
+            .updateDrinkType(request.getDrinkType())
+            .updateDateCostType(request.getDateCostType())
+            .updateSmokeType(request.getSmokeType())
+            .updateContactType(request.getContactType())
+            .updateDateStyleType(request.getDateStyleType())
+            .updateJustFriendType(request.getJustFriendType());
     }
 }
