@@ -50,9 +50,9 @@ public class MemberVerify extends BaseInsertEntity {
     @Enumerated(EnumType.STRING)
     private MemberVerifyStatus verifyStatus = PENDING;
 
-    public void success() {
+    public void success(String successReason) {
         this.verifyStatus = SUCCESS;
-        this.description = "성공";
+        this.description = successReason;
     }
 
     public void fail(String failReason) {

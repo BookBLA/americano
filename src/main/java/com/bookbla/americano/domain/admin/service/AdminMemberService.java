@@ -108,7 +108,7 @@ public class AdminMemberService {
             MemberVerify memberVerify, MemberProfile memberProfile
     ) {
         if (status.isDone()) {
-            memberVerify.success();
+            memberVerify.success(dto.getReason());
             memberProfile.updateOpenKakaoRoomUrl(memberVerify.getContents());
             return;
         }
@@ -140,7 +140,7 @@ public class AdminMemberService {
             MemberVerify memberVerify, MemberProfile memberProfile
     ) {
         if (status.isDone()) {
-            memberVerify.success();
+            memberVerify.success(dto.getReason());
             memberProfile.updateProfileImageUrl(memberVerify.getContents());
             return;
         }
@@ -172,6 +172,7 @@ public class AdminMemberService {
             MemberVerify memberVerify, MemberProfile memberProfile
     ) {
         if (status.isDone()) {
+            memberVerify.success(dto.getReason());
             updateMemberProfileByStudentIdElements(memberVerify, memberProfile);
             return;
         }
@@ -185,7 +186,5 @@ public class AdminMemberService {
                 .updateName(descriptions.getOrDefault("name", DESCRIPTION_PARSING_FAIL))
                 .updateSchoolName(descriptions.getOrDefault("schoolName", DESCRIPTION_PARSING_FAIL))
                 .updateBirthDate(LocalDate.parse(descriptions.getOrDefault("birthDate", DESCRIPTION_PARSING_FAIL), DateTimeFormatter.ofPattern("yyyyMMdd")));
-
-        memberVerify.success();
     }
 }

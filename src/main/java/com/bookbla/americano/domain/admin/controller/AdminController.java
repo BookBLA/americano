@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.admin.controller;
 
 import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberKakaoRoomStatusUpdateRequest;
 import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberProfileImageStatusUpdateRequest;
+import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberProfileStudentIdStatusUpdateRequest;
 import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberPushAlarmRequest;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKakaoRoomResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
@@ -101,7 +102,7 @@ public class AdminController {
     @PatchMapping("/member-verifies/{memberVerifyId}/pending/student-id/image")
     public ResponseEntity<Void> updateStudentIdPendingMemberStatus(
             @PathVariable Long memberVerifyId,
-            @RequestBody @Valid AdminMemberProfileImageStatusUpdateRequest request
+            @RequestBody @Valid AdminMemberProfileStudentIdStatusUpdateRequest request
     ) {
         adminMemberService.updateMemberStudentIdStatus(request.toDto(memberVerifyId));
         return ResponseEntity.ok().build();
