@@ -15,7 +15,7 @@ import static java.util.stream.Collectors.toList;
 public class AdminMemberProfileImageResponses {
 
     private final long totalCount;
-    private final List<AdminMemberProfileImageResponse> datas;
+    private final List<AdminMemberProfileImageResponse> data;
 
     public static AdminMemberProfileImageResponses from(long totalCount, List<MemberVerify> memberVerifies) {
         List<AdminMemberProfileImageResponse> pendingMemberProfileResponses = memberVerifies.stream()
