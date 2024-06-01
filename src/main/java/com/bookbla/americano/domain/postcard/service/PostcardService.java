@@ -7,10 +7,10 @@ import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.service.dto.request.SendPostcardRequest;
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardTypeResponse;
 import com.bookbla.americano.domain.postcard.service.dto.response.SendPostcardResponse;
-
 import java.util.List;
 
 public interface PostcardService {
+
     SendPostcardResponse send(Long memberId, SendPostcardRequest sendPostcardRequest);
 
     PostcardTypeResponse getPostcardTypeList();
@@ -22,6 +22,8 @@ public interface PostcardService {
     void readMemberPostcard(Long memberId, Long postcardId);
 
     void updatePostcardStatus(Long memberId, Long postcardId, PostcardStatus postcardStatus);
+
+    PostcardStatus getPostcardStatus(Long postcardId);
 
     PostcardSendValidateResponse validateSendPostcard(Long memberId, Long targetMemberId);
 }
