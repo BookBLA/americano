@@ -76,6 +76,7 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
         MemberStatusLog.MemberStatusLogBuilder memberStatusLogBuilder = MemberStatusLog.builder()
+            .memberId(memberId)
             .beforeStatus(member.getMemberStatus())
             .afterStatus(memberStatus);
 
