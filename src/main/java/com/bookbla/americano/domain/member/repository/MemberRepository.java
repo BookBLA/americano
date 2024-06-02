@@ -35,4 +35,14 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
 
     @Query("SELECT m FROM Member m WHERE m.memberStatus = :status1 OR m.memberStatus = :status2")
     List<Member> findByMemberStatus(@Param("status1") MemberStatus status1, @Param("status2") MemberStatus status2);
+
+    @Query("SELECT m " +
+        "FROM Member m " +
+        "WHERE m.memberProfile.phoneNumber NOT IN (" +
+        "    SELECT mc.otherPhoneNumber " +
+        "    FROM MemberContact mc " +
+        "    WHERE mc.member.id = :memberId) " +
+        "AND m.id != :memberId")
+    List<Member> findMembersWithPhoneNumbersNotInContacts(@Param("memberId") Long memberId);
+
 }
