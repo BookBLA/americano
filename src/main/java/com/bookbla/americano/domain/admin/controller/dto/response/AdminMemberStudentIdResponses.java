@@ -17,7 +17,7 @@ import static com.bookbla.americano.domain.member.repository.entity.MemberVerify
 public class AdminMemberStudentIdResponses {
 
     private final long totalCount;
-    private final List<AdminMemberStudentIdResponse> datas;
+    private final List<AdminMemberStudentIdResponse> data;
 
     public static AdminMemberStudentIdResponses from(long totalCount, List<MemberVerify> memberVerifies) {
         List<AdminMemberStudentIdResponse> adminMemberStudentIdResponses = memberVerifies.stream()

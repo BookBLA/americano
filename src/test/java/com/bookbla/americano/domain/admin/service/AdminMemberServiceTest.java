@@ -155,7 +155,7 @@ class AdminMemberServiceTest {
         AdminMemberKakaoRoomResponses adminMemberKakaoRoomResponses = adminMemberService.readKakaoRoomPendingMembers(pageRequest);
 
         // then
-        assertThat(adminMemberKakaoRoomResponses.getDatas()).hasSize(2);
+        assertThat(adminMemberKakaoRoomResponses.getData()).hasSize(2);
     }
 
     @Test
@@ -233,7 +233,7 @@ class AdminMemberServiceTest {
         AdminMemberProfileImageResponses adminMemberProfileImageResponses = adminMemberService.readProfileImagePendingMembers(pageRequest);
 
         // then
-        assertThat(adminMemberProfileImageResponses.getDatas()).hasSize(2);
+        assertThat(adminMemberProfileImageResponses.getData()).hasSize(2);
     }
 
     @Test
@@ -305,7 +305,7 @@ class AdminMemberServiceTest {
         AdminMemberStudentIdResponses adminMemberStudentIdResponses = adminMemberService.readStudentIdImagePendingMembers(pageRequest);
 
         // then
-        assertThat(adminMemberStudentIdResponses.getDatas()).hasSize(2);
+        assertThat(adminMemberStudentIdResponses.getData()).hasSize(2);
     }
 
     @Test

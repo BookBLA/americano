@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminMemberKakaoRoomResponses {
 
     private final long totalCount;
-    private final List<AdminMemberKakaoRoomResponse> datas;
+    private final List<AdminMemberKakaoRoomResponse> data;
 
     public static AdminMemberKakaoRoomResponses from(long totalCount, List<MemberVerify> memberVerifies) {
         List<AdminMemberKakaoRoomResponse> adminMemberKakaoRoomResponses = memberVerifies.stream()

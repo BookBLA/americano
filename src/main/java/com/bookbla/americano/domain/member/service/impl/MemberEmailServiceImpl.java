@@ -1,6 +1,11 @@
 package com.bookbla.americano.domain.member.service.impl;
 
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Optional;
+import java.util.Random;
+
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.base.utils.RedisUtil;
@@ -16,12 +21,7 @@ import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberEmail;
 import com.bookbla.americano.domain.member.repository.entity.MemberPostcard;
-import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.service.MemberEmailService;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Optional;
-import java.util.Random;
 import javax.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,14 +64,14 @@ public class MemberEmailServiceImpl implements MemberEmailService {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
         MemberEmail memberEmail = memberEmailRepository.findByMember(member)
-            .orElseGet(() -> MemberEmail.builder()
-                .member(member)
-                .schoolEmail(schoolEmail)
-                .emailVerifyStatus(EmailVerifyStatus.PENDING)
-                .build());
+                .orElseGet(() -> MemberEmail.builder()
+                        .member(member)
+                        .schoolEmail(schoolEmail)
+                        .emailVerifyStatus(EmailVerifyStatus.PENDING)
+                        .build());
 
         memberEmail.updateSchoolEmail(schoolEmail)
-            .updateEmailVerifyPending();
+                .updateEmailVerifyPending();
 
         memberEmailRepository.save(memberEmail);
 
@@ -88,13 +88,13 @@ public class MemberEmailServiceImpl implements MemberEmailService {
         String redisVerifyCode = redisUtil.getData(requestSchoolEmail);
 
         if (!requestSchoolEmail.equals(redisSchoolEmail) ||
-            !requestVerifyCode.equals(redisVerifyCode)) {
+                !requestVerifyCode.equals(redisVerifyCode)) {
             throw new BaseException(MemberEmailExceptionType.NOT_EQUAL_VERIFY_CODE);
         }
 
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberEmail memberEmail = memberEmailRepository.findByMember(member)
-            .orElseThrow(() -> new BaseException(MemberEmailExceptionType.EMAIL_NOT_REGISTERED));
+                .orElseThrow(() -> new BaseException(MemberEmailExceptionType.EMAIL_NOT_REGISTERED));
 
         if (!requestSchoolEmail.equals(memberEmail.getSchoolEmail())) {
             throw new BaseException(MemberEmailExceptionType.NOT_EQUAL_SCHOOL_EMAIL);
@@ -102,10 +102,12 @@ public class MemberEmailServiceImpl implements MemberEmailService {
 
         memberEmail.updateEmailVerifyDone();
 
-        // 메일 인증시 멤버 엽서 엔티티 생성
-        memberPostcardRepository.save(MemberPostcard.builder()
-            .member(member)
-            .build());
+        // 메일 인증시 멤버 엽서 엔티티 생성, 중복 생성 방지용 로직 추가
+        memberPostcardRepository.findMemberPostcardByMemberId(memberId)
+                .orElseGet(() -> memberPostcardRepository.save(MemberPostcard.builder()
+                        .member(member)
+                        .build()));
+
 
         redisUtil.deleteData(requestSchoolEmail);
         redisUtil.deleteData(redisVerifyCode);
@@ -119,7 +121,7 @@ public class MemberEmailServiceImpl implements MemberEmailService {
 
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberEmail memberEmail = memberEmailRepository.findByMember(member)
-            .orElseThrow(() -> new BaseException(MemberEmailExceptionType.EMAIL_NOT_REGISTERED));
+                .orElseThrow(() -> new BaseException(MemberEmailExceptionType.EMAIL_NOT_REGISTERED));
 
         String beforeSchoolEmail = memberEmail.getSchoolEmail();
         String beforeVerifyCode = redisUtil.getData(beforeSchoolEmail);
@@ -139,7 +141,7 @@ public class MemberEmailServiceImpl implements MemberEmailService {
         redisUtil.setDataExpire(schoolEmail, verifyCode, 5 * 60);
 
         memberEmail.updateSchoolEmail(schoolEmail)
-            .updateEmailVerifyPending();
+                .updateEmailVerifyPending();
 
         return EmailResponse.from(memberEmail);
     }

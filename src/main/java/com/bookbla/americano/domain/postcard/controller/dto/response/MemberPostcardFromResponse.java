@@ -43,10 +43,12 @@ public class MemberPostcardFromResponse {
     private List<String> bookImageUrls;
 
     // 엽서 정보
+    private long postcardId;
+
     private PostcardStatus postcardStatus;
 
     public MemberPostcardFromResponse(long memberId, String memberName, int memberAge, Gender memberGender, String memberSchoolName,
-                                      String memberProfileImageUrl, String memberOpenKakaoRoomUrl, PostcardStatus postcardStatus) {
+                                      String memberProfileImageUrl, String memberOpenKakaoRoomUrl, long postcardId, PostcardStatus postcardStatus) {
         this.memberId = memberId;
         this.memberName = memberName;
         this.memberAge = memberAge;
@@ -54,6 +56,7 @@ public class MemberPostcardFromResponse {
         this.memberSchoolName = memberSchoolName;
         this.memberProfileImageUrl = memberProfileImageUrl;
         this.memberOpenKakaoRoomUrl = memberOpenKakaoRoomUrl;
+        this.postcardId = postcardId;
         this.postcardStatus = postcardStatus;
     }
 }

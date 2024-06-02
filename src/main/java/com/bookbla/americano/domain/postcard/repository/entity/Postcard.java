@@ -1,17 +1,15 @@
 package com.bookbla.americano.domain.postcard.repository.entity;
 
+import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.ACCEPT;
+import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.ALL_WRONG;
+import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.PENDING;
+
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.memberask.repository.entity.MemberReply;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -22,10 +20,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-
-import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.PENDING;
-import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.ACCEPT;
-import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.ALL_WRONG;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
