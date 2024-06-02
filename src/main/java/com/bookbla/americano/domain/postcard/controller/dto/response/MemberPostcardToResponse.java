@@ -23,6 +23,8 @@ public class MemberPostcardToResponse {
 
     private String memberProfileImageUrl;
 
+    private String memberOpenKakaoRoomUrl;
+
     private int memberAge;
 
     private String memberGender;
@@ -64,7 +66,7 @@ public class MemberPostcardToResponse {
                                     int memberAge, Gender memberGender, DrinkType drinkType, SmokeType smokeType,
                                     ContactType contactType, DateStyleType dateStyleType, DateCostType dateCostType,
                                     Mbti mbti, JustFriendType justFriendType, String memberSchoolName, String memberReplyContent,
-                                    PostcardStatus postcardStatus, String postcardImageUrl) {
+                                    PostcardStatus postcardStatus, String postcardImageUrl, String memberKakaoRoomUrl) {
 
         this.postcardId = postcardId;
         this.memberId = memberId;
@@ -83,5 +85,6 @@ public class MemberPostcardToResponse {
         this.memberReplyContent = memberReplyContent;
         this.postcardStatus = postcardStatus;
         this.postcardImageUrl = postcardImageUrl;
+        this.memberOpenKakaoRoomUrl = memberKakaoRoomUrl;
     }
 }

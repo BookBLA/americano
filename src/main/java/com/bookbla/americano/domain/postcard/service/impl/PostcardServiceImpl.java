@@ -197,7 +197,7 @@ public class PostcardServiceImpl implements PostcardService {
                         i.getContactType(), i.getDateStyleType(), i.getDateCostType(), i.getMbti(),
                         i.getJustFriendType(),
                         i.getMemberSchoolName(), i.getMemberReplyContent(), i.getPostcardStatus(),
-                        i.getPostcardImageUrl());
+                        i.getPostcardImageUrl(), i.getMemberKakaoRoomUrl());
                 nowBookTitles = new ArrayList<>();
                 nowCorrectStatuses = new ArrayList<>();
                 nowScore = 0;

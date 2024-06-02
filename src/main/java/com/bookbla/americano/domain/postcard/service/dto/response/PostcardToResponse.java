@@ -61,4 +61,6 @@ public class PostcardToResponse {
     // 개인 질문 답
     private String memberReplyContent;
 
+    private String memberKakaoRoomUrl;
+
 }
