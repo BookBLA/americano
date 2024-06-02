@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.repository;
 
 
+import feign.Param;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +14,7 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
 
@@ -30,5 +32,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     List<Member> findByMemberPolicyAdAgreementPolicy(Boolean isAgree);
 
     long countByMemberStatus(MemberStatus memberStatus);
-    List<Member> findByMemberStatus(MemberStatus memberStatus);
+
+    @Query("SELECT m FROM Member m WHERE m.memberStatus = :status1 OR m.memberStatus = :status2")
+    List<Member> findByMemberStatus(@Param("status1") MemberStatus status1, @Param("status2") MemberStatus status2);
 }
