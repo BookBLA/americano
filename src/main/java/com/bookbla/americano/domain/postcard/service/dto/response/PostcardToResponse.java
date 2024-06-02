@@ -1,20 +1,9 @@
 package com.bookbla.americano.domain.postcard.service.dto.response;
 
-import com.bookbla.americano.domain.member.enums.ContactType;
-import com.bookbla.americano.domain.member.enums.DateCostType;
-import com.bookbla.americano.domain.member.enums.DateStyleType;
-import com.bookbla.americano.domain.member.enums.DrinkType;
-import com.bookbla.americano.domain.member.enums.Gender;
-import com.bookbla.americano.domain.member.enums.JustFriendType;
-import com.bookbla.americano.domain.member.enums.Mbti;
-import com.bookbla.americano.domain.member.enums.SmokeType;
+import com.bookbla.americano.domain.member.enums.*;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.quiz.enums.CorrectStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -63,6 +52,8 @@ public class PostcardToResponse {
 
     // 책 제목
     private String bookTitle;
+
+    private String bookImageUrl;
 
     // 독서 퀴즈 답
     private CorrectStatus correctStatus;

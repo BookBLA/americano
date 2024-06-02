@@ -34,14 +34,15 @@ import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
 import com.bookbla.americano.domain.quiz.repository.QuizReplyRepository;
 import com.bookbla.americano.domain.quiz.repository.entity.QuizQuestion;
 import com.bookbla.americano.domain.quiz.repository.entity.QuizReply;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -174,6 +175,7 @@ public class PostcardServiceImpl implements PostcardService {
         long now = -1;
         MemberPostcardToResponse nowResponse = new MemberPostcardToResponse();
         List<String> nowBookTitles = new ArrayList<>();
+        List<String> nowBookImageUrls = new ArrayList<>();
         List<CorrectStatus> nowCorrectStatuses = new ArrayList<>();
         int nowScore = 0;
         for (PostcardToResponse i : postcardToResponseList) {
@@ -202,6 +204,7 @@ public class PostcardServiceImpl implements PostcardService {
 
                 // 책 퀴즈 정답 여부 저장
                 nowBookTitles.add(i.getBookTitle());
+                nowBookImageUrls.add(i.getBookImageUrl());
                 nowCorrectStatuses.add(i.getCorrectStatus());
                 if (i.getCorrectStatus().equals(CorrectStatus.CORRECT)) {
                     nowScore++;
@@ -217,6 +220,7 @@ public class PostcardServiceImpl implements PostcardService {
         }
         if (!nowBookTitles.isEmpty()) {
             nowResponse.setBookTitles(nowBookTitles);
+            nowResponse.setBookImageUrls(nowBookImageUrls);
             nowResponse.setCorrectStatuses(nowCorrectStatuses);
             nowResponse.setQuizScore(nowScore);
 

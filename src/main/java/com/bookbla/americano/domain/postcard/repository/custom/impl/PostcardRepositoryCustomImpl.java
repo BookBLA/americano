@@ -75,6 +75,7 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                         , postcard.postcardStatus
                         , postcard.postcardType.imageUrl.as("postcardImageUrl")
                         , book.title.as("bookTitle")
+                        , book.imageUrl.as("bookImageUrl")
                         , quizReply.correctStatus
                         , memberReply.content.as("memberReplyContent"))
                 )
