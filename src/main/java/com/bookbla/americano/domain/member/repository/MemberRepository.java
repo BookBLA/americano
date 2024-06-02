@@ -30,4 +30,5 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     List<Member> findByMemberPolicyAdAgreementPolicy(Boolean isAgree);
 
     long countByMemberStatus(MemberStatus memberStatus);
+    List<Member> findByMemberStatus(MemberStatus memberStatus);
 }

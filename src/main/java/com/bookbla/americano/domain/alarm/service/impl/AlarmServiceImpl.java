@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.alarm.service.impl;
 
 import com.bookbla.americano.domain.alarm.controller.dto.request.PushAlarmAllCreateRequest;
 import com.bookbla.americano.domain.alarm.controller.dto.response.PushAlarmAllCreateResponse;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -45,10 +46,16 @@ public class AlarmServiceImpl implements AlarmService {
 
         Member member = memberRepository.getByIdOrThrow(pushAlarmCreateRequest.getMemberId());
 
+        // 해당 멤버가 푸시 토큰이 없다면 에러 발생
         if (member.getPushToken() == null) {
             throw new BaseException(PushAlarmExceptionType.NOT_FOUND_TOKEN);
         }
-
+        
+        // 해당 멤버가 회원가입 완료상태가 아니라면 에러 발생
+        if (member.getMemberStatus() != MemberStatus.COMPLETED) {
+            throw new BaseException(PushAlarmExceptionType.NOT_COMPLETED_MEMBER);
+        }
+        
         sendPushAlarmToExpo(member.getPushToken(), pushAlarmCreateRequest.getTitle(),
                 pushAlarmCreateRequest.getBody());
 
@@ -67,10 +74,16 @@ public class AlarmServiceImpl implements AlarmService {
     @Override
     @Transactional
     public void sendPushAlarm(Member member, String title, String body) {
-
+        // 해당 멤버가 푸시 토큰이 없다면 에러 발생
         if (member.getPushToken() == null) {
             throw new BaseException(PushAlarmExceptionType.NOT_FOUND_TOKEN);
         }
+
+        // 해당 멤버가 회원가입 완료상태가 아니라면 에러 발생
+        if (member.getMemberStatus() != MemberStatus.COMPLETED) {
+            throw new BaseException(PushAlarmExceptionType.NOT_COMPLETED_MEMBER);
+        }
+
 
         sendPushAlarmToExpo(member.getPushToken(), title, body);
 
@@ -91,12 +104,13 @@ public class AlarmServiceImpl implements AlarmService {
         String title = pushAlarmAllCreateRequest.getTitle();
         String body = pushAlarmAllCreateRequest.getBody();
 
-        List<Member> members = memberRepository.findAll();
-        List<String> tokens = members.stream()
+
+        List<Member> completedMembers =  memberRepository.findByMemberStatus(MemberStatus.COMPLETED);
+        List<String> tokens = completedMembers.stream()
             .map(Member::getPushToken)
             .collect(Collectors.toList());
 
-
+        // https://docs.expo.dev/push-notifications/sending-notifications/#request-errors
         List<List<String>> tokenBatches = new ArrayList<>();
         for (int i = 0; i < tokens.size(); i += 100) {
             int end = Math.min(tokens.size(), i + 100);
@@ -108,7 +122,7 @@ public class AlarmServiceImpl implements AlarmService {
             sendPushAlarmListToExpo(tokenBatch, title, body);
         }
 
-        for (Member member : members) {
+        for (Member member : completedMembers) {
             MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
                 .member(member)
                 .title(title)
