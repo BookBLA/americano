@@ -1,20 +1,9 @@
 package com.bookbla.americano.domain.postcard.controller.dto.response;
 
-import com.bookbla.americano.domain.member.enums.ContactType;
-import com.bookbla.americano.domain.member.enums.DateCostType;
-import com.bookbla.americano.domain.member.enums.DateStyleType;
-import com.bookbla.americano.domain.member.enums.DrinkType;
-import com.bookbla.americano.domain.member.enums.Gender;
-import com.bookbla.americano.domain.member.enums.JustFriendType;
-import com.bookbla.americano.domain.member.enums.Mbti;
-import com.bookbla.americano.domain.member.enums.SmokeType;
+import com.bookbla.americano.domain.member.enums.*;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.quiz.enums.CorrectStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -33,6 +22,8 @@ public class MemberPostcardToResponse {
     private String memberName;
 
     private String memberProfileImageUrl;
+
+    private String memberOpenKakaoRoomUrl;
 
     private int memberAge;
 
@@ -69,11 +60,13 @@ public class MemberPostcardToResponse {
     // 개인 질문 답
     private String memberReplyContent;
 
+    private List<String> bookImageUrls;
+
     public MemberPostcardToResponse(long postcardId, long memberId, String memberName, String memberProfileImageUrl,
                                     int memberAge, Gender memberGender, DrinkType drinkType, SmokeType smokeType,
                                     ContactType contactType, DateStyleType dateStyleType, DateCostType dateCostType,
                                     Mbti mbti, JustFriendType justFriendType, String memberSchoolName, String memberReplyContent,
-                                    PostcardStatus postcardStatus, String postcardImageUrl) {
+                                    PostcardStatus postcardStatus, String postcardImageUrl, String memberKakaoRoomUrl) {
 
         this.postcardId = postcardId;
         this.memberId = memberId;
@@ -92,5 +85,6 @@ public class MemberPostcardToResponse {
         this.memberReplyContent = memberReplyContent;
         this.postcardStatus = postcardStatus;
         this.postcardImageUrl = postcardImageUrl;
+        this.memberOpenKakaoRoomUrl = memberKakaoRoomUrl;
     }
 }

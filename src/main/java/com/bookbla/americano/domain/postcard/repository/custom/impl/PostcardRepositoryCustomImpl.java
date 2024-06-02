@@ -65,6 +65,7 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                         , postcard.sendMember.memberProfile.gender.as("memberGender")
                         , postcard.sendMember.memberProfile.schoolName.as("memberSchoolName")
                         , postcard.sendMember.memberProfile.profileImageUrl.as("memberProfileImageUrl")
+                        , postcard.sendMember.memberProfile.openKakaoRoomUrl.as("memberKakaoRoomUrl")
                         , postcard.sendMember.memberStyle.drinkType
                         , postcard.sendMember.memberStyle.smokeType
                         , postcard.sendMember.memberStyle.contactType
@@ -75,6 +76,7 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                         , postcard.postcardStatus
                         , postcard.postcardType.imageUrl.as("postcardImageUrl")
                         , book.title.as("bookTitle")
+                        , book.imageUrl.as("bookImageUrl")
                         , quizReply.correctStatus
                         , memberReply.content.as("memberReplyContent"))
                 )
