@@ -1,6 +1,8 @@
 package com.bookbla.americano.domain.alarm.controller;
 
+import com.bookbla.americano.domain.alarm.controller.dto.request.PushAlarmAllCreateRequest;
 import com.bookbla.americano.domain.alarm.controller.dto.request.PushAlarmCreateRequest;
+import com.bookbla.americano.domain.alarm.controller.dto.response.PushAlarmAllCreateResponse;
 import com.bookbla.americano.domain.alarm.controller.dto.response.PushAlarmCreateResponse;
 import com.bookbla.americano.domain.alarm.service.AlarmService;
 import javax.validation.Valid;
@@ -22,8 +24,19 @@ public class AlarmController {
     public ResponseEntity<PushAlarmCreateResponse> sendPushAlarm(
         @RequestBody @Valid PushAlarmCreateRequest pushAlarmCreateRequest
     ) {
-        PushAlarmCreateResponse pushAlarmCreateResponse = alarmService.sendPushAlarm(pushAlarmCreateRequest);
+        PushAlarmCreateResponse pushAlarmCreateResponse = alarmService.sendPushAlarm(
+            pushAlarmCreateRequest);
         return ResponseEntity.ok(pushAlarmCreateResponse);
     }
+
+    @PostMapping("/sends/all")
+    public ResponseEntity<PushAlarmAllCreateResponse> sendAllPushAlarm(
+        @RequestBody @Valid PushAlarmAllCreateRequest pushAlarmAllCreateRequest
+    ) {
+        PushAlarmAllCreateResponse pushAlarmAllCreateResponse = alarmService.sendPushAlarmAll(
+            pushAlarmAllCreateRequest);
+        return ResponseEntity.ok(pushAlarmAllCreateResponse);
+    }
+
 
 }

@@ -4,7 +4,7 @@ import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.alarm.controller.dto.response.MemberPushAlarmAllDeleteResponse;
 import com.bookbla.americano.domain.alarm.controller.dto.response.MemberPushAlarmDeleteResponse;
-import com.bookbla.americano.domain.alarm.controller.dto.response.MemberPushAlarmResponse;
+import com.bookbla.americano.domain.alarm.controller.dto.response.MemberPushAlarmReadResponse;
 import com.bookbla.americano.domain.alarm.service.MemberPushAlarmService;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +23,12 @@ public class MemberPushAlarmController {
     private final MemberPushAlarmService memberPushAlarmService;
 
     @GetMapping
-    public ResponseEntity<MemberPushAlarmResponse> readPushAlarm(
+    public ResponseEntity<MemberPushAlarmReadResponse> readPushAlarm(
         @Parameter(hidden = true) @User LoginUser loginUser) {
 
-        MemberPushAlarmResponse memberPushAlarmResponse = memberPushAlarmService.readPushAlarm(
+        MemberPushAlarmReadResponse memberPushAlarmReadResponse = memberPushAlarmService.readPushAlarm(
             loginUser.getMemberId());
-        return ResponseEntity.ok(memberPushAlarmResponse);
+        return ResponseEntity.ok(memberPushAlarmReadResponse);
     }
 
     @DeleteMapping("/{memberPushAlarmId}")
