@@ -46,15 +46,4 @@ public class MemberEmailController {
         return ResponseEntity.ok(emailResponse);
     }
 
-    @PutMapping("/resends")
-    public ResponseEntity<EmailResponse> resendEmail(
-        @Parameter(hidden = true) @User LoginUser loginUser,
-        @RequestBody @Valid EmailResendRequest emailResendRequest) {
-
-        EmailResponse emailResponse = memberEmailService.resendEmail(
-            loginUser.getMemberId(), emailResendRequest);
-
-        return ResponseEntity.ok(emailResponse);
-    }
-
 }
