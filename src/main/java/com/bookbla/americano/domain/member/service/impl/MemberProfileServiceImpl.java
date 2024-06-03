@@ -53,8 +53,9 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     private final MemberVerifyRepository memberVerifyRepository;
 
     @Override
+    @Transactional
     public MemberProfileResponse createMemberProfile(Long memberId,
-                                                     MemberProfileDto memberProfileDto) {
+        MemberProfileDto memberProfileDto) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberEmail memberEmail = memberEmailRepository.findByMember(member)
             .orElseThrow(
@@ -67,6 +68,12 @@ public class MemberProfileServiceImpl implements MemberProfileService {
             memberProfileDto.getStudentIdImageUrl());
 
         MemberProfile memberProfile = memberProfileDto.toMemberProfile();
+        member.updateMemberProfile(memberProfile)
+            .updateMemberStatus(MemberStatus.APPROVAL, LocalDateTime.now());
+
+        // member 객체 명시적으로 save 선언
+        memberRepository.save(member);
+
         memberStatusLogRepository.save(
             MemberStatusLog.builder()
                 .memberId(member.getId())
@@ -74,8 +81,6 @@ public class MemberProfileServiceImpl implements MemberProfileService {
                 .afterStatus(MemberStatus.APPROVAL)
                 .build()
         );
-        member.updateMemberProfile(memberProfile)
-            .updateMemberStatus(MemberStatus.APPROVAL, LocalDateTime.now());
 
         return MemberProfileResponse.from(member, memberProfile);
     }
