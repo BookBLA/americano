@@ -1,7 +1,6 @@
 package com.bookbla.americano.domain.member.service.impl;
 
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberDeleteResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStatusResponse;
@@ -36,15 +35,6 @@ public class MemberServiceImpl implements MemberService {
     public MemberStatusResponse readMemberStatus(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         return MemberStatusResponse.from(member);
-    }
-
-    @Override
-    @Transactional
-    public MemberResponse updateMember(Long memberId, MemberUpdateRequest memberUpdateRequest) {
-        Member member = memberRepository.getByIdOrThrow(memberId);
-        update(member, memberUpdateRequest);
-
-        return MemberResponse.from(member);
     }
 
     @Override
@@ -89,20 +79,5 @@ public class MemberServiceImpl implements MemberService {
         member.updateMemberStatus(memberStatus, LocalDateTime.now());
 
         return MemberStatusResponse.from(member);
-    }
-
-    private void update(Member member, MemberUpdateRequest request) {
-        memberStatusLogRepository.save(
-            MemberStatusLog.builder()
-                .memberId(member.getId())
-                .beforeStatus(member.getMemberStatus())
-                .afterStatus(request.getMemberStatus())
-                .build()
-        );
-
-        member.updateOauthEmail(request.getOauthEmail())
-            .updateMemberType(request.getMemberType())
-            .updateMemberStatus(request.getMemberStatus(), LocalDateTime.now())
-            .updateMemberType(request.getMemberType());
     }
 }
