@@ -67,21 +67,20 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         saveStudentIdVerify(member, memberProfileDto.toMemberVerifyDescription(),
             memberProfileDto.getStudentIdImageUrl());
 
+        MemberStatus beforeStatus = member.getMemberStatus();
         MemberProfile memberProfile = memberProfileDto.toMemberProfile();
         member.updateMemberProfile(memberProfile)
             .updateMemberStatus(MemberStatus.APPROVAL, LocalDateTime.now());
 
         // member 객체 명시적으로 save 선언
         memberRepository.save(member);
-
         memberStatusLogRepository.save(
             MemberStatusLog.builder()
                 .memberId(member.getId())
-                .beforeStatus(member.getMemberStatus())
+                .beforeStatus(beforeStatus)
                 .afterStatus(MemberStatus.APPROVAL)
                 .build()
         );
-
         return MemberProfileResponse.from(member, memberProfile);
     }
 
@@ -130,13 +129,26 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     public MemberProfileResponse updateMemberProfile(Long memberId,
                                                      MemberProfileUpdateRequest request) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = member.getMemberProfile();
+        // 승인이 필요한 항목들은 검증 테이블에 저장해둠
+        if (!member.isOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl())) {
+            saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
+        }
+        if (!member.isProfileImageUrl(request.getProfileImageUrl())) {
+            saveProfileImageVerify(member, request.getProfileImageUrl());
+        }
 
-        saveProfileImageVerify(member, request.getProfileImageUrl());
-        saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
-        saveStudentIdVerify(member, request.toVerifyDescription(), request.getStudentIdImageUrl());
+        update(member, request);
+        return MemberProfileResponse.from(member, member.getMemberProfile());
+    }
 
-        return MemberProfileResponse.from(member, memberProfile);
+    private void update(Member member, MemberProfileUpdateRequest request) {
+        member.getMemberProfile().updateName(request.getName())
+                .updateBirthDate(request.getBirthDate())
+                .updateGender(request.getGender())
+                .updateSchoolName(request.getSchoolName())
+                .updateSchoolEmail(request.getSchoolEmail())
+                .updatePhoneNumber(request.getPhoneNumber());
+        memberRepository.save(member);
     }
 
     @Override
@@ -144,21 +156,6 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     public MemberProfileStatusResponse readMemberProfileStatus(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
-        return MemberProfileStatusResponse.from(memberProfile);
-    }
-
-    @Override
-    public MemberProfileStatusResponse updateMemberProfileStatus(
-        Long memberId,
-        MemberProfileStatusDto dto
-    ) {
-        Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = member.getMemberProfile();
-
-        memberProfile.updateProfileImageStatus(dto.getProfileImageStatus())
-            .updateOpenKakaoRoomStatus(dto.getOpenKakaoRoomStatus())
-            .updateStudentIdImageStatus(dto.getStudentIdImageStatus());
-
         return MemberProfileStatusResponse.from(memberProfile);
     }
 
@@ -172,6 +169,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
         MemberProfile memberProfile = member.getMemberProfile();
         memberProfile.updateProfileImageStatus(ProfileImageStatus.PENDING);
+        memberRepository.save(member);
     }
 
     @Override
@@ -184,6 +182,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
         MemberProfile memberProfile = member.getMemberProfile();
         memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
+        memberRepository.save(member);
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -47,7 +48,6 @@ public class MemberStyleServiceImpl implements MemberStyleService {
                                                  MemberStyleCreateRequest memberStyleCreateRequest) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         member.validateStyleRegistered();
-
         member.updateMemberStyle(memberStyleCreateRequest.toMemberStyle());
 
         MemberAsk memberAsk = MemberAsk.builder()
@@ -56,16 +56,17 @@ public class MemberStyleServiceImpl implements MemberStyleService {
             .build();
         MemberAsk savedMemberAsk = memberAskRepository.save(memberAsk);
 
+        MemberStatus beforeStatus = member.getMemberStatus();
+        member.updateMemberStatus(BOOK, LocalDateTime.now());
+        memberRepository.save(member);
+
         memberStatusLogRepository.save(
             MemberStatusLog.builder()
                 .memberId(member.getId())
-                .beforeStatus(member.getMemberStatus())
+                .beforeStatus(beforeStatus)
                 .afterStatus(BOOK)
                 .build()
         );
-
-        member.updateMemberStatus(BOOK, LocalDateTime.now());
-
         return MemberStyleResponse.of(member, member.getMemberStyle(), savedMemberAsk);
     }
 

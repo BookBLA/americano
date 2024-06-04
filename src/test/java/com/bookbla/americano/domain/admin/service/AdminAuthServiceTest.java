@@ -12,6 +12,7 @@ import com.bookbla.americano.domain.admin.repository.AdminRepository;
 import com.bookbla.americano.domain.admin.repository.AdminSessionRepository;
 import com.bookbla.americano.domain.admin.repository.entity.Admin;
 import com.bookbla.americano.domain.admin.repository.entity.AdminSession;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @SuppressWarnings("NonAsciiCharacters")
 @SpringBootTest
-@Transactional
 class AdminAuthServiceTest {
 
     @Autowired
@@ -166,4 +166,9 @@ class AdminAuthServiceTest {
         assertThat(findAdminSession).isEmpty();
     }
 
+    @AfterEach
+    void tearDown() {
+        adminRepository.deleteAllInBatch();
+        adminSessionRepository.deleteAllInBatch();
+    }
 }

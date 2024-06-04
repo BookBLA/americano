@@ -4,7 +4,6 @@ import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStatusUpdateRequest;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberDeleteResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,15 +41,6 @@ public class MemberController {
     public ResponseEntity<MemberResponse> readMember(
         @Parameter(hidden = true) @User LoginUser loginUser) {
         MemberResponse memberResponse = memberService.readMember(loginUser.getMemberId());
-        return ResponseEntity.ok(memberResponse);
-    }
-
-    @PutMapping
-    public ResponseEntity<MemberResponse> updateMember(
-        @Parameter(hidden = true) @User LoginUser loginUser,
-        @RequestBody @Valid MemberUpdateRequest memberUpdateRequest) {
-        MemberResponse memberResponse = memberService.updateMember(loginUser.getMemberId(),
-            memberUpdateRequest);
         return ResponseEntity.ok(memberResponse);
     }
 

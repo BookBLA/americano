@@ -3,13 +3,11 @@ package com.bookbla.americano.domain.member.service.impl;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.Optional;
 import java.util.Random;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.base.utils.RedisUtil;
-import com.bookbla.americano.domain.member.controller.dto.request.EmailResendRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.EmailSendRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.EmailVerifyRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.EmailResponse;
@@ -114,40 +112,7 @@ public class MemberEmailServiceImpl implements MemberEmailService {
         return EmailResponse.from(memberEmail);
     }
 
-    @Override
-    @Transactional
-    public EmailResponse resendEmail(Long memberId, EmailResendRequest emailResendRequest) {
-        String schoolEmail = emailResendRequest.getSchoolEmail();
-
-        Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberEmail memberEmail = memberEmailRepository.findByMember(member)
-                .orElseThrow(() -> new BaseException(MemberEmailExceptionType.EMAIL_NOT_REGISTERED));
-
-        String beforeSchoolEmail = memberEmail.getSchoolEmail();
-        String beforeVerifyCode = redisUtil.getData(beforeSchoolEmail);
-
-        redisUtil.deleteData(beforeSchoolEmail);
-        redisUtil.deleteData(beforeVerifyCode);
-
-        // 이메일 중복 체크
-        checkDuplicatedEmail(schoolEmail);
-
-        // 이메일 보내기
-        String verifyCode = createVerifyCode();
-        sendEmailMessage(schoolEmail, verifyCode);
-
-        // 5분 뒤에 redis 만료
-        redisUtil.setDataExpire(verifyCode, schoolEmail, 5 * 60);
-        redisUtil.setDataExpire(schoolEmail, verifyCode, 5 * 60);
-
-        memberEmail.updateSchoolEmail(schoolEmail)
-                .updateEmailVerifyPending();
-
-        return EmailResponse.from(memberEmail);
-    }
-
     private void sendEmailMessage(String schoolEmail, String verifyCode) {
-
         String subject = "북블라 학교 이메일 인증코드";
 
         Context context = new Context();
@@ -167,11 +132,8 @@ public class MemberEmailServiceImpl implements MemberEmailService {
     }
 
     private void checkDuplicatedEmail(String schoolEmail) {
-
-        Optional<Member> member = memberRepository.findByMemberProfileSchoolEmail(schoolEmail);
-        if (member.isPresent()) {
-            throw new BaseException(MemberEmailExceptionType.ALREADY_EXIST);
-        }
+        memberRepository.findByMemberProfileSchoolEmail(schoolEmail)
+                .ifPresent(action -> new BaseException(MemberEmailExceptionType.ALREADY_EXIST));
     }
 
     private String createVerifyCode() {

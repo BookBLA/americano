@@ -153,4 +153,12 @@ public class Member extends BaseInsertEntity {
             throw new BaseException(LoginExceptionType.CANNOT_LOGIN_MEMBER_DELETED);
         }
     }
+
+    public boolean isOpenKakaoRoomUrl(String openKakaoRoomUrl) {
+        return this.memberProfile.isOpenKakaoRoomUrl(openKakaoRoomUrl);
+    }
+
+    public boolean isProfileImageUrl(String profileImageUrl) {
+        return this.memberProfile.isProfileImageUrl(profileImageUrl);
+    }
 }
