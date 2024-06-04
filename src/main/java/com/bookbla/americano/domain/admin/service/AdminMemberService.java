@@ -172,8 +172,8 @@ public class AdminMemberService {
             MemberVerify memberVerify, MemberProfile memberProfile
     ) {
         if (status.isDone()) {
-            memberVerify.success(dto.getReason());
             updateMemberProfileByStudentIdElements(memberVerify, memberProfile);
+            memberVerify.success(dto.getReason());
             return;
         }
         memberVerify.fail(dto.getReason());
