@@ -152,4 +152,12 @@ public class MemberProfile {
         }
         return getGender().name();
     }
+
+    public boolean isOpenKakaoRoomUrl(String openKakaoRoomUrl) {
+        return this.openKakaoRoomUrl.equals(openKakaoRoomUrl);
+    }
+
+    public boolean isProfileImageUrl(String profileImageUrl) {
+        return this.profileImageUrl.equals(profileImageUrl);
+    }
 }

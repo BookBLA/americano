@@ -130,13 +130,27 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     public MemberProfileResponse updateMemberProfile(Long memberId,
                                                      MemberProfileUpdateRequest request) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = member.getMemberProfile();
+        // 승인이 필요한 항목들은 검증 테이블에 저장해둠
+        if (!member.isOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl())) {
+            saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
+        }
+        if (!member.isProfileImageUrl(request.getProfileImageUrl())) {
+            saveProfileImageVerify(member, request.getProfileImageUrl());
+        }
 
-        saveProfileImageVerify(member, request.getProfileImageUrl());
-        saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
-        saveStudentIdVerify(member, request.toVerifyDescription(), request.getStudentIdImageUrl());
+        update(member, request);
+        return MemberProfileResponse.from(member, member.getMemberProfile());
+    }
 
-        return MemberProfileResponse.from(member, memberProfile);
+    private void update(Member member, MemberProfileUpdateRequest request) {
+        member.getMemberProfile().updateName(request.getName())
+                .updateBirthDate(request.getBirthDate())
+                .updateGender(request.getGender())
+                .updateSchoolName(request.getSchoolName())
+                .updateSchoolEmail(request.getSchoolEmail())
+                .updatePhoneNumber(request.getPhoneNumber());
+        memberRepository.save(member);
+        // 명시적으로 save
     }
 
     @Override
