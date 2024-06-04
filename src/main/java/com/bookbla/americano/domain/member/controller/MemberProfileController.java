@@ -5,7 +5,6 @@ import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileImageUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileOpenKakaoRoomUrlUpdateRequest;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileStatusUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
@@ -62,17 +61,6 @@ public class MemberProfileController {
             @Parameter(hidden = true) @User LoginUser loginUser) {
         MemberProfileStatusResponse memberProfileStatusResponse = memberProfileService.readMemberProfileStatus(
                 loginUser.getMemberId());
-
-        return ResponseEntity.ok(memberProfileStatusResponse);
-    }
-
-    @PatchMapping("/member-profiles/statuses")
-    public ResponseEntity<MemberProfileStatusResponse> updateMemberProfileStatus(
-            @Parameter(hidden = true) @User LoginUser loginUser,
-            @RequestBody @Valid MemberProfileStatusUpdateRequest memberProfileStatusUpdateRequest
-    ) {
-        MemberProfileStatusResponse memberProfileStatusResponse = memberProfileService.updateMemberProfileStatus(
-                loginUser.getMemberId(), memberProfileStatusUpdateRequest.toDto());
 
         return ResponseEntity.ok(memberProfileStatusResponse);
     }

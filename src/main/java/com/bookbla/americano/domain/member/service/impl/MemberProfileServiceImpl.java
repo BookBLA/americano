@@ -160,22 +160,6 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     }
 
     @Override
-    public MemberProfileStatusResponse updateMemberProfileStatus(
-        Long memberId,
-        MemberProfileStatusDto dto
-    ) {
-        Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = member.getMemberProfile();
-
-        memberProfile.updateProfileImageStatus(dto.getProfileImageStatus())
-            .updateOpenKakaoRoomStatus(dto.getOpenKakaoRoomStatus())
-            .updateStudentIdImageStatus(dto.getStudentIdImageStatus());
-
-        memberRepository.save(member);
-        return MemberProfileStatusResponse.from(memberProfile);
-    }
-
-    @Override
     public void updateMemberProfileImage(
         Long memberId, MemberProfileImageUpdateRequest request
     ) {
