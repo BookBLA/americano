@@ -67,21 +67,20 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         saveStudentIdVerify(member, memberProfileDto.toMemberVerifyDescription(),
             memberProfileDto.getStudentIdImageUrl());
 
+        MemberStatus beforeStatus = member.getMemberStatus();
         MemberProfile memberProfile = memberProfileDto.toMemberProfile();
         member.updateMemberProfile(memberProfile)
             .updateMemberStatus(MemberStatus.APPROVAL, LocalDateTime.now());
 
         // member 객체 명시적으로 save 선언
         memberRepository.save(member);
-
         memberStatusLogRepository.save(
             MemberStatusLog.builder()
                 .memberId(member.getId())
-                .beforeStatus(member.getMemberStatus())
+                .beforeStatus(beforeStatus)
                 .afterStatus(MemberStatus.APPROVAL)
                 .build()
         );
-
         return MemberProfileResponse.from(member, memberProfile);
     }
 
@@ -150,7 +149,6 @@ public class MemberProfileServiceImpl implements MemberProfileService {
                 .updateSchoolEmail(request.getSchoolEmail())
                 .updatePhoneNumber(request.getPhoneNumber());
         memberRepository.save(member);
-        // 명시적으로 save
     }
 
     @Override
@@ -173,6 +171,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
             .updateOpenKakaoRoomStatus(dto.getOpenKakaoRoomStatus())
             .updateStudentIdImageStatus(dto.getStudentIdImageStatus());
 
+        memberRepository.save(member);
         return MemberProfileStatusResponse.from(memberProfile);
     }
 
@@ -186,6 +185,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
         MemberProfile memberProfile = member.getMemberProfile();
         memberProfile.updateProfileImageStatus(ProfileImageStatus.PENDING);
+        memberRepository.save(member);
     }
 
     @Override
@@ -198,6 +198,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
 
         MemberProfile memberProfile = member.getMemberProfile();
         memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
+        memberRepository.save(member);
     }
 
     @Override
