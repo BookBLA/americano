@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.bookbla.americano.base.utils.ConvertUtil;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKakaoRoomResponses;
@@ -12,9 +11,7 @@ import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberPro
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileStatusResponse;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
-import com.bookbla.americano.domain.admin.service.dto.AlarmDto;
 import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
-import com.bookbla.americano.domain.alarm.service.AlarmService;
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.MemberVerifyStatus;
@@ -39,11 +36,9 @@ import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT
 import static com.bookbla.americano.domain.member.repository.entity.MemberVerify.DESCRIPTION_PARSING_FAIL;
 
 @RequiredArgsConstructor
-@Transactional
 @Service
 public class AdminMemberService {
 
-    private final AlarmService alarmService;
     private final MemberRepository memberRepository;
     private final MemberVerifyRepository memberVerifyRepository;
 
@@ -64,17 +59,6 @@ public class AdminMemberService {
         );
     }
 
-    public void sendPushAlarm(AlarmDto alarmDto) {
-        List<Member> members = memberRepository.findByMemberPolicyAdAgreementPolicy(true);
-        List<Member> possibleMembers = members.stream()
-                .filter(Member::canSendAdvertisementAlarm)
-                .collect(Collectors.toList());
-
-        possibleMembers.forEach(possibleMember ->
-                alarmService.sendPushAlarm(possibleMember, alarmDto.getTitle(), alarmDto.getContents())
-        );
-    }
-
     @Transactional(readOnly = true)
     public AdminMemberReadResponses readDeletedMembers(Pageable pageable) {
         long count = memberRepository.countByMemberStatus(MemberStatus.DELETED);
@@ -91,6 +75,7 @@ public class AdminMemberService {
         return AdminMemberKakaoRoomResponses.from(count, memberVerifies);
     }
 
+    @Transactional
     public void updateMemberKakaoRoomStatus(StatusUpdateDto dto) {
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
@@ -123,6 +108,7 @@ public class AdminMemberService {
         return AdminMemberProfileImageResponses.from(count, memberVerifies);
     }
 
+    @Transactional
     public void updateMemberImageStatus(StatusUpdateDto dto) {
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
@@ -155,6 +141,7 @@ public class AdminMemberService {
         return AdminMemberStudentIdResponses.from(count, memberVerifies);
     }
 
+    @Transactional
     public void updateMemberStudentIdStatus(StatusUpdateDto dto) {
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());

@@ -4,6 +4,8 @@ import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.base.log.enums.PushAlarmStatus;
 import com.bookbla.americano.base.log.enums.PushAlarmType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,11 +28,14 @@ public class PushAlarmLog extends BaseInsertEntity {
 
     private String token;
 
+    private Long memberId;
+
+    @Enumerated(EnumType.STRING)
     private PushAlarmType pushAlarmType;
 
+    @Enumerated(EnumType.STRING)
     private PushAlarmStatus pushAlarmStatus;
 
     private String title;
-
     private String body;
 }
