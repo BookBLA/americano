@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDate;
+import java.time.Period;
+
 @Getter
 @Setter
 @Builder
@@ -33,4 +36,20 @@ public class MemberBookProfileResponse {
     private String bookImageUrl;
 
     private boolean bookIsRepresentative;
+
+    public MemberBookProfileResponse(BookProfileResponse bookProfileResponse) {
+        this.memberId = bookProfileResponse.getMemberId();
+        this.bookId = bookProfileResponse.getBookId();
+        this.memberName = bookProfileResponse.getMemberName();
+        this.memberAge = getAge(bookProfileResponse.getMemberBirthDate());
+        this.memberGender = bookProfileResponse.getMemberGender();
+        this.memberSchoolName = bookProfileResponse.getMemberSchoolName();
+        this.bookName = bookProfileResponse.getBookName();
+        this.bookImageUrl = bookProfileResponse.getBookImageUrl();
+        this.bookIsRepresentative = bookProfileResponse.isBookIsRepresentative();
+    }
+
+    private int getAge(LocalDate birthDay) {
+        return Period.between(birthDay, LocalDate.now()).getYears();
+    }
 }

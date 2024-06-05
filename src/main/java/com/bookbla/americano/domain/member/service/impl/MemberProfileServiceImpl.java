@@ -1,14 +1,11 @@
 package com.bookbla.americano.domain.member.service.impl;
 
-import static com.bookbla.americano.domain.member.enums.MemberVerifyType.OPEN_KAKAO_ROOM_URL;
-import static com.bookbla.americano.domain.member.enums.MemberVerifyType.PROFILE_IMAGE;
-import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT_ID;
-
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileImageUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileOpenKakaoRoomUrlUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
+import com.bookbla.americano.domain.member.controller.dto.response.BookProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
@@ -28,7 +25,10 @@ import com.bookbla.americano.domain.member.repository.entity.MemberStatusLog;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
-import com.bookbla.americano.domain.member.service.dto.MemberProfileStatusDto;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,9 +37,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import static com.bookbla.americano.domain.member.enums.MemberVerifyType.*;
 
 
 @Service
@@ -257,18 +256,19 @@ public class MemberProfileServiceImpl implements MemberProfileService {
             .collect(Collectors.toList());
     }
 
-
     @Override
     @Transactional(readOnly = true)
     public List<MemberBookProfileResponse> getAllMembers(Long memberId,
                                                          MemberBookProfileRequestDto requestDto) {
-        List<MemberBookProfileResponse> allResult = memberRepository.getAllMembers(
-            memberId, requestDto);
+        List<BookProfileResponse> allResult = memberRepository.getAllMembers(memberId, requestDto);
         // 탐색 결과가 없을 때, EMPTY_MEMBER_BOOK Exception(해당 사용자의 선호 책도 없음)
         if (allResult.isEmpty()) {
             throw new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOK);
         }
-        return allResult;
+
+        return allResult.stream()
+                .map(MemberBookProfileResponse::new)
+                .collect(Collectors.toList());
     }
 
     private List<MemberBookProfileResponse> findMatches(

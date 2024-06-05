@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.member.repository.custom.impl;
 
 import com.bookbla.americano.domain.book.repository.entity.QBook;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
+import com.bookbla.americano.domain.member.controller.dto.response.BookProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
 import com.bookbla.americano.domain.member.enums.ContactType;
 import com.bookbla.americano.domain.member.enums.DateCostType;
@@ -59,7 +60,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .select(Projections.fields(MemberBookProfileResponse.class
                         , member.id.as("memberId")
                         , memberBook.book.id.as("bookId")
-                        , member.memberProfile.nickname.as("memberName")
+                        , member.memberProfile.name.as("memberName")
                         , member.memberProfile.birthDate.year().subtract(LocalDate.now().getYear() + 1).abs().as("memberAge")
                         , member.memberProfile.gender.as("memberGender")
                         , member.memberProfile.schoolName.as("memberSchoolName")
@@ -75,7 +76,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
     }
 
     @Override
-    public List<MemberBookProfileResponse> getAllMembers(Long memberId, MemberBookProfileRequestDto requestDto) {
+    public List<BookProfileResponse> getAllMembers(Long memberId, MemberBookProfileRequestDto requestDto) {
         QMember member = QMember.member;
         QMemberBook memberBook = QMemberBook.memberBook;
         QBook book = QBook.book;
@@ -93,11 +94,11 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .and(new BooleanBuilder(memberBook.isRepresentative.eq(Boolean.TRUE)));
 
         return queryFactory
-                .select(Projections.fields(MemberBookProfileResponse.class
+                .select(Projections.fields(BookProfileResponse.class
                         , member.id.as("memberId")
                         , memberBook.book.id.as("bookId")
-                        , member.memberProfile.nickname.as("memberName")
-                        , member.memberProfile.birthDate.year().subtract(LocalDate.now().getYear() + 1).abs().as("memberAge")
+                        , member.memberProfile.name.as("memberName")
+                        , member.memberProfile.birthDate.as("memberBirthDate")
                         , member.memberProfile.gender.as("memberGender")
                         , member.memberProfile.schoolName.as("memberSchoolName")
                         , book.title.as("bookName")
