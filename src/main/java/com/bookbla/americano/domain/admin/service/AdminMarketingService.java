@@ -5,9 +5,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.bookbla.americano.domain.admin.service.dto.AlarmDto;
-import com.bookbla.americano.domain.alarm.service.AlarmClient;
-import com.bookbla.americano.domain.member.enums.MemberStatus;
+import com.bookbla.americano.domain.admin.service.dto.NotificationDto;
+import com.bookbla.americano.domain.notification.service.NotificationClient;
 import com.bookbla.americano.domain.member.repository.MemberPushAlarmRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -23,12 +22,12 @@ import static com.bookbla.americano.domain.member.enums.MemberStatus.*;
 @Service
 public class AdminMarketingService {
 
-    private final AlarmClient alarmClient;
+    private final NotificationClient notificationClient;
     private final MemberRepository memberRepository;
     private final MemberPushAlarmRepository memberPushAlarmRepository;
     private final TransactionTemplate transactionTemplate;
 
-    public void sendPushAlarm(AlarmDto alarmDto) {
+    public void sendNotifications(NotificationDto notificationDto) {
         List<Member> members = memberRepository.findByMemberStatus(COMPLETED, MATCHING_DISABLED);
         Map<Member, String> sendableMemberTokenMap = members.stream()
                 .filter(Member::canSendAdvertisementAlarm)
@@ -37,9 +36,9 @@ public class AdminMarketingService {
                         Member::getPushToken
                 ));
 
-        alarmClient.sendAll(toTokens(sendableMemberTokenMap), alarmDto.getTitle(), alarmDto.getContents());
+        notificationClient.sendAll(toTokens(sendableMemberTokenMap), notificationDto.getTitle(), notificationDto.getContents());
         transactionTemplate.executeWithoutResult(action ->
-                memberPushAlarmRepository.saveAllAndFlush(toMemberPushAlarms(alarmDto, sendableMemberTokenMap))
+                memberPushAlarmRepository.saveAllAndFlush(toMemberPushAlarms(notificationDto, sendableMemberTokenMap))
         );
     }
 
@@ -50,12 +49,12 @@ public class AdminMarketingService {
                 .collect(Collectors.toList());
     }
 
-    private List<MemberPushAlarm> toMemberPushAlarms(AlarmDto alarmDto, Map<Member, String> memberTokenMap) {
+    private List<MemberPushAlarm> toMemberPushAlarms(NotificationDto notificationDto, Map<Member, String> memberTokenMap) {
         return memberTokenMap.keySet()
                 .stream()
                 .map(member -> MemberPushAlarm.builder()
-                        .body(alarmDto.getContents())
-                        .title(alarmDto.getTitle())
+                        .body(notificationDto.getContents())
+                        .title(notificationDto.getTitle())
                         .member(member)
                         .build())
                 .collect(Collectors.toList());

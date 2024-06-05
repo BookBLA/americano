@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.admin.controller;
 
-import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberPushAlarmRequest;
+import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberNotificationRequest;
 import com.bookbla.americano.domain.admin.service.AdminMarketingService;
 import io.swagger.v3.oas.annotations.Operation;
 import javax.validation.Valid;
@@ -21,9 +21,9 @@ public class AdminMarketingController {
     @Operation(summary = "광고 동의 회원 대상 푸시 알림 전송 API")
     @PostMapping("/alarm")
     public ResponseEntity<Void> pushAlarm(
-            @RequestBody @Valid AdminMemberPushAlarmRequest request
+            @RequestBody @Valid AdminMemberNotificationRequest request
     ) {
-        adminMarketingService.sendPushAlarm(request.toDto());
+        adminMarketingService.sendNotifications(request.toDto());
         return ResponseEntity.ok().build();
     }
 
