@@ -1,15 +1,15 @@
-package com.bookbla.americano.domain.member.service.impl;
+package com.bookbla.americano.domain.library.service.impl;
 
 import java.util.List;
 
-import com.bookbla.americano.domain.member.controller.dto.response.MemberLibraryProfileReadResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberTargetLibraryProfileReadResponse;
+import com.bookbla.americano.domain.library.service.MemberLibraryService;
+import com.bookbla.americano.domain.library.controller.dto.MemberLibraryProfileReadResponse;
+import com.bookbla.americano.domain.library.controller.dto.MemberTargetLibraryProfileReadResponse;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
-import com.bookbla.americano.domain.member.service.MemberLibraryService;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.PostcardRepository;
 import lombok.RequiredArgsConstructor;

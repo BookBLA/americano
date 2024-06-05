@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.member.controller.dto.response;
+package com.bookbla.americano.domain.library.controller.dto;
 
 import java.time.LocalDate;
 import java.util.List;
