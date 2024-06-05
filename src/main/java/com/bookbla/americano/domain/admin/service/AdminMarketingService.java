@@ -27,6 +27,20 @@ public class AdminMarketingService {
     private final MemberPushAlarmRepository memberPushAlarmRepository;
     private final TransactionTemplate transactionTemplate;
 
+    public void sendNotification(NotificationDto notificationDto, Long memberId) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        notificationClient.send(member.getPushToken(), notificationDto.getTitle(), notificationDto.getContents());
+
+        MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
+                .member(member)
+                .title(notificationDto.getTitle())
+                .body(notificationDto.getContents())
+                .build();
+        transactionTemplate.executeWithoutResult(action -> memberPushAlarmRepository.save(memberPushAlarm));
+    }
+
+    // TODO: 회원 별 성공/실패 결과 전달할 방법?
+    // TODO: expo는 토큰 보낸 순서대로 data를 보내줌
     public void sendNotifications(NotificationDto notificationDto) {
         List<Member> members = memberRepository.findByMemberStatus(COMPLETED, MATCHING_DISABLED);
         Map<Member, String> sendableMemberTokenMap = members.stream()

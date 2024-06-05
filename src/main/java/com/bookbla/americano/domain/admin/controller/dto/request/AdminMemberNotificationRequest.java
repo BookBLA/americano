@@ -13,15 +13,13 @@ import lombok.NoArgsConstructor;
 @Getter
 public class AdminMemberNotificationRequest {
 
+    private Long memberId;
+
     @NotBlank(message = "알림 제목이 입력되지 않았습니다")
     private String title;
 
     @NotBlank(message = "알림 내용이 입력되지 않았습니다")
     private String contents;
-
-    public PushAlarmCreateRequest toDto(Long memberId) {
-        return new PushAlarmCreateRequest(memberId, title, contents);
-    }
 
     public NotificationDto toDto() {
         return new NotificationDto(title, contents);

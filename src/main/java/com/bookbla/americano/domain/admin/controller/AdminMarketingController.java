@@ -20,10 +20,20 @@ public class AdminMarketingController {
 
     @Operation(summary = "광고 동의 회원 대상 푸시 알림 전송 API")
     @PostMapping("/alarm")
-    public ResponseEntity<Void> pushAlarm(
+    public ResponseEntity<Void> sendNotifications(
             @RequestBody @Valid AdminMemberNotificationRequest request
     ) {
         adminMarketingService.sendNotifications(request.toDto());
+        return ResponseEntity.ok().build();
+    }
+
+
+    @Operation(summary = "개인 푸시 알림 전송 API")
+    @PostMapping("/notification")
+    public ResponseEntity<Void> sendNotification(
+            @RequestBody @Valid AdminMemberNotificationRequest request
+    ) {
+        adminMarketingService.sendNotification(request.toDto(), request.getMemberId());
         return ResponseEntity.ok().build();
     }
 
