@@ -45,7 +45,6 @@ import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT
 import static com.bookbla.americano.domain.member.repository.entity.MemberVerify.DESCRIPTION_PARSING_FAIL;
 
 @RequiredArgsConstructor
-@Transactional
 @Service
 public class AdminMemberService {
 
@@ -82,7 +81,9 @@ public class AdminMemberService {
                 ));
 
         alarmClient.sendAll(toTokens(sendableMemberTokenMap), alarmDto.getTitle(), alarmDto.getContents());
-        memberPushAlarmRepository.saveAllAndFlush(toMemberPushAlarms(alarmDto, sendableMemberTokenMap));
+        transactionTemplate.executeWithoutResult(action ->
+                memberPushAlarmRepository.saveAllAndFlush(toMemberPushAlarms(alarmDto, sendableMemberTokenMap))
+        );
     }
 
     private List<String> toTokens(Map<Member, String> memberTokens) {
@@ -119,6 +120,7 @@ public class AdminMemberService {
         return AdminMemberKakaoRoomResponses.from(count, memberVerifies);
     }
 
+    @Transactional
     public void updateMemberKakaoRoomStatus(StatusUpdateDto dto) {
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
@@ -151,6 +153,7 @@ public class AdminMemberService {
         return AdminMemberProfileImageResponses.from(count, memberVerifies);
     }
 
+    @Transactional
     public void updateMemberImageStatus(StatusUpdateDto dto) {
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
@@ -183,6 +186,7 @@ public class AdminMemberService {
         return AdminMemberStudentIdResponses.from(count, memberVerifies);
     }
 
+    @Transactional
     public void updateMemberStudentIdStatus(StatusUpdateDto dto) {
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
