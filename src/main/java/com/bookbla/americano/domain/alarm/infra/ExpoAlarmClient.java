@@ -23,7 +23,8 @@ public class ExpoAlarmClient implements AlarmClient {
 
     private static final String EXPO_PUSH_TOKEN_FORMAT = "ExponentPushToken[%s]";
 
-    // https://docs.expo.dev/push-notifications/sending-notifications/#request-errors
+    // https://docs.expo.dev/push-notifications/sending-notifications/
+    // Ticket의 Success는 expo 서버에 전달 성공이라는 의미
     @Override
     public List<AlarmResponse> sendAll(List<String> tokens, String title, String body) {
         List<List<String>> tokenBatches = toTokenBatches(tokens);
@@ -42,12 +43,14 @@ public class ExpoAlarmClient implements AlarmClient {
                 .collect(Collectors.toList());
     }
 
+    // https://docs.expo.dev/push-notifications/sending-notifications/#request-errors
+    // 100개 이상 보낼 경우 에러 뜸
     private List<List<String>> toTokenBatches(List<String> tokens) {
         List<List<String>> tokenBatches = new ArrayList<>();
         for (int i = 0; i < tokens.size(); i += 100) {
             int end = Math.min(tokens.size(), i + 100);
             List<String> batch = tokens.subList(i, end);
-            tokenBatches.add(new ArrayList<>(batch)); // Add the batch to the list of batches
+            tokenBatches.add(new ArrayList<>(batch));
         }
         return tokenBatches;
     }

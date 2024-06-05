@@ -12,7 +12,7 @@ public class ExpoAlarmResponse implements AlarmResponse {
 
     private final boolean isSuccess;
     private final String id;
-    private final String body;
+    private final String message;
     private final String token;
 
     public static AlarmResponse from(ExpoPushTicket expoPushTicket) {

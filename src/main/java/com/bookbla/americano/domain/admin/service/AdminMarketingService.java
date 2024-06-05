@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import com.bookbla.americano.domain.admin.service.dto.AlarmDto;
 import com.bookbla.americano.domain.alarm.service.AlarmClient;
-import com.bookbla.americano.domain.alarm.service.AlarmService;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.repository.MemberPushAlarmRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
@@ -17,8 +16,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
-@Service
+import static com.bookbla.americano.domain.member.enums.MemberStatus.*;
+
+
 @RequiredArgsConstructor
+@Service
 public class AdminMarketingService {
 
     private final AlarmClient alarmClient;
@@ -27,7 +29,7 @@ public class AdminMarketingService {
     private final TransactionTemplate transactionTemplate;
 
     public void sendPushAlarm(AlarmDto alarmDto) {
-        List<Member> members = memberRepository.findByMemberStatus(MemberStatus.COMPLETED, MemberStatus.MATCHING_DISABLED);
+        List<Member> members = memberRepository.findByMemberStatus(COMPLETED, MATCHING_DISABLED);
         Map<Member, String> sendableMemberTokenMap = members.stream()
                 .filter(Member::canSendAdvertisementAlarm)
                 .collect(Collectors.toMap(
