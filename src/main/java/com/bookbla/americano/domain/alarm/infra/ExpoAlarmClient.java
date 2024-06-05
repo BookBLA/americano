@@ -9,6 +9,9 @@ import java.util.stream.Collectors;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.alarm.exception.PushAlarmExceptionType;
+import com.bookbla.americano.domain.alarm.infra.api.ExpoFeignClient;
+import com.bookbla.americano.domain.alarm.infra.api.dto.ReceiptsRequest;
+import com.bookbla.americano.domain.alarm.infra.api.dto.ReceiptsResponse;
 import com.bookbla.americano.domain.alarm.infra.dto.ExpoAlarmResponse;
 import com.bookbla.americano.domain.alarm.service.AlarmClient;
 import com.bookbla.americano.domain.alarm.service.dto.AlarmResponse;
@@ -16,29 +19,44 @@ import io.github.jav.exposerversdk.ExpoPushMessage;
 import io.github.jav.exposerversdk.ExpoPushTicket;
 import io.github.jav.exposerversdk.PushClient;
 import io.github.jav.exposerversdk.PushClientException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+/**
+ * Expo reference docs URL: https://docs.expo.dev/push-notifications/sending-notifications/
+ *
+ * @author iamjooon2
+ */
+
 @Component
+@RequiredArgsConstructor
 public class ExpoAlarmClient implements AlarmClient {
 
     private static final String EXPO_PUSH_TOKEN_FORMAT = "ExponentPushToken[%s]";
+    private static final int EXPO_MAX_MESSAGE_SIZE = 100;
+
+    private final ExpoFeignClient expoFeignClient;
 
     // https://docs.expo.dev/push-notifications/sending-notifications/
-    // Ticket의 Success는 expo 서버에 전달 성공이라는 의미
+    // Ticket의 Success는 expo 서버에 전달 성공이라는 의미, 사용자에게 전송이 성공했다는 뜻은 아님
     @Override
     public List<AlarmResponse> sendAll(List<String> tokens, String title, String body) {
         List<List<String>> tokenBatches = toTokenBatches(tokens);
 
         List<ExpoPushTicket> expoPushTickets = new ArrayList<>();
         for (List<String> tokenBatch : tokenBatches) {
-            List<String> expoTokens = toExpoToken(tokenBatch);
-            List<ExpoPushMessage> expoPushMessages = setMessages(title, body, expoTokens);
+            List<String> batch = toExpoTokens(tokenBatch);
+            List<ExpoPushMessage> expoPushMessages = setMessages(title, body, batch);
 
             List<ExpoPushTicket> expoTickets = sendPushAlarmsToExpo(expoPushMessages);
 
             expoPushTickets.addAll(expoTickets);
         }
-        return expoPushTickets.stream()
+
+        ReceiptsRequest request = ReceiptsRequest.of(expoPushTickets);
+        ReceiptsResponse response = expoFeignClient.postReceipts(request);
+        return response.getData()
+                .stream()
                 .map(ExpoAlarmResponse::from)
                 .collect(Collectors.toList());
     }
@@ -47,15 +65,15 @@ public class ExpoAlarmClient implements AlarmClient {
     // 100개 이상 보낼 경우 에러 뜸
     private List<List<String>> toTokenBatches(List<String> tokens) {
         List<List<String>> tokenBatches = new ArrayList<>();
-        for (int i = 0; i < tokens.size(); i += 100) {
-            int end = Math.min(tokens.size(), i + 100);
+        for (int i = 0; i < tokens.size(); i += EXPO_MAX_MESSAGE_SIZE) {
+            int end = Math.min(tokens.size(), i + EXPO_MAX_MESSAGE_SIZE);
             List<String> batch = tokens.subList(i, end);
             tokenBatches.add(new ArrayList<>(batch));
         }
         return tokenBatches;
     }
 
-    private List<String> toExpoToken(List<String> tokens) {
+    private List<String> toExpoTokens(List<String> tokens) {
         return tokens.stream()
                 .map(token -> String.format(EXPO_PUSH_TOKEN_FORMAT, token))
                 .filter(PushClient::isExponentPushToken)
@@ -84,10 +102,10 @@ public class ExpoAlarmClient implements AlarmClient {
             messageRepliesFutures.add(client.sendPushNotificationsAsync(chunk));
         }
 
-        // Wait for each completable future to finish
         return getAsyncResponses(messageRepliesFutures);
     }
 
+    // Wait for each completable future to finish
     private List<ExpoPushTicket> getAsyncResponses(List<CompletableFuture<List<ExpoPushTicket>>> messageRepliesFutures) {
         List<ExpoPushTicket> allTickets = new ArrayList<>();
         for (CompletableFuture<List<ExpoPushTicket>> messageReplyFuture : messageRepliesFutures) {
@@ -101,7 +119,7 @@ public class ExpoAlarmClient implements AlarmClient {
     }
 
     @Override
-    public AlarmResponse send(String token, String title, String body) {
+    public List<AlarmResponse> send(String token, String title, String body) {
         String expoToken = toExpoToken(token);
         ExpoPushMessage message = setMessage(title, body, expoToken);
 
@@ -109,7 +127,13 @@ public class ExpoAlarmClient implements AlarmClient {
         CompletableFuture<List<ExpoPushTicket>> messageReplyFuture = client.sendPushNotificationsAsync(Arrays.asList(message));
 
         ExpoPushTicket expoPushTicket = getExpoPushTicket(messageReplyFuture);
-        return ExpoAlarmResponse.of(expoPushTicket, token);
+
+        ReceiptsRequest request = ReceiptsRequest.from(expoPushTicket);
+        ReceiptsResponse response = expoFeignClient.postReceipts(request);
+        return response.getData()
+                .stream()
+                .map(ExpoAlarmResponse::from)
+                .collect(Collectors.toList());
     }
 
     private String toExpoToken(String token) {

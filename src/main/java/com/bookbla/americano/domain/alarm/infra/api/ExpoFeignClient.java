@@ -5,7 +5,7 @@ import com.bookbla.americano.domain.alarm.infra.api.dto.ReceiptsResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 
-@FeignClient(value = "apple", url = "https://exp.host")
+@FeignClient(value = "expo", url = "https://exp.host")
 public interface ExpoFeignClient {
 
     @PostMapping("/--/api/v2/push/getReceipts")
