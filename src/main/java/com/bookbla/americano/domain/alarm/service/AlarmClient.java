@@ -2,10 +2,12 @@ package com.bookbla.americano.domain.alarm.service;
 
 import java.util.List;
 
-import com.bookbla.americano.domain.alarm.service.dto.AlarmSendResponse;
+import com.bookbla.americano.domain.alarm.service.dto.AlarmResponse;
 
 public interface AlarmClient {
 
-    List<AlarmSendResponse> send(String token, String title, String body);
+    AlarmResponse send(String token, String title, String body);
+
+    List<AlarmResponse> sendAll(List<String> tokens, String title, String body);
 
 }
