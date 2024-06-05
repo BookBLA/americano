@@ -16,7 +16,6 @@ import io.github.jav.exposerversdk.ExpoPushMessage;
 import io.github.jav.exposerversdk.ExpoPushTicket;
 import io.github.jav.exposerversdk.PushClient;
 import io.github.jav.exposerversdk.PushClientException;
-import io.github.jav.exposerversdk.enums.Status;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -107,7 +106,7 @@ public class ExpoAlarmClient implements AlarmClient {
         CompletableFuture<List<ExpoPushTicket>> messageReplyFuture = client.sendPushNotificationsAsync(Arrays.asList(message));
 
         ExpoPushTicket expoPushTicket = getExpoPushTicket(messageReplyFuture);
-        return ExpoAlarmResponse.from(expoPushTicket);
+        return ExpoAlarmResponse.of(expoPushTicket, token);
     }
 
     private String toExpoToken(String token) {

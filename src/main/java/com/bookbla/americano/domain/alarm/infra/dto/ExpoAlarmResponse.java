@@ -13,20 +13,23 @@ public class ExpoAlarmResponse implements AlarmResponse {
     private final boolean isSuccess;
     private final String id;
     private final String body;
+    private final String token;
 
     public static AlarmResponse from(ExpoPushTicket expoPushTicket) {
         return new ExpoAlarmResponse(
                 expoPushTicket.getStatus() == Status.OK,
                 expoPushTicket.getId(),
-                expoPushTicket.getMessage()
+                expoPushTicket.getMessage(),
+                "토큰 없음"
         );
     }
 
-    public static ExpoAlarmResponse fail() {
+    public static ExpoAlarmResponse of(ExpoPushTicket expoPushTicket, String token) {
         return new ExpoAlarmResponse(
-                false,
-                "실패",
-                "Expo 서버로부터 응답을 받는데 실패하였습니다"
+                expoPushTicket.getStatus() == Status.OK,
+                expoPushTicket.getId(),
+                expoPushTicket.getMessage(),
+                token
         );
     }
 }

@@ -100,7 +100,8 @@ public class AlarmServiceImpl implements AlarmService {
     @Override
     @Transactional
     public PushAlarmAllCreateResponse sendPushAlarmAll(
-        PushAlarmAllCreateRequest pushAlarmAllCreateRequest) {
+        PushAlarmAllCreateRequest pushAlarmAllCreateRequest
+    ) {
 
         String title = pushAlarmAllCreateRequest.getTitle();
         String body = pushAlarmAllCreateRequest.getBody();

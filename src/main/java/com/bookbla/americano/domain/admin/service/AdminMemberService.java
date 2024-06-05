@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.bookbla.americano.base.utils.ConvertUtil;
@@ -14,23 +15,28 @@ import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberRea
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
 import com.bookbla.americano.domain.admin.service.dto.AlarmDto;
 import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
-import com.bookbla.americano.domain.alarm.service.AlarmService;
+import com.bookbla.americano.domain.alarm.service.AlarmClient;
+import com.bookbla.americano.domain.alarm.service.dto.AlarmResponse;
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.MemberVerifyStatus;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
+import com.bookbla.americano.domain.member.repository.MemberPushAlarmRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
+import com.bookbla.americano.domain.member.repository.entity.MemberPushAlarm;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import static com.bookbla.americano.domain.member.enums.MemberVerifyStatus.PENDING;
 import static com.bookbla.americano.domain.member.enums.MemberVerifyType.OPEN_KAKAO_ROOM_URL;
@@ -43,9 +49,11 @@ import static com.bookbla.americano.domain.member.repository.entity.MemberVerify
 @Service
 public class AdminMemberService {
 
-    private final AlarmService alarmService;
+    private final AlarmClient alarmClient;
     private final MemberRepository memberRepository;
     private final MemberVerifyRepository memberVerifyRepository;
+    private final MemberPushAlarmRepository memberPushAlarmRepository;
+    private final TransactionTemplate transactionTemplate;
 
     @Transactional(readOnly = true)
     public AdminMemberReadResponses readMembers(Pageable pageable) {
@@ -65,14 +73,34 @@ public class AdminMemberService {
     }
 
     public void sendPushAlarm(AlarmDto alarmDto) {
-        List<Member> members = memberRepository.findByMemberPolicyAdAgreementPolicy(true);
-        List<Member> possibleMembers = members.stream()
+        List<Member> members = memberRepository.findByMemberStatus(MemberStatus.COMPLETED, MemberStatus.MATCHING_DISABLED);
+        Map<Member, String> sendableMemberTokenMap = members.stream()
                 .filter(Member::canSendAdvertisementAlarm)
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        Member::getPushToken
+                ));
 
-        possibleMembers.forEach(possibleMember ->
-                alarmService.sendPushAlarm(possibleMember, alarmDto.getTitle(), alarmDto.getContents())
-        );
+        alarmClient.sendAll(toTokens(sendableMemberTokenMap), alarmDto.getTitle(), alarmDto.getContents());
+        memberPushAlarmRepository.saveAllAndFlush(toMemberPushAlarms(alarmDto, sendableMemberTokenMap));
+    }
+
+    private List<String> toTokens(Map<Member, String> memberTokens) {
+        return memberTokens.keySet()
+                .stream()
+                .map(memberTokens::get)
+                .collect(Collectors.toList());
+    }
+
+    private List<MemberPushAlarm> toMemberPushAlarms(AlarmDto alarmDto, Map<Member, String> memberTokenMap) {
+        return memberTokenMap.keySet()
+                .stream()
+                .map(member -> MemberPushAlarm.builder()
+                        .body(alarmDto.getContents())
+                        .title(alarmDto.getTitle())
+                        .member(member)
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
