@@ -3,7 +3,6 @@ package com.bookbla.americano.domain.admin.controller;
 import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberKakaoRoomStatusUpdateRequest;
 import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberProfileImageStatusUpdateRequest;
 import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberProfileStudentIdStatusUpdateRequest;
-import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberPushAlarmRequest;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKakaoRoomResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileStatusResponse;
@@ -19,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 @RestController
-public class AdminController {
+public class AdminMemberController {
 
     private final AdminMemberService adminMemberService;
 
@@ -105,15 +103,6 @@ public class AdminController {
             @RequestBody @Valid AdminMemberProfileStudentIdStatusUpdateRequest request
     ) {
         adminMemberService.updateMemberStudentIdStatus(request.toDto(memberVerifyId));
-        return ResponseEntity.ok().build();
-    }
-
-    @Operation(summary = "광고 동의 회원 대상 푸시 알림 전송 API")
-    @PostMapping("/alarm")
-    public ResponseEntity<Void> pushAlarm(
-            @RequestBody @Valid AdminMemberPushAlarmRequest request
-    ) {
-        adminMemberService.sendPushAlarm(request.toDto());
         return ResponseEntity.ok().build();
     }
 }

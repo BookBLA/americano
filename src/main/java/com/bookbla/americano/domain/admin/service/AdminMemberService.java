@@ -48,11 +48,8 @@ import static com.bookbla.americano.domain.member.repository.entity.MemberVerify
 @Service
 public class AdminMemberService {
 
-    private final AlarmClient alarmClient;
     private final MemberRepository memberRepository;
     private final MemberVerifyRepository memberVerifyRepository;
-    private final MemberPushAlarmRepository memberPushAlarmRepository;
-    private final TransactionTemplate transactionTemplate;
 
     @Transactional(readOnly = true)
     public AdminMemberReadResponses readMembers(Pageable pageable) {
@@ -69,39 +66,6 @@ public class AdminMemberService {
                 StudentIdImageStatus.getValues(),
                 MemberVerifyStatus.getValues()
         );
-    }
-
-    public void sendPushAlarm(AlarmDto alarmDto) {
-        List<Member> members = memberRepository.findByMemberStatus(MemberStatus.COMPLETED, MemberStatus.MATCHING_DISABLED);
-        Map<Member, String> sendableMemberTokenMap = members.stream()
-                .filter(Member::canSendAdvertisementAlarm)
-                .collect(Collectors.toMap(
-                        Function.identity(),
-                        Member::getPushToken
-                ));
-
-        alarmClient.sendAll(toTokens(sendableMemberTokenMap), alarmDto.getTitle(), alarmDto.getContents());
-        transactionTemplate.executeWithoutResult(action ->
-                memberPushAlarmRepository.saveAllAndFlush(toMemberPushAlarms(alarmDto, sendableMemberTokenMap))
-        );
-    }
-
-    private List<String> toTokens(Map<Member, String> memberTokens) {
-        return memberTokens.keySet()
-                .stream()
-                .map(memberTokens::get)
-                .collect(Collectors.toList());
-    }
-
-    private List<MemberPushAlarm> toMemberPushAlarms(AlarmDto alarmDto, Map<Member, String> memberTokenMap) {
-        return memberTokenMap.keySet()
-                .stream()
-                .map(member -> MemberPushAlarm.builder()
-                        .body(alarmDto.getContents())
-                        .title(alarmDto.getTitle())
-                        .member(member)
-                        .build())
-                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
