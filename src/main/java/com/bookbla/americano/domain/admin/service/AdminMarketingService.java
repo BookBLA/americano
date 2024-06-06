@@ -32,13 +32,19 @@ public class AdminMarketingService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         List<NotificationResponse> response = notificationClient.send(member.getPushToken(), notificationDto.getTitle(), notificationDto.getContents());
 
+        response.stream()
+                .filter(NotificationResponse::isSuccess)
+                .forEach(it -> saveMemberPushAlarm(notificationDto, member));
+        return response;
+    }
+
+    private void saveMemberPushAlarm(NotificationDto notificationDto, Member member) {
         MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
                 .member(member)
                 .title(notificationDto.getTitle())
                 .body(notificationDto.getContents())
                 .build();
         transactionTemplate.executeWithoutResult(action -> memberPushAlarmRepository.save(memberPushAlarm));
-        return response;
     }
 
     // TODO: 회원 별 성공/실패 결과 전달할 방법?
@@ -52,28 +58,14 @@ public class AdminMarketingService {
                         Member::getPushToken
                 ));
 
-        List<NotificationResponse> notificationResponses = notificationClient.sendAll(toTokens(sendableMemberTokenMap), notificationDto.getTitle(), notificationDto.getContents());
-        transactionTemplate.executeWithoutResult(action ->
-                memberPushAlarmRepository.saveAllAndFlush(toMemberPushAlarms(notificationDto, sendableMemberTokenMap))
-        );
-        return notificationResponses;
+        List<NotificationResponse> response = notificationClient.sendAll(toTokens(sendableMemberTokenMap), notificationDto.getTitle(), notificationDto.getContents());
+        return response;
     }
 
     private List<String> toTokens(Map<Member, String> memberTokens) {
         return memberTokens.keySet()
                 .stream()
                 .map(memberTokens::get)
-                .collect(Collectors.toList());
-    }
-
-    private List<MemberPushAlarm> toMemberPushAlarms(NotificationDto notificationDto, Map<Member, String> memberTokenMap) {
-        return memberTokenMap.keySet()
-                .stream()
-                .map(member -> MemberPushAlarm.builder()
-                        .body(notificationDto.getContents())
-                        .title(notificationDto.getTitle())
-                        .member(member)
-                        .build())
                 .collect(Collectors.toList());
     }
 

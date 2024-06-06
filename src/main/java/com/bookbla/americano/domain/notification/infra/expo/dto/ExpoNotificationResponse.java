@@ -20,4 +20,9 @@ public class ExpoNotificationResponse implements NotificationResponse {
                 receiptStatus.getMessage()
         );
     }
+
+    @Override
+    public boolean isSuccess() {
+        return id.equals("ok");
+    }
 }
