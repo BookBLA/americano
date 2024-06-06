@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.notification.infra.expo.api.dto;
 
-import java.util.List;
+import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,24 +11,15 @@ import lombok.NoArgsConstructor;
 @Getter
 public class ReceiptsResponse {
 
-    private List<Data> data;
+    private Map<String, ReceiptStatus> data;
 
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
-    public static class Data {
+    public static class ReceiptStatus {
 
         private String status;
         private String message;
-        private Details details;
-        private String id;
 
-        @AllArgsConstructor
-        @NoArgsConstructor
-        @Getter
-        public static class Details {
-
-            private String error;
-        }
     }
 }
