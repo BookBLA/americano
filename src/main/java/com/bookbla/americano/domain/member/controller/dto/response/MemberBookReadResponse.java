@@ -15,6 +15,7 @@ public class MemberBookReadResponse {
 
     private final String title;
     private final List<String> authors;
+    private final String isbn;
     private final String imageUrl;
     private final String review;
     private final String quiz;
@@ -27,6 +28,7 @@ public class MemberBookReadResponse {
         return new MemberBookReadResponse(
                 book.getTitle(),
                 book.getAuthors(),
+                book.getIsbn(),
                 book.getImageUrl(),
                 memberBook.getReview(),
                 quizQuestion.getContents(),
