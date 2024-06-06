@@ -9,15 +9,15 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class ExpoNotificationResponse implements NotificationResponse {
 
+    private final String id;
     private final String status;
     private final String message;
-    private final String error;
 
-    public static NotificationResponse from(ReceiptsResponse.Data data) {
+    public static NotificationResponse from(String id, ReceiptsResponse.ReceiptStatus receiptStatus) {
         return new ExpoNotificationResponse(
-                data.getStatus(),
-                data.getMessage(),
-                data.getDetails().getError()
+                id,
+                receiptStatus.getStatus(),
+                receiptStatus.getMessage()
         );
     }
 }

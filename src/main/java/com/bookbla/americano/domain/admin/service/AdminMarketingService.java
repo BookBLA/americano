@@ -11,6 +11,7 @@ import com.bookbla.americano.domain.member.repository.MemberPushAlarmRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberPushAlarm;
+import com.bookbla.americano.domain.notification.service.dto.NotificationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -27,9 +28,9 @@ public class AdminMarketingService {
     private final MemberPushAlarmRepository memberPushAlarmRepository;
     private final TransactionTemplate transactionTemplate;
 
-    public void sendNotification(NotificationDto notificationDto, Long memberId) {
+    public List<NotificationResponse> sendNotification(NotificationDto notificationDto, Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        notificationClient.send(member.getPushToken(), notificationDto.getTitle(), notificationDto.getContents());
+        List<NotificationResponse> response = notificationClient.send(member.getPushToken(), notificationDto.getTitle(), notificationDto.getContents());
 
         MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
                 .member(member)
@@ -37,11 +38,12 @@ public class AdminMarketingService {
                 .body(notificationDto.getContents())
                 .build();
         transactionTemplate.executeWithoutResult(action -> memberPushAlarmRepository.save(memberPushAlarm));
+        return response;
     }
 
     // TODO: 회원 별 성공/실패 결과 전달할 방법?
     // TODO: expo는 토큰 보낸 순서대로 data를 보내줌
-    public void sendNotifications(NotificationDto notificationDto) {
+    public List<NotificationResponse> sendNotifications(NotificationDto notificationDto) {
         List<Member> members = memberRepository.findByMemberStatus(COMPLETED, MATCHING_DISABLED);
         Map<Member, String> sendableMemberTokenMap = members.stream()
                 .filter(Member::canSendAdvertisementAlarm)
@@ -50,10 +52,11 @@ public class AdminMarketingService {
                         Member::getPushToken
                 ));
 
-        notificationClient.sendAll(toTokens(sendableMemberTokenMap), notificationDto.getTitle(), notificationDto.getContents());
+        List<NotificationResponse> notificationResponses = notificationClient.sendAll(toTokens(sendableMemberTokenMap), notificationDto.getTitle(), notificationDto.getContents());
         transactionTemplate.executeWithoutResult(action ->
                 memberPushAlarmRepository.saveAllAndFlush(toMemberPushAlarms(notificationDto, sendableMemberTokenMap))
         );
+        return notificationResponses;
     }
 
     private List<String> toTokens(Map<Member, String> memberTokens) {

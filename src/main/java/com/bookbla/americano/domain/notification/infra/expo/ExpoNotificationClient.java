@@ -56,8 +56,9 @@ public class ExpoNotificationClient implements NotificationClient {
         ReceiptsRequest request = ReceiptsRequest.of(expoPushTickets);
         ReceiptsResponse response = expoFeignClient.postReceipts(request);
         return response.getData()
+                .entrySet()
                 .stream()
-                .map(ExpoNotificationResponse::from)
+                .map(it -> ExpoNotificationResponse.from(it.getKey(), it.getValue()))
                 .collect(Collectors.toList());
     }
 
@@ -131,8 +132,9 @@ public class ExpoNotificationClient implements NotificationClient {
         ReceiptsRequest request = ReceiptsRequest.from(expoPushTicket);
         ReceiptsResponse response = expoFeignClient.postReceipts(request);
         return response.getData()
+                .entrySet()
                 .stream()
-                .map(ExpoNotificationResponse::from)
+                .map(it -> ExpoNotificationResponse.from(it.getKey(), it.getValue()))
                 .collect(Collectors.toList());
     }
 
