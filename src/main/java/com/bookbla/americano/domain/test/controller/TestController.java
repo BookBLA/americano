@@ -15,6 +15,7 @@ import com.bookbla.americano.domain.test.controller.dto.response.TestSignUpRespo
 import com.bookbla.americano.domain.test.service.TestService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
