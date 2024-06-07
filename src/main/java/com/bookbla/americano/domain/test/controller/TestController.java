@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/tests")
 @RequiredArgsConstructor
+@Profile({"local", "dev"})
 public class TestController {
 
     private final TestService testService;
