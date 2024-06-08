@@ -57,7 +57,7 @@ public class AlarmServiceImpl implements AlarmService {
             throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
         }
 
-        sendPushAlarmToExpo(member.getPushToken(), pushAlarmCreateRequest.getTitle(),
+        sendToExpo(member.getPushToken(), pushAlarmCreateRequest.getTitle(),
             pushAlarmCreateRequest.getBody());
 
         MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
@@ -74,22 +74,53 @@ public class AlarmServiceImpl implements AlarmService {
 
     @Override
     @Transactional
-    public void sendPushAlarm(Member member, String title, String body) {
+    public void sendPushAlarmForReceivePostCard(Member receiveMember) {
         // 해당 멤버가 푸시 토큰이 없다면 에러 발생
-        if (member.getPushToken() == null) {
+        if (receiveMember.getPushToken() == null) {
             throw new BaseException(PushAlarmExceptionType.NOT_FOUND_TOKEN);
         }
 
         // 해당 멤버가 회원가입 완료상태가 아니면서 매칭 비활성화가 아니라면
-        if (!member.getMemberStatus().equals(MemberStatus.COMPLETED)
-            && !member.getMemberStatus().equals(MemberStatus.MATCHING_DISABLED)) {
+        if (!receiveMember.getMemberStatus().equals(MemberStatus.COMPLETED)
+            && !receiveMember.getMemberStatus().equals(MemberStatus.MATCHING_DISABLED)) {
             throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
         }
 
-        sendPushAlarmToExpo(member.getPushToken(), title, body);
+        String title = "띵동~\uD83D\uDC8C 엽서가 도착했어요!";
+        String body = receiveMember.getMemberProfile().getName() + "님이 엽서를 보냈어요! 지금 확인해 보세요~\uD83E\uDD70";
+
+        sendToExpo(receiveMember.getPushToken(), title, body);
 
         MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
-            .member(member)
+            .member(receiveMember)
+            .title(title)
+            .body(body)
+            .build();
+
+        memberPushAlarmRepository.save(memberPushAlarm);
+    }
+
+    @Override
+    @Transactional
+    public void sendPushAlarmForAcceptPostcard(Member sendMember) {
+        // 해당 멤버가 푸시 토큰이 없다면 에러 발생
+        if (sendMember.getPushToken() == null) {
+            throw new BaseException(PushAlarmExceptionType.NOT_FOUND_TOKEN);
+        }
+
+        // 해당 멤버가 회원가입 완료상태가 아니면서 매칭 비활성화가 아니라면
+        if (!sendMember.getMemberStatus().equals(MemberStatus.COMPLETED)
+            && !sendMember.getMemberStatus().equals(MemberStatus.MATCHING_DISABLED)) {
+            throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
+        }
+
+        String title = "축하합니다\uD83E\uDD73\uD83E\uDD73 매칭에 성공하셨습니다~!!\uD83D\uDC95";
+        String body = sendMember.getMemberProfile().getName() + "님이 엽서를 수락했어요! 지금 바로 채팅해보세요~\uD83E\uDD70";
+
+        sendToExpo(sendMember.getPushToken(), title, body);
+
+        MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
+            .member(sendMember)
             .title(title)
             .body(body)
             .build();
@@ -122,7 +153,7 @@ public class AlarmServiceImpl implements AlarmService {
         }
 
         for (List<String> tokenBatch : tokenBatches) {
-            sendPushAlarmListToExpo(tokenBatch, title, body);
+            sendListToExpo(tokenBatch, title, body);
         }
 
         for (Member member : selectedMembers) {
@@ -138,7 +169,7 @@ public class AlarmServiceImpl implements AlarmService {
         return PushAlarmAllCreateResponse.from(title, body);
     }
 
-    private void sendPushAlarmListToExpo(List<String> tokens, String title, String body) {
+    private void sendListToExpo(List<String> tokens, String title, String body) {
         List<String> exponentPushTokens = tokens.stream()
             .map(token -> "ExponentPushToken[" + token + "]")
             .collect(Collectors.toList());
@@ -195,7 +226,7 @@ public class AlarmServiceImpl implements AlarmService {
 
     }
 
-    private void sendPushAlarmToExpo(String token, String title, String body) {
+    private void sendToExpo(String token, String title, String body) {
 
         String exponentPushToken = "ExponentPushToken[" + token + "]";
 
