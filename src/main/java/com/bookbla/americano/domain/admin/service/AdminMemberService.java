@@ -12,6 +12,7 @@ import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberPro
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
 import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
+import com.bookbla.americano.domain.aws.service.S3Service;
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.MemberVerifyStatus;
@@ -29,6 +30,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.bookbla.americano.domain.aws.enums.UploadType.PROFILE;
+import static com.bookbla.americano.domain.aws.enums.UploadType.UPDATE_PROFILE;
 import static com.bookbla.americano.domain.member.enums.MemberVerifyStatus.PENDING;
 import static com.bookbla.americano.domain.member.enums.MemberVerifyType.OPEN_KAKAO_ROOM_URL;
 import static com.bookbla.americano.domain.member.enums.MemberVerifyType.PROFILE_IMAGE;
@@ -41,6 +44,7 @@ public class AdminMemberService {
 
     private final MemberRepository memberRepository;
     private final MemberVerifyRepository memberVerifyRepository;
+    private final S3Service s3Service;
 
     @Transactional(readOnly = true)
     public AdminMemberReadResponses readMembers(Pageable pageable) {
@@ -115,7 +119,7 @@ public class AdminMemberService {
         MemberProfile memberProfile = member.getMemberProfile();
         ProfileImageStatus status = ProfileImageStatus.from(dto.getStatus());
 
-        updateVerification(dto, status, memberVerify, memberProfile);
+        updateVerification(dto, status, memberVerify, memberProfile, member);
 
         memberProfile.updateProfileImageStatus(status);
         member.updateMemberStatus();
@@ -123,11 +127,13 @@ public class AdminMemberService {
 
     private void updateVerification(
             StatusUpdateDto dto, ProfileImageStatus status,
-            MemberVerify memberVerify, MemberProfile memberProfile
+            MemberVerify memberVerify, MemberProfile memberProfile,
+            Member member
     ) {
         if (status.isDone()) {
             memberVerify.success(dto.getReason());
-            memberProfile.updateProfileImageUrl(memberVerify.getContents());
+            String imageUrl = s3Service.movePhoto(UPDATE_PROFILE, PROFILE, member.getId());
+            memberProfile.updateProfileImageUrl(imageUrl);
             return;
         }
         memberVerify.fail(dto.getReason());

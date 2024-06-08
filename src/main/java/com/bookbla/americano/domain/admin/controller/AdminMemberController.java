@@ -32,7 +32,7 @@ public class AdminMemberController {
     @Operation(summary = "회원 전체 조회")
     @GetMapping("/members")
     public ResponseEntity<AdminMemberReadResponses> readMembers(Pageable pageable) {
-        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
         AdminMemberReadResponses adminMemberReadResponses = adminMemberService.readMembers(pageRequest);
         return ResponseEntity.ok(adminMemberReadResponses);
     }
@@ -47,7 +47,7 @@ public class AdminMemberController {
     @Operation(summary = "탈퇴 회원 목록 조회 API")
     @GetMapping("/members/deleted")
     public ResponseEntity<AdminMemberReadResponses> readDeletedMembers(Pageable pageable) {
-        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
         AdminMemberReadResponses adminMemberReadResponses = adminMemberService.readDeletedMembers(pageRequest);
         return ResponseEntity.ok(adminMemberReadResponses);
     }
@@ -55,7 +55,7 @@ public class AdminMemberController {
     @Operation(summary = "카카오톡 오픈 승인 채팅방 대기 회원 조회 API")
     @GetMapping("/members/pending/kakao")
     public ResponseEntity<AdminMemberKakaoRoomResponses> readKakaoOpenRoomUrlPendingMembers(Pageable pageable) {
-        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
         AdminMemberKakaoRoomResponses adminMemberKakaoRoomResponses = adminMemberService.readKakaoRoomPendingMembers(pageRequest);
         return ResponseEntity.ok(adminMemberKakaoRoomResponses);
     }
@@ -73,7 +73,7 @@ public class AdminMemberController {
     @Operation(summary = "프로필 이미지 승인 대기 회원 조회 API")
     @GetMapping("/members/pending/profile-image")
     public ResponseEntity<AdminMemberProfileImageResponses> readProfileImagePendingMembers(Pageable pageable) {
-        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
         AdminMemberProfileImageResponses adminMemberProfileImageResponses = adminMemberService.readProfileImagePendingMembers(pageRequest);
         return ResponseEntity.ok(adminMemberProfileImageResponses);
     }
@@ -91,7 +91,7 @@ public class AdminMemberController {
     @Operation(summary = "학생증 승인 대기 회원 조회 API")
     @GetMapping("/members/pending/student-id/image")
     public ResponseEntity<AdminMemberStudentIdResponses> readStudentIdPendingMembers(Pageable pageable) {
-        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize());
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
         AdminMemberStudentIdResponses adminMemberStudentIdResponses = adminMemberService.readStudentIdImagePendingMembers(pageRequest);
         return ResponseEntity.ok(adminMemberStudentIdResponses);
     }

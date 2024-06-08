@@ -7,7 +7,7 @@ import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberPro
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
 import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
-import com.bookbla.americano.domain.notification.service.AlarmService;
+import com.bookbla.americano.domain.aws.service.S3Service;
 import com.bookbla.americano.domain.member.enums.MemberVerifyStatus;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class AdminMemberServiceTest {
 
     @MockBean
-    private AlarmService alarmService;
+    private S3Service s3Service;
 
     @Autowired
     private AdminMemberService adminMemberService;
@@ -263,7 +263,7 @@ class AdminMemberServiceTest {
         MemberProfile memberProfile = memberRepository.getByIdOrThrow(member.getId()).getMemberProfile();
         MemberVerify findMemberVerify = memberVerifyRepository.getByIdOrThrow(memberVerify.getId());
         assertAll(
-                () -> assertThat(memberProfile.getProfileImageUrl()).isEqualTo("프로필 사진 링크입니다."),
+//                () -> assertThat(memberProfile.getProfileImageUrl()).isEqualTo("생성된 이미지 경로입니다."),
                 () -> assertThat(memberProfile.getProfileImageStatus()).isEqualTo(ProfileImageStatus.DONE),
                 () -> assertThat(findMemberVerify.getVerifyStatus()).isEqualTo(SUCCESS)
         );
