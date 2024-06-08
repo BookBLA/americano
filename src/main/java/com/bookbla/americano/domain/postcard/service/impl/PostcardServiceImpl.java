@@ -38,8 +38,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -144,8 +142,7 @@ public class PostcardServiceImpl implements PostcardService {
                     i.getMemberId());
             List<String> nowBookImageUrls = new ArrayList<>();
             nowResponse = new MemberPostcardFromResponse(i.getMemberId(), i.getMemberName(),
-                    getAge(i.getMemberBirthDate()),
-                    i.getMemberGender(), i.getMemberSchoolName(), i.getMemberProfileImageUrl(),
+                    i.getMemberBirthDate(), i.getMemberGender(), i.getMemberSchoolName(), i.getMemberProfileImageUrl(),
                     i.getMemberOpenKakaoRoomUrl(), i.getPostcardId(), i.getPostcardStatus());
             for (MemberBookReadResponses.MemberBookReadResponse j : memberBookList.getMemberBookReadResponses()) {
                 if (j.isRepresentative()) {
@@ -161,10 +158,6 @@ public class PostcardServiceImpl implements PostcardService {
         }
 
         return memberPostcardFromResponseList;
-    }
-
-    private int getAge(LocalDate birthDay) {
-        return Period.between(birthDay, LocalDate.now()).getYears();
     }
 
     @Override // 받은 엽서
@@ -189,13 +182,10 @@ public class PostcardServiceImpl implements PostcardService {
                 }
                 // 초기화
                 now = i.getMemberId();
-                int age = getAge(i.getMemberBirthDate());
                 nowResponse = new MemberPostcardToResponse(i.getPostcardId(), i.getMemberId(),
-                        i.getMemberName(),
-                        i.getMemberProfileImageUrl(), age, i.getMemberGender(), i.getDrinkType(),
-                        i.getSmokeType(),
-                        i.getContactType(), i.getDateStyleType(), i.getDateCostType(), i.getMbti(),
-                        i.getJustFriendType(),
+                        i.getMemberName(), i.getMemberProfileImageUrl(), i.getMemberBirthDate(), i.getMemberGender(),
+                        i.getDrinkType(), i.getSmokeType(), i.getContactType(), i.getDateStyleType(),
+                        i.getDateCostType(), i.getMbti(), i.getJustFriendType(),
                         i.getMemberSchoolName(), i.getMemberReplyContent(), i.getPostcardStatus(),
                         i.getPostcardImageUrl(), i.getMemberKakaoRoomUrl());
                 nowBookTitles = new ArrayList<>();

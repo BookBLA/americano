@@ -5,6 +5,8 @@ import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.quiz.enums.CorrectStatus;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 
 @Getter
@@ -63,16 +65,20 @@ public class MemberPostcardToResponse {
     private List<String> bookImageUrls;
 
     public MemberPostcardToResponse(long postcardId, long memberId, String memberName, String memberProfileImageUrl,
-                                    int memberAge, Gender memberGender, DrinkType drinkType, SmokeType smokeType,
+                                    LocalDate memberBirthDate, Gender memberGender, DrinkType drinkType, SmokeType smokeType,
                                     ContactType contactType, DateStyleType dateStyleType, DateCostType dateCostType,
                                     Mbti mbti, JustFriendType justFriendType, String memberSchoolName, String memberReplyContent,
                                     PostcardStatus postcardStatus, String postcardImageUrl, String memberKakaoRoomUrl) {
 
         this.postcardId = postcardId;
         this.memberId = memberId;
-        this.memberName = memberName;
+        if(postcardStatus.equals(PostcardStatus.ACCEPT)){
+            this.memberName = memberName;
+        } else {
+            this.memberName = transformMemberName(memberName);
+        }
         this.memberProfileImageUrl = memberProfileImageUrl;
-        this.memberAge = memberAge;
+        this.memberAge = getAge(memberBirthDate);
         this.memberGender = memberGender.name();
         this.drinkType = drinkType.getValue();
         this.smokeType = smokeType.getValue();
@@ -86,5 +92,17 @@ public class MemberPostcardToResponse {
         this.postcardStatus = postcardStatus;
         this.postcardImageUrl = postcardImageUrl;
         this.memberOpenKakaoRoomUrl = memberKakaoRoomUrl;
+    }
+
+    private String transformMemberName(String name){
+        if(name == null || name.isEmpty())
+            return "";
+        char lastName = name.charAt(0);
+        return lastName +
+                "O".repeat(name.length() - 1);
+    }
+
+    private int getAge(LocalDate birthDay) {
+        return Period.between(birthDay, LocalDate.now()).getYears();
     }
 }

@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 
 @Getter
@@ -47,16 +49,33 @@ public class MemberPostcardFromResponse {
 
     private PostcardStatus postcardStatus;
 
-    public MemberPostcardFromResponse(long memberId, String memberName, int memberAge, Gender memberGender, String memberSchoolName,
-                                      String memberProfileImageUrl, String memberOpenKakaoRoomUrl, long postcardId, PostcardStatus postcardStatus) {
+    public MemberPostcardFromResponse(long memberId, String memberName, LocalDate memberBirthDate, Gender memberGender,
+                                      String memberSchoolName, String memberProfileImageUrl, String memberOpenKakaoRoomUrl,
+                                      long postcardId, PostcardStatus postcardStatus) {
         this.memberId = memberId;
-        this.memberName = memberName;
-        this.memberAge = memberAge;
+        if(postcardStatus.equals(PostcardStatus.ACCEPT)){
+            this.memberName = memberName;
+        } else {
+            this.memberName = transformMemberName(memberName);
+        }
+        this.memberAge = getAge(memberBirthDate);
         this.memberGender = memberGender;
         this.memberSchoolName = memberSchoolName;
         this.memberProfileImageUrl = memberProfileImageUrl;
         this.memberOpenKakaoRoomUrl = memberOpenKakaoRoomUrl;
         this.postcardId = postcardId;
         this.postcardStatus = postcardStatus;
+    }
+
+    private String transformMemberName(String name){
+        if(name == null || name.isEmpty())
+            return "";
+        char lastName = name.charAt(0);
+        return lastName +
+                "O".repeat(name.length() - 1);
+    }
+
+    private int getAge(LocalDate birthDay) {
+        return Period.between(birthDay, LocalDate.now()).getYears();
     }
 }
