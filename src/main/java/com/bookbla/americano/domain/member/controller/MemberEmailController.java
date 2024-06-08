@@ -6,6 +6,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.EmailSendReque
 import com.bookbla.americano.domain.member.controller.dto.request.EmailVerifyRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.EmailResponse;
 import com.bookbla.americano.domain.member.service.MemberEmailService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class MemberEmailController {
 
     private final MemberEmailService memberEmailService;
 
+    @Operation(summary = "이메일 인증 코드 전송 API")
     @PostMapping("/sends")
     public ResponseEntity<EmailResponse> sendEmail(
             @Parameter(hidden = true) @User LoginUser loginUser,
@@ -33,6 +35,7 @@ public class MemberEmailController {
         return ResponseEntity.ok(emailResponse);
     }
 
+    @Operation(summary = "이메일 인증 코드 확인 API")
     @PostMapping("/verifys")
     public ResponseEntity<EmailResponse> verifyEmail(
             @Parameter(hidden = true) @User LoginUser loginUser,

@@ -5,6 +5,7 @@ import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.notification.controller.dto.request.MemberTokenCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberTokenCreateResponse;
 import com.bookbla.americano.domain.notification.service.MemberTokenService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class MemberTokenController {
 
     private final MemberTokenService memberTokenService;
 
+    @Operation(summary = "회원의 EXPO 서버 토큰 생성 API")
     @PostMapping
     public ResponseEntity<MemberTokenCreateResponse> createPushToken(
         @Parameter(hidden = true) @User LoginUser loginUser,
