@@ -41,11 +41,12 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
 
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(memberBook.book.id.in(
-                JPAExpressions
-                        .select(memberBook.book.id)
-                        .from(member)
-                        .innerJoin(memberBook).on(member.eq(memberBook.member))
-                        .where(member.id.eq(memberId))));
+                        JPAExpressions
+                                .select(memberBook.book.id)
+                                .from(member)
+                                .innerJoin(memberBook).on(member.eq(memberBook.member))
+                                .where(member.id.eq(memberId)
+                                        .and(memberBook.isDeleted.eq(false)))));
 
         builder.and(eqGender(member.memberProfile, requestDto.getGender()))
                 .and(eqSmokeType(member.memberStyle, requestDto.getSmokeType()))
