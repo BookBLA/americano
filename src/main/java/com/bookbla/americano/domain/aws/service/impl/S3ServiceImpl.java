@@ -1,5 +1,8 @@
 package com.bookbla.americano.domain.aws.service.impl;
 
+import java.net.URL;
+import java.util.Date;
+
 import com.amazonaws.HttpMethod;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
@@ -17,9 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.net.URL;
-import java.util.Date;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -32,8 +32,11 @@ public class S3ServiceImpl implements S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    @Value("${cloud.aws.cloud-front-url}")
+    private String url;
+
     @Override
-    public void movePhoto(UploadType source, UploadType destination, Long key) {
+    public String movePhoto(UploadType source, UploadType destination, Long key) {
         String fileName = key.toString() + IMAGE_POSTFIX;
 
         String sourceKey = createPath(source.getType(), fileName);
@@ -48,6 +51,8 @@ public class S3ServiceImpl implements S3Service {
         } catch (SdkClientException e) {
             throw new BaseException(AwsException.AWS_COMMUNICATION_ERROR);
         }
+
+        return url + destination.getType() + "/" + fileName;
     }
 
     public String getPreSignedUrl(UploadType type, String fileName) {
