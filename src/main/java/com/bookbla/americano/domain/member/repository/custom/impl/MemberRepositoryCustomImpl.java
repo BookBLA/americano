@@ -1,6 +1,9 @@
 package com.bookbla.americano.domain.member.repository.custom.impl;
 
 
+import java.time.LocalDate;
+import java.util.List;
+
 import com.bookbla.americano.domain.book.repository.entity.QBook;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.response.BookProfileResponse;
@@ -25,12 +28,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
-import java.util.List;
-
 @Repository
 @RequiredArgsConstructor
 public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
+
     private final JPAQueryFactory queryFactory;
 
     @Override
@@ -108,7 +109,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 )
                 .from(member)
                 .innerJoin(memberBook).on(member.eq(memberBook.member))
-                .innerJoin(book).on(memberBook.book.eq(book))
+                .innerJoin(book).on(memberBook.book.eq(book).and(memberBook.isDeleted.eq(false)))
                 .where(builder.andNot(member.id.eq(memberId)))
                 .orderBy(member.createdAt.desc())
                 .fetch();
