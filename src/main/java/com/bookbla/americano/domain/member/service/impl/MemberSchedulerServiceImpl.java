@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.member.service.impl;
 
+import com.bookbla.americano.domain.member.repository.MemberRepository;
 import java.time.LocalDateTime;
 
 import com.bookbla.americano.base.log.discord.BookblaDiscord;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class MemberSchedulerServiceImpl implements MemberSchedulerService {
 
+    private final MemberRepository memberRepository;
     private final MemberPostcardRepository memberPostcardRepository;
     private final MemberEmailRepository memberEmailRepository;
     private final MailService mailService;
@@ -58,5 +60,25 @@ public class MemberSchedulerServiceImpl implements MemberSchedulerService {
             log.debug("Exception in {}", MemberSchedulerService.class.getName());
             log.error(e.toString());
         }
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 0 4 * * *", zone = "Asia/Seoul")
+    @Override
+    public void deleteMemberSchedule() {
+        try {
+            LocalDateTime currentDate = LocalDateTime.now();
+            LocalDateTime thirtyDaysAgo = currentDate.minusDays(30);
+            memberRepository.deleteAllByDeletedAtBeforeAndMemberStatus(thirtyDaysAgo);
+        } catch (Exception e) {
+            String txName = MemberSchedulerService.class.getName() + "(deleteMemberSchedule)";
+            String message = "멤버 테이블의 탈퇴한 멤버 삭제 작업이 실패하였습니다. 확인 부탁드립니다.";
+
+            mailService.sendTransactionFailureEmail(txName, message);
+            bookblaDiscord.sendMessage(message);
+            log.debug("Exception in {}", MemberSchedulerService.class.getName());
+            log.error(e.toString());
+        }
+
     }
 }

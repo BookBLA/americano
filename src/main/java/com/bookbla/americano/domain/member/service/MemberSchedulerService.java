@@ -4,4 +4,6 @@ public interface MemberSchedulerService {
     void initMemberFreePostcardSchedule();
 
     void deleteMemberEmailSchedule();
+
+    void deleteMemberSchedule();
 }
