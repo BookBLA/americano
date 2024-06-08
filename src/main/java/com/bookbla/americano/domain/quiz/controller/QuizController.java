@@ -6,6 +6,7 @@ import com.bookbla.americano.domain.quiz.controller.dto.request.QuizQuestionCrea
 import com.bookbla.americano.domain.quiz.controller.dto.request.QuizQuestionUpdateRequest;
 import com.bookbla.americano.domain.quiz.controller.dto.response.QuizQuestionReadResponse;
 import com.bookbla.americano.domain.quiz.service.QuizQuestionService;
+import io.swagger.v3.oas.annotations.Parameter;
 import java.net.URI;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,8 @@ public class QuizController {
     // Todo: 리팩터링
     @PostMapping("/{memberBookId}")
     public ResponseEntity<Void> createQuizQuestion(
-            @User LoginUser loginUser, @PathVariable Long memberBookId,
-            @RequestBody @Valid QuizQuestionCreateRequest quizQuestionCreateRequest
+        @Parameter(hidden = true) @User LoginUser loginUser, @PathVariable Long memberBookId,
+        @RequestBody @Valid QuizQuestionCreateRequest quizQuestionCreateRequest
     ) {
         Long quizQuestionId = quizQuestionService.createQuizQuestion(loginUser.getMemberId(),
                 memberBookId, quizQuestionCreateRequest);
@@ -40,7 +41,7 @@ public class QuizController {
 
     @GetMapping("/{memberBookId}")
     public ResponseEntity<QuizQuestionReadResponse> createQuizQuestion(
-            @User LoginUser loginUser, @PathVariable Long memberBookId
+        @Parameter(hidden = true) @User LoginUser loginUser, @PathVariable Long memberBookId
     ) {
         QuizQuestionReadResponse quizQuestionReadResponse = quizQuestionService.getQuizQuestion(
                 loginUser.getMemberId(), memberBookId);
@@ -49,8 +50,8 @@ public class QuizController {
 
     @PutMapping("/{memberBookId}")
     public ResponseEntity<Void> updateQuizQuestion(
-            @User LoginUser loginUser, @PathVariable Long memberBookId,
-            @RequestBody @Valid QuizQuestionUpdateRequest quizQuestionUpdateRequest
+        @Parameter(hidden = true) @User LoginUser loginUser, @PathVariable Long memberBookId,
+        @RequestBody @Valid QuizQuestionUpdateRequest quizQuestionUpdateRequest
     ) {
         quizQuestionService.updateQuizQuestion(loginUser.getMemberId(), memberBookId,
                 quizQuestionUpdateRequest);

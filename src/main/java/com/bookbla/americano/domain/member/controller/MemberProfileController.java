@@ -9,6 +9,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileU
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class MemberProfileController {
 
     private final MemberProfileService memberProfileService;
 
+    @Operation(summary = "멤버 프로필 생성 API")
     @PostMapping("/member-profiles")
     public ResponseEntity<MemberProfileResponse> createMemberProfile(
             @Parameter(hidden = true) @User LoginUser loginUser,
@@ -38,6 +40,7 @@ public class MemberProfileController {
         return ResponseEntity.ok(memberProfileResponse);
     }
 
+    @Operation(summary = "멤버 프로필 조회 API")
     @GetMapping("/member-profiles")
     public ResponseEntity<MemberProfileResponse> readMemberProfile(
             @Parameter(hidden = true) @User LoginUser loginUser) {
@@ -46,6 +49,7 @@ public class MemberProfileController {
         return ResponseEntity.ok(memberProfileResponse);
     }
 
+    @Operation(summary = "멤버 프로필 수정 API")
     @PutMapping("/member-profiles")
     public ResponseEntity<MemberProfileResponse> updateMemberProfile(
             @Parameter(hidden = true) @User LoginUser loginUser,

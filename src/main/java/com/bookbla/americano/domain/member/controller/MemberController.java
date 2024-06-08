@@ -11,6 +11,7 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberStatusR
 import com.bookbla.americano.domain.member.service.MemberPostcardService;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
 import com.bookbla.americano.domain.member.service.MemberService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import java.util.List;
 import javax.validation.Valid;
@@ -37,6 +38,7 @@ public class MemberController {
     private final MemberPostcardService memberPostcardService;
     private final MemberProfileService memberProfileService;
 
+    @Operation(summary = "멤버 조회 API")
     @GetMapping
     public ResponseEntity<MemberResponse> readMember(
         @Parameter(hidden = true) @User LoginUser loginUser) {
@@ -44,6 +46,7 @@ public class MemberController {
         return ResponseEntity.ok(memberResponse);
     }
 
+    @Operation(summary = "멤버 상태 업데이트 API")
     @PostMapping("/status")
     public ResponseEntity<MemberStatusResponse> updateMemberStatus(
         @Parameter(hidden = true) @User LoginUser loginUser,
@@ -55,6 +58,7 @@ public class MemberController {
         return ResponseEntity.ok(memberStatusResponse);
     }
 
+    @Operation(summary = "멤버 탈퇴 API", description = "탈퇴하고나서 30일 뒤에 회원 정보 삭제")
     @DeleteMapping
     public ResponseEntity<MemberDeleteResponse> deleteMember(
         @Parameter(hidden = true) @User LoginUser loginUser) {
@@ -63,6 +67,7 @@ public class MemberController {
         return ResponseEntity.ok(memberDeleteResponse);
     }
 
+    @Operation(summary = "멤버 상태 조회 API")
     @GetMapping("/statuses")
     public ResponseEntity<MemberStatusResponse> readMemberStatus(
         @Parameter(hidden = true) @User LoginUser loginUser) {

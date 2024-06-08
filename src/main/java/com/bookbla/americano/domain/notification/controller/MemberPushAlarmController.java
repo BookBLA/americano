@@ -6,6 +6,7 @@ import com.bookbla.americano.domain.notification.controller.dto.response.MemberP
 import com.bookbla.americano.domain.notification.controller.dto.response.MemberPushAlarmDeleteResponse;
 import com.bookbla.americano.domain.notification.controller.dto.response.MemberPushAlarmReadResponse;
 import com.bookbla.americano.domain.notification.service.MemberPushAlarmService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ public class MemberPushAlarmController {
 
     private final MemberPushAlarmService memberPushAlarmService;
 
+    @Operation(summary = "해당 회원의 푸시 알림 조회 API")
     @GetMapping
     public ResponseEntity<MemberPushAlarmReadResponse> readPushAlarm(
         @Parameter(hidden = true) @User LoginUser loginUser) {
@@ -31,6 +33,7 @@ public class MemberPushAlarmController {
         return ResponseEntity.ok(memberPushAlarmReadResponse);
     }
 
+    @Operation(summary = "해당 회원의 푸시 알림 1개 삭제 API")
     @DeleteMapping("/{memberPushAlarmId}")
     public ResponseEntity<MemberPushAlarmDeleteResponse> deletePushAlarm(
         @Parameter(hidden = true) @User LoginUser loginuser,
@@ -43,6 +46,7 @@ public class MemberPushAlarmController {
         return ResponseEntity.ok(memberPushAlarmDeleteResponse);
     }
 
+    @Operation(summary = "해당 회원의 푸시 알림 전체 삭제 API")
     @DeleteMapping
     public ResponseEntity<MemberPushAlarmAllDeleteResponse> deleteAllPushAlarm(
         @Parameter(hidden = true) @User LoginUser loginUser) {

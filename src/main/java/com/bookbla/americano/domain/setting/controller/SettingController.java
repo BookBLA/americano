@@ -4,6 +4,7 @@ import com.bookbla.americano.domain.setting.controller.request.VersionCreateRequ
 import com.bookbla.americano.domain.setting.controller.response.VersionCreateResponse;
 import com.bookbla.americano.domain.setting.controller.response.VersionReadResponse;
 import com.bookbla.americano.domain.setting.service.SettingService;
+import io.swagger.v3.oas.annotations.Operation;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +21,14 @@ public class SettingController {
 
     private final SettingService settingService;
 
+    @Operation(summary = "현재 버전 정보 조회 API")
     @GetMapping("/versions")
     public ResponseEntity<VersionReadResponse> readVersion() {
         VersionReadResponse versionReadResponse = settingService.readVersion();
         return ResponseEntity.ok(versionReadResponse);
     }
 
+    @Operation(summary = "현재 버전 정보 생성 API")
     @PostMapping("/versions")
     public ResponseEntity<VersionCreateResponse> createVersion(
         @RequestBody @Valid VersionCreateRequest versionCreateRequest) {

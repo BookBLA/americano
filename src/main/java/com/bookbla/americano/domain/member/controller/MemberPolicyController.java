@@ -6,6 +6,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberPolicyCr
 import com.bookbla.americano.domain.member.controller.dto.request.MemberPolicyUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberPolicyResponse;
 import com.bookbla.americano.domain.member.service.MemberPolicyService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class MemberPolicyController {
 
     private final MemberPolicyService memberPolicyService;
 
+    @Operation(summary = "멤버 약관 생성 API")
     @PostMapping
     public ResponseEntity<MemberPolicyResponse> createMemberPolicies(
         @Parameter(hidden = true) @User LoginUser loginUser,
@@ -35,6 +37,7 @@ public class MemberPolicyController {
         return ResponseEntity.ok(memberPolicyResponse);
     }
 
+    @Operation(summary = "멤버 약관 조회 API")
     @GetMapping
     public ResponseEntity<MemberPolicyResponse> readMemberPolicies(
         @Parameter(hidden = true) @User LoginUser loginUser) {
@@ -43,6 +46,7 @@ public class MemberPolicyController {
         return ResponseEntity.ok(memberPolicyResponse);
     }
 
+    @Operation(summary = "멤버 약관 수정 API")
     @PutMapping
     public ResponseEntity<MemberPolicyResponse> updateMemberPolicies(
         @Parameter(hidden = true) @User LoginUser loginUser,
