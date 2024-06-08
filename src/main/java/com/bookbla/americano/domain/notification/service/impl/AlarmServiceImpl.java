@@ -80,9 +80,8 @@ public class AlarmServiceImpl implements AlarmService {
             throw new BaseException(PushAlarmExceptionType.NOT_FOUND_TOKEN);
         }
 
-        // 해당 멤버가 회원가입 완료상태가 아니면서 매칭 비활성화가 아니라면
-        if (!receiveMember.getMemberStatus().equals(MemberStatus.COMPLETED)
-            && !receiveMember.getMemberStatus().equals(MemberStatus.MATCHING_DISABLED)) {
+        // 해당 멤버가 회원가입 완료상태가 아니라면
+        if (!receiveMember.getMemberStatus().equals(MemberStatus.COMPLETED)) {
             throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
         }
         
