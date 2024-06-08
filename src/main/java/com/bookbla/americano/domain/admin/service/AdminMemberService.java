@@ -132,8 +132,8 @@ public class AdminMemberService {
     ) {
         if (status.isDone()) {
             memberVerify.success(dto.getReason());
-            memberProfile.updateProfileImageUrl(memberVerify.getContents());
-            s3Service.movePhoto(UPDATE_PROFILE, PROFILE, member.getId());
+            String imageUrl = s3Service.movePhoto(UPDATE_PROFILE, PROFILE, member.getId());
+            memberProfile.updateProfileImageUrl(imageUrl);
             return;
         }
         memberVerify.fail(dto.getReason());
