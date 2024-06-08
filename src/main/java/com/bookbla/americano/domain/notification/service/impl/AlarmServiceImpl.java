@@ -85,9 +85,10 @@ public class AlarmServiceImpl implements AlarmService {
             && !receiveMember.getMemberStatus().equals(MemberStatus.MATCHING_DISABLED)) {
             throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
         }
-
+        
+        // 엽서 도착은 익명 처리
         String title = "띵동~\uD83D\uDC8C 엽서가 도착했어요!";
-        String body = receiveMember.getMemberProfile().getName() + "님이 엽서를 보냈어요! 지금 확인해 보세요~\uD83E\uDD70";
+        String body = receiveMember.getMemberProfile().showBlindName() + "님이 엽서를 보냈어요! 지금 확인해 보세요~\uD83E\uDD70";
 
         sendToExpo(receiveMember.getPushToken(), title, body);
 
@@ -113,7 +114,8 @@ public class AlarmServiceImpl implements AlarmService {
             && !sendMember.getMemberStatus().equals(MemberStatus.MATCHING_DISABLED)) {
             throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
         }
-
+        
+        // 엽서 수락은 실명 처리
         String title = "축하합니다\uD83E\uDD73\uD83E\uDD73 매칭에 성공하셨습니다~!!\uD83D\uDC95";
         String body = sendMember.getMemberProfile().getName() + "님이 엽서를 수락했어요! 지금 바로 채팅해보세요~\uD83E\uDD70";
 
