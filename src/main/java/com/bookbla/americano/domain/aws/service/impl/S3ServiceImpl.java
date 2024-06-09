@@ -36,8 +36,8 @@ public class S3ServiceImpl implements S3Service {
     private String url;
 
     @Override
-    public String movePhoto(UploadType source, UploadType destination, Long key) {
-        String fileName = key.toString() + IMAGE_POSTFIX;
+    public String movePhoto(UploadType source, UploadType destination, String key) {
+        String fileName = key.replace(destination.getType() + "/", "");
 
         String sourceKey = createPath(source.getType(), fileName);
         String destinationKey = createPath(destination.getType(), fileName);

@@ -25,6 +25,7 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,9 @@ import static com.bookbla.americano.domain.member.repository.entity.MemberVerify
 @RequiredArgsConstructor
 @Service
 public class AdminMemberService {
+
+    @Value("${cloud.aws.cloud-front-url}")
+    private String url;
 
     private final MemberRepository memberRepository;
     private final MemberVerifyRepository memberVerifyRepository;
@@ -119,7 +123,7 @@ public class AdminMemberService {
         MemberProfile memberProfile = member.getMemberProfile();
         ProfileImageStatus status = ProfileImageStatus.from(dto.getStatus());
 
-        updateVerification(dto, status, memberVerify, memberProfile, member);
+        updateVerification(dto, status, memberVerify, memberProfile);
 
         memberProfile.updateProfileImageStatus(status);
         member.updateMemberStatus();
@@ -127,13 +131,14 @@ public class AdminMemberService {
 
     private void updateVerification(
             StatusUpdateDto dto, ProfileImageStatus status,
-            MemberVerify memberVerify, MemberProfile memberProfile,
-            Member member
+            MemberVerify memberVerify, MemberProfile memberProfile
     ) {
         if (status.isDone()) {
             memberVerify.success(dto.getReason());
-            String imageUrl = s3Service.movePhoto(UPDATE_PROFILE, PROFILE, member.getId());
-            memberProfile.updateProfileImageUrl(imageUrl);
+            String profileImageUrl = memberVerify.getDescription();
+            String imageFile = profileImageUrl.replace(url, "");
+            String newUrl = s3Service.movePhoto(UPDATE_PROFILE, PROFILE, imageFile);
+            memberProfile.updateProfileImageUrl(newUrl);
             return;
         }
         memberVerify.fail(dto.getReason());
