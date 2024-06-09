@@ -6,6 +6,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileC
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileImageUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileOpenKakaoRoomUrlUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.ProfileModifyRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
@@ -84,6 +85,15 @@ public class MemberProfileController {
             @RequestBody @Valid MemberProfileOpenKakaoRoomUrlUpdateRequest request
     ) {
         memberProfileService.updateMemberProfileKakaoRoom(loginUser.getMemberId(), request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/members/me/member-profile")
+    public ResponseEntity<Void> updateProfile(
+            @Parameter(hidden = true) @User LoginUser loginUser,
+            @RequestBody @Valid ProfileModifyRequest request
+    ) {
+        memberProfileService.modifyProfile(loginUser.getMemberId(), request);
         return ResponseEntity.ok().build();
     }
 }
