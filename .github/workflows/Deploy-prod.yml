@@ -54,6 +54,19 @@ jobs:
           distribution: 'zulu'
           cache: 'gradle'
 
+        # Firebase secret JSON 생성
+      - name: Create Json File
+        id: create-json
+        uses: jsdaniell/create-json@1.1.2
+        with:
+          name: "bookbla-2024-firebase.json"
+          json: ${{ secrets.FIREBASE_SECRET }}
+
+      # JSON 파일 이동
+      - name: Move Json File
+        run: |
+          mv bookbla-2024-firebase.json ./src/main/resources/
+
       # Gradle Package Caching
       - name: Caching Gradle packages
         uses: actions/cache@v3
@@ -127,7 +140,7 @@ jobs:
           echo 'sudo docker rm -f ${{ env.CONTAINER_NAME }}' >> deploy.sh
           echo 'sudo docker rmi ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}' >> deploy.sh
           echo 'sudo docker pull ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}' >> deploy.sh
-          echo 'sudo docker run -d -p 8080:8080 --restart=unless-stopped --log-opt max-size=10m --log-opt max-file=3 --name ${{ env.CONTAINER_NAME }} ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}' >> deploy.sh
+          echo 'sudo docker run -d -p 8080:8080 --add-host host.docker.internal:host-gateway --restart=unless-stopped --log-opt max-size=10m --log-opt max-file=3 --name ${{ env.CONTAINER_NAME }} ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}' >> deploy.sh
 
       - name: Transfer Deploy Script use SCP
         uses: appleboy/scp-action@master
