@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.postcard.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.custom.PostcardRepositoryCustom;
@@ -14,13 +15,8 @@ public interface PostcardRepository extends JpaRepository<Postcard, Long>, Postc
 
     boolean existsBySendMemberIdAndReceiveMemberIdAndPostcardStatus(Long sendMemberId, Long receiveMemberId, PostcardStatus status);
 
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("update MemberPostcard mp set mp.freePostcardCount = mp.freePostcardCount - 1 where mp.member.id = :memberId")
-    void useMemberFreePostcard(@Param("memberId") Long memberId);
-
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("update MemberPostcard mp set mp.payPostcardCount = mp.payPostcardCount - 1 where mp.member.id = :memberId")
-    void useMemberPayPostcard(@Param("memberId") Long memberId);
+    @Query("SELECT p FROM Postcard p JOIN FETCH p.receiveMember JOIN FETCH p.sendMember WHERE p.id = :postcardId")
+    Optional<Postcard> findById(@Param("postcardId") Long postcardId);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("update Postcard p set p.postcardStatus = :status where p.id = :postcardId")

@@ -264,8 +264,8 @@ public class PostcardServiceImpl implements PostcardService {
                                      PostcardStatus postcardStatus) {
         Postcard postcard = postcardRepository.findById(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
-        if (!Objects.equals(postcard.getReceiveMember().getId(), memberId) && !Objects.equals(
-                postcard.getSendMember().getId(), memberId)) {
+        if (!Objects.equals(postcard.getReceiveMember().getId(), memberId)
+                && !Objects.equals(postcard.getSendMember().getId(), memberId)) {
             throw new BaseException(PostcardExceptionType.ACCESS_DENIED_TO_POSTCARD);
         }
 
