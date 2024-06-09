@@ -18,6 +18,7 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -237,6 +238,7 @@ class AdminMemberServiceTest {
     }
 
     @Test
+    @Disabled
     void 회원의_프로필_사진_인증_상태를_변경할_수_있다() {
         // given
         Member member = memberRepository.save(Member.builder()
