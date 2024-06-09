@@ -269,7 +269,8 @@ public class PostcardServiceImpl implements PostcardService {
         // 상태가 수락으로 변경되면 엽서를 보낸 멤버에게 푸시 알림
         if (postcardStatus.isAccept()) {
             Member sendMember = postcard.getSendMember();
-            alarmService.sendPushAlarmForAcceptPostcard(sendMember);
+            Member receiveMember = postcard.getReceiveMember();
+            alarmService.sendPushAlarmForAcceptPostcard(sendMember, receiveMember);
         }
     }
 

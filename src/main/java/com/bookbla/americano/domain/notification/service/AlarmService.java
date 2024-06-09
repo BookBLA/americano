@@ -12,7 +12,7 @@ public interface AlarmService {
 
     void sendPushAlarmForReceivePostCard(Member sendMember, Member receiveMember);
 
-    void sendPushAlarmForAcceptPostcard(Member member);
+    void sendPushAlarmForAcceptPostcard(Member sendMember, Member receiveMember);
 
     PushAlarmAllCreateResponse sendPushAlarmAll(PushAlarmAllCreateRequest pushAlarmAllCreateRequest);
 }
