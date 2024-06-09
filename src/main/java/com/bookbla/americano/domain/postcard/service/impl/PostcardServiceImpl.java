@@ -1,10 +1,6 @@
 package com.bookbla.americano.domain.postcard.service.impl;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
@@ -39,6 +35,9 @@ import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
 import com.bookbla.americano.domain.quiz.repository.QuizReplyRepository;
 import com.bookbla.americano.domain.quiz.repository.entity.QuizQuestion;
 import com.bookbla.americano.domain.quiz.repository.entity.QuizReply;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,39 +61,39 @@ public class PostcardServiceImpl implements PostcardService {
     @Override
     public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
         MemberPostcard memberPostcard = memberPostcardRepository.findMemberPostcardByMemberId(
-                        memberId)
-                .orElseThrow(
-                        () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_POSTCARD_INFO));
+                memberId)
+            .orElseThrow(
+                () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_POSTCARD_INFO));
         memberPostcard.validate();
 
         List<Postcard> sentPostcards = postcardRepository.findBySendMemberIdAndReceiveMemberId(
-                memberId, request.getReceiveMemberId());
+            memberId, request.getReceiveMemberId());
         sentPostcards.forEach(Postcard::validateSendPostcard);
 
         Member member = memberRepository.getByIdOrThrow(memberId);
         Member targetMember = memberRepository.getByIdOrThrow(request.getReceiveMemberId());
 
         MemberAsk memberAsk = memberAskRepository.findByMember(member)
-                .orElseThrow(() -> new BaseException(MemberAskExceptionType.NOT_REGISTERED_MEMBER));
+            .orElseThrow(() -> new BaseException(MemberAskExceptionType.NOT_REGISTERED_MEMBER));
         MemberReply memberReply = MemberReply.builder()
-                .memberAsk(memberAsk)
-                .content(request.getMemberReply())
-                .build();
+            .memberAsk(memberAsk)
+            .content(request.getMemberReply())
+            .build();
         memberReplyRepository.save(memberReply);
 
         List<QuizReply> correctReplies = new ArrayList<>();
         boolean isCorrect = false;
         for (SendPostcardRequest.QuizAnswer quizAnswer : request.getQuizAnswerList()) {
             QuizQuestion quizQuestion = quizQuestionRepository.getByIdOrThrow(
-                    quizAnswer.getQuizId());
+                quizAnswer.getQuizId());
             CorrectStatus status = quizQuestion.solve(quizAnswer.getQuizAnswer());
 
             QuizReply quizReply = QuizReply.builder()
-                    .quizQuestion(quizQuestion)
-                    .answer(quizAnswer.getQuizAnswer())
-                    .member(member)
-                    .correctStatus(status)
-                    .build();
+                .quizQuestion(quizQuestion)
+                .answer(quizAnswer.getQuizAnswer())
+                .member(member)
+                .correctStatus(status)
+                .build();
             correctReplies.add(quizReply);
 
             if (status == CorrectStatus.CORRECT) {
@@ -107,15 +106,15 @@ public class PostcardServiceImpl implements PostcardService {
         memberPostcard.use();
 
         PostcardType postCardType = postcardTypeRepository.getByIdOrThrow(
-                request.getPostcardTypeId());
+            request.getPostcardTypeId());
         Postcard postcard = Postcard.builder()
-                .sendMember(member)
-                .receiveMember(targetMember)
-                .postcardStatus(status)
-                .memberReply(memberReply)
-                .postcardType(postCardType)
-                .imageUrl(postCardType.getImageUrl())
-                .build();
+            .sendMember(member)
+            .receiveMember(targetMember)
+            .postcardStatus(status)
+            .memberReply(memberReply)
+            .postcardType(postCardType)
+            .imageUrl(postCardType.getImageUrl())
+            .build();
         postcardRepository.save(postcard);
 
         for (QuizReply quizReply : correctReplies) {
@@ -138,17 +137,18 @@ public class PostcardServiceImpl implements PostcardService {
     @Override // 보낸 엽서
     public List<MemberPostcardFromResponse> getPostcardsFromMember(Long memberId) {
         List<PostcardFromResponse> postcardFromResponseList = postcardRepository.getPostcardsFromMember(
-                memberId);
+            memberId);
         List<MemberPostcardFromResponse> memberPostcardFromResponseList = new ArrayList<>();
 
         for (PostcardFromResponse i : postcardFromResponseList) {
             MemberPostcardFromResponse nowResponse;
             MemberBookReadResponses memberBookList = memberBookService.readMemberBooks(
-                    i.getMemberId());
+                i.getMemberId());
             List<String> nowBookImageUrls = new ArrayList<>();
             nowResponse = new MemberPostcardFromResponse(i.getMemberId(), i.getMemberName(),
-                    i.getMemberBirthDate(), i.getMemberGender(), i.getMemberSchoolName(), i.getMemberProfileImageUrl(),
-                    i.getMemberOpenKakaoRoomUrl(), i.getPostcardId(), i.getPostcardStatus());
+                i.getMemberBirthDate(), i.getMemberGender(), i.getMemberSchoolName(),
+                i.getMemberProfileImageUrl(),
+                i.getMemberOpenKakaoRoomUrl(), i.getPostcardId(), i.getPostcardStatus());
             for (MemberBookReadResponses.MemberBookReadResponse j : memberBookList.getMemberBookReadResponses()) {
                 if (j.isRepresentative()) {
                     nowResponse.setRepresentativeBookTitle(j.getTitle());
@@ -168,7 +168,7 @@ public class PostcardServiceImpl implements PostcardService {
     @Override // 받은 엽서
     public List<MemberPostcardToResponse> getPostcardsToMember(Long memberId) {
         List<PostcardToResponse> postcardToResponseList = postcardRepository.getPostcardsToMember(
-                memberId);
+            memberId);
         List<MemberPostcardToResponse> memberPostcardToResponseList = new ArrayList<>();
         long now = -1;
         MemberPostcardToResponse nowResponse = new MemberPostcardToResponse();
@@ -180,6 +180,7 @@ public class PostcardServiceImpl implements PostcardService {
             if (i.getMemberId() != now) {
                 if (now != -1) {
                     nowResponse.setBookTitles(nowBookTitles);
+                    nowResponse.setBookImageUrls(nowBookImageUrls);
                     nowResponse.setCorrectStatuses(nowCorrectStatuses);
                     nowResponse.setQuizScore(nowScore);
                     // 리스트에 추가
@@ -188,12 +189,14 @@ public class PostcardServiceImpl implements PostcardService {
                 // 초기화
                 now = i.getMemberId();
                 nowResponse = new MemberPostcardToResponse(i.getPostcardId(), i.getMemberId(),
-                        i.getMemberName(), i.getMemberProfileImageUrl(), i.getMemberBirthDate(), i.getMemberGender(),
-                        i.getDrinkType(), i.getSmokeType(), i.getContactType(), i.getDateStyleType(),
-                        i.getDateCostType(), i.getMbti(), i.getJustFriendType(),
-                        i.getMemberSchoolName(), i.getMemberReplyContent(), i.getPostcardStatus(),
-                        i.getPostcardImageUrl(), i.getMemberKakaoRoomUrl());
+                    i.getMemberName(), i.getMemberProfileImageUrl(), i.getMemberBirthDate(),
+                    i.getMemberGender(),
+                    i.getDrinkType(), i.getSmokeType(), i.getContactType(), i.getDateStyleType(),
+                    i.getDateCostType(), i.getMbti(), i.getJustFriendType(),
+                    i.getMemberSchoolName(), i.getMemberReplyContent(), i.getPostcardStatus(),
+                    i.getPostcardImageUrl(), i.getMemberKakaoRoomUrl());
                 nowBookTitles = new ArrayList<>();
+                nowBookImageUrls = new ArrayList<>();
                 nowCorrectStatuses = new ArrayList<>();
                 nowScore = 0;
 
@@ -207,6 +210,7 @@ public class PostcardServiceImpl implements PostcardService {
             } else {
                 // 책 퀴즈 정답 여부 저장
                 nowBookTitles.add(i.getBookTitle());
+                nowBookImageUrls.add(i.getBookImageUrl());
                 nowCorrectStatuses.add(i.getCorrectStatus());
                 if (i.getCorrectStatus().equals(CorrectStatus.CORRECT)) {
                     nowScore++;
@@ -228,7 +232,7 @@ public class PostcardServiceImpl implements PostcardService {
     @Override
     public void readMemberPostcard(Long memberId, Long postcardId) {
         Postcard postcard = postcardRepository.findById(postcardId)
-                .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
+            .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
         if (!Objects.equals(postcard.getReceiveMember().getId(), memberId)) {
             throw new BaseException(PostcardExceptionType.ACCESS_DENIED_TO_POSTCARD);
         } else if (!postcard.getPostcardStatus().equals(PostcardStatus.PENDING)) {
@@ -239,9 +243,9 @@ public class PostcardServiceImpl implements PostcardService {
             }
         }
         MemberPostcard memberPostcard = memberPostcardRepository.findMemberPostcardByMemberId(
-                        memberId)
-                .orElseThrow(
-                        () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_POSTCARD_INFO));
+                memberId)
+            .orElseThrow(
+                () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_POSTCARD_INFO));
         memberPostcard.use();
         updatePostcardStatus(memberId, postcardId, PostcardStatus.READ);
     }
@@ -249,7 +253,7 @@ public class PostcardServiceImpl implements PostcardService {
     @Override
     public PostcardStatus getPostcardStatus(Long postcardId) {
         Postcard postcard = postcardRepository.findById(postcardId)
-                .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
+            .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
 
         return postcard.getPostcardStatus();
     }
@@ -258,9 +262,10 @@ public class PostcardServiceImpl implements PostcardService {
     public void updatePostcardStatus(Long memberId, Long postcardId,
                                      PostcardStatus postcardStatus) {
         Postcard postcard = postcardRepository.findById(postcardId)
-                .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
+            .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
         Member member = memberRepository.getByIdOrThrow(memberId);
-        if (!member.equals(postcard.getSendMember()) && !member.equals(postcard.getReceiveMember())) {
+        if (!member.equals(postcard.getSendMember()) && !member.equals(
+            postcard.getReceiveMember())) {
             throw new BaseException(PostcardExceptionType.ACCESS_DENIED_TO_POSTCARD);
         }
 
@@ -279,12 +284,12 @@ public class PostcardServiceImpl implements PostcardService {
     public PostcardSendValidateResponse validateSendPostcard(Long sendMemberId,
                                                              Long targetMemberId) {
         List<Postcard> sendPostcards = postcardRepository.findBySendMemberIdAndReceiveMemberId(
-                sendMemberId, targetMemberId);
+            sendMemberId, targetMemberId);
         sendPostcards.forEach(Postcard::validateSendPostcard);
 
         return PostcardSendValidateResponse.from(
-                sendPostcards.stream()
-                        .anyMatch(Postcard::isRefused)
+            sendPostcards.stream()
+                .anyMatch(Postcard::isRefused)
         );
     }
 }
