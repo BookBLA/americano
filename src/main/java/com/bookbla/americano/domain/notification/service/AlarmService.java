@@ -10,7 +10,7 @@ public interface AlarmService {
 
     PushAlarmCreateResponse sendPushAlarm(PushAlarmCreateRequest pushAlarmCreateRequest);
 
-    void sendPushAlarmForReceivePostCard(Member receiveMember);
+    void sendPushAlarmForReceivePostCard(Member sendMember, Member receiveMember);
 
     void sendPushAlarmForAcceptPostcard(Member member);
 

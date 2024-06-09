@@ -74,7 +74,7 @@ public class AlarmServiceImpl implements AlarmService {
 
     @Override
     @Transactional
-    public void sendPushAlarmForReceivePostCard(Member receiveMember) {
+    public void sendPushAlarmForReceivePostCard(Member sendMember, Member receiveMember) {
         // 해당 멤버가 푸시 토큰이 없다면 에러 발생
         if (receiveMember.getPushToken() == null) {
             throw new BaseException(PushAlarmExceptionType.NOT_FOUND_TOKEN);
@@ -87,7 +87,7 @@ public class AlarmServiceImpl implements AlarmService {
         
         // 엽서 도착은 익명 처리
         String title = "띵동~\uD83D\uDC8C 엽서가 도착했어요!";
-        String body = receiveMember.getMemberProfile().showBlindName() + "님이 엽서를 보냈어요! 지금 확인해 보세요~\uD83E\uDD70";
+        String body = sendMember.getMemberProfile().showBlindName() + "님이 엽서를 보냈어요! 지금 확인해 보세요~\uD83E\uDD70";
 
         sendToExpo(receiveMember.getPushToken(), title, body);
 
