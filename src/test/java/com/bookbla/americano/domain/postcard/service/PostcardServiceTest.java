@@ -36,14 +36,14 @@ class PostcardServiceTest {
     private PostcardRepository postcardRepository;
 
 
-    @EnumSource(mode = INCLUDE, names = {"PENDING", "ACCEPT", "ALL_WRONG"})
+    @EnumSource(mode = INCLUDE, names = {"PENDING", "ACCEPT", "ALL_WRONG", "READ"})
     @ParameterizedTest(name = "엽서를_보낼_수_없다면_예외를_반환한다")
     void 엽서를_보낼_수_없다면_예외를_반환한다(PostcardStatus postcardStatus) {
         // given
         Member sendMember = memberRepository.save(Member.builder().build());
         Member reciveMember = memberRepository.save(Member.builder().build());
 
-        Postcard unSendablePostcard = postcardRepository.save(Postcard.builder()
+        postcardRepository.save(Postcard.builder()
                 .sendMember(sendMember)
                 .receiveMember(reciveMember)
                 .postcardStatus(postcardStatus)
@@ -74,7 +74,7 @@ class PostcardServiceTest {
         Member sendMember = memberRepository.save(Member.builder().build());
         Member reciveMember = memberRepository.save(Member.builder().build());
 
-        Postcard refusedPostcard = postcardRepository.save(Postcard.builder()
+        postcardRepository.save(Postcard.builder()
                 .sendMember(sendMember)
                 .receiveMember(reciveMember)
                 .postcardStatus(REFUSED)

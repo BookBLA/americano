@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.postcard.repository.entity;
 import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.ACCEPT;
 import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.ALL_WRONG;
 import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.PENDING;
+import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.READ;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.base.exception.BaseException;
@@ -59,6 +60,9 @@ public class Postcard extends BaseInsertEntity {
     private PostcardStatus postcardStatus;
 
     public void validateSendPostcard() {
+        if (postcardStatus == READ) {
+            throw new BaseException(PostcardExceptionType.PENDING_POSTCARD_EXISTS);
+        }
         if (postcardStatus == PENDING) {
             throw new BaseException(PostcardExceptionType.PENDING_POSTCARD_EXISTS);
         }

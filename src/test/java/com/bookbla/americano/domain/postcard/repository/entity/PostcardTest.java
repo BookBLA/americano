@@ -16,7 +16,7 @@ import static org.junit.jupiter.params.provider.EnumSource.Mode.INCLUDE;
 @SuppressWarnings("NonAsciiCharacters")
 class PostcardTest {
 
-    @EnumSource(mode = INCLUDE, names = {"PENDING", "ACCEPT", "ALL_WRONG"})
+    @EnumSource(mode = INCLUDE, names = {"PENDING", "ACCEPT", "ALL_WRONG", "READ"})
     @ParameterizedTest(name = "엽서를_보낼_수_없다면_예외를_던진다")
     void 엽서를_보낼_수_없다면_예외를_던진다(PostcardStatus status) {
         // given
