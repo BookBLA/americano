@@ -32,8 +32,7 @@ public class MemberProfile {
     private Gender gender;
 
     private String schoolName;
-
-//    @Column(unique = true)  TODO: 나중에 제약 조건 변경 예정
+    
     private String schoolEmail;
 
     private String phoneNumber;
@@ -153,11 +152,4 @@ public class MemberProfile {
         return getGender().name();
     }
 
-    public boolean isOpenKakaoRoomUrl(String openKakaoRoomUrl) {
-        return this.openKakaoRoomUrl.equals(openKakaoRoomUrl);
-    }
-
-    public boolean isProfileImageUrl(String profileImageUrl) {
-        return this.profileImageUrl.equals(profileImageUrl);
-    }
 }

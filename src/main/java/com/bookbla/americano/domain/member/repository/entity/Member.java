@@ -147,18 +147,4 @@ public class Member extends BaseInsertEntity {
             throw new BaseException(MemberExceptionType.STYLE_ALREADY_REGISTERD);
         }
     }
-
-    public void validateDeleted() {
-        if (this.memberStatus == MemberStatus.DELETED) {
-            throw new BaseException(LoginExceptionType.CANNOT_LOGIN_MEMBER_DELETED);
-        }
-    }
-
-    public boolean isOpenKakaoRoomUrl(String openKakaoRoomUrl) {
-        return this.memberProfile.isOpenKakaoRoomUrl(openKakaoRoomUrl);
-    }
-
-    public boolean isProfileImageUrl(String profileImageUrl) {
-        return this.memberProfile.isProfileImageUrl(profileImageUrl);
-    }
 }

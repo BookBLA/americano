@@ -6,6 +6,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProf
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileImageUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileOpenKakaoRoomUrlUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.ProfileModifyRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
@@ -22,6 +23,8 @@ public interface MemberProfileService {
     MemberProfileResponse readMemberProfile(Long memberId);
 
     MemberProfileResponse updateMemberProfile(Long memberId, MemberProfileUpdateRequest memberProfileUpdateRequest);
+
+    void modifyProfile(Long memberId, ProfileModifyRequest request);
 
     MemberProfileStatusResponse readMemberProfileStatus(Long memberId);
 
