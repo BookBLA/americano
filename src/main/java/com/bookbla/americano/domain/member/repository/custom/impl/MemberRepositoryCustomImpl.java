@@ -15,6 +15,7 @@ import com.bookbla.americano.domain.member.enums.DrinkType;
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.JustFriendType;
 import com.bookbla.americano.domain.member.enums.Mbti;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.SmokeType;
 import com.bookbla.americano.domain.member.repository.custom.MemberRepositoryCustom;
 import com.bookbla.americano.domain.member.repository.entity.QMember;
@@ -110,7 +111,8 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .from(member)
                 .innerJoin(memberBook).on(member.eq(memberBook.member))
                 .innerJoin(book).on(memberBook.book.eq(book).and(memberBook.isDeleted.eq(false)))
-                .where(builder.andNot(member.id.eq(memberId)))
+                .where(builder.andNot(member.id.eq(memberId))
+                        .and(member.memberStatus.eq(MemberStatus.COMPLETED)))
                 .orderBy(member.createdAt.desc())
                 .fetch();
     }

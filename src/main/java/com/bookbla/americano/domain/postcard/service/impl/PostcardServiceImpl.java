@@ -1,12 +1,6 @@
 package com.bookbla.americano.domain.postcard.service.impl;
 
 
-import java.time.LocalDate;
-import java.time.Period;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
@@ -20,6 +14,7 @@ import com.bookbla.americano.domain.memberask.repository.MemberAskRepository;
 import com.bookbla.americano.domain.memberask.repository.MemberReplyRepository;
 import com.bookbla.americano.domain.memberask.repository.entity.MemberAsk;
 import com.bookbla.americano.domain.memberask.repository.entity.MemberReply;
+import com.bookbla.americano.domain.notification.service.AlarmService;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardFromResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardToResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
@@ -44,6 +39,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -58,6 +57,7 @@ public class PostcardServiceImpl implements PostcardService {
     private final PostcardTypeRepository postcardTypeRepository;
     private final MemberPostcardRepository memberPostcardRepository;
     private final MemberBookService memberBookService;
+    private final AlarmService alarmService;
 
     @Override
     public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
@@ -123,6 +123,9 @@ public class PostcardServiceImpl implements PostcardService {
             quizReplyRepository.save(quizReply);
         }
 
+        // 엽서를 받는 멤버에게 푸시 알림
+        alarmService.sendPushAlarmForReceivePostCard(member, targetMember);
+
         return SendPostcardResponse.builder().isSendSuccess(isCorrect).build();
     }
 
@@ -144,8 +147,7 @@ public class PostcardServiceImpl implements PostcardService {
                     i.getMemberId());
             List<String> nowBookImageUrls = new ArrayList<>();
             nowResponse = new MemberPostcardFromResponse(i.getMemberId(), i.getMemberName(),
-                    getAge(i.getMemberBirthDate()),
-                    i.getMemberGender(), i.getMemberSchoolName(), i.getMemberProfileImageUrl(),
+                    i.getMemberBirthDate(), i.getMemberGender(), i.getMemberSchoolName(), i.getMemberProfileImageUrl(),
                     i.getMemberOpenKakaoRoomUrl(), i.getPostcardId(), i.getPostcardStatus());
             for (MemberBookReadResponses.MemberBookReadResponse j : memberBookList.getMemberBookReadResponses()) {
                 if (j.isRepresentative()) {
@@ -161,10 +163,6 @@ public class PostcardServiceImpl implements PostcardService {
         }
 
         return memberPostcardFromResponseList;
-    }
-
-    private int getAge(LocalDate birthDay) {
-        return Period.between(birthDay, LocalDate.now()).getYears();
     }
 
     @Override // 받은 엽서
@@ -189,13 +187,10 @@ public class PostcardServiceImpl implements PostcardService {
                 }
                 // 초기화
                 now = i.getMemberId();
-                int age = getAge(i.getMemberBirthDate());
                 nowResponse = new MemberPostcardToResponse(i.getPostcardId(), i.getMemberId(),
-                        i.getMemberName(),
-                        i.getMemberProfileImageUrl(), age, i.getMemberGender(), i.getDrinkType(),
-                        i.getSmokeType(),
-                        i.getContactType(), i.getDateStyleType(), i.getDateCostType(), i.getMbti(),
-                        i.getJustFriendType(),
+                        i.getMemberName(), i.getMemberProfileImageUrl(), i.getMemberBirthDate(), i.getMemberGender(),
+                        i.getDrinkType(), i.getSmokeType(), i.getContactType(), i.getDateStyleType(),
+                        i.getDateCostType(), i.getMbti(), i.getJustFriendType(),
                         i.getMemberSchoolName(), i.getMemberReplyContent(), i.getPostcardStatus(),
                         i.getPostcardImageUrl(), i.getMemberKakaoRoomUrl());
                 nowBookTitles = new ArrayList<>();
@@ -264,13 +259,18 @@ public class PostcardServiceImpl implements PostcardService {
                                      PostcardStatus postcardStatus) {
         Postcard postcard = postcardRepository.findById(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
-        Member member = memberRepository.getByIdOrThrow(memberId);
-        if (!member.equals(postcard.getReceiveMember())
-                && !member.equals(postcard.getSendMember())) {
+        if (!Objects.equals(postcard.getReceiveMember().getId(), memberId) && !Objects.equals(
+                postcard.getSendMember().getId(), memberId)) {
             throw new BaseException(PostcardExceptionType.ACCESS_DENIED_TO_POSTCARD);
         }
 
         postcardRepository.updatePostcardStatus(postcardStatus, postcardId);
+
+        // 상태가 수락으로 변경되면 엽서를 보낸 멤버에게 푸시 알림
+        if (postcardStatus.isAccept()) {
+            Member sendMember = postcard.getSendMember();
+            alarmService.sendPushAlarmForAcceptPostcard(sendMember);
+        }
     }
 
     @Override

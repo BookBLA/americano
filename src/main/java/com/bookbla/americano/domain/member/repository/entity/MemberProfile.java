@@ -33,7 +33,7 @@ public class MemberProfile {
 
     private String schoolName;
 
-    @Column(unique = true)
+//    @Column(unique = true)  TODO: 나중에 제약 조건 변경 예정
     private String schoolEmail;
 
     private String phoneNumber;
