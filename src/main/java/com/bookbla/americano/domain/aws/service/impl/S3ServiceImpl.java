@@ -38,9 +38,13 @@ public class S3ServiceImpl implements S3Service {
     @Override
     public String movePhoto(UploadType source, UploadType destination, String key) {
         String fileName = key.replace(destination.getType() + "/", "");
+        log.info(fileName);
 
         String sourceKey = createPath(source.getType(), fileName);
         String destinationKey = createPath(destination.getType(), fileName);
+
+        log.info(sourceKey);
+        log.info(destinationKey);
 
         try {
             CopyObjectRequest copyObjectRequest = new CopyObjectRequest(bucket, sourceKey, bucket, destinationKey);

@@ -25,6 +25,7 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +42,7 @@ import static com.bookbla.americano.domain.member.repository.entity.MemberVerify
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class AdminMemberService {
 
     @Value("${cloud.aws.cloud-front-url}")
@@ -137,6 +139,7 @@ public class AdminMemberService {
             memberVerify.success(dto.getReason());
             String profileImageUrl = memberVerify.getDescription();
             String imageFile = profileImageUrl.replace(url, "");
+            log.info(imageFile);
             String newUrl = s3Service.movePhoto(UPDATE_PROFILE, PROFILE, imageFile);
             memberProfile.updateProfileImageUrl(newUrl);
             return;
