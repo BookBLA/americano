@@ -49,7 +49,7 @@ public class S3ServiceImpl implements S3Service {
             DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(bucket, sourceKey);
             amazonS3.deleteObject(deleteObjectRequest);
         } catch (SdkClientException e) {
-            throw new BaseException(AwsException.AWS_COMMUNICATION_ERROR);
+            throw new BaseException(AwsException.AWS_COMMUNICATION_ERROR, e);
         }
 
         return url + destination.getType() + "/" + fileName;
