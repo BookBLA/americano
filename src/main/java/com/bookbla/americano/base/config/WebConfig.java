@@ -1,22 +1,28 @@
 package com.bookbla.americano.base.config;
 
+import com.bookbla.americano.base.log.RequestStorage;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import java.util.List;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
-    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        // 기존에 등록된 StringHttpMessageConverter를 제거
-        converters.removeIf(converter -> converter instanceof StringHttpMessageConverter);
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+            .allowedOrigins("*")
+            .allowedMethods("*")
+            .allowCredentials(false)
+            .maxAge(3000);
+    }
 
-        // JSON 형식으로 응답을 처리하는 MappingJackson2HttpMessageConverter 등록
-        converters.add(new MappingJackson2HttpMessageConverter());
+    @Bean
+    @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
+    public RequestStorage requestStorage() {
+        return new RequestStorage();
     }
 }

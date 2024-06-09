@@ -1,31 +1,22 @@
 package com.bookbla.americano.base.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
-import java.time.LocalDateTime;
+import lombok.Getter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@Getter
-@ToString
-@AllArgsConstructor
-@NoArgsConstructor
-@SuperBuilder
+
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
+@Getter
 public abstract class BaseInsertEntity {
 
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
-
 
     //todo 추후 적용
 //    @CreatedBy

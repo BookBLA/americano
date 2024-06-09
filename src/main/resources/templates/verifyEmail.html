@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <style>
+    div {
+      text-align: center;
+      margin-top: 0.15em;
+    }
+
+    .verify-code {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    .code-title {
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div>북블라 이메일 인증 코드 보내드려요!</div>
+    <div class="code-title">인증코드 : </div>
+    <div class="verify-code" th:text="${verifyCode}"></div>
+    <div>북블라 계정 설정을 계속하려면 다음 확인 코드를 입력하세요. 코드는 05분 후에 만료됩니다.</div>
+    <div>이 코드를 요청하지 않은 경우 이메일을 무시해주세요.</div>
+  </div>
+</body>
+</html>
