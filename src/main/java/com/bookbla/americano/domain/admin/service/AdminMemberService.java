@@ -136,12 +136,12 @@ public class AdminMemberService {
             MemberVerify memberVerify, MemberProfile memberProfile
     ) {
         if (status.isDone()) {
-            memberVerify.success(dto.getReason());
             String profileImageUrl = memberVerify.getDescription();
             String imageFile = profileImageUrl.replace(url, "");
             log.info(imageFile);
             String newUrl = s3Service.movePhoto(UPDATE_PROFILE, PROFILE, imageFile);
             memberProfile.updateProfileImageUrl(newUrl);
+            memberVerify.success(dto.getReason());
             return;
         }
         memberVerify.fail(dto.getReason());
