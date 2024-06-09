@@ -1,6 +1,12 @@
 package com.bookbla.americano.domain.postcard.service.impl;
 
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
@@ -37,12 +43,6 @@ import com.bookbla.americano.domain.quiz.repository.entity.QuizReply;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.time.Period;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 @Service
 @Transactional
@@ -264,8 +264,9 @@ public class PostcardServiceImpl implements PostcardService {
                                      PostcardStatus postcardStatus) {
         Postcard postcard = postcardRepository.findById(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
-        if (!Objects.equals(postcard.getReceiveMember().getId(), memberId)
-                && !Objects.equals(postcard.getSendMember().getId(), memberId)) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        if (!member.equals(postcard.getReceiveMember())
+                && !member.equals(postcard.getSendMember())) {
             throw new BaseException(PostcardExceptionType.ACCESS_DENIED_TO_POSTCARD);
         }
 
