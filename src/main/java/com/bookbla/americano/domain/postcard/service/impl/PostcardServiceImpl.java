@@ -14,6 +14,7 @@ import com.bookbla.americano.domain.memberask.repository.MemberAskRepository;
 import com.bookbla.americano.domain.memberask.repository.MemberReplyRepository;
 import com.bookbla.americano.domain.memberask.repository.entity.MemberAsk;
 import com.bookbla.americano.domain.memberask.repository.entity.MemberReply;
+import com.bookbla.americano.domain.notification.service.AlarmService;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardFromResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardToResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
@@ -56,6 +57,7 @@ public class PostcardServiceImpl implements PostcardService {
     private final PostcardTypeRepository postcardTypeRepository;
     private final MemberPostcardRepository memberPostcardRepository;
     private final MemberBookService memberBookService;
+    private final AlarmService alarmService;
 
     @Override
     public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
@@ -120,6 +122,9 @@ public class PostcardServiceImpl implements PostcardService {
             quizReply.updatePostcard(postcard);
             quizReplyRepository.save(quizReply);
         }
+
+        // 엽서를 받는 멤버에게 푸시 알림
+        alarmService.sendPushAlarmForReceivePostCard(targetMember);
 
         return SendPostcardResponse.builder().isSendSuccess(isCorrect).build();
     }
@@ -260,6 +265,12 @@ public class PostcardServiceImpl implements PostcardService {
         }
 
         postcardRepository.updatePostcardStatus(postcardStatus, postcardId);
+
+        // 상태가 수락으로 변경되면 엽서를 보낸 멤버에게 푸시 알림
+        if (postcardStatus.isAccept()) {
+            Member sendMember = postcard.getSendMember();
+            alarmService.sendPushAlarmForAcceptPostcard(sendMember);
+        }
     }
 
     @Override
