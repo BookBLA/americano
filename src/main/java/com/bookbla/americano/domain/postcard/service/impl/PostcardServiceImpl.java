@@ -124,7 +124,7 @@ public class PostcardServiceImpl implements PostcardService {
         }
 
         // 엽서를 받는 멤버에게 푸시 알림
-        alarmService.sendPushAlarmForReceivePostCard(targetMember);
+        alarmService.sendPushAlarmForReceivePostCard(member, targetMember);
 
         return SendPostcardResponse.builder().isSendSuccess(isCorrect).build();
     }
