@@ -54,11 +54,20 @@ public class TestController {
     }
 
 
-    @PostMapping("/sign-up")
-    public ResponseEntity<TestSignUpResponse> testSignUp(
+    @PostMapping("/sign-up/admin")
+    public ResponseEntity<TestSignUpResponse> testSignUpAdmin(
             @RequestBody TestSignUpRequest testSignUpRequest
     ) {
-        Member member = testService.signUp(testSignUpRequest.getEmail());
+        Member member = testService.signUpAdmin(testSignUpRequest.getEmail());
+        String token = jwtProvider.createToken(member.getId().toString());
+        return ResponseEntity.ok(TestSignUpResponse.of(member.getId(), token));
+    }
+
+    @PostMapping("/sign-up/kakao")
+    public ResponseEntity<TestSignUpResponse> testSignUpKakao(
+        @RequestBody TestSignUpRequest testSignUpRequest
+    ) {
+        Member member = testService.signUpKakao(testSignUpRequest.getEmail());
         String token = jwtProvider.createToken(member.getId().toString());
         return ResponseEntity.ok(TestSignUpResponse.of(member.getId(), token));
     }

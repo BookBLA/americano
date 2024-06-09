@@ -12,5 +12,7 @@ public interface TestService {
 
     List<TestReadResponse> findTestsByContents(String contents);
 
-    Member signUp(String email);
+    Member signUpAdmin(String email);
+
+    Member signUpKakao(String email);
 }

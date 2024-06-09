@@ -41,7 +41,7 @@ public class TestServiceImpl implements TestService {
 
     @Override
     @Transactional
-    public Member signUp(String email) {
+    public Member signUpAdmin(String email) {
         return memberRepository.findByMemberTypeAndOauthEmail(MemberType.ADMIN, email)
                 .orElseGet(() -> memberRepository.save(
                         Member.builder()
@@ -49,5 +49,17 @@ public class TestServiceImpl implements TestService {
                                 .memberStatus(MemberStatus.PROFILE)
                                 .oauthEmail(email)
                                 .build()));
+    }
+
+    @Override
+    @Transactional
+    public Member signUpKakao(String email) {
+        return memberRepository.findByMemberTypeAndOauthEmail(MemberType.KAKAO, email)
+            .orElseGet(() -> memberRepository.save(
+                Member.builder()
+                    .memberType(MemberType.KAKAO)
+                    .memberStatus(MemberStatus.PROFILE)
+                    .oauthEmail(email)
+                    .build()));
     }
 }
