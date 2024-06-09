@@ -23,11 +23,11 @@ public class AdminMarketingController {
 
     @Operation(summary = "광고 동의 회원 대상 푸시 알림 전송 API")
     @PostMapping("/alarm")
-    public ResponseEntity<List<NotificationResponse>> sendNotifications(
+    public ResponseEntity<Void> sendNotifications(
             @RequestBody @Valid AdminMemberNotificationRequest request
     ) {
-        List<NotificationResponse> response = adminMarketingService.sendNotifications(request.toDto());
-        return ResponseEntity.ok(response);
+        adminMarketingService.sendNotifications(request.toDto());
+        return ResponseEntity.ok().build();
     }
 
 

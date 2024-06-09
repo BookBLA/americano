@@ -1,22 +1,20 @@
 package com.bookbla.americano.domain.admin.service;
 
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.bookbla.americano.domain.admin.service.dto.NotificationDto;
-import com.bookbla.americano.domain.notification.service.NotificationClient;
 import com.bookbla.americano.domain.member.repository.MemberPushAlarmRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberPushAlarm;
+import com.bookbla.americano.domain.notification.controller.dto.request.PushAlarmAllCreateRequest;
+import com.bookbla.americano.domain.notification.service.AlarmService;
+import com.bookbla.americano.domain.notification.service.NotificationClient;
 import com.bookbla.americano.domain.notification.service.dto.NotificationResponse;
+import com.sun.xml.bind.v2.TODO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import static com.bookbla.americano.domain.member.enums.MemberStatus.*;
 
 
 @RequiredArgsConstructor
@@ -24,6 +22,7 @@ import static com.bookbla.americano.domain.member.enums.MemberStatus.*;
 public class AdminMarketingService {
 
     private final NotificationClient notificationClient;
+    private final AlarmService alarmService;
     private final MemberRepository memberRepository;
     private final MemberPushAlarmRepository memberPushAlarmRepository;
     private final TransactionTemplate transactionTemplate;
@@ -47,26 +46,24 @@ public class AdminMarketingService {
         transactionTemplate.executeWithoutResult(action -> memberPushAlarmRepository.save(memberPushAlarm));
     }
 
-    // TODO: 회원 별 성공/실패 결과 전달할 방법?
-    // TODO: expo는 토큰 보낸 순서대로 data를 보내줌
-    public List<NotificationResponse> sendNotifications(NotificationDto notificationDto) {
-        List<Member> members = memberRepository.findByMemberStatus(COMPLETED, MATCHING_DISABLED);
-        Map<Member, String> sendableMemberTokenMap = members.stream()
-                .filter(Member::canSendAdvertisementAlarm)
-                .collect(Collectors.toMap(
-                        Function.identity(),
-                        Member::getPushToken
-                ));
-
-        List<NotificationResponse> response = notificationClient.sendAll(toTokens(sendableMemberTokenMap), notificationDto.getTitle(), notificationDto.getContents());
-        return response;
+//     TODO: 회원 별 성공/실패 결과 전달할 방법?
+//     TODO: expo는 토큰 보낸 순서대로 data를 보내줌
+    public void sendNotifications(NotificationDto dto) {
+        alarmService.sendPushAlarmAll(new PushAlarmAllCreateRequest(dto.getTitle(), dto.getContents()));
+//        List<Member> members = memberRepository.findByMemberStatus(COMPLETED, MATCHING_DISABLED);
+//        Map<Member, String> sendableMemberTokenMap = members.stream()
+//                .filter(Member::canSendAdvertisementAlarm)
+//                .collect(Collectors.toMap(
+//                        Function.identity(),
+//                        Member::getPushToken
+//                ));
     }
-
-    private List<String> toTokens(Map<Member, String> memberTokens) {
-        return memberTokens.keySet()
-                .stream()
-                .map(memberTokens::get)
-                .collect(Collectors.toList());
-    }
+//
+//    private List<String> toTokens(Map<Member, String> memberTokens) {
+//        return memberTokens.keySet()
+//                .stream()
+//                .map(memberTokens::get)
+//                .collect(Collectors.toList());
+//    }
 
 }
