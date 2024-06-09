@@ -136,7 +136,7 @@ public class AdminMemberService {
             MemberVerify memberVerify, MemberProfile memberProfile
     ) {
         if (status.isDone()) {
-            String profileImageUrl = memberVerify.getDescription();
+            String profileImageUrl = memberVerify.getContents();
             String imageFile = profileImageUrl.replace(url, "");
             log.info(imageFile);
             String newUrl = s3Service.movePhoto(UPDATE_PROFILE, PROFILE, imageFile);
