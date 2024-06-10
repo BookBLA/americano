@@ -71,7 +71,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         MemberStatus beforeStatus = member.getMemberStatus();
         MemberProfile memberProfile = memberProfileDto.toMemberProfile();
         member.updateMemberProfile(memberProfile)
-            .updateMemberStatus(MemberStatus.APPROVAL, LocalDateTime.now());
+            .updateMemberStatus(MemberStatus.STYLE, LocalDateTime.now());
 
         // member 객체 명시적으로 save 선언
         memberRepository.save(member);
