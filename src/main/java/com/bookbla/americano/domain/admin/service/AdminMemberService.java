@@ -99,6 +99,9 @@ public class AdminMemberService {
             memberProfile.updateOpenKakaoRoomUrl(memberVerify.getContents());
             return;
         }
+        if (status.isPending()) {
+            return;
+        }
         memberVerify.fail(dto.getReason());
     }
 
@@ -132,6 +135,9 @@ public class AdminMemberService {
             memberVerify.success(dto.getReason());
             return;
         }
+        if (status.isPending()) {
+            return;
+        }
         memberVerify.fail(dto.getReason());
     }
 
@@ -163,6 +169,9 @@ public class AdminMemberService {
         if (status.isDone()) {
             updateMemberProfileByStudentIdElements(memberVerify, memberProfile);
             memberVerify.success(dto.getReason());
+            return;
+        }
+        if (status.isPending()) {
             return;
         }
         memberVerify.fail(dto.getReason());

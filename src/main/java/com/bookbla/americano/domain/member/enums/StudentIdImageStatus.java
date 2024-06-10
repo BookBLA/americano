@@ -29,4 +29,8 @@ public enum StudentIdImageStatus {
     public boolean isDone() {
         return this == DONE;
     }
+
+    public boolean isPending() {
+        return this == PENDING;
+    }
 }

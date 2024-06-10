@@ -31,4 +31,8 @@ public enum OpenKakaoRoomStatus {
     public boolean isDone() {
         return this == DONE;
     }
+
+    public boolean isPending() {
+        return this == DONE;
+    }
 }
