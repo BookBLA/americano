@@ -5,6 +5,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProf
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileImageUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileOpenKakaoRoomUrlUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.ProfileModifyRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.BookProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
@@ -12,6 +13,7 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberProfile
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
+import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberEmailRepository;
@@ -124,23 +126,52 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         return MemberProfileResponse.from(member, memberProfile);
     }
 
+    @Transactional
     @Override
-    public MemberProfileResponse updateMemberProfile(Long memberId,
-                                                     MemberProfileUpdateRequest request) {
+    public void modifyProfile(Long memberId, ProfileModifyRequest request) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        // 승인이 필요한 항목들은 검증 테이블에 저장해둠
-        if (!member.isOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl())) {
+        MemberProfile memberProfile = member.getMemberProfile();
+
+        if (!memberProfile.getOpenKakaoRoomUrl().equals(request.getOpenKakaoRoomUrl())) {
             saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
         }
-        if (!member.isProfileImageUrl(request.getProfileImageUrl())) {
-            saveProfileImageVerify(member, request.getProfileImageUrl());
+
+        memberProfile.updateName(request.getName())
+                .updatePhoneNumber(request.getPhoneNumber())
+                .updateSchoolName(request.getSchoolName())
+                .updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
+
+        member.updateMemberProfile(memberProfile);
+        memberRepository.save(member);
+    }
+
+    @Override
+    public MemberProfileResponse updateMemberProfile(Long memberId, MemberProfileUpdateRequest request) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberProfile memberProfile = member.getMemberProfile();
+
+        if (!memberProfile.getOpenKakaoRoomUrl().equals(request.getOpenKakaoRoomUrl())) {
+            saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
+            memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
         }
 
-        update(member, request);
+        if (!memberProfile.getProfileImageUrl().equals(request.getProfileImageUrl())) {
+            saveProfileImageVerify(member, request.getProfileImageUrl());
+            memberProfile.updateProfileImageStatus(ProfileImageStatus.PENDING);
+        }
+
+        if (!memberProfile.getStudentIdImageUrl().equals(request.getStudentIdImageUrl())) {
+            saveStudentIdVerify(member, request.toMemberVerifyDescription(), request.getStudentIdImageUrl());
+            memberProfile.updateStudentIdImageStatus(StudentIdImageStatus.PENDING);
+        }
+
+        update(member, memberProfile, request);
+
         return MemberProfileResponse.from(member, member.getMemberProfile());
     }
 
-    private void update(Member member, MemberProfileUpdateRequest request) {
+    private void update(Member member, MemberProfile memberProfile, MemberProfileUpdateRequest request) {
+        member.updateMemberProfile(memberProfile);
         member.getMemberProfile().updateName(request.getName())
                 .updateBirthDate(request.getBirthDate())
                 .updateGender(request.getGender())
