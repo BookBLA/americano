@@ -23,16 +23,14 @@ public class MemberLibraryController {
     @GetMapping
     public ResponseEntity<MemberLibraryProfileReadResponse> readMemberProfile(
         @Parameter(hidden = true) @User LoginUser loginUser) {
-        MemberLibraryProfileReadResponse memberLibraryProfileReadResponse = memberLibraryService.getLibraryProfile(
-loginUser.getMemberId());
-        return ResponseEntity.ok(memberLibraryProfileReadResponse);
+        var response = memberLibraryService.getLibraryProfile(loginUser.getMemberId());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/target/{targetMemberId}")
     public ResponseEntity<MemberTargetLibraryProfileReadResponse> readMemberProfileByTarget(
         @Parameter(hidden = true) @User LoginUser loginUser, @PathVariable Long targetMemberId) {
-        MemberTargetLibraryProfileReadResponse memberLibraryTargetProfileReadResponse = memberLibraryService.getTargetLibraryProfile(
-            loginUser.getMemberId(), targetMemberId);
+        MemberTargetLibraryProfileReadResponse memberLibraryTargetProfileReadResponse = memberLibraryService.getTargetLibraryProfile(loginUser.getMemberId(), targetMemberId);
         return ResponseEntity.ok(memberLibraryTargetProfileReadResponse);
     }
 }

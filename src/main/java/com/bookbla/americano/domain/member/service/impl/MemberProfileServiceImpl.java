@@ -139,7 +139,8 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         memberProfile.updateName(request.getName())
                 .updatePhoneNumber(request.getPhoneNumber())
                 .updateSchoolName(request.getSchoolName())
-                .updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
+                        .updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl());
+//                .updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
 
         member.updateMemberProfile(memberProfile);
         memberRepository.save(member);
@@ -198,7 +199,8 @@ public class MemberProfileServiceImpl implements MemberProfileService {
         saveProfileImageVerify(member, request.getProfileImageUrl());
 
         MemberProfile memberProfile = member.getMemberProfile();
-        memberProfile.updateProfileImageStatus(ProfileImageStatus.PENDING);
+        memberProfile.updateProfileImageUrl(request.getProfileImageUrl());
+//        memberProfile.updateProfileImageStatus(ProfileImageStatus.PENDING);
         memberRepository.save(member);
     }
 
@@ -208,10 +210,12 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     ) {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
+
         saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
 
         MemberProfile memberProfile = member.getMemberProfile();
-        memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
+        memberProfile.updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl());
+//        memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
         memberRepository.save(member);
     }
 
