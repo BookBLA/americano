@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.postcard.service;
 
+import com.bookbla.americano.domain.postcard.controller.dto.response.ContactInfoResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardFromResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardToResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
@@ -26,4 +27,6 @@ public interface PostcardService {
     PostcardStatus getPostcardStatus(Long postcardId);
 
     PostcardSendValidateResponse validateSendPostcard(Long memberId, Long targetMemberId);
+
+    ContactInfoResponse getContactInfo(Long memberId, Long postcardId);
 }
