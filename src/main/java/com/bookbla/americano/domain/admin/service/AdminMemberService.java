@@ -12,7 +12,6 @@ import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberPro
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
 import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
-import com.bookbla.americano.domain.aws.service.S3Service;
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.MemberVerifyStatus;
@@ -26,14 +25,11 @@ import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.bookbla.americano.domain.aws.enums.UploadType.PROFILE;
-import static com.bookbla.americano.domain.aws.enums.UploadType.UPDATE_PROFILE;
 import static com.bookbla.americano.domain.member.enums.MemberVerifyStatus.PENDING;
 import static com.bookbla.americano.domain.member.enums.MemberVerifyType.OPEN_KAKAO_ROOM_URL;
 import static com.bookbla.americano.domain.member.enums.MemberVerifyType.PROFILE_IMAGE;
@@ -45,12 +41,8 @@ import static com.bookbla.americano.domain.member.repository.entity.MemberVerify
 @Slf4j
 public class AdminMemberService {
 
-    @Value("${cloud.aws.cloud-front-url}")
-    private String url;
-
     private final MemberRepository memberRepository;
     private final MemberVerifyRepository memberVerifyRepository;
-    private final S3Service s3Service;
 
     @Transactional(readOnly = true)
     public AdminMemberReadResponses readMembers(Pageable pageable) {
@@ -136,11 +128,7 @@ public class AdminMemberService {
             MemberVerify memberVerify, MemberProfile memberProfile
     ) {
         if (status.isDone()) {
-            String profileImageUrl = memberVerify.getContents();
-            String imageFile = profileImageUrl.replace(url, "");
-            log.info(imageFile);
-            String newUrl = s3Service.movePhoto(UPDATE_PROFILE, PROFILE, imageFile);
-            memberProfile.updateProfileImageUrl(newUrl);
+            memberProfile.updateProfileImageUrl(memberVerify.getContents());
             memberVerify.success(dto.getReason());
             return;
         }
