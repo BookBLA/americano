@@ -1,8 +1,8 @@
 package com.bookbla.americano.domain.postcard.controller.dto.response;
 
-import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.enums.Gender;
+import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,17 +31,17 @@ public class ContactInfoResponse {
 
     private List<String> bookImageUrls;
 
-    public ContactInfoResponse(MemberProfileResponse memberProfileResponse, MemberBookReadResponses memberBookReadResponses) {
-        this.memberId = memberProfileResponse.getMemberId();
-        this.memberName = memberProfileResponse.getName();
-        this.memberAge = getAge(LocalDate.parse(memberProfileResponse.getBirthDate()));
-        this.memberGender = Gender.from(memberProfileResponse.getGender());
-        this.memberProfileImageUrl = memberProfileResponse.getProfileImageUrl();
-        this.memberSchoolName = memberProfileResponse.getSchoolName();
-        this.memberOpenKakaoRoomUrl = memberProfileResponse.getOpenKakaoRoomUrl();
+    public ContactInfoResponse(Member member, List<MemberBook> memberBooks) {
+        this.memberId = member.getId();
+        this.memberName = member.getMemberProfile().getName();
+        this.memberAge = getAge(member.getMemberProfile().getBirthDate());
+        this.memberGender = member.getMemberProfile().getGender();
+        this.memberProfileImageUrl = member.getMemberProfile().getProfileImageUrl();
+        this.memberSchoolName = member.getMemberProfile().getSchoolName();
+        this.memberOpenKakaoRoomUrl = member.getMemberProfile().getOpenKakaoRoomUrl();
         List<String> imageUrls = new ArrayList<>();
-        for (MemberBookReadResponses.MemberBookReadResponse i : memberBookReadResponses.getMemberBookReadResponses()) {
-            imageUrls.add(i.getThumbnail());
+        for (MemberBook i : memberBooks) {
+            imageUrls.add(i.getBook().getImageUrl());
         }
         this.bookImageUrls = imageUrls;
     }

@@ -3,14 +3,14 @@ package com.bookbla.americano.domain.postcard.service.impl;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
+import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberPostcardRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import com.bookbla.americano.domain.member.repository.entity.MemberPostcard;
 import com.bookbla.americano.domain.member.service.MemberBookService;
-import com.bookbla.americano.domain.member.service.MemberProfileService;
 import com.bookbla.americano.domain.memberask.exception.MemberAskExceptionType;
 import com.bookbla.americano.domain.memberask.repository.MemberAskRepository;
 import com.bookbla.americano.domain.memberask.repository.MemberReplyRepository;
@@ -59,8 +59,8 @@ public class PostcardServiceImpl implements PostcardService {
     private final MemberRepository memberRepository;
     private final PostcardTypeRepository postcardTypeRepository;
     private final MemberPostcardRepository memberPostcardRepository;
+    private final MemberBookRepository memberBookRepository;
     private final MemberBookService memberBookService;
-    private final MemberProfileService memberProfileService;
     private final AlarmService alarmService;
 
     @Override
@@ -309,13 +309,13 @@ public class PostcardServiceImpl implements PostcardService {
             throw new BaseException(PostcardExceptionType.POSTCARD_NOT_ACCEPTED);
 
         if (Objects.equals(postcard.getReceiveMember().getId(), memberId)) {
-            MemberProfileResponse memberProfileResponse = memberProfileService.readMemberProfile(postcard.getSendMember().getId());
-            MemberBookReadResponses memberBookReadResponses = memberBookService.readMemberBooks(postcard.getSendMember().getId());
-            return new ContactInfoResponse(memberProfileResponse, memberBookReadResponses);
+            Member targetMember = memberRepository.getByIdOrThrow(postcard.getSendMember().getId());
+            List<MemberBook> targetMemberBooks = memberBookRepository.findByMemberOrderByCreatedAt(targetMember);
+            return new ContactInfoResponse(targetMember, targetMemberBooks);
         } else if (Objects.equals(postcard.getSendMember().getId(), memberId)) {
-            MemberProfileResponse memberProfileResponse = memberProfileService.readMemberProfile(postcard.getReceiveMember().getId());
-            MemberBookReadResponses memberBookReadResponses = memberBookService.readMemberBooks(postcard.getReceiveMember().getId());
-            return new ContactInfoResponse(memberProfileResponse, memberBookReadResponses);
+            Member targetMember = memberRepository.getByIdOrThrow(postcard.getReceiveMember().getId());
+            List<MemberBook> targetMemberBooks = memberBookRepository.findByMemberOrderByCreatedAt(targetMember);
+            return new ContactInfoResponse(targetMember, targetMemberBooks);
         }
 
         throw new BaseException(PostcardExceptionType.ACCESS_DENIED_TO_POSTCARD);
