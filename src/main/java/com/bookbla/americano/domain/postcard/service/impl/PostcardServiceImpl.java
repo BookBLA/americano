@@ -4,9 +4,11 @@ package com.bookbla.americano.domain.postcard.service.impl;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
+import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberPostcardRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import com.bookbla.americano.domain.member.repository.entity.MemberPostcard;
 import com.bookbla.americano.domain.member.service.MemberBookService;
 import com.bookbla.americano.domain.memberask.exception.MemberAskExceptionType;
@@ -15,6 +17,7 @@ import com.bookbla.americano.domain.memberask.repository.MemberReplyRepository;
 import com.bookbla.americano.domain.memberask.repository.entity.MemberAsk;
 import com.bookbla.americano.domain.memberask.repository.entity.MemberReply;
 import com.bookbla.americano.domain.notification.service.AlarmService;
+import com.bookbla.americano.domain.postcard.controller.dto.response.ContactInfoResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardFromResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardToResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
@@ -35,12 +38,13 @@ import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
 import com.bookbla.americano.domain.quiz.repository.QuizReplyRepository;
 import com.bookbla.americano.domain.quiz.repository.entity.QuizQuestion;
 import com.bookbla.americano.domain.quiz.repository.entity.QuizReply;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -55,6 +59,7 @@ public class PostcardServiceImpl implements PostcardService {
     private final MemberRepository memberRepository;
     private final PostcardTypeRepository postcardTypeRepository;
     private final MemberPostcardRepository memberPostcardRepository;
+    private final MemberBookRepository memberBookRepository;
     private final MemberBookService memberBookService;
     private final AlarmService alarmService;
 
@@ -291,5 +296,28 @@ public class PostcardServiceImpl implements PostcardService {
             sendPostcards.stream()
                 .anyMatch(Postcard::isRefused)
         );
+    }
+
+    @Override
+    public ContactInfoResponse getContactInfo(Long memberId, Long postcardId) {
+        Postcard postcard = postcardRepository.findById(postcardId)
+                .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
+
+        if (!Objects.equals(postcard.getReceiveMember().getId(), memberId) && !Objects.equals(postcard.getSendMember().getId(), memberId))
+            throw new BaseException(PostcardExceptionType.ACCESS_DENIED_TO_POSTCARD);
+        if (postcard.getPostcardStatus() != PostcardStatus.ACCEPT)
+            throw new BaseException(PostcardExceptionType.POSTCARD_NOT_ACCEPTED);
+
+        if (Objects.equals(postcard.getReceiveMember().getId(), memberId)) {
+            Member targetMember = memberRepository.getByIdOrThrow(postcard.getSendMember().getId());
+            List<MemberBook> targetMemberBooks = memberBookRepository.findByMemberOrderByCreatedAt(targetMember);
+            return new ContactInfoResponse(targetMember, targetMemberBooks);
+        } else if (Objects.equals(postcard.getSendMember().getId(), memberId)) {
+            Member targetMember = memberRepository.getByIdOrThrow(postcard.getReceiveMember().getId());
+            List<MemberBook> targetMemberBooks = memberBookRepository.findByMemberOrderByCreatedAt(targetMember);
+            return new ContactInfoResponse(targetMember, targetMemberBooks);
+        }
+
+        throw new BaseException(PostcardExceptionType.ACCESS_DENIED_TO_POSTCARD);
     }
 }

@@ -24,6 +24,8 @@ public enum PostcardExceptionType implements ExceptionType {
 
     READ_POSTCARD_ALREADY(HttpStatus.BAD_REQUEST, "postcard-009", "이미 읽은 엽서입니다."),
     ALL_WRONG_POSTCARD(HttpStatus.BAD_REQUEST, "postcard-010", "독서 퀴즈를 모두 틀린 엽서입니다."),
+
+    POSTCARD_NOT_ACCEPTED(HttpStatus.UNPROCESSABLE_ENTITY, "postcard-011", "수락되지 않은 엽서입니다."),
     ;
 
     private final HttpStatus httpStatus;

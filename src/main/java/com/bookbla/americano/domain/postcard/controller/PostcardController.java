@@ -5,6 +5,7 @@ import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.service.MemberPostcardService;
 import com.bookbla.americano.domain.postcard.controller.dto.request.PostcardSendValidationRequest;
 import com.bookbla.americano.domain.postcard.controller.dto.request.PostcardStatusUpdateRequest;
+import com.bookbla.americano.domain.postcard.controller.dto.response.ContactInfoResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardFromResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardToResponse;
@@ -17,8 +18,6 @@ import com.bookbla.americano.domain.postcard.service.dto.response.PostcardTypeRe
 import com.bookbla.americano.domain.postcard.service.dto.response.SendPostcardResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import java.util.List;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +26,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/postcard")
@@ -79,6 +81,13 @@ public class PostcardController {
             @Parameter(hidden = true) @User LoginUser loginUser,
             @PathVariable Long postcardId) {
         return PostcardStatusResponse.from(postcardService.getPostcardStatus(postcardId));
+    }
+
+    @Operation(summary = "상대방 정보 조회", description = "ACCEPT 엽서의 상대방 정보 조회")
+    @GetMapping("/contact-info/{postcardId}")
+    public ResponseEntity<ContactInfoResponse> getContactInfo(
+            @Parameter(hidden = true) @User LoginUser loginUser, @PathVariable Long postcardId) {
+        return ResponseEntity.ok(postcardService.getContactInfo(loginUser.getMemberId(), postcardId));
     }
 
     @PostMapping("/send")
