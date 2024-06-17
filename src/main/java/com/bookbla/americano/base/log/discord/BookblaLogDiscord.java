@@ -12,8 +12,8 @@ public class BookblaLogDiscord {
     private final DiscordLogFeignClient discordLogFeignClient;
 
     public void sendMessage(String message) {
-        DiscordWebhookLogMessageRequest dto = new DiscordWebhookLogMessageRequest(message);
-        discordLogFeignClient.send(dto);
+        DiscordWebhookLogMessageRequest request = new DiscordWebhookLogMessageRequest(message);
+        discordLogFeignClient.send(request);
     }
 }
 
