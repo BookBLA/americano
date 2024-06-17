@@ -28,12 +28,12 @@ public class DiscordNotificationClient implements AdminNotificationClient {
 
     private String toMessage(String title, String contents) {
         String message = String.format(MESSAGE_FORMAT, LocalDate.now(), title, contents);
-        return isLongerThanOrEqualMaxMessageSize(message)
+        return isLongerOrEqualThanMaxMessageSize(message)
                 ? message.substring(0, DISCORD_MAX_MESSAGE_INCLUSIVE - 1)
                 : message;
     }
 
-    private boolean isLongerThanOrEqualMaxMessageSize(String message) {
+    private boolean isLongerOrEqualThanMaxMessageSize(String message) {
         return message.length() >= DISCORD_MAX_MESSAGE_INCLUSIVE;
     }
 }
