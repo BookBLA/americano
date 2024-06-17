@@ -10,6 +10,7 @@ import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -131,5 +132,11 @@ class AdminVerificationServiceTest {
                 () -> assertThat(findMemberVerify.getVerifyStatus()).isEqualTo(MemberVerifyStatus.FAIL),
                 () -> assertThat(findMemberVerify.getDescription()).isEqualTo("흐릿해요")
         );
+    }
+
+    @AfterEach
+    void tearDown() {
+        memberRepository.deleteAllInBatch();
+        memberVerifyRepository.deleteAllInBatch();
     }
 }
