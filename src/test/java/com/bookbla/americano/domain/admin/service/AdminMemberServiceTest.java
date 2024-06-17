@@ -64,7 +64,7 @@ class AdminMemberServiceTest {
                         .name("이준희")
                         .build()
                 ).build();
-        memberRepository.save(member1);
+        memberRepository.saveAndFlush(member1);
 
         Member member2 = Member.builder()
                 .memberType(ADMIN)
@@ -72,7 +72,7 @@ class AdminMemberServiceTest {
                 .oauthEmail("bookbla@bookbla.com")
                 .memberProfile(MemberProfile.builder().birthDate(LocalDate.of(1999, 3, 3)).phoneNumber("01012345678").gender(MALE).schoolName("가천대").name("이준희").build())
                 .build();
-        memberRepository.save(member2);
+        memberRepository.saveAndFlush(member2);
 
         Member member3 = Member.builder()
                 .memberType(ADMIN)
@@ -80,7 +80,7 @@ class AdminMemberServiceTest {
                 .oauthEmail("bookbla@bookbla.com")
                 .memberProfile(MemberProfile.builder().phoneNumber("01012345678").gender(MALE).schoolName("가천대").name("이준희").build())
                 .build();
-        memberRepository.save(member3);
+        memberRepository.saveAndFlush(member3);
 
         // when
         AdminMemberReadResponses adminMemberReadResponses = adminMemberService.readMembers(PageRequest.of(0, 10));
@@ -242,7 +242,7 @@ class AdminMemberServiceTest {
 
     @AfterEach
     void tearDown() {
-        memberVerifyRepository.deleteAll();
-        memberRepository.deleteAll();
+        memberVerifyRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
     }
 }
