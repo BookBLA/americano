@@ -86,6 +86,7 @@ class AdminMemberServiceTest {
         // when
         AdminMemberReadResponses adminMemberReadResponses = adminMemberService.readMembers(PageRequest.of(0, 10));
         AdminMemberReadResponses.AdminMemberReadResponse adminMemberReadResponse = adminMemberReadResponses.getData().get(0);
+
         // then
         assertAll(
                 () -> assertThat(adminMemberReadResponses.getTotalCount()).isEqualTo(3),

@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.admin.controller.dto.response;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
@@ -34,6 +35,7 @@ public class AdminMemberProfileImageResponses {
         private final Long memberId;
         private final String gender;
         private final String profileImageUrl;
+        private final LocalDateTime createdAt;
 
         public static AdminMemberProfileImageResponse from(MemberVerify memberVerify) {
             return AdminMemberProfileImageResponse.builder()
@@ -41,6 +43,7 @@ public class AdminMemberProfileImageResponses {
                     .memberId(memberVerify.getMemberId())
                     .gender(memberVerify.getDescription())
                     .profileImageUrl(memberVerify.getContents())
+                    .createdAt(memberVerify.getCreatedAt())
                     .build();
         }
     }
