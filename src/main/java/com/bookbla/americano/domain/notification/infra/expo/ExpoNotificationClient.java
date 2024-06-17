@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
 public class ExpoNotificationClient implements NotificationClient {
 
     private static final String EXPO_PUSH_TOKEN_FORMAT = "ExponentPushToken[%s]";
-    private static final int EXPO_MAX_MESSAGE_SIZE = 100;
+    private static final int EXPO_MAX_CHUNK_SIZE = 100;
 
     private final ExpoApi expoApi;
 
@@ -68,11 +68,11 @@ public class ExpoNotificationClient implements NotificationClient {
     }
 
     // https://docs.expo.dev/push-notifications/sending-notifications/#request-errors
-    // 카카오의 100개
+    // 한 번에 최대 100개까지 전송 가능함. 그렇지 않으면 에러
     private List<List<String>> toTokenBatches(List<String> tokens) {
         List<List<String>> tokenBatches = new ArrayList<>();
-        for (int i = 0; i < tokens.size(); i += EXPO_MAX_MESSAGE_SIZE) {
-            int end = Math.min(tokens.size(), i + EXPO_MAX_MESSAGE_SIZE);
+        for (int i = 0; i < tokens.size(); i += EXPO_MAX_CHUNK_SIZE) {
+            int end = Math.min(tokens.size(), i + EXPO_MAX_CHUNK_SIZE);
             List<String> batch = tokens.subList(i, end);
             tokenBatches.add(new ArrayList<>(batch));
         }

@@ -25,14 +25,17 @@ import io.github.jav.exposerversdk.ExpoPushTicket;
 import io.github.jav.exposerversdk.PushClient;
 import io.github.jav.exposerversdk.PushClientException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class AlarmServiceImpl implements AlarmService {
+
+    private static final String POSTCARD_SEND_TITLE = "띵동~\uD83D\uDC8C 엽서가 도착했어요!";
+    private static final String POSTCARD_SEND_BODY = "%s님이 엽서를 보냈어요! 지금 확인해 보세요~\uD83E\uDD70";
+    private static final String POSTCARD_ACCEPT_TITLE = "축하합니다\uD83E\uDD73\uD83E\uDD73 매칭에 성공하셨습니다~!!\uD83D\uDC95";
+    private static final String POSTCARD_ACCEPT_BODY = "%s님이 엽서를 수락했어요! 지금 바로 채팅해보세요~\uD83E\uDD70";
 
     private final MemberRepository memberRepository;
     private final MemberPushAlarmRepository memberPushAlarmRepository;
@@ -52,14 +55,12 @@ public class AlarmServiceImpl implements AlarmService {
         }
 
         // 엽서 도착은 익명 처리
-        String title = "띵동~\uD83D\uDC8C 엽서가 도착했어요!";
-        String body = sendMember.getMemberProfile().showBlindName() + "님이 엽서를 보냈어요! 지금 확인해 보세요~\uD83E\uDD70";
-
-        sendToExpo(receiveMember.getPushToken(), title, body);
+        String body = String.format(POSTCARD_SEND_BODY, sendMember.getMemberProfile().showBlindName());
+        sendToExpo(receiveMember.getPushToken(), POSTCARD_SEND_TITLE, body);
 
         MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
                 .member(receiveMember)
-                .title(title)
+                .title(POSTCARD_SEND_TITLE)
                 .body(body)
                 .build();
 
@@ -81,14 +82,13 @@ public class AlarmServiceImpl implements AlarmService {
         }
 
         // 엽서 수락은 실명 처리
-        String title = "축하합니다\uD83E\uDD73\uD83E\uDD73 매칭에 성공하셨습니다~!!\uD83D\uDC95";
-        String body = receiveMember.getMemberProfile().getName() + "님이 엽서를 수락했어요! 지금 바로 채팅해보세요~\uD83E\uDD70";
+        String body = String.format(POSTCARD_ACCEPT_BODY, receiveMember.getMemberProfile().getName());
 
-        sendToExpo(sendMember.getPushToken(), title, body);
+        sendToExpo(sendMember.getPushToken(), POSTCARD_ACCEPT_TITLE, body);
 
         MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
                 .member(sendMember)
-                .title(title)
+                .title(POSTCARD_ACCEPT_TITLE)
                 .body(body)
                 .build();
 
@@ -206,9 +206,6 @@ public class AlarmServiceImpl implements AlarmService {
         expoPushMessage.setTitle(title);
         expoPushMessage.setBody(body);
 
-        log.info(expoPushMessage.getTitle());
-        log.info(expoPushMessage.getBody());
-
         List<ExpoPushMessage> expoPushMessages = new ArrayList<>();
         expoPushMessages.add(expoPushMessage);
 
@@ -237,9 +234,6 @@ public class AlarmServiceImpl implements AlarmService {
         }
 
         for (int i = 0; i < allTickets.size(); i++) {
-            log.info(allTickets.get(i).getStatus().toString());
-            log.info(allTickets.get(i).getMessage());
-
             if (allTickets.get(i).getStatus().toString().equals("error")) {
                 PushAlarmLog pushAlarmLog = PushAlarmLog.builder()
                         .token(token)
