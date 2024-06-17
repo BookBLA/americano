@@ -1,10 +1,10 @@
 package com.bookbla.americano.domain.admin.infrastructure.discord;
 
-import com.bookbla.americano.domain.admin.service.AdminNotificationClient;
 import com.bookbla.americano.domain.admin.infrastructure.discord.api.DiscordNotificationApi;
 import com.bookbla.americano.domain.admin.infrastructure.discord.api.dto.AdminDiscordNotificationRequest;
+import com.bookbla.americano.domain.admin.service.AdminNotificationClient;
 import lombok.RequiredArgsConstructor;
-import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class DiscordNotificationClient implements AdminNotificationClient {
     }
 
     private String toMessage(String title, String contents) {
-        String message = String.format(MESSAGE_FORMAT, LocalDate.now(), title, contents);
+        String message = String.format(MESSAGE_FORMAT, LocalDateTime.now(), title, contents);
         return isEqualOrLongerThanMaxSize(message)
                 ? message.substring(0, DISCORD_MESSAGE_SIZE_INCLUSIVE - 1)
                 : message;
