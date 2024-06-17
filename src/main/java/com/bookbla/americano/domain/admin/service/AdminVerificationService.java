@@ -22,13 +22,15 @@ import org.springframework.transaction.annotation.Transactional;
 import static com.bookbla.americano.domain.member.repository.entity.MemberVerify.DESCRIPTION_PARSING_FAIL;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class AdminVerificationService {
+
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     private final MemberRepository memberRepository;
     private final MemberVerifyRepository memberVerifyRepository;
 
-    @Transactional
     public void updateMemberImageStatus(StatusUpdateDto dto) {
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
@@ -56,7 +58,6 @@ public class AdminVerificationService {
         memberVerify.fail(dto.getReason());
     }
 
-    @Transactional
     public void updateMemberStudentIdStatus(StatusUpdateDto dto) {
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
@@ -90,10 +91,9 @@ public class AdminVerificationService {
                 .updateGender(Gender.from(descriptions.getOrDefault("gender", DESCRIPTION_PARSING_FAIL)))
                 .updateName(descriptions.getOrDefault("name", DESCRIPTION_PARSING_FAIL))
                 .updateSchoolName(descriptions.getOrDefault("schoolName", DESCRIPTION_PARSING_FAIL))
-                .updateBirthDate(LocalDate.parse(descriptions.getOrDefault("birthDate", DESCRIPTION_PARSING_FAIL), DateTimeFormatter.ofPattern("yyyyMMdd")));
+                .updateBirthDate(LocalDate.parse(descriptions.getOrDefault("birthDate", DESCRIPTION_PARSING_FAIL), DATE_FORMAT));
     }
 
-    @Transactional
     public void updateMemberKakaoRoomStatus(StatusUpdateDto dto) {
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
