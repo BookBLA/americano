@@ -20,7 +20,7 @@ public class ExceptionAppender {
 
     private final RequestStorage requestStorage;
     private final DiscordMessage discordMessage;
-    private final BookblaDiscord bookblaDiscord;
+    private final BookblaLogDiscord bookblaLogDiscord;
 
     @Before("@annotation(com.bookbla.americano.base.log.discord.DiscordAlarm)")
     public void appendExceptionToResponseBody(JoinPoint joinPoint) {
@@ -36,6 +36,6 @@ public class ExceptionAppender {
                 logLevel,
                 (Exception) arg
         );
-        bookblaDiscord.sendMessage(message);
+        bookblaLogDiscord.sendMessage(message);
     }
 }

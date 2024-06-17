@@ -3,7 +3,7 @@ package com.bookbla.americano.domain.member.service.impl;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import java.time.LocalDateTime;
 
-import com.bookbla.americano.base.log.discord.BookblaDiscord;
+import com.bookbla.americano.base.log.discord.BookblaLogDiscord;
 import com.bookbla.americano.domain.member.repository.MemberEmailRepository;
 import com.bookbla.americano.domain.member.repository.MemberPostcardRepository;
 import com.bookbla.americano.domain.member.service.MailService;
@@ -23,7 +23,7 @@ public class MemberSchedulerServiceImpl implements MemberSchedulerService {
     private final MemberPostcardRepository memberPostcardRepository;
     private final MemberEmailRepository memberEmailRepository;
     private final MailService mailService;
-    private final BookblaDiscord bookblaDiscord;
+    private final BookblaLogDiscord bookblaLogDiscord;
 
     @Transactional
     @Scheduled(cron = "0 0 6 * * *", zone = "Asia/Seoul")
@@ -36,7 +36,7 @@ public class MemberSchedulerServiceImpl implements MemberSchedulerService {
             String message = "무료 엽서 초기화 작업이 실패하였습니다. 확인 부탁드립니다.";
 
             mailService.sendTransactionFailureEmail(txName, message);
-            bookblaDiscord.sendMessage(message);
+            bookblaLogDiscord.sendMessage(message);
             log.debug("Exception in {}", MemberSchedulerService.class.getName());
             log.error(e.toString());
         }
@@ -56,7 +56,7 @@ public class MemberSchedulerServiceImpl implements MemberSchedulerService {
             String message = "임시 메일 테이블 초기화 작업이 실패하였습니다. 확인 부탁드립니다.";
 
             mailService.sendTransactionFailureEmail(txName, message);
-            bookblaDiscord.sendMessage(message);
+            bookblaLogDiscord.sendMessage(message);
             log.debug("Exception in {}", MemberSchedulerService.class.getName());
             log.error(e.toString());
         }
@@ -75,7 +75,7 @@ public class MemberSchedulerServiceImpl implements MemberSchedulerService {
             String message = "멤버 테이블의 탈퇴한 멤버 삭제 작업이 실패하였습니다. 확인 부탁드립니다.";
 
             mailService.sendTransactionFailureEmail(txName, message);
-            bookblaDiscord.sendMessage(message);
+            bookblaLogDiscord.sendMessage(message);
             log.debug("Exception in {}", MemberSchedulerService.class.getName());
             log.error(e.toString());
         }

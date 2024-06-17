@@ -1,4 +1,4 @@
-package com.bookbla.americano.base.log.discord.dto;
+package com.bookbla.americano.base.log.discord.api.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
-public class DiscordWebhookMessageRequest {
+public class DiscordWebhookLogMessageRequest {
 
     private String content;
 
