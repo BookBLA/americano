@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.admin.controller.dto.response;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,7 @@ public class AdminMemberKakaoRoomResponses {
         private final Long memberId;
         private final String name;
         private final String openKakaoRoomUrl;
+        private final LocalDateTime createdAt;
 
         public static AdminMemberKakaoRoomResponse from(MemberVerify memberVerify) {
 
@@ -41,6 +43,7 @@ public class AdminMemberKakaoRoomResponses {
                     .memberId(memberVerify.getMemberId())
                     .name(memberVerify.getDescription())
                     .openKakaoRoomUrl(memberVerify.getContents())
+                    .createdAt(memberVerify.getCreatedAt())
                     .build();
         }
     }

@@ -1,6 +1,6 @@
-package com.bookbla.americano.domain.member.service.impl;
+package com.bookbla.americano.domain.notification.service.impl;
 
-import com.bookbla.americano.domain.member.service.MailService;
+import com.bookbla.americano.domain.notification.service.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,6 +1,5 @@
-package com.bookbla.americano.domain.auth.service.impl;
+package com.bookbla.americano.domain.auth.service;
 
-import com.bookbla.americano.domain.auth.service.OAuth2Provider;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import java.util.Map;
 import java.util.Set;

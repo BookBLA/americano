@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @FeignClient(value = "expo", url = "https://exp.host")
-public interface ExpoFeignClient {
+public interface ExpoApi {
 
     @PostMapping("/--/api/v2/push/getReceipts")
     ReceiptsResponse postReceipts(ReceiptsRequest receiptsRequest);

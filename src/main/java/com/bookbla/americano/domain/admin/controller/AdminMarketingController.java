@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.admin.controller;
 import java.util.List;
 
 import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberNotificationRequest;
+import com.bookbla.americano.domain.admin.controller.dto.request.AdminNotificationRequest;
 import com.bookbla.americano.domain.admin.service.AdminMarketingService;
 import com.bookbla.americano.domain.notification.service.dto.NotificationResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,14 +23,13 @@ public class AdminMarketingController {
     private final AdminMarketingService adminMarketingService;
 
     @Operation(summary = "광고 동의 회원 대상 푸시 알림 전송 API")
-    @PostMapping("/alarm")
+    @PostMapping("/notifications")
     public ResponseEntity<Void> sendNotifications(
-            @RequestBody @Valid AdminMemberNotificationRequest request
+            @RequestBody @Valid AdminNotificationRequest request
     ) {
         adminMarketingService.sendNotifications(request.toDto());
         return ResponseEntity.ok().build();
     }
-
 
     @Operation(summary = "개인 푸시 알림 전송 API")
     @PostMapping("/notification")
@@ -40,4 +40,12 @@ public class AdminMarketingController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "광고 동의 회원 대상 푸시 알림 전송 API")
+    @PostMapping("/alarm")
+    public ResponseEntity<Void> sendAlarms(
+            @RequestBody @Valid AdminNotificationRequest request
+    ) {
+        adminMarketingService.sendNotifications(request.toDto());
+        return ResponseEntity.ok().build();
+    }
 }

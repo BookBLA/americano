@@ -1,7 +1,6 @@
 package com.bookbla.americano.domain.member.repository;
 
 
-import feign.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +11,7 @@ import com.bookbla.americano.domain.member.enums.MemberType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.custom.MemberRepositoryCustom;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import feign.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,8 +30,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     Optional<Member> findByMemberTypeAndOauthEmail(MemberType memberType, String email);
 
     Optional<Member> findByMemberProfileSchoolEmail(String schoolEmail);
-
-    List<Member> findByMemberPolicyAdAgreementPolicy(Boolean isAgree);
 
     long countByMemberStatus(MemberStatus memberStatus);
 

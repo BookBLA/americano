@@ -27,7 +27,7 @@ public class AdminAuthController {
     }
 
     @DeleteMapping("/logout")
-    public ResponseEntity<Void> login(@RequestBody @Valid AdminLogoutRequest adminLogoutRequest) {
+    public ResponseEntity<Void> logout(@RequestBody @Valid AdminLogoutRequest adminLogoutRequest) {
         adminAuthService.logout(adminLogoutRequest);
         return ResponseEntity.noContent().build();
     }

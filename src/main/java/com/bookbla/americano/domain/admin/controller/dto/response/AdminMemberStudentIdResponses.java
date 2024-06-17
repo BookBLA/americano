@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.admin.controller.dto.response;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,6 +41,7 @@ public class AdminMemberStudentIdResponses {
         private final String birthDate;
         private final String gender;
         private final String studentIdImageUrl;
+        private final LocalDateTime createdAt;
 
         public static AdminMemberStudentIdResponse from(MemberVerify memberVerify) {
             Map<String, String> descriptions = ConvertUtil.stringToMap(memberVerify.getDescription());
@@ -52,6 +54,7 @@ public class AdminMemberStudentIdResponses {
                     .gender(descriptions.getOrDefault("gender", DESCRIPTION_PARSING_FAIL))
                     .birthDate(descriptions.getOrDefault("birthDate", DESCRIPTION_PARSING_FAIL))
                     .studentIdImageUrl(memberVerify.getContents())
+                    .createdAt(memberVerify.getCreatedAt())
                     .build();
         }
     }

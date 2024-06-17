@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.notification.exception.PushAlarmExceptionType;
-import com.bookbla.americano.domain.notification.infra.expo.api.ExpoFeignClient;
+import com.bookbla.americano.domain.notification.infra.expo.api.ExpoApi;
 import com.bookbla.americano.domain.notification.infra.expo.api.dto.ReceiptsRequest;
 import com.bookbla.americano.domain.notification.infra.expo.api.dto.ReceiptsResponse;
 import com.bookbla.americano.domain.notification.infra.expo.dto.ExpoNotificationResponse;
@@ -28,14 +28,14 @@ import org.springframework.stereotype.Component;
  * @author iamjooon2
  */
 
-@Component
 @RequiredArgsConstructor
+@Component
 public class ExpoNotificationClient implements NotificationClient {
 
     private static final String EXPO_PUSH_TOKEN_FORMAT = "ExponentPushToken[%s]";
-    private static final int EXPO_MAX_MESSAGE_SIZE = 100;
+    private static final int EXPO_MAX_CHUNK_SIZE = 100;
 
-    private final ExpoFeignClient expoFeignClient;
+    private final ExpoApi expoApi;
 
     // https://docs.expo.dev/push-notifications/sending-notifications/
     // Ticket의 Success는 expo 서버에 전달 성공이라는 의미, 사용자에게 전송이 성공했다는 뜻은 아님
@@ -53,8 +53,8 @@ public class ExpoNotificationClient implements NotificationClient {
             expoPushTickets.addAll(expoTickets);
         }
 
-        ReceiptsRequest request = ReceiptsRequest.of(expoPushTickets);
-        ReceiptsResponse response = expoFeignClient.postReceipts(request);
+        ReceiptsResponse response = getReceiptsResponse(expoPushTickets);
+
         return response.getData()
                 .entrySet()
                 .stream()
@@ -62,12 +62,17 @@ public class ExpoNotificationClient implements NotificationClient {
                 .collect(Collectors.toList());
     }
 
+    private ReceiptsResponse getReceiptsResponse(List<ExpoPushTicket> expoPushTickets) {
+        ReceiptsRequest request = ReceiptsRequest.of(expoPushTickets);
+        return expoApi.postReceipts(request);
+    }
+
     // https://docs.expo.dev/push-notifications/sending-notifications/#request-errors
-    // 100개 이상 보낼 경우 에러 뜸
+    // 한 번에 최대 100개까지 전송 가능함. 그렇지 않으면 에러
     private List<List<String>> toTokenBatches(List<String> tokens) {
         List<List<String>> tokenBatches = new ArrayList<>();
-        for (int i = 0; i < tokens.size(); i += EXPO_MAX_MESSAGE_SIZE) {
-            int end = Math.min(tokens.size(), i + EXPO_MAX_MESSAGE_SIZE);
+        for (int i = 0; i < tokens.size(); i += EXPO_MAX_CHUNK_SIZE) {
+            int end = Math.min(tokens.size(), i + EXPO_MAX_CHUNK_SIZE);
             List<String> batch = tokens.subList(i, end);
             tokenBatches.add(new ArrayList<>(batch));
         }
@@ -130,7 +135,7 @@ public class ExpoNotificationClient implements NotificationClient {
         ExpoPushTicket expoPushTicket = getExpoPushTicket(messageReplyFuture);
 
         ReceiptsRequest request = ReceiptsRequest.from(expoPushTicket);
-        ReceiptsResponse response = expoFeignClient.postReceipts(request);
+        ReceiptsResponse response = expoApi.postReceipts(request);
         return response.getData()
                 .entrySet()
                 .stream()

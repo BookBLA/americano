@@ -25,9 +25,10 @@ public class DiscordMessage {
     private static final int MAX_MESSAGE_SIZE = 2_000;
     private static final String CRLF = "\n";
     private static final String EXTRACTION_ERROR_MESSAGE = "메시지 추출중 예외가 발생했습니다.\nmessage : %s";
-    private static final String EXCEPTION_MESSAGE_FORMAT = "_%s_ %s.%s:%d - %s";
+    private static final String EXCEPTION_MESSAGE_FORMAT = "%s.%s:%d - %s";
     private static final String MESSAGE_FORMAT = "\n\n**[요청한 멤버 id]**\n%s\n\n" +
             "**[요청 시간]**\n%s\n\n" +
+            "**[로그 레벨]**\n%s\n\n" +
             "**[에러 로그]**\n%s\n[%s] %s\n\n" +
             "*[Header]*\n%s\n\n" +
             "*[Body]*\n%s\n\n";
@@ -46,9 +47,10 @@ public class DiscordMessage {
             String requestURI = request.getRequestURI();
             String headers = extractHeaders(request);
             String body = getBody(request);
-            String message = extractExceptionMessage(exception, logLevel);
+            String message = extractExceptionMessage(exception);
+            String level = logLevel.name();
 
-            return toMessage(currentTime, memberId, message, method, requestURI, headers, body);
+            return toMessage(currentTime, memberId, level, message, method, requestURI, headers, body);
         } catch (Exception e) {
             return String.format(EXTRACTION_ERROR_MESSAGE, e);
         }
@@ -84,7 +86,7 @@ public class DiscordMessage {
         return body;
     }
 
-    private String extractExceptionMessage(Exception e, LogLevel logLevel) {
+    private String extractExceptionMessage(Exception e) {
         StackTraceElement stackTrace = e.getStackTrace()[0];
         String className = stackTrace.getClassName();
         int lineNumber = stackTrace.getLineNumber();
@@ -99,17 +101,17 @@ public class DiscordMessage {
         }
 
         return String.format(
-                EXCEPTION_MESSAGE_FORMAT, logLevel.name(), className,
+                EXCEPTION_MESSAGE_FORMAT, className,
                 method, lineNumber, message
         );
     }
 
     private String toMessage(
-            String currentTime, String memberId, String errorMessage,
+            String currentTime, String memberId, String logLevel, String errorMessage,
             String method, String requestURI, String headers, String body
     ) {
         String message = String.format(
-                MESSAGE_FORMAT, memberId, currentTime,
+                MESSAGE_FORMAT, memberId, currentTime, logLevel,
                 errorMessage, method, requestURI, headers, body
         );
         return message.length() < MAX_MESSAGE_SIZE
