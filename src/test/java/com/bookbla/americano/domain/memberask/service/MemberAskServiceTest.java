@@ -138,7 +138,7 @@ class MemberAskServiceTest {
 
     @AfterEach
     void tearDown() {
-        memberRepository.deleteAllInBatch();
         memberAskRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
     }
 }
