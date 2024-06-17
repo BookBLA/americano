@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DiscordNotificationClient implements AdminNotificationClient {
 
-    private static final int DISCORD_MAX_MESSAGE_INCLUSIVE = 2_000;
+    private static final int DISCORD_MESSAGE_SIZE_INCLUSIVE = 2_000;
     private static final String MESSAGE_FORMAT = "**[새로운 이벤트가 생성됐습니다]**\n\n" +
             "*[발생 시간]*\n%s\n\n" +
             "*[이벤트 내역]*\n%s\n\n" +
@@ -28,12 +28,12 @@ public class DiscordNotificationClient implements AdminNotificationClient {
 
     private String toMessage(String title, String contents) {
         String message = String.format(MESSAGE_FORMAT, LocalDate.now(), title, contents);
-        return isLongerOrEqualThanMaxMessageSize(message)
-                ? message.substring(0, DISCORD_MAX_MESSAGE_INCLUSIVE - 1)
+        return isEqualOrLongerThanMaxSize(message)
+                ? message.substring(0, DISCORD_MESSAGE_SIZE_INCLUSIVE - 1)
                 : message;
     }
 
-    private boolean isLongerOrEqualThanMaxMessageSize(String message) {
-        return message.length() >= DISCORD_MAX_MESSAGE_INCLUSIVE;
+    private boolean isEqualOrLongerThanMaxSize(String message) {
+        return message.length() >= DISCORD_MESSAGE_SIZE_INCLUSIVE;
     }
 }
