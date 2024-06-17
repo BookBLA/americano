@@ -11,11 +11,11 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Component
 public class AdminNotificationEventListener {
 
-    private final AdminNotificationClient notificationClient;
+    private final AdminNotificationClient adminNotificationClient;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void sendMessage(AdminNotificationEvent adminNotificationEvent) {
-        notificationClient.send(adminNotificationEvent.getTitle(), adminNotificationEvent.getContents());
+        adminNotificationClient.send(adminNotificationEvent.getTitle(), adminNotificationEvent.getContents());
     }
 
 }

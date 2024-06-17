@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.notification.exception.PushAlarmExceptionType;
-import com.bookbla.americano.domain.notification.infra.expo.api.ExpoFeignClient;
+import com.bookbla.americano.domain.notification.infra.expo.api.ExpoFeignClientApi;
 import com.bookbla.americano.domain.notification.infra.expo.api.dto.ReceiptsRequest;
 import com.bookbla.americano.domain.notification.infra.expo.api.dto.ReceiptsResponse;
 import com.bookbla.americano.domain.notification.infra.expo.dto.ExpoNotificationResponse;
@@ -35,7 +35,7 @@ public class ExpoNotificationClient implements NotificationClient {
     private static final String EXPO_PUSH_TOKEN_FORMAT = "ExponentPushToken[%s]";
     private static final int EXPO_MAX_MESSAGE_SIZE = 100;
 
-    private final ExpoFeignClient expoFeignClient;
+    private final ExpoFeignClientApi expoFeignClientApi;
 
     // https://docs.expo.dev/push-notifications/sending-notifications/
     // Ticket의 Success는 expo 서버에 전달 성공이라는 의미, 사용자에게 전송이 성공했다는 뜻은 아님
@@ -54,7 +54,7 @@ public class ExpoNotificationClient implements NotificationClient {
         }
 
         ReceiptsRequest request = ReceiptsRequest.of(expoPushTickets);
-        ReceiptsResponse response = expoFeignClient.postReceipts(request);
+        ReceiptsResponse response = expoFeignClientApi.postReceipts(request);
         return response.getData()
                 .entrySet()
                 .stream()
@@ -130,7 +130,7 @@ public class ExpoNotificationClient implements NotificationClient {
         ExpoPushTicket expoPushTicket = getExpoPushTicket(messageReplyFuture);
 
         ReceiptsRequest request = ReceiptsRequest.from(expoPushTicket);
-        ReceiptsResponse response = expoFeignClient.postReceipts(request);
+        ReceiptsResponse response = expoFeignClientApi.postReceipts(request);
         return response.getData()
                 .entrySet()
                 .stream()

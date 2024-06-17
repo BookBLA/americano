@@ -1,31 +1,29 @@
 package com.bookbla.americano.domain.notification.service.impl;
 
-import com.bookbla.americano.domain.notification.controller.dto.request.PushAlarmAllCreateRequest;
-import com.bookbla.americano.domain.notification.controller.dto.response.PushAlarmAllCreateResponse;
-import com.bookbla.americano.domain.member.enums.MemberStatus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.log.enums.PushAlarmStatus;
 import com.bookbla.americano.base.log.enums.PushAlarmType;
 import com.bookbla.americano.base.log.repository.PushAlarmLogRepository;
 import com.bookbla.americano.base.log.repository.entity.PushAlarmLog;
-import com.bookbla.americano.domain.notification.controller.dto.request.PushAlarmCreateRequest;
-import com.bookbla.americano.domain.notification.controller.dto.response.PushAlarmCreateResponse;
-import com.bookbla.americano.domain.notification.exception.PushAlarmExceptionType;
-import com.bookbla.americano.domain.notification.service.AlarmService;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.repository.MemberPushAlarmRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberPushAlarm;
+import com.bookbla.americano.domain.notification.controller.dto.request.PushAlarmAllCreateRequest;
+import com.bookbla.americano.domain.notification.controller.dto.response.PushAlarmAllCreateResponse;
+import com.bookbla.americano.domain.notification.exception.PushAlarmExceptionType;
+import com.bookbla.americano.domain.notification.service.AlarmService;
 import io.github.jav.exposerversdk.ExpoPushMessage;
 import io.github.jav.exposerversdk.ExpoPushTicket;
 import io.github.jav.exposerversdk.PushClient;
 import io.github.jav.exposerversdk.PushClientException;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -42,38 +40,6 @@ public class AlarmServiceImpl implements AlarmService {
 
     @Override
     @Transactional
-    public PushAlarmCreateResponse sendPushAlarm(PushAlarmCreateRequest pushAlarmCreateRequest) {
-
-        Member member = memberRepository.getByIdOrThrow(pushAlarmCreateRequest.getMemberId());
-
-        // 해당 멤버가 푸시 토큰이 없다면 에러 발생
-        if (member.getPushToken() == null) {
-            throw new BaseException(PushAlarmExceptionType.NOT_FOUND_TOKEN);
-        }
-
-        // 해당 멤버가 회원가입 완료상태가 아니면서 매칭 비활성화가 아니라면
-        if (!member.getMemberStatus().equals(MemberStatus.COMPLETED)
-            && !member.getMemberStatus().equals(MemberStatus.MATCHING_DISABLED)) {
-            throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
-        }
-
-        sendToExpo(member.getPushToken(), pushAlarmCreateRequest.getTitle(),
-            pushAlarmCreateRequest.getBody());
-
-        MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
-            .member(member)
-            .title(pushAlarmCreateRequest.getTitle())
-            .body(pushAlarmCreateRequest.getBody())
-            .build();
-
-        memberPushAlarmRepository.save(memberPushAlarm);
-
-        return PushAlarmCreateResponse.from(member, pushAlarmCreateRequest.getTitle(),
-            pushAlarmCreateRequest.getBody());
-    }
-
-    @Override
-    @Transactional
     public void sendPushAlarmForReceivePostCard(Member sendMember, Member receiveMember) {
         // 해당 멤버가 푸시 토큰이 없다면 에러 발생
         if (receiveMember.getPushToken() == null) {
@@ -84,7 +50,7 @@ public class AlarmServiceImpl implements AlarmService {
         if (!receiveMember.getMemberStatus().equals(MemberStatus.COMPLETED)) {
             throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
         }
-        
+
         // 엽서 도착은 익명 처리
         String title = "띵동~\uD83D\uDC8C 엽서가 도착했어요!";
         String body = sendMember.getMemberProfile().showBlindName() + "님이 엽서를 보냈어요! 지금 확인해 보세요~\uD83E\uDD70";
@@ -92,10 +58,10 @@ public class AlarmServiceImpl implements AlarmService {
         sendToExpo(receiveMember.getPushToken(), title, body);
 
         MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
-            .member(receiveMember)
-            .title(title)
-            .body(body)
-            .build();
+                .member(receiveMember)
+                .title(title)
+                .body(body)
+                .build();
 
         memberPushAlarmRepository.save(memberPushAlarm);
     }
@@ -110,10 +76,10 @@ public class AlarmServiceImpl implements AlarmService {
 
         // 해당 멤버가 회원가입 완료상태가 아니면서 매칭 비활성화가 아니라면
         if (!sendMember.getMemberStatus().equals(MemberStatus.COMPLETED)
-            && !sendMember.getMemberStatus().equals(MemberStatus.MATCHING_DISABLED)) {
+                && !sendMember.getMemberStatus().equals(MemberStatus.MATCHING_DISABLED)) {
             throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
         }
-        
+
         // 엽서 수락은 실명 처리
         String title = "축하합니다\uD83E\uDD73\uD83E\uDD73 매칭에 성공하셨습니다~!!\uD83D\uDC95";
         String body = receiveMember.getMemberProfile().getName() + "님이 엽서를 수락했어요! 지금 바로 채팅해보세요~\uD83E\uDD70";
@@ -121,10 +87,10 @@ public class AlarmServiceImpl implements AlarmService {
         sendToExpo(sendMember.getPushToken(), title, body);
 
         MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
-            .member(sendMember)
-            .title(title)
-            .body(body)
-            .build();
+                .member(sendMember)
+                .title(title)
+                .body(body)
+                .build();
 
         memberPushAlarmRepository.save(memberPushAlarm);
     }
@@ -132,18 +98,18 @@ public class AlarmServiceImpl implements AlarmService {
     @Override
     @Transactional
     public PushAlarmAllCreateResponse sendPushAlarmAll(
-        PushAlarmAllCreateRequest pushAlarmAllCreateRequest
+            PushAlarmAllCreateRequest pushAlarmAllCreateRequest
     ) {
 
         String title = pushAlarmAllCreateRequest.getTitle();
         String body = pushAlarmAllCreateRequest.getBody();
 
         List<Member> selectedMembers = memberRepository.findByMemberStatus(MemberStatus.COMPLETED,
-            MemberStatus.MATCHING_DISABLED);
+                MemberStatus.MATCHING_DISABLED);
 
         List<String> tokens = selectedMembers.stream()
-            .map(Member::getPushToken)
-            .collect(Collectors.toList());
+                .map(Member::getPushToken)
+                .collect(Collectors.toList());
 
         // https://docs.expo.dev/push-notifications/sending-notifications/#request-errors
         List<List<String>> tokenBatches = new ArrayList<>();
@@ -159,10 +125,10 @@ public class AlarmServiceImpl implements AlarmService {
 
         for (Member member : selectedMembers) {
             MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
-                .member(member)
-                .title(title)
-                .body(body)
-                .build();
+                    .member(member)
+                    .title(title)
+                    .body(body)
+                    .build();
 
             memberPushAlarmRepository.save(memberPushAlarm);
         }
@@ -172,8 +138,8 @@ public class AlarmServiceImpl implements AlarmService {
 
     private void sendListToExpo(List<String> tokens, String title, String body) {
         List<String> exponentPushTokens = tokens.stream()
-            .map(token -> "ExponentPushToken[" + token + "]")
-            .collect(Collectors.toList());
+                .map(token -> "ExponentPushToken[" + token + "]")
+                .collect(Collectors.toList());
 
         ExpoPushMessage expoPushMessage = new ExpoPushMessage();
 
@@ -214,12 +180,12 @@ public class AlarmServiceImpl implements AlarmService {
         for (int i = 0; i < allTickets.size(); i++) {
             if (allTickets.get(i).getStatus().toString().equals("error")) {
                 PushAlarmLog pushAlarmLog = PushAlarmLog.builder()
-                    .token(tokens.get(i))
-                    .pushAlarmType(PushAlarmType.EXPO)
-                    .title(title)
-                    .body(body)
-                    .pushAlarmStatus(PushAlarmStatus.FAIL)
-                    .build();
+                        .token(tokens.get(i))
+                        .pushAlarmType(PushAlarmType.EXPO)
+                        .title(title)
+                        .body(body)
+                        .pushAlarmStatus(PushAlarmStatus.FAIL)
+                        .build();
 
                 pushAlarmLogRepository.save(pushAlarmLog);
             }
@@ -276,12 +242,12 @@ public class AlarmServiceImpl implements AlarmService {
 
             if (allTickets.get(i).getStatus().toString().equals("error")) {
                 PushAlarmLog pushAlarmLog = PushAlarmLog.builder()
-                    .token(token)
-                    .pushAlarmType(PushAlarmType.EXPO)
-                    .title(title)
-                    .body(body)
-                    .pushAlarmStatus(PushAlarmStatus.FAIL)
-                    .build();
+                        .token(token)
+                        .pushAlarmType(PushAlarmType.EXPO)
+                        .title(title)
+                        .body(body)
+                        .pushAlarmStatus(PushAlarmStatus.FAIL)
+                        .build();
 
                 pushAlarmLogRepository.save(pushAlarmLog);
             }
