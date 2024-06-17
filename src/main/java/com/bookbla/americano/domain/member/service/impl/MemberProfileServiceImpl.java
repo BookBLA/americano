@@ -27,7 +27,9 @@ import com.bookbla.americano.domain.member.repository.entity.MemberStatusLog;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
+import com.bookbla.americano.domain.member.service.dto.event.AdminNotificationEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +54,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
     private final MemberStatusLogRepository memberStatusLogRepository;
     private final MemberEmailRepository memberEmailRepository;
     private final MemberVerifyRepository memberVerifyRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional
@@ -82,6 +85,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
                 .afterStatus(MemberStatus.APPROVAL)
                 .build()
         );
+
         return MemberProfileResponse.from(member, memberProfile);
     }
 
@@ -94,6 +98,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
             .contents(studentImageUrl)
             .verifyType(STUDENT_ID)
             .build();
+        eventPublisher.publishEvent(new AdminNotificationEvent(STUDENT_ID.name(), member.getId().toString()));
         memberVerifyRepository.save(studentIdVerify);
     }
 
@@ -105,6 +110,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
             .verifyType(PROFILE_IMAGE)
             .build();
         memberVerifyRepository.save(profileImageVerify);
+        eventPublisher.publishEvent(new AdminNotificationEvent(PROFILE_IMAGE.name(), member.getId().toString()));
     }
 
     private void saveKakaoRoomVerify(Member member, String kakaoRoomUrl) {
@@ -115,6 +121,7 @@ public class MemberProfileServiceImpl implements MemberProfileService {
             .verifyType(OPEN_KAKAO_ROOM_URL)
             .build();
         memberVerifyRepository.save(kakaoRoomVerify);
+        eventPublisher.publishEvent(new AdminNotificationEvent(OPEN_KAKAO_ROOM_URL.name(), member.getId().toString()));
     }
 
     @Override
