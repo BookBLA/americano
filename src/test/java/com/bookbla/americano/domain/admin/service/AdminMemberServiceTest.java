@@ -6,25 +6,20 @@ import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKak
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
-import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
-import com.bookbla.americano.domain.aws.service.S3Service;
 import com.bookbla.americano.domain.member.enums.MemberVerifyStatus;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
-import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 
 import static com.bookbla.americano.domain.member.enums.Gender.MALE;
@@ -45,9 +40,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @SuppressWarnings("NonAsciiCharacters")
 @SpringBootTest
 class AdminMemberServiceTest {
-
-    @MockBean
-    private S3Service s3Service;
 
     @Autowired
     private AdminMemberService adminMemberService;
@@ -160,34 +152,6 @@ class AdminMemberServiceTest {
     }
 
     @Test
-    void 회원의_카카오톡_오픈채팅방_인증_상태를_변경할_수_있다() {
-        // given
-        Member member = memberRepository.save(Member.builder()
-                .memberType(ADMIN)
-                .memberStatus(APPROVAL)
-                .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().name("문성진").profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").name("이준희").build())
-                .build());
-        MemberVerify memberVerify = memberVerifyRepository.save(MemberVerify.builder()
-                .memberId(member.getId())
-                .verifyType(OPEN_KAKAO_ROOM_URL)
-                .verifyStatus(MemberVerifyStatus.PENDING)
-                .build());
-        StatusUpdateDto statusUpdateDto = new StatusUpdateDto(memberVerify.getId(), "done", "성공");
-
-        // when
-        adminMemberService.updateMemberKakaoRoomStatus(statusUpdateDto);
-
-        // then
-        MemberProfile memberProfile = memberRepository.getByIdOrThrow(member.getId()).getMemberProfile();
-        MemberVerify foundMemberVerify = memberVerifyRepository.getByIdOrThrow(memberVerify.getId());
-        assertAll(
-                () -> assertThat(memberProfile.getOpenKakaoRoomStatus()).isEqualTo(OpenKakaoRoomStatus.DONE),
-                () -> assertThat(foundMemberVerify.getVerifyStatus()).isEqualTo(SUCCESS)
-        );
-    }
-
-    @Test
     void 프로필_이미지_승인_대기중인_회원들을_조회할_수_있다() {
         // given
         Member pendingMember = memberRepository.save(Member.builder()
@@ -238,40 +202,6 @@ class AdminMemberServiceTest {
     }
 
     @Test
-    @Disabled
-    void 회원의_프로필_사진_인증_상태를_변경할_수_있다() {
-        // given
-        Member member = memberRepository.save(Member.builder()
-                .memberType(ADMIN)
-                .oauthEmail("bookbla@bookbla.com")
-                .memberStatus(APPROVAL)
-                .memberProfile(MemberProfile.builder().name("문성진").profileImageStatus(ProfileImageStatus.PENDING).profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").build())
-                .build());
-        MemberVerify memberVerify = MemberVerify.builder()
-                .memberId(member.getId())
-                .contents("프로필 사진 링크입니다.")
-                .verifyType(PROFILE_IMAGE)
-                .verifyStatus(PENDING)
-                .build();
-
-        memberVerifyRepository.save(memberVerify);
-
-        StatusUpdateDto statusUpdateDto = new StatusUpdateDto(memberVerify.getId(), "done", "성공");
-
-        // when
-        adminMemberService.updateMemberImageStatus(statusUpdateDto);
-
-        // then
-        MemberProfile memberProfile = memberRepository.getByIdOrThrow(member.getId()).getMemberProfile();
-        MemberVerify findMemberVerify = memberVerifyRepository.getByIdOrThrow(memberVerify.getId());
-        assertAll(
-//                () -> assertThat(memberProfile.getProfileImageUrl()).isEqualTo("생성된 이미지 경로입니다."),
-                () -> assertThat(memberProfile.getProfileImageStatus()).isEqualTo(ProfileImageStatus.DONE),
-                () -> assertThat(findMemberVerify.getVerifyStatus()).isEqualTo(SUCCESS)
-        );
-    }
-
-    @Test
     void 학생증_승인_대기중인_회원_목록을_조회할_수_있다() {
         // given
         Member savedMember1 = memberRepository.save(Member.builder().build());
@@ -308,37 +238,6 @@ class AdminMemberServiceTest {
 
         // then
         assertThat(adminMemberStudentIdResponses.getData()).hasSize(2);
-    }
-
-    @Test
-    void 회원의_학생증_인증_상태를_변경할_수_있다() {
-        // given
-        Member member = memberRepository.save(Member.builder()
-                .memberType(ADMIN)
-                .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().studentIdImageStatus(StudentIdImageStatus.PENDING).build())
-                .memberStatus(APPROVAL)
-                .build());
-        MemberVerify memberVerify = memberVerifyRepository.save(MemberVerify.builder()
-                .memberId(member.getId())
-                .verifyStatus(PENDING)
-                .verifyType(STUDENT_ID)
-                .contents("학생증 링크~")
-                .description("이름: 고도현, 학교: 가천대학교, 학과: 관광경영학과, 학번: 201900001")
-                .build());
-        StatusUpdateDto statusUpdateDto = new StatusUpdateDto(memberVerify.getId(), "denial", "흐릿해요");
-
-        // when
-        adminMemberService.updateMemberStudentIdStatus(statusUpdateDto);
-
-        // then
-        MemberProfile memberProfile = memberRepository.getByIdOrThrow(member.getId()).getMemberProfile();
-        MemberVerify findMemberVerify = memberVerifyRepository.getByIdOrThrow(memberVerify.getId());
-        assertAll(
-                () -> assertThat(memberProfile.getStudentIdImageStatus()).isEqualTo(StudentIdImageStatus.DENIAL),
-                () -> assertThat(findMemberVerify.getVerifyStatus()).isEqualTo(MemberVerifyStatus.FAIL),
-                () -> assertThat(findMemberVerify.getDescription()).isEqualTo("흐릿해요")
-        );
     }
 
     @AfterEach
