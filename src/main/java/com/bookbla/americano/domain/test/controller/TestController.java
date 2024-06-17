@@ -1,12 +1,12 @@
 package com.bookbla.americano.domain.test.controller;
 
-import com.bookbla.americano.domain.member.repository.entity.Member;
 import java.net.URI;
 import java.util.List;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.base.jwt.JwtProvider;
+import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.test.controller.dto.request.TestCreateRequest;
 import com.bookbla.americano.domain.test.controller.dto.request.TestSignUpRequest;
 import com.bookbla.americano.domain.test.controller.dto.response.TestCreateResponse;
@@ -15,7 +15,6 @@ import com.bookbla.americano.domain.test.controller.dto.response.TestSignUpRespo
 import com.bookbla.americano.domain.test.service.TestService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,13 +26,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/tests")
 @RequiredArgsConstructor
-@Profile({"local", "dev"})
 public class TestController {
 
     private final TestService testService;
-
     private final JwtProvider jwtProvider;
-
 
     @GetMapping
     public ResponseEntity<List<TestReadResponse>> readTest(@RequestParam String contents) {
@@ -65,7 +61,7 @@ public class TestController {
 
     @PostMapping("/sign-up/kakao")
     public ResponseEntity<TestSignUpResponse> testSignUpKakao(
-        @RequestBody TestSignUpRequest testSignUpRequest
+            @RequestBody TestSignUpRequest testSignUpRequest
     ) {
         Member member = testService.signUpKakao(testSignUpRequest.getEmail());
         String token = jwtProvider.createToken(member.getId().toString());
