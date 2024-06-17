@@ -27,7 +27,6 @@ import static com.bookbla.americano.domain.member.enums.MemberStatus.APPROVAL;
 import static com.bookbla.americano.domain.member.enums.MemberStatus.COMPLETED;
 import static com.bookbla.americano.domain.member.enums.MemberStatus.STYLE;
 import static com.bookbla.americano.domain.member.enums.MemberType.ADMIN;
-import static com.bookbla.americano.domain.member.enums.MemberType.KAKAO;
 import static com.bookbla.americano.domain.member.enums.MemberVerifyStatus.PENDING;
 import static com.bookbla.americano.domain.member.enums.MemberVerifyStatus.SUCCESS;
 import static com.bookbla.americano.domain.member.enums.MemberVerifyType.OPEN_KAKAO_ROOM_URL;
@@ -54,7 +53,7 @@ class AdminMemberServiceTest {
     void 회원들의_정보를_확인할_수_있다() {
         // given
         Member member1 = Member.builder()
-                .memberType(KAKAO)
+                .memberType(ADMIN)
                 .memberStatus(COMPLETED)
                 .oauthEmail("bookbla@bookbla.com")
                 .memberProfile(MemberProfile.builder()
@@ -68,7 +67,7 @@ class AdminMemberServiceTest {
         memberRepository.save(member1);
 
         Member member2 = Member.builder()
-                .memberType(KAKAO)
+                .memberType(ADMIN)
                 .memberStatus(STYLE)
                 .oauthEmail("bookbla@bookbla.com")
                 .memberProfile(MemberProfile.builder().birthDate(LocalDate.of(1999, 3, 3)).phoneNumber("01012345678").gender(MALE).schoolName("가천대").name("이준희").build())
@@ -76,7 +75,7 @@ class AdminMemberServiceTest {
         memberRepository.save(member2);
 
         Member member3 = Member.builder()
-                .memberType(KAKAO)
+                .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
                 .memberProfile(MemberProfile.builder().phoneNumber("01012345678").gender(MALE).schoolName("가천대").name("이준희").build())
@@ -91,7 +90,7 @@ class AdminMemberServiceTest {
         assertAll(
                 () -> assertThat(adminMemberReadResponses.getTotalCount()).isEqualTo(3),
                 () -> assertThat(adminMemberReadResponses.getData()).hasSize(3),
-                () -> assertThat(adminMemberReadResponse.getMemberType()).isEqualToIgnoringCase("kakao"),
+                () -> assertThat(adminMemberReadResponse.getMemberType()).isEqualToIgnoringCase("ADMIN"),
                 () -> assertThat(adminMemberReadResponse.getAuthEmail()).isEqualTo("bookbla@bookbla.com"),
                 () -> assertThat(adminMemberReadResponse.getName()).isEqualTo("이준희"),
                 () -> assertThat(adminMemberReadResponse.getGender()).isEqualToIgnoringCase("male"),
@@ -193,9 +192,9 @@ class AdminMemberServiceTest {
                 .verifyType(PROFILE_IMAGE)
                 .contents("사진 링크~")
                 .build());
-        PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
+        PageRequest pageRequest = PageRequest.of(0, 10);
         AdminMemberProfileImageResponses adminMemberProfileImageResponses = adminMemberService.readProfileImagePendingMembers(pageRequest);
 
         // then
@@ -232,9 +231,9 @@ class AdminMemberServiceTest {
                 .description("이것은 카톡방이여요~")
                 .build());
         // 학생증 대기 2, 카톡방 대기 1
-        PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
+        PageRequest pageRequest = PageRequest.of(0, 10);
         AdminMemberStudentIdResponses adminMemberStudentIdResponses = adminMemberService.readStudentIdImagePendingMembers(pageRequest);
 
         // then
@@ -243,7 +242,7 @@ class AdminMemberServiceTest {
 
     @AfterEach
     void tearDown() {
-        memberRepository.deleteAll();
         memberVerifyRepository.deleteAll();
+        memberRepository.deleteAll();
     }
 }
