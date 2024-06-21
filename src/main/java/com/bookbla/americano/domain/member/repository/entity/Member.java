@@ -9,6 +9,8 @@ import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.bookbla.americano.domain.member.exception.PolicyExceptionType;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -16,6 +18,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -64,6 +67,12 @@ public class Member extends BaseInsertEntity {
     @Embedded
     @Getter(AccessLevel.NONE)
     private MemberStyle memberStyle;
+
+    @OneToMany(mappedBy = "blockerMember")
+    private Set<MemberBlock> blockerMembers = new HashSet<>();
+
+    @OneToMany(mappedBy = "blockedByMember")
+    private Set<MemberBlock> blockedByMembers = new HashSet<>();
 
     // 첫 가입시 확인용
     public void updateMemberStatus() {
