@@ -36,7 +36,7 @@ public class MemberReportServiceImpl implements MemberReportService {
     public MemberReportCreateResponse addMemberReport(Long memberId,
         MemberReportCreateRequest memberReportCreateRequest) {
 
-        if (Objects.equals(memberId, memberReportCreateRequest.getReportedByMemberId())) {
+        if (Objects.equals(memberId, memberReportCreateRequest.getReportedMemberId())) {
             throw new BaseException(MemberReportExceptionType.SAME_MEMBER);
         }
 
@@ -44,16 +44,16 @@ public class MemberReportServiceImpl implements MemberReportService {
         Member reporterMember = memberRepository.getByIdOrThrow(memberId);
 
         // 신고를 당하는 멤버
-        Member reportedByMember = memberRepository.getByIdOrThrow(
-            memberReportCreateRequest.getReportedByMemberId());
+        Member reportedMember = memberRepository.getByIdOrThrow(
+            memberReportCreateRequest.getReportedMemberId());
 
-        if (memberReportRepository.findByReporterMemberAndReportedByMember(reporterMember, reportedByMember).isPresent()) {
+        if (memberReportRepository.findByReporterMemberAndReportedMember(reporterMember, reportedMember).isPresent()) {
             throw new BaseException(MemberReportExceptionType.ALREADY_MEMBER_REPORT);
         }
 
         MemberReport memberReport = MemberReport.builder()
             .reporterMember(reporterMember)
-            .reportedByMember(reportedByMember)
+            .reportedMember(reportedMember)
             .bookQuizReport(memberReportCreateRequest.getReportStatuses().getBookQuizReport())
             .reviewReport(memberReportCreateRequest.getReportStatuses().getReviewReport())
             .askReport(memberReportCreateRequest.getReportStatuses().getAskReport())
@@ -82,23 +82,23 @@ public class MemberReportServiceImpl implements MemberReportService {
         memberReportRepository.save(memberReport);
 
         // 신고당한 횟수 늘리기
-        reportedByMember.updateReportedByCountUp();
-        memberRepository.save(reportedByMember);
+        reportedMember.updateReportedByCountUp();
+        memberRepository.save(reportedMember);
 
         // 신고 횟수가 3회 이상인 유저는 MemberStatus 변경
-        if (reportedByMember.getReportedByCount() >= 3) {
+        if (reportedMember.getReportedByCount() >= 3) {
 
             // 멤버 이전 상태 기록
             memberStatusLogRepository.save(
                 MemberStatusLog.builder()
-                    .memberId(reportedByMember.getId())
-                    .beforeStatus(reportedByMember.getMemberStatus())
+                    .memberId(reportedMember.getId())
+                    .beforeStatus(reportedMember.getMemberStatus())
                     .afterStatus(MemberStatus.REPORTED)
                     .build()
             );
 
-            reportedByMember.updateMemberStatus(MemberStatus.REPORTED, LocalDateTime.now());
-            memberRepository.save(reportedByMember);
+            reportedMember.updateMemberStatus(MemberStatus.REPORTED, LocalDateTime.now());
+            memberRepository.save(reportedMember);
         }
         return MemberReportCreateResponse.from(memberReport);
     }
@@ -128,15 +128,15 @@ public class MemberReportServiceImpl implements MemberReportService {
         }
 
         // 신고를 당하는 멤버
-        Member reportedByMember = memberReport.getReportedByMember();
+        Member reportedMember = memberReport.getReportedMember();
 
-        reportedByMember.updateReportedByCountDown();
-        memberRepository.save(reportedByMember);
+        reportedMember.updateReportedByCountDown();
+        memberRepository.save(reportedMember);
 
         // 신고 당한 횟수가 3번 보다 적으면 멤버 상태를 이전으로 되돌리기
-        if (reportedByMember.getReportedByCount() < 3) {
-            MemberStatusLog memberStatusLog = memberStatusLogRepository.getByMemberIdOrThrow(reportedByMember.getId());
-            reportedByMember.updateMemberStatus(memberStatusLog.getBeforeStatus(), LocalDateTime.now());
+        if (reportedMember.getReportedByCount() < 3) {
+            MemberStatusLog memberStatusLog = memberStatusLogRepository.getByMemberIdOrThrow(reportedMember.getId());
+            reportedMember.updateMemberStatus(memberStatusLog.getBeforeStatus(), LocalDateTime.now());
             memberStatusLogRepository.delete(memberStatusLog);
         }
 

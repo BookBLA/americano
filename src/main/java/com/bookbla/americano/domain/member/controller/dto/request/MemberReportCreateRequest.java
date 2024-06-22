@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class MemberReportCreateRequest {
 
     @NotNull(message = "신고당하는 멤버의 아이디가 입력되지 않았습니다.")
-    private Long reportedByMemberId;
+    private Long reportedMemberId;
 
     @Data
     @NoArgsConstructor

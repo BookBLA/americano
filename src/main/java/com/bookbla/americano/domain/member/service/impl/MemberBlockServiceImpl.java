@@ -29,7 +29,7 @@ public class MemberBlockServiceImpl implements MemberBlockService {
     public MemberBlockCreateResponse addMemberBlock(Long memberId,
         MemberBlockCreateRequest memberBlockCreateRequest) {
 
-        if (Objects.equals(memberId, memberBlockCreateRequest.getBlockedByMemberId())) {
+        if (Objects.equals(memberId, memberBlockCreateRequest.getBlockedMemberId())) {
             throw new BaseException(MemberBlockExceptionType.SAME_MEMBER);
         }
 
@@ -37,16 +37,16 @@ public class MemberBlockServiceImpl implements MemberBlockService {
         Member blockerMember = memberRepository.getByIdOrThrow(memberId);
 
         // 차단을 당하는 멤버
-        Member blockedByMember = memberRepository.getByIdOrThrow(
-            memberBlockCreateRequest.getBlockedByMemberId());
+        Member blockedMember = memberRepository.getByIdOrThrow(
+            memberBlockCreateRequest.getBlockedMemberId());
 
-        if (memberBlockRepository.findByBlockerMemberAndBlockedByMember(blockerMember, blockedByMember).isPresent()) {
+        if (memberBlockRepository.findByBlockerMemberAndBlockedMember(blockerMember, blockedMember).isPresent()) {
             throw new BaseException(MemberBlockExceptionType.ALREADY_MEMBER_BLOCK);
         }
 
         MemberBlock memberBlock = MemberBlock.builder()
             .blockerMember(blockerMember)
-            .blockedByMember(blockedByMember)
+            .blockedMember(blockedMember)
             .build();
 
         memberBlockRepository.save(memberBlock);

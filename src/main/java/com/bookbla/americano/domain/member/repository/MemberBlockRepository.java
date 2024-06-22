@@ -10,9 +10,9 @@ public interface MemberBlockRepository extends JpaRepository<MemberBlock, Long> 
 
     Optional<MemberBlock> findById(Long memberBlockId);
 
-    Optional<MemberBlock> findByBlockerMemberAndBlockedByMember(Member blockerMember, Member blockedByMember);
+    Optional<MemberBlock> findByBlockerMemberAndBlockedMember(Member blockerMember, Member blockedMember);
 
     List<MemberBlock> findAllByBlockerMember(Member blockerMember);
 
-    List<MemberBlock> findAllByBlockedByMember(Member blockedByMember);
+    List<MemberBlock> findAllByBlockedMember(Member blockedMember);
 }

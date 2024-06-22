@@ -10,10 +10,10 @@ public interface MemberReportRepository extends JpaRepository<MemberReport, Long
 
     Optional<MemberReport> findById(Long memberReportId);
 
-    Optional<MemberReport> findByReporterMemberAndReportedByMember(Member reporterMember, Member reportedByMember);
+    Optional<MemberReport> findByReporterMemberAndReportedMember(Member reporterMember, Member reportedMember);
 
     List<MemberReport> findAllByReporterMember(Member reporterMember);
 
-    List<MemberReport> findAllByReportedByMember(Member repotedByMember);
+    List<MemberReport> findAllByReportedMember(Member repotedByMember);
 
 }

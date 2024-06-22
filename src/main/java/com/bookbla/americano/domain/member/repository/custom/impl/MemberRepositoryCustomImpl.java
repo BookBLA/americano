@@ -101,7 +101,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
 
         // memberId가 차단해서 차단당한 멤버 ID List
         List<Long> blockedByIds = queryFactory
-            .select(memberBlock.blockedByMember.id)
+            .select(memberBlock.blockedMember.id)
             .from(memberBlock)
             .where(memberBlock.blockerMember.id.eq(memberId))
             .fetch();
@@ -110,7 +110,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
         List<Long> blockerIds = queryFactory
             .select(memberBlock.blockerMember.id)
             .from(memberBlock)
-            .where(memberBlock.blockedByMember.id.eq(memberId))
+            .where(memberBlock.blockedMember.id.eq(memberId))
             .fetch();
 
         return queryFactory

@@ -18,7 +18,7 @@ public class MemberReportReadResponse {
     @Builder
     public static class MemberReportDetail {
         private final Long memberReportId;
-        private final Long reportedByMemberId;
+        private final Long reportedMemberId;
         private ReportStatuses reportStatuses;
         private String etcContents;
     }
@@ -38,7 +38,7 @@ public class MemberReportReadResponse {
         List<MemberReportDetail> memberReportDetails = memberReports.stream()
             .map(memberReport -> MemberReportDetail.builder()
                 .memberReportId(memberReport.getId())
-                .reportedByMemberId(memberReport.getReportedByMember().getId())
+                .reportedMemberId(memberReport.getReportedMember().getId())
                 .reportStatuses(ReportStatuses.builder()
                     .bookQuizReport(memberReport.getBookQuizReport())
                     .reviewReport(memberReport.getReviewReport())

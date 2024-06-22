@@ -18,14 +18,14 @@ public class MemberBlockReadResponse {
     @Builder
     public static class MemberBlockDetail {
         private final Long memberBlockId;
-        private final Long blockedByMemberId;
+        private final Long blockedMemberId;
     }
 
     public static MemberBlockReadResponse from(List<MemberBlock> memberBlocks) {
         List<MemberBlockDetail> memberBlockDetails = memberBlocks.stream()
             .map(memberBlock -> MemberBlockDetail.builder()
                 .memberBlockId(memberBlock.getId())
-                .blockedByMemberId(memberBlock.getBlockedByMember().getId())
+                .blockedMemberId(memberBlock.getBlockedMember().getId())
                 .build())
             .collect(Collectors.toList());
 

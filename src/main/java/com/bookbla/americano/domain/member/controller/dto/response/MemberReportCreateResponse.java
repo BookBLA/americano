@@ -15,7 +15,7 @@ public class MemberReportCreateResponse {
 
     private Long memberReportId;
     private Long reporterMemberId;
-    private Long reportedByMemberId;
+    private Long reportedMemberId;
     private ReportStatuses reportStatuses;
 
     @Getter
@@ -35,7 +35,7 @@ public class MemberReportCreateResponse {
         return MemberReportCreateResponse.builder()
             .memberReportId(memberReport.getId())
             .reporterMemberId(memberReport.getReporterMember().getId())
-            .reportedByMemberId(memberReport.getReportedByMember().getId())
+            .reportedMemberId(memberReport.getReportedMember().getId())
             .reportStatuses(
                 ReportStatuses.builder()
                     .bookQuizReport(memberReport.getBookQuizReport())

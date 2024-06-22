@@ -71,14 +71,14 @@ public class Member extends BaseInsertEntity {
     @OneToMany(mappedBy = "blockerMember")
     private Set<MemberBlock> blockerMembers = new HashSet<>();
 
-    @OneToMany(mappedBy = "blockedByMember")
-    private Set<MemberBlock> blockedByMembers = new HashSet<>();
+    @OneToMany(mappedBy = "blockedMember")
+    private Set<MemberBlock> blockedMembers = new HashSet<>();
 
     @OneToMany(mappedBy = "reporterMember")
     private Set<MemberReport> reporterMembers = new HashSet<>();
 
-    @OneToMany(mappedBy = "reportedByMember")
-    private Set<MemberReport> reportedByMembers = new HashSet<>();
+    @OneToMany(mappedBy = "reportedMember")
+    private Set<MemberReport> reportedMembers = new HashSet<>();
 
     private Integer reportedByCount; // 신고당한 횟수
 

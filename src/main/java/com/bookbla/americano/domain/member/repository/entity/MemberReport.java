@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.member.repository.entity;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,13 +26,13 @@ public class MemberReport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reporter_member_id")
     private Member reporterMember; // 신고를 한 유저
 
-    @ManyToOne
-    @JoinColumn(name = "reported_by_member_id")
-    private Member reportedByMember; // 신고를 당한 유저
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reported_member_id")
+    private Member reportedMember; // 신고를 당한 유저
 
     @Column(length = 1)
     @Convert(converter = BooleanToYNConverter.class)

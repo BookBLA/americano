@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 public class MemberBlockCreateRequest {
 
     @NotNull(message = "차단될 멤버의 아이디가 입력되지 않았습니다.")
-    private Long blockedByMemberId;
+    private Long blockedMemberId;
 }

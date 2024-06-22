@@ -13,13 +13,13 @@ public class MemberBlockCreateResponse {
 
     private Long memberBlockId;
     private Long blockerMemberId;
-    private Long blockedByMemberId;
+    private Long blockedMemberId;
 
     public static MemberBlockCreateResponse from(MemberBlock memberBlock) {
         return MemberBlockCreateResponse.builder()
             .memberBlockId(memberBlock.getId())
             .blockerMemberId(memberBlock.getBlockerMember().getId())
-            .blockedByMemberId(memberBlock.getBlockedByMember().getId())
+            .blockedMemberId(memberBlock.getBlockedMember().getId())
             .build();
     }
 }

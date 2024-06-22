@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -23,12 +24,12 @@ public class MemberBlock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "blocker_member_id")
     private Member blockerMember; // 차단을 한 유저
 
-    @ManyToOne
-    @JoinColumn(name = "blocked_by_member_id")
-    private Member blockedByMember; // 차단된 유저
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "blocked_member_id")
+    private Member blockedMember; // 차단된 유저
 
 }
