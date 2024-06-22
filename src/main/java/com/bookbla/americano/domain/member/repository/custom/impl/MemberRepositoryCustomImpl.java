@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.repository.custom.impl;
 
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -22,6 +23,7 @@ import com.bookbla.americano.domain.member.repository.entity.QMember;
 import com.bookbla.americano.domain.member.repository.entity.QMemberBook;
 import com.bookbla.americano.domain.member.repository.entity.QMemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.QMemberStyle;
+import com.bookbla.americano.domain.member.repository.entity.QMemberBlock;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
@@ -82,6 +84,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
     public List<BookProfileResponse> getAllMembers(Long memberId, MemberBookProfileRequestDto requestDto) {
         QMember member = QMember.member;
         QMemberBook memberBook = QMemberBook.memberBook;
+        QMemberBlock memberBlock = QMemberBlock.memberBlock;
         QBook book = QBook.book;
 
         BooleanBuilder builder = new BooleanBuilder();
@@ -95,6 +98,20 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .and(eqMbtiType(member.memberStyle, requestDto.getMbti()))
                 .and(eqJustFriendType(member.memberStyle, requestDto.getJustFriendType()))
                 .and(new BooleanBuilder(memberBook.isRepresentative.eq(Boolean.TRUE)));
+
+        // memberId가 차단해서 차단당한 멤버 ID List
+        List<Long> blockedByIds = queryFactory
+            .select(memberBlock.blockedByMember.id)
+            .from(memberBlock)
+            .where(memberBlock.blockerMember.id.eq(memberId))
+            .fetch();
+
+        // memberId를 차단한 유저의 ID 목록 List
+        List<Long> blockerIds = queryFactory
+            .select(memberBlock.blockerMember.id)
+            .from(memberBlock)
+            .where(memberBlock.blockedByMember.id.eq(memberId))
+            .fetch();
 
         return queryFactory
                 .select(Projections.fields(BookProfileResponse.class
@@ -112,7 +129,10 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .innerJoin(memberBook).on(member.eq(memberBook.member))
                 .innerJoin(book).on(memberBook.book.eq(book).and(memberBook.isDeleted.eq(false)))
                 .where(builder.andNot(member.id.eq(memberId))
-                        .and(member.memberStatus.eq(MemberStatus.COMPLETED)))
+                        .and(member.memberStatus.eq(MemberStatus.COMPLETED))
+                        .and(member.id.notIn(blockerIds))
+                        .and(member.id.notIn(blockedByIds))
+                )
                 .orderBy(member.createdAt.desc())
                 .fetch();
     }
@@ -172,4 +192,5 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
         }
         return new BooleanBuilder(memberStyle.justFriendType.eq(justFriendType));
     }
+
 }
