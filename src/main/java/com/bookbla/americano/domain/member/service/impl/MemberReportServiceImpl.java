@@ -118,7 +118,11 @@ public class MemberReportServiceImpl implements MemberReportService {
     public MemberReportDeleteResponse deleteMemberReport(Long memberId, Long memberReportId) {
 
         MemberReport memberReport = memberReportRepository.findById(memberReportId)
-            .orElseThrow(() -> new BaseException(MemberReportExceptionType.NOT_FOUND_MEMBER_REPORT));
+            .orElse(null);
+
+        if (memberReport == null) {
+            return MemberReportDeleteResponse.from(memberReportId);
+        }
 
         // 신고를 하는 멤버
         Member reporterMember = memberRepository.getByIdOrThrow(memberId);

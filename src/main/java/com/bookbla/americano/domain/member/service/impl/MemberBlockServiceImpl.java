@@ -69,7 +69,11 @@ public class MemberBlockServiceImpl implements MemberBlockService {
     public MemberBlockDeleteResponse deleteMemberBlock(Long memberId, Long memberBlockId) {
 
         MemberBlock memberBlock = memberBlockRepository.findById(memberBlockId)
-            .orElseThrow(() -> new BaseException(MemberBlockExceptionType.NOT_FOUND_MEMBER_BLOCK));
+            .orElse(null);
+
+        if (memberBlock == null) {
+            return MemberBlockDeleteResponse.from(memberBlockId);
+        }
 
         Member blockerMember = memberRepository.getByIdOrThrow(memberId);
 
