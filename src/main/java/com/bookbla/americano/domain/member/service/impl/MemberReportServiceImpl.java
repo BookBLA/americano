@@ -1,0 +1,146 @@
+package com.bookbla.americano.domain.member.service.impl;
+
+import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberReportCreateRequest;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberReportCreateResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberReportDeleteResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberReportReadResponse;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
+import com.bookbla.americano.domain.member.exception.MemberReportExceptionType;
+import com.bookbla.americano.domain.member.repository.MemberReportRepository;
+import com.bookbla.americano.domain.member.repository.MemberRepository;
+import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
+import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberReport;
+import com.bookbla.americano.domain.member.repository.entity.MemberStatusLog;
+import com.bookbla.americano.domain.member.service.MemberReportService;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class MemberReportServiceImpl implements MemberReportService {
+
+    private final MemberRepository memberRepository;
+    private final MemberReportRepository memberReportRepository;
+    private final MemberStatusLogRepository memberStatusLogRepository;
+
+    @Override
+    @Transactional
+    public MemberReportCreateResponse addMemberReport(Long memberId,
+        MemberReportCreateRequest memberReportCreateRequest) {
+
+        if (Objects.equals(memberId, memberReportCreateRequest.getReportedByMemberId())) {
+            throw new BaseException(MemberReportExceptionType.SAME_MEMBER);
+        }
+
+        // 신고를 하는 멤버
+        Member reporterMember = memberRepository.getByIdOrThrow(memberId);
+
+        // 신고를 당하는 멤버
+        Member reportedByMember = memberRepository.getByIdOrThrow(
+            memberReportCreateRequest.getReportedByMemberId());
+
+        if (memberReportRepository.findByReporterMemberAndReportedByMember(reporterMember, reportedByMember).isPresent()) {
+            throw new BaseException(MemberReportExceptionType.ALREADY_MEMBER_REPORT);
+        }
+
+        MemberReport memberReport = MemberReport.builder()
+            .reporterMember(reporterMember)
+            .reportedByMember(reportedByMember)
+            .bookQuizReport(memberReportCreateRequest.getReportStatuses().getBookQuizReport())
+            .reviewReport(memberReportCreateRequest.getReportStatuses().getReviewReport())
+            .askReport(memberReportCreateRequest.getReportStatuses().getAskReport())
+            .profileImageReport(memberReportCreateRequest.getReportStatuses().getProfileImageReport())
+            .replyReport(memberReportCreateRequest.getReportStatuses().getReplyReport())
+            .etcReport(memberReportCreateRequest.getReportStatuses().getEtcReport())
+            .etcContents(memberReportCreateRequest.getEtcContents())
+            .build();
+
+
+        // 모든 항목이 Boolean.False 라면
+        if ((memberReport.getBookQuizReport() == Boolean.FALSE) &&
+            (memberReport.getReviewReport() == Boolean.FALSE) &&
+            (memberReport.getAskReport() == Boolean.FALSE) &&
+            (memberReport.getProfileImageReport() == Boolean.FALSE) &&
+            (memberReport.getReplyReport() == Boolean.FALSE) &&
+            (memberReport.getEtcReport() == Boolean.FALSE)) {
+            throw new BaseException(MemberReportExceptionType.ALL_REPORT_FALSE);
+        }
+        
+        // 기타 항목이 Boolean.True인데 기타 항목 내용이 빈 칸이라면
+        if (memberReport.getEtcReport() == Boolean.TRUE && memberReport.getEtcContents().isEmpty()) {
+            throw new BaseException(MemberReportExceptionType.ETC_CONTENTS_EMPTY);
+        }
+
+        memberReportRepository.save(memberReport);
+
+        // 신고당한 횟수 늘리기
+        reportedByMember.updateReportedByCountUp();
+        memberRepository.save(reportedByMember);
+
+        // 신고 횟수가 3회 이상인 유저는 MemberStatus 변경
+        if (reportedByMember.getReportedByCount() >= 3) {
+
+            // 멤버 이전 상태 기록
+            memberStatusLogRepository.save(
+                MemberStatusLog.builder()
+                    .memberId(reportedByMember.getId())
+                    .beforeStatus(reportedByMember.getMemberStatus())
+                    .afterStatus(MemberStatus.REPORTED)
+                    .build()
+            );
+
+            reportedByMember.updateMemberStatus(MemberStatus.REPORTED, LocalDateTime.now());
+            memberRepository.save(reportedByMember);
+        }
+        return MemberReportCreateResponse.from(memberReport);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MemberReportReadResponse readMemberReport(Long memberId) {
+        // 신고를 하는 멤버
+        Member reporterMember = memberRepository.getByIdOrThrow(memberId);
+
+        List<MemberReport> memberReports = memberReportRepository.findAllByReporterMember(reporterMember);
+        return MemberReportReadResponse.from(memberReports);
+    }
+
+    @Override
+    @Transactional
+    public MemberReportDeleteResponse deleteMemberReport(Long memberId, Long memberReportId) {
+
+        MemberReport memberReport = memberReportRepository.findById(memberReportId)
+            .orElseThrow(() -> new BaseException(MemberReportExceptionType.NOT_FOUND_MEMBER_REPORT));
+
+        // 신고를 하는 멤버
+        Member reporterMember = memberRepository.getByIdOrThrow(memberId);
+
+        if(!memberReport.getReporterMember().equals(reporterMember)) {
+            throw new BaseException(MemberReportExceptionType.NOT_SAME_MEMBER_REPORT);
+        }
+
+        // 신고를 당하는 멤버
+        Member reportedByMember = memberReport.getReportedByMember();
+
+        reportedByMember.updateReportedByCountDown();
+        memberRepository.save(reportedByMember);
+
+        // 신고 당한 횟수가 3번 보다 적으면 멤버 상태를 이전으로 되돌리기
+        if (reportedByMember.getReportedByCount() < 3) {
+            MemberStatusLog memberStatusLog = memberStatusLogRepository.getByMemberIdOrThrow(reportedByMember.getId());
+            reportedByMember.updateMemberStatus(memberStatusLog.getBeforeStatus(), LocalDateTime.now());
+            memberStatusLogRepository.delete(memberStatusLog);
+        }
+
+        memberReportRepository.delete(memberReport);
+        return MemberReportDeleteResponse.from(memberReportId);
+    }
+}

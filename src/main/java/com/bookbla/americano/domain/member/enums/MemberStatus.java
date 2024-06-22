@@ -20,7 +20,9 @@ public enum MemberStatus {
     COMPLETED("c", "회원 가입 모두 완료"),
     DELETED("d", "회원 탈퇴 상태"),
     BLOCKED("bl", "차단된 회원"),
-    MATCHING_DISABLED("mb", "매칭 비활성화 회원");
+    MATCHING_DISABLED("mb", "매칭 비활성화 회원"),
+    REPORTED("r", "신고당한 회원")
+    ;
 
     private final String value;
     private final String description;

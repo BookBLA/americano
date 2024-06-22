@@ -74,6 +74,14 @@ public class Member extends BaseInsertEntity {
     @OneToMany(mappedBy = "blockedByMember")
     private Set<MemberBlock> blockedByMembers = new HashSet<>();
 
+    @OneToMany(mappedBy = "reporterMember")
+    private Set<MemberReport> reporterMembers = new HashSet<>();
+
+    @OneToMany(mappedBy = "reportedByMember")
+    private Set<MemberReport> reportedByMembers = new HashSet<>();
+
+    private Integer reportedByCount; // 신고당한 횟수
+
     // 첫 가입시 확인용
     public void updateMemberStatus() {
         if (memberProfile.isCertified() && memberStatus == MemberStatus.APPROVAL) {
@@ -119,6 +127,21 @@ public class Member extends BaseInsertEntity {
 
     public Member updateMemberStyle(MemberStyle memberStyle) {
         this.memberStyle = memberStyle;
+        return this;
+    }
+
+    public Member initReportedByCount() {
+        this.reportedByCount = 0;
+        return this;
+    }
+
+    public Member updateReportedByCountUp() {
+        this.reportedByCount += 1;
+        return this;
+    }
+
+    public Member updateReportedByCountDown() {
+        this.reportedByCount -= 1;
         return this;
     }
 
