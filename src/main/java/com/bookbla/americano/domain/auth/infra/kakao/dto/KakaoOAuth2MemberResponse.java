@@ -25,7 +25,6 @@ public class KakaoOAuth2MemberResponse implements OAuth2MemberResponse {
                 .oauthEmail(email)
                 .memberType(MemberType.KAKAO)
                 .memberStatus(MemberStatus.PROFILE)
-                .reportedByCount(0)
                 .build();
     }
 }

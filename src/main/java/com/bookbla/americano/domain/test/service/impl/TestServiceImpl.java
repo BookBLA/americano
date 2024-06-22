@@ -48,7 +48,6 @@ public class TestServiceImpl implements TestService {
                                 .memberType(MemberType.ADMIN)
                                 .memberStatus(MemberStatus.PROFILE)
                                 .oauthEmail(email)
-                                .reportedByCount(0)
                                 .build()));
     }
 
@@ -61,7 +60,6 @@ public class TestServiceImpl implements TestService {
                     .memberType(MemberType.KAKAO)
                     .memberStatus(MemberStatus.PROFILE)
                     .oauthEmail(email)
-                    .reportedByCount(0)
                     .build()));
     }
 }

@@ -17,6 +17,7 @@ import com.bookbla.americano.domain.member.service.MemberReportService;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -47,8 +48,10 @@ public class MemberReportServiceImpl implements MemberReportService {
         Member reportedMember = memberRepository.getByIdOrThrow(
             memberReportCreateRequest.getReportedMemberId());
 
-        if (memberReportRepository.findByReporterMemberAndReportedMember(reporterMember, reportedMember).isPresent()) {
-            throw new BaseException(MemberReportExceptionType.ALREADY_MEMBER_REPORT);
+        Optional<MemberReport> optionalMemberReport = memberReportRepository.findByReporterMemberAndReportedMember(reporterMember, reportedMember);
+
+        if (optionalMemberReport.isPresent()) {
+            return MemberReportCreateResponse.from(optionalMemberReport.get());
         }
 
         MemberReport memberReport = MemberReport.builder()
@@ -64,29 +67,22 @@ public class MemberReportServiceImpl implements MemberReportService {
             .build();
 
 
-        // 모든 항목이 Boolean.False 라면
-        if ((memberReport.getBookQuizReport() == Boolean.FALSE) &&
-            (memberReport.getReviewReport() == Boolean.FALSE) &&
-            (memberReport.getAskReport() == Boolean.FALSE) &&
-            (memberReport.getProfileImageReport() == Boolean.FALSE) &&
-            (memberReport.getReplyReport() == Boolean.FALSE) &&
-            (memberReport.getEtcReport() == Boolean.FALSE)) {
+        if (memberReport.hasAllReportsFalse()) {
             throw new BaseException(MemberReportExceptionType.ALL_REPORT_FALSE);
         }
-        
-        // 기타 항목이 Boolean.True인데 기타 항목 내용이 빈 칸이라면
-        if (memberReport.getEtcReport() == Boolean.TRUE && memberReport.getEtcContents().isEmpty()) {
+
+        if (memberReport.isEtcReportWithoutContents()) {
             throw new BaseException(MemberReportExceptionType.ETC_CONTENTS_EMPTY);
         }
 
         memberReportRepository.save(memberReport);
 
         // 신고당한 횟수 늘리기
-        reportedMember.updateReportedByCountUp();
+        reportedMember.updateReportedCountUp();
         memberRepository.save(reportedMember);
 
         // 신고 횟수가 3회 이상인 유저는 MemberStatus 변경
-        if (reportedMember.getReportedByCount() >= 3) {
+        if (reportedMember.getReportedCount() >= 3) {
 
             // 멤버 이전 상태 기록
             memberStatusLogRepository.save(
@@ -134,14 +130,11 @@ public class MemberReportServiceImpl implements MemberReportService {
         // 신고를 당하는 멤버
         Member reportedMember = memberReport.getReportedMember();
 
-        reportedMember.updateReportedByCountDown();
+        reportedMember.updateReportedCountDown();
         memberRepository.save(reportedMember);
 
-        // 신고 당한 횟수가 3번 보다 적으면 멤버 상태를 이전으로 되돌리기
-        if (reportedMember.getReportedByCount() < 3) {
-            MemberStatusLog memberStatusLog = memberStatusLogRepository.getByMemberIdOrThrow(reportedMember.getId());
-            reportedMember.updateMemberStatus(memberStatusLog.getBeforeStatus(), LocalDateTime.now());
-            memberStatusLogRepository.delete(memberStatusLog);
+        if (reportedMember.getReportedCount() < 3) {
+            reportedMember.revertStatus(memberStatusLogRepository);
         }
 
         memberReportRepository.delete(memberReport);

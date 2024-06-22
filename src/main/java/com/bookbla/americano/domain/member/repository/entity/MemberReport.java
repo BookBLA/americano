@@ -61,4 +61,17 @@ public class MemberReport {
     // 기타 내용
     private String etcContents;
 
+    public boolean hasAllReportsFalse() {
+        return Boolean.FALSE.equals(bookQuizReport) &&
+            Boolean.FALSE.equals(reviewReport) &&
+            Boolean.FALSE.equals(askReport) &&
+            Boolean.FALSE.equals(profileImageReport) &&
+            Boolean.FALSE.equals(replyReport) &&
+            Boolean.FALSE.equals(etcReport);
+    }
+
+    public boolean isEtcReportWithoutContents() {
+        return Boolean.TRUE.equals(etcReport) && (etcContents == null || etcContents.isEmpty());
+    }
+
 }

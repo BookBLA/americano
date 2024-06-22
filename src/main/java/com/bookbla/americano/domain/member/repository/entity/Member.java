@@ -8,6 +8,7 @@ import com.bookbla.americano.domain.member.enums.MemberType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.bookbla.americano.domain.member.exception.PolicyExceptionType;
+import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -80,7 +81,8 @@ public class Member extends BaseInsertEntity {
     @OneToMany(mappedBy = "reportedMember")
     private Set<MemberReport> reportedMembers = new HashSet<>();
 
-    private Integer reportedByCount; // 신고당한 횟수
+    @Builder.Default
+    private Integer reportedCount = 0; // 신고당한 횟수
 
     // 첫 가입시 확인용
     public void updateMemberStatus() {
@@ -130,18 +132,17 @@ public class Member extends BaseInsertEntity {
         return this;
     }
 
-    public Member initReportedByCount() {
-        this.reportedByCount = 0;
+    public Member updateReportedCountUp() {
+        this.reportedCount += 1;
         return this;
     }
 
-    public Member updateReportedByCountUp() {
-        this.reportedByCount += 1;
-        return this;
-    }
-
-    public Member updateReportedByCountDown() {
-        this.reportedByCount -= 1;
+    public Member updateReportedCountDown() {
+        if (this.reportedCount <= 0) {
+            this.reportedCount = 0;
+            return this;
+        }
+        this.reportedCount -= 1;
         return this;
     }
 
@@ -178,5 +179,11 @@ public class Member extends BaseInsertEntity {
         if (this.memberStyle != null) {
             throw new BaseException(MemberExceptionType.STYLE_ALREADY_REGISTERD);
         }
+    }
+
+    public void revertStatus(MemberStatusLogRepository memberStatusLogRepository) {
+        MemberStatusLog memberStatusLog = memberStatusLogRepository.getByMemberIdOrThrow(this.getId());
+        this.updateMemberStatus(memberStatusLog.getBeforeStatus(), LocalDateTime.now());
+        memberStatusLogRepository.delete(memberStatusLog);
     }
 }

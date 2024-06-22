@@ -22,7 +22,6 @@ public class AppleOAuth2MemberResponse implements OAuth2MemberResponse {
                 .oauthEmail(email)
                 .memberType(MemberType.APPLE)
                 .memberStatus(MemberStatus.PROFILE)
-                .reportedByCount(0)
                 .build();
     }
 }
