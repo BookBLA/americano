@@ -15,11 +15,11 @@ public class MemberBlockCreateResponse {
     private Long blockerMemberId;
     private Long blockedByMemberId;
 
-    public static MemberBlockCreateResponse from(MemberBlock memberBlock, Member blocker, Member blocked) {
+    public static MemberBlockCreateResponse from(MemberBlock memberBlock) {
         return MemberBlockCreateResponse.builder()
             .memberBlockId(memberBlock.getId())
-            .blockerMemberId(blocker.getId())
-            .blockedByMemberId(blocked.getId())
+            .blockerMemberId(memberBlock.getBlockerMember().getId())
+            .blockedByMemberId(memberBlock.getBlockedByMember().getId())
             .build();
     }
 }

@@ -50,7 +50,7 @@ public class MemberBlockServiceImpl implements MemberBlockService {
             .build();
 
         memberBlockRepository.save(memberBlock);
-        return MemberBlockCreateResponse.from(memberBlock, blockerMember, blockedByMember);
+        return MemberBlockCreateResponse.from(memberBlock);
     }
 
     @Override
