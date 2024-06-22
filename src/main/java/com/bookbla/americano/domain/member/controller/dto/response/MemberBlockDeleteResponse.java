@@ -11,12 +11,10 @@ import lombok.Getter;
 public class MemberBlockDeleteResponse {
 
     private Long memberBlockId;
-    private Long blockerMemberId;
 
-    public static MemberBlockDeleteResponse from(Long memberBlockId, Member blockerMember){
+    public static MemberBlockDeleteResponse from(Long memberBlockId){
         return MemberBlockDeleteResponse.builder()
             .memberBlockId(memberBlockId)
-            .blockerMemberId(blockerMember.getId())
             .build();
     }
 }

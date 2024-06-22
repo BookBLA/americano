@@ -78,6 +78,6 @@ public class MemberBlockServiceImpl implements MemberBlockService {
         }
 
         memberBlockRepository.delete(memberBlock);
-        return MemberBlockDeleteResponse.from(memberBlockId, blockerMember);
+        return MemberBlockDeleteResponse.from(memberBlockId);
     }
 }
