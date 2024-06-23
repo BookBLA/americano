@@ -35,6 +35,25 @@ class PostcardServiceTest {
     @Autowired
     private PostcardRepository postcardRepository;
 
+    @Autowired
+    private MemberBlockRepository memberBlockRepository;
+
+    @Test
+    void 엽서를_받는_사람이_보내는_사람을_차단했다면_엽서를_보낼_수_없다() {
+        // given
+        Member blockerMember = memberRepository.save(Member.builder().build());
+        Member blockedMember = memberRepository.save(Member.builder().build());
+
+        memberBlockRepository.save(MemberBlock.builder()
+                .blockedMember(blockedMember)
+                .blockerMember(blockerMember)
+                .build());
+
+        // when, then
+        assertThatThrownBy(() -> postcardService.validateSendPostcard(blockedMember.getId(), blockerMember.getId()))
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining(PostcardExceptionType.BLOCKED.getMessage());
+    }
 
     @EnumSource(mode = INCLUDE, names = {"PENDING", "ACCEPT", "ALL_WRONG", "READ"})
     @ParameterizedTest(name = "엽서를_보낼_수_없다면_예외를_반환한다")

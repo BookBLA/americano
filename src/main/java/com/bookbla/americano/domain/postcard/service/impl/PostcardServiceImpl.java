@@ -4,6 +4,7 @@ package com.bookbla.americano.domain.postcard.service.impl;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
+import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberPostcardRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
@@ -60,6 +61,7 @@ public class PostcardServiceImpl implements PostcardService {
     private final PostcardTypeRepository postcardTypeRepository;
     private final MemberPostcardRepository memberPostcardRepository;
     private final MemberBookRepository memberBookRepository;
+    private final MemberBlockRepository memberBlockRepository;
     private final MemberBookService memberBookService;
     private final AlarmService alarmService;
 
@@ -286,16 +288,16 @@ public class PostcardServiceImpl implements PostcardService {
 
     @Override
     @Transactional(readOnly = true)
-    public PostcardSendValidateResponse validateSendPostcard(Long sendMemberId,
-                                                             Long targetMemberId) {
+    public PostcardSendValidateResponse validateSendPostcard(Long sendMemberId, Long targetMemberId) {
+        memberBlockRepository.findByBlockerMemberIdAndBlockedMemberId(targetMemberId, sendMemberId)
+                .ifPresent(it -> { throw new BaseException(PostcardExceptionType.BLOCKED); });
         List<Postcard> sendPostcards = postcardRepository.findBySendMemberIdAndReceiveMemberId(
             sendMemberId, targetMemberId);
         sendPostcards.forEach(Postcard::validateSendPostcard);
 
-        return PostcardSendValidateResponse.from(
-            sendPostcards.stream()
-                .anyMatch(Postcard::isRefused)
-        );
+        boolean isRefused = sendPostcards.stream().anyMatch(Postcard::isRefused);
+
+        return PostcardSendValidateResponse.from(isRefused);
     }
 
     @Override
