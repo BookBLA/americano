@@ -73,6 +73,8 @@ public class PostcardServiceImpl implements PostcardService {
                 () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_POSTCARD_INFO));
         memberPostcard.validate();
 
+        memberBlockRepository.findByBlockerMemberIdAndBlockedMemberId(request.getReceiveMemberId(), memberId)
+                .ifPresent(it -> { throw new BaseException(PostcardExceptionType.BLOCKED); });
         List<Postcard> sentPostcards = postcardRepository.findBySendMemberIdAndReceiveMemberId(
             memberId, request.getReceiveMemberId());
         sentPostcards.forEach(Postcard::validateSendPostcard);

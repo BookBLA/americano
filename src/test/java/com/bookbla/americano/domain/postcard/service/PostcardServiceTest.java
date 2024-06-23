@@ -1,10 +1,13 @@
 package com.bookbla.americano.domain.postcard.service;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberBlock;
 import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
+import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
 import com.bookbla.americano.domain.postcard.repository.PostcardRepository;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
 import org.junit.jupiter.api.AfterEach;
@@ -108,6 +111,7 @@ class PostcardServiceTest {
 
     @AfterEach
     void tearDown() {
-        postcardRepository.deleteAll();
+        postcardRepository.deleteAllInBatch();
+        memberBlockRepository.deleteAllInBatch();
     }
 }
