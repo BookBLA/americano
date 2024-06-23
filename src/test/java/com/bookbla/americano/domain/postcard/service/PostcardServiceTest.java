@@ -42,7 +42,7 @@ class PostcardServiceTest {
     private MemberBlockRepository memberBlockRepository;
 
     @Test
-    void 엽서를_받는_사람이_보내는_사람을_차단했다면_엽서를_보낼_수_없다() {
+    void 받는_사람이_보내는_사람을_차단했다면_엽서를_보낼_수_없다() {
         // given
         Member blockerMember = memberRepository.save(Member.builder().build());
         Member blockedMember = memberRepository.save(Member.builder().build());
