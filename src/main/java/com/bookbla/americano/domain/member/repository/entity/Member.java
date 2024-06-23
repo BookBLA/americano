@@ -8,7 +8,10 @@ import com.bookbla.americano.domain.member.enums.MemberType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.bookbla.americano.domain.member.exception.PolicyExceptionType;
+import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -16,6 +19,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -65,6 +69,21 @@ public class Member extends BaseInsertEntity {
     @Getter(AccessLevel.NONE)
     private MemberStyle memberStyle;
 
+    @OneToMany(mappedBy = "blockerMember")
+    private Set<MemberBlock> blockerMembers = new HashSet<>();
+
+    @OneToMany(mappedBy = "blockedMember")
+    private Set<MemberBlock> blockedMembers = new HashSet<>();
+
+    @OneToMany(mappedBy = "reporterMember")
+    private Set<MemberReport> reporterMembers = new HashSet<>();
+
+    @OneToMany(mappedBy = "reportedMember")
+    private Set<MemberReport> reportedMembers = new HashSet<>();
+
+    @Builder.Default
+    private Integer reportedCount = 0; // 신고당한 횟수
+
     // 첫 가입시 확인용
     public void updateMemberStatus() {
         if (memberProfile.isCertified() && memberStatus == MemberStatus.APPROVAL) {
@@ -113,6 +132,20 @@ public class Member extends BaseInsertEntity {
         return this;
     }
 
+    public Member updateReportedCountUp() {
+        this.reportedCount += 1;
+        return this;
+    }
+
+    public Member updateReportedCountDown() {
+        if (this.reportedCount <= 0) {
+            this.reportedCount = 0;
+            return this;
+        }
+        this.reportedCount -= 1;
+        return this;
+    }
+
     public boolean canSendAdvertisementAlarm() {
         return pushToken != null && memberPolicy.getAdAgreementPolicy();
     }
@@ -146,5 +179,11 @@ public class Member extends BaseInsertEntity {
         if (this.memberStyle != null) {
             throw new BaseException(MemberExceptionType.STYLE_ALREADY_REGISTERD);
         }
+    }
+
+    public void revertStatus(MemberStatusLogRepository memberStatusLogRepository) {
+        MemberStatusLog memberStatusLog = memberStatusLogRepository.getByMemberIdOrThrow(this.getId());
+        this.updateMemberStatus(memberStatusLog.getBeforeStatus(), LocalDateTime.now());
+        memberStatusLogRepository.delete(memberStatusLog);
     }
 }
