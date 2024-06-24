@@ -30,4 +30,8 @@ public class MemberReply extends BaseInsertEntity {
     private MemberAsk memberAsk;
 
     private String content;
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }
