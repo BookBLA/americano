@@ -54,10 +54,6 @@ public class MemberReport {
     @Convert(converter = BooleanToYNConverter.class)
     private Boolean profileImageReport; // 프로필 사진
 
-    @Column(length = 1)
-    @Convert(converter = BooleanToYNConverter.class)
-    private Boolean etcReport; // 기타) 직접 작성
-
     // 기타 내용
     private String etcContents;
 
@@ -66,12 +62,7 @@ public class MemberReport {
             Boolean.FALSE.equals(reviewReport) &&
             Boolean.FALSE.equals(askReport) &&
             Boolean.FALSE.equals(profileImageReport) &&
-            Boolean.FALSE.equals(replyReport) &&
-            Boolean.FALSE.equals(etcReport);
-    }
-
-    public boolean isEtcReportWithoutContents() {
-        return Boolean.TRUE.equals(etcReport) && (etcContents == null || etcContents.isEmpty());
+            Boolean.FALSE.equals(replyReport);
     }
 
 }

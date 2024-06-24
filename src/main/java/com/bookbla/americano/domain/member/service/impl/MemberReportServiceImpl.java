@@ -62,17 +62,12 @@ public class MemberReportServiceImpl implements MemberReportService {
             .askReport(memberReportCreateRequest.getReportStatuses().getAskReport())
             .profileImageReport(memberReportCreateRequest.getReportStatuses().getProfileImageReport())
             .replyReport(memberReportCreateRequest.getReportStatuses().getReplyReport())
-            .etcReport(memberReportCreateRequest.getReportStatuses().getEtcReport())
             .etcContents(memberReportCreateRequest.getEtcContents())
             .build();
 
 
         if (memberReport.hasAllReportsFalse()) {
             throw new BaseException(MemberReportExceptionType.ALL_REPORT_FALSE);
-        }
-
-        if (memberReport.isEtcReportWithoutContents()) {
-            throw new BaseException(MemberReportExceptionType.ETC_CONTENTS_EMPTY);
         }
 
         memberReportRepository.save(memberReport);

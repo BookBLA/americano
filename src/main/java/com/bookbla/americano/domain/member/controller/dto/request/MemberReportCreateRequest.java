@@ -24,7 +24,6 @@ public class MemberReportCreateRequest {
         private Boolean askReport; // 개인 질문
         private Boolean replyReport; // 개인 질문 답변
         private Boolean profileImageReport; // 프로필 사진
-        private Boolean etcReport; // 기타) 직접 작성
     }
 
     @NotNull(message = "신고 항목이 입력되지 않았습니다.")
