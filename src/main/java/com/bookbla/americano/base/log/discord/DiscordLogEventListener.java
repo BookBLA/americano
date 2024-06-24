@@ -1,6 +1,6 @@
 package com.bookbla.americano.base.log.discord;
 
-import com.bookbla.americano.domain.scheduler.dto.AdminLogEvent;
+import com.bookbla.americano.base.log.discord.dto.AdminLogEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;

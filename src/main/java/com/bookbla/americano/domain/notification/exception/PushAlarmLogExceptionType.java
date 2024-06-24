@@ -1,4 +1,4 @@
-package com.bookbla.americano.base.log.exception;
+package com.bookbla.americano.domain.notification.exception;
 
 import com.bookbla.americano.base.exception.ExceptionType;
 import lombok.AllArgsConstructor;

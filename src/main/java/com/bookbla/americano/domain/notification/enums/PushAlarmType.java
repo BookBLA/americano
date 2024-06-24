@@ -1,7 +1,7 @@
-package com.bookbla.americano.base.log.enums;
+package com.bookbla.americano.domain.notification.enums;
 
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.base.log.exception.PushAlarmLogExceptionType;
+import com.bookbla.americano.domain.notification.exception.PushAlarmLogExceptionType;
 import java.util.Arrays;
 
 public enum PushAlarmType {

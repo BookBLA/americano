@@ -1,8 +1,8 @@
-package com.bookbla.americano.base.log.repository.entity;
+package com.bookbla.americano.domain.notification.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
-import com.bookbla.americano.base.log.enums.PushAlarmStatus;
-import com.bookbla.americano.base.log.enums.PushAlarmType;
+import com.bookbla.americano.domain.notification.enums.PushAlarmStatus;
+import com.bookbla.americano.domain.notification.enums.PushAlarmType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;

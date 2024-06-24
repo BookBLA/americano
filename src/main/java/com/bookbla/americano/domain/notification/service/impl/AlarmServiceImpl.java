@@ -7,10 +7,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.base.log.enums.PushAlarmStatus;
-import com.bookbla.americano.base.log.enums.PushAlarmType;
-import com.bookbla.americano.base.log.repository.PushAlarmLogRepository;
-import com.bookbla.americano.base.log.repository.entity.PushAlarmLog;
+import com.bookbla.americano.domain.notification.enums.PushAlarmStatus;
+import com.bookbla.americano.domain.notification.enums.PushAlarmType;
+import com.bookbla.americano.domain.notification.repository.PushAlarmLogRepository;
+import com.bookbla.americano.domain.notification.repository.entity.PushAlarmLog;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.repository.MemberPushAlarmRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;

@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.scheduler.dto;
+package com.bookbla.americano.base.log.discord.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -7,7 +7,7 @@ import com.bookbla.americano.domain.member.repository.MemberEmailRepository;
 import com.bookbla.americano.domain.member.repository.MemberPostcardRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.notification.service.MailService;
-import com.bookbla.americano.domain.scheduler.dto.AdminLogEvent;
+import com.bookbla.americano.base.log.discord.dto.AdminLogEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
