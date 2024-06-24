@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.member.service.impl;
+package com.bookbla.americano.domain.member.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
