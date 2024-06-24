@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.schedule.dto;
+package com.bookbla.americano.domain.scheduler.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

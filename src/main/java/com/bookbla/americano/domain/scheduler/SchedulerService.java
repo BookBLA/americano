@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.schedule;
+package com.bookbla.americano.domain.scheduler;
 
 import java.time.LocalDateTime;
 
@@ -7,7 +7,7 @@ import com.bookbla.americano.domain.member.repository.MemberEmailRepository;
 import com.bookbla.americano.domain.member.repository.MemberPostcardRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.notification.service.MailService;
-import com.bookbla.americano.domain.schedule.dto.AdminLogEvent;
+import com.bookbla.americano.domain.scheduler.dto.AdminLogEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -15,8 +15,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.bookbla.americano.domain.schedule.Crons.EVERY_4_AM;
-import static com.bookbla.americano.domain.schedule.Crons.EVERY_6_AM;
+import static com.bookbla.americano.domain.scheduler.Crons.EVERY_4_AM;
+import static com.bookbla.americano.domain.scheduler.Crons.EVERY_6_AM;
 
 @RequiredArgsConstructor
 @Service

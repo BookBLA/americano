@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.schedule;
+package com.bookbla.americano.domain.scheduler;
 
 class Crons {
 
