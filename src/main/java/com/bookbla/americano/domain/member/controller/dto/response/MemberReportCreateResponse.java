@@ -26,7 +26,6 @@ public class MemberReportCreateResponse {
         private Boolean askReport; // 개인 질문
         private Boolean replyReport; // 개인 질문 답변
         private Boolean profileImageReport; // 프로필 사진
-        private Boolean etcReport; // 기타) 직접 작성
     }
 
     private String etcContents;
@@ -43,7 +42,6 @@ public class MemberReportCreateResponse {
                     .askReport(memberReport.getAskReport())
                     .replyReport(memberReport.getReplyReport())
                     .profileImageReport(memberReport.getProfileImageReport())
-                    .etcReport(memberReport.getEtcReport())
                     .build()
             )
             .etcContents(memberReport.getEtcContents())

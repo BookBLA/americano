@@ -45,7 +45,6 @@ public class MemberReportReadResponse {
                     .askReport(memberReport.getAskReport())
                     .replyReport(memberReport.getReplyReport())
                     .profileImageReport(memberReport.getProfileImageReport())
-                    .etcReport(memberReport.getEtcReport())
                     .build())
                 .etcContents(memberReport.getEtcContents())
                 .build())
