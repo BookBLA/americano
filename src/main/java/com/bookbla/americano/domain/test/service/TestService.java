@@ -1,18 +1,60 @@
 package com.bookbla.americano.domain.test.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.bookbla.americano.domain.member.enums.MemberStatus;
+import com.bookbla.americano.domain.member.enums.MemberType;
+import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.test.controller.dto.response.TestCreateResponse;
 import com.bookbla.americano.domain.test.controller.dto.response.TestReadResponse;
+import com.bookbla.americano.domain.test.repository.TestRepository;
+import com.bookbla.americano.domain.test.repository.entity.TestEntity;
 import com.bookbla.americano.domain.test.service.dto.TestDto;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-public interface TestService {
+@Service
+@RequiredArgsConstructor
+public class TestService {
 
-    TestCreateResponse create(TestDto testDto);
+    private final TestRepository testRepository;
+    private final MemberRepository memberRepository;
 
-    List<TestReadResponse> findTestsByContents(String contents);
+    @Transactional
+    public TestCreateResponse create(TestDto testDto) {
+        TestEntity testEntity = testRepository.save(testDto.toEntity());
+        return TestCreateResponse.from(testEntity);
+    }
 
-    Member signUpAdmin(String email);
+    @Transactional(readOnly = true)
+    public List<TestReadResponse> findTestsByContents(String contents) {
+        return testRepository.findByContents(contents).stream()
+                .map(TestReadResponse::from)
+                .collect(Collectors.toList());
+    }
 
-    Member signUpKakao(String email);
+    @Transactional
+    public Member signUpAdmin(String email) {
+        return memberRepository.findByMemberTypeAndOauthEmail(MemberType.ADMIN, email)
+                .orElseGet(() -> memberRepository.save(
+                        Member.builder()
+                                .memberType(MemberType.ADMIN)
+                                .memberStatus(MemberStatus.PROFILE)
+                                .oauthEmail(email)
+                                .build()));
+    }
+
+    @Transactional
+    public Member signUpKakao(String email) {
+        return memberRepository.findByMemberTypeAndOauthEmail(MemberType.KAKAO, email)
+                .orElseGet(() -> memberRepository.save(
+                        Member.builder()
+                                .memberType(MemberType.KAKAO)
+                                .memberStatus(MemberStatus.PROFILE)
+                                .oauthEmail(email)
+                                .build()));
+    }
 }

@@ -1,7 +1,7 @@
 package com.bookbla.americano.domain.book.controller;
 
-import com.bookbla.americano.domain.book.service.dto.BookSearchResponses;
 import com.bookbla.americano.domain.book.service.BookService;
+import com.bookbla.americano.domain.book.service.dto.BookSearchResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
