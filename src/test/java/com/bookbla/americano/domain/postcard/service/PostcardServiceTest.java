@@ -1,10 +1,13 @@
 package com.bookbla.americano.domain.postcard.service;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberBlock;
 import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
+import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
 import com.bookbla.americano.domain.postcard.repository.PostcardRepository;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
 import org.junit.jupiter.api.AfterEach;
@@ -35,6 +38,25 @@ class PostcardServiceTest {
     @Autowired
     private PostcardRepository postcardRepository;
 
+    @Autowired
+    private MemberBlockRepository memberBlockRepository;
+
+    @Test
+    void 받는_사람이_보내는_사람을_차단했다면_엽서를_보낼_수_없다() {
+        // given
+        Member blockerMember = memberRepository.save(Member.builder().build());
+        Member blockedMember = memberRepository.save(Member.builder().build());
+
+        memberBlockRepository.save(MemberBlock.builder()
+                .blockedMember(blockedMember)
+                .blockerMember(blockerMember)
+                .build());
+
+        // when, then
+        assertThatThrownBy(() -> postcardService.validateSendPostcard(blockedMember.getId(), blockerMember.getId()))
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining(PostcardExceptionType.BLOCKED.getMessage());
+    }
 
     @EnumSource(mode = INCLUDE, names = {"PENDING", "ACCEPT", "ALL_WRONG", "READ"})
     @ParameterizedTest(name = "엽서를_보낼_수_없다면_예외를_반환한다")
@@ -89,6 +111,7 @@ class PostcardServiceTest {
 
     @AfterEach
     void tearDown() {
-        postcardRepository.deleteAll();
+        postcardRepository.deleteAllInBatch();
+        memberBlockRepository.deleteAllInBatch();
     }
 }
