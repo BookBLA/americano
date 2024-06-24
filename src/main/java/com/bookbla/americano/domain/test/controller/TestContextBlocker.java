@@ -1,5 +1,7 @@
 package com.bookbla.americano.domain.test.controller;
 
+import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.base.exception.BaseExceptionType;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.context.annotation.Configuration;
@@ -10,9 +12,9 @@ import org.springframework.context.annotation.Profile;
 @Profile("prod")
 public class TestContextBlocker {
 
-    @Before("execution(* com.bookbla.americano.domain.test.controller.*(..))")
+    @Before("execution(* com.bookbla.americano.domain.test.controller.TestController.*(..))")
     public void beforeBlockedMethod() {
-        throw new UnsupportedOperationException("지원하지 않는 메서드입니다");
+        throw new BaseException(BaseExceptionType.NOT_VALID_METHODS);
     }
 
 }
