@@ -166,4 +166,4 @@ jobs:
         uses: tsickert/discord-webhook@v5.3.0
         with:
           webhook-url: ${{ secrets.DEV_WEBHOOK_URL }}
-          content: "개발서버 배포가 완료되었습니당~"
+          content: "개발서버 배포가 완료되었습니다🎉"

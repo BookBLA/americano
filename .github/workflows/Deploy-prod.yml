@@ -16,11 +16,11 @@ name: Backend CI & CD (prod)
 on:
   pull_request:
     # 특정 브랜치만
-    branches: [main]
+    branches: [master]
 #    # pr이 생성 되었을 때, 담당 유저가 등록되었을 때, PR에 코드가 머지되었을 때, 라벨이 달렸을 때 동작
 #    types: [opened, assigned, synchronize, labeled, reopened]
   push:
-    branches: [main]
+    branches: [master]
 
 env:
   CONTAINER_NAME: americano_prod
@@ -168,4 +168,4 @@ jobs:
         uses: tsickert/discord-webhook@v5.3.0
         with:
           webhook-url: ${{ secrets.PROD_WEBHOOK_URL }}
-          content: "운영서버 배포가 완료되었습니당~"
+          content: "운영서버 배포가 완료되었습니당🎉"
