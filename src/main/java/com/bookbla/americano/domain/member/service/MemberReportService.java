@@ -18,8 +18,10 @@ import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberReport;
 import com.bookbla.americano.domain.member.repository.entity.MemberStatusLog;
+import com.bookbla.americano.domain.member.service.dto.event.AdminNotificationEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +33,7 @@ public class MemberReportService {
     private final MemberRepository memberRepository;
     private final MemberReportRepository memberReportRepository;
     private final MemberStatusLogRepository memberStatusLogRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     public MemberReportCreateResponse addMemberReport(Long memberId,
@@ -70,6 +73,7 @@ public class MemberReportService {
         }
 
         memberReportRepository.save(memberReport);
+        applicationEventPublisher.publishEvent(new AdminNotificationEvent("새 신고가 접수되었습니다", "신고당한 회원 id : " + reportedMember.getId().toString()));
 
         // 신고당한 횟수 늘리기
         reportedMember.updateReportedCountUp();
