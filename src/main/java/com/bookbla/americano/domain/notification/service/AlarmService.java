@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-class AlarmService {
+public class AlarmService {
 
     private static final String POSTCARD_SEND_TITLE = "띵동~\uD83D\uDC8C 엽서가 도착했어요!";
     private static final String POSTCARD_SEND_BODY = "%s님이 엽서를 보냈어요! 지금 확인해 보세요~\uD83E\uDD70";
@@ -45,7 +45,7 @@ class AlarmService {
     public void sendPushAlarmForReceivePostCard(Member sendMember, Member receiveMember) {
         // 해당 멤버가 푸시 토큰이 없다면 에러 발생
         if (receiveMember.getPushToken() == null) {
-            throw new BaseException(PushAlarmExceptionType.NOT_FOUND_TOKEN);
+            return;
         }
 
         // 해당 멤버가 회원가입 완료상태가 아니라면
@@ -70,7 +70,7 @@ class AlarmService {
     public void sendPushAlarmForAcceptPostcard(Member sendMember, Member receiveMember) {
         // 해당 멤버가 푸시 토큰이 없다면 에러 발생
         if (sendMember.getPushToken() == null) {
-            throw new BaseException(PushAlarmExceptionType.NOT_FOUND_TOKEN);
+            return;
         }
 
         // 해당 멤버가 회원가입 완료상태가 아니면서 매칭 비활성화가 아니라면

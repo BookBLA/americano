@@ -1,8 +1,6 @@
 package com.bookbla.americano.domain.notification.service;
 
-import com.bookbla.americano.domain.notification.controller.dto.request.PushAlarmAllCreateRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
@@ -24,11 +22,5 @@ public class PostcardPushAlarmEventListener {
     @Async
     public void acceptPostcard(PostcardAlarmEvent postcardAlarmEvent) {
         alarmService.sendPushAlarmForAcceptPostcard(postcardAlarmEvent.getSendMember(), postcardAlarmEvent.getReceiveMember());
-    }
-
-    @EventListener
-    @Async
-    public void sendAll(PushAlarmSendAllEvent event) {
-        alarmService.sendPushAlarmAll(new PushAlarmAllCreateRequest(event.getTitle(), event.getContents()));
     }
 }

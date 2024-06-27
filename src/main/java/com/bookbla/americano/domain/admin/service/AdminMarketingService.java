@@ -7,9 +7,9 @@ import com.bookbla.americano.domain.member.repository.MemberPushAlarmRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberPushAlarm;
+import com.bookbla.americano.domain.notification.controller.dto.request.PushAlarmAllCreateRequest;
+import com.bookbla.americano.domain.notification.service.AlarmService;
 import com.bookbla.americano.domain.notification.service.NotificationClient;
-import com.bookbla.americano.domain.notification.service.PostcardPushAlarmEventListener;
-import com.bookbla.americano.domain.notification.service.PushAlarmSendAllEvent;
 import com.bookbla.americano.domain.notification.service.dto.NotificationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class AdminMarketingService {
     private final MemberRepository memberRepository;
     private final MemberPushAlarmRepository memberPushAlarmRepository;
     private final TransactionTemplate transactionTemplate;
-    private final PostcardPushAlarmEventListener postcardPushAlarmEventListener;
+    private final AlarmService alarmService;
 
     public List<NotificationResponse> sendNotification(NotificationDto notificationDto, Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
@@ -46,7 +46,7 @@ public class AdminMarketingService {
     }
 
     public void sendNotifications(NotificationDto dto) {
-        postcardPushAlarmEventListener.sendAll(new PushAlarmSendAllEvent(dto.getTitle(), dto.getContents()));
+        alarmService.sendPushAlarmAll(new PushAlarmAllCreateRequest(dto.getTitle(), dto.getContents()));
     }
 
 }
