@@ -25,11 +25,12 @@ import io.github.jav.exposerversdk.PushClient;
 import io.github.jav.exposerversdk.PushClientException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class AlarmService {
+class AlarmService {
 
     private static final String POSTCARD_SEND_TITLE = "띵동~\uD83D\uDC8C 엽서가 도착했어요!";
     private static final String POSTCARD_SEND_BODY = "%s님이 엽서를 보냈어요! 지금 확인해 보세요~\uD83E\uDD70";
@@ -40,7 +41,7 @@ public class AlarmService {
     private final MemberPushAlarmRepository memberPushAlarmRepository;
     private final PushAlarmLogRepository pushAlarmLogRepository;
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendPushAlarmForReceivePostCard(Member sendMember, Member receiveMember) {
         // 해당 멤버가 푸시 토큰이 없다면 에러 발생
         if (receiveMember.getPushToken() == null) {
@@ -65,7 +66,7 @@ public class AlarmService {
         memberPushAlarmRepository.save(memberPushAlarm);
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendPushAlarmForAcceptPostcard(Member sendMember, Member receiveMember) {
         // 해당 멤버가 푸시 토큰이 없다면 에러 발생
         if (sendMember.getPushToken() == null) {
