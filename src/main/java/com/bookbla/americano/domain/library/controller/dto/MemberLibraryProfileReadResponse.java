@@ -42,7 +42,7 @@ public class MemberLibraryProfileReadResponse {
         MemberProfile memberProfile = member.getMemberProfile();
         return new MemberLibraryProfileReadResponse(
                 member.getId(),
-                memberProfile.showBlindName(),
+                memberProfile.getName(),
                 memberProfile.calculateAge(LocalDate.now()),
                 memberProfile.getGender().name(),
                 memberProfile.getSchoolName(),
@@ -61,7 +61,7 @@ public class MemberLibraryProfileReadResponse {
         MemberProfile memberProfile = member.getMemberProfile();
         return new MemberLibraryProfileReadResponse(
                 member.getId(),
-                memberProfile.showBlindName(),
+                memberProfile.getName(),
                 memberProfile.calculateAge(LocalDate.now()),
                 memberProfile.getGender().name(),
                 memberProfile.getSchoolName(),

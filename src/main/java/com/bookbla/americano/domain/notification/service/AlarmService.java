@@ -53,7 +53,7 @@ public class AlarmService {
         }
 
         // 엽서 도착은 익명 처리
-        String body = String.format(POSTCARD_SEND_BODY, sendMember.getMemberProfile().showBlindName());
+        String body = String.format(POSTCARD_SEND_BODY, sendMember.getMemberProfile().getName());
         sendToExpo(receiveMember.getPushToken(), POSTCARD_SEND_TITLE, body);
 
         MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()

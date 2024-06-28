@@ -72,11 +72,11 @@ public class MemberPostcardToResponse {
 
         this.postcardId = postcardId;
         this.memberId = memberId;
-        if(postcardStatus.equals(PostcardStatus.ACCEPT)){
+//        if(postcardStatus.equals(PostcardStatus.ACCEPT)){
             this.memberName = memberName;
-        } else {
-            this.memberName = transformMemberName(memberName);
-        }
+//        } else {
+//            this.memberName = transformMemberName(memberName);
+//        }
         this.memberProfileImageUrl = memberProfileImageUrl;
         this.memberAge = getAge(memberBirthDate);
         this.memberGender = memberGender.name();
