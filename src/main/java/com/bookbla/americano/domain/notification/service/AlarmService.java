@@ -25,6 +25,7 @@ import io.github.jav.exposerversdk.PushClient;
 import io.github.jav.exposerversdk.PushClientException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -40,11 +41,11 @@ public class AlarmService {
     private final MemberPushAlarmRepository memberPushAlarmRepository;
     private final PushAlarmLogRepository pushAlarmLogRepository;
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendPushAlarmForReceivePostCard(Member sendMember, Member receiveMember) {
         // 해당 멤버가 푸시 토큰이 없다면 에러 발생
         if (receiveMember.getPushToken() == null) {
-            throw new BaseException(PushAlarmExceptionType.NOT_FOUND_TOKEN);
+            return;
         }
 
         // 해당 멤버가 회원가입 완료상태가 아니라면
@@ -65,11 +66,11 @@ public class AlarmService {
         memberPushAlarmRepository.save(memberPushAlarm);
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendPushAlarmForAcceptPostcard(Member sendMember, Member receiveMember) {
         // 해당 멤버가 푸시 토큰이 없다면 에러 발생
         if (sendMember.getPushToken() == null) {
-            throw new BaseException(PushAlarmExceptionType.NOT_FOUND_TOKEN);
+            return;
         }
 
         // 해당 멤버가 회원가입 완료상태가 아니면서 매칭 비활성화가 아니라면
