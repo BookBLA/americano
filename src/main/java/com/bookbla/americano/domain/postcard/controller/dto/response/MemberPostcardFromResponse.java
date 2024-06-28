@@ -53,11 +53,11 @@ public class MemberPostcardFromResponse {
                                       String memberSchoolName, String memberProfileImageUrl, String memberOpenKakaoRoomUrl,
                                       long postcardId, PostcardStatus postcardStatus) {
         this.memberId = memberId;
-        if(postcardStatus.equals(PostcardStatus.ACCEPT)){
+//        if(postcardStatus.equals(PostcardStatus.ACCEPT)){
             this.memberName = memberName;
-        } else {
-            this.memberName = transformMemberName(memberName);
-        }
+//        } else {
+//            this.memberName = transformMemberName(memberName);
+//        }
         this.memberAge = getAge(memberBirthDate);
         this.memberGender = memberGender;
         this.memberSchoolName = memberSchoolName;
