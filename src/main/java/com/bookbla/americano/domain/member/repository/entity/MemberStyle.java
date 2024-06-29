@@ -4,6 +4,7 @@ import com.bookbla.americano.domain.member.enums.ContactType;
 import com.bookbla.americano.domain.member.enums.DateCostType;
 import com.bookbla.americano.domain.member.enums.DateStyleType;
 import com.bookbla.americano.domain.member.enums.DrinkType;
+import com.bookbla.americano.domain.member.enums.HeightType;
 import com.bookbla.americano.domain.member.enums.JustFriendType;
 import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.SmokeType;
@@ -39,6 +40,9 @@ public class MemberStyle {
 
     @Enumerated(EnumType.STRING)
     private JustFriendType justFriendType;
+
+    @Enumerated(EnumType.STRING)
+    private HeightType heightType;
 
     @Enumerated(EnumType.STRING)
     private Mbti mbti;
