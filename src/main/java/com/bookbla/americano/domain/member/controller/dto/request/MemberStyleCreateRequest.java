@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.member.controller.dto.request;
 
+import com.bookbla.americano.domain.member.enums.HeightType;
 import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
 import com.bookbla.americano.domain.member.enums.ContactType;
 import com.bookbla.americano.domain.member.enums.DateCostType;
@@ -41,6 +42,9 @@ public class MemberStyleCreateRequest {
     @NotNull(message = "데이트 스타일이 입력되지 않았습니다.")
     private String dateStyleType;
 
+    @NotNull(message = "키 범위가 입력되지 않았습니다.")
+    private String heightType;
+
     @NotBlank(message = "개인 질문이 입력되지 않았습니다.")
     private String memberAsk;
 
@@ -50,6 +54,7 @@ public class MemberStyleCreateRequest {
                 .contactType(ContactType.from(contactType))
                 .smokeType(SmokeType.from(smokeType))
                 .mbti(Mbti.from(mbti))
+                .heightType(HeightType.from(heightType))
                 .drinkType(DrinkType.from(drinkType))
                 .justFriendType(JustFriendType.from(justFriendType))
                 .dateCostType(DateCostType.from(dateCostType))

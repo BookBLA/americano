@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.member.enums.HeightType;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
@@ -57,7 +58,7 @@ class MemberStyleServiceTest {
                 .oauthEmail("bookbla@bookbla.com")
                 .build());
         MemberStyleCreateRequest memberStyleCreateRequest = new MemberStyleCreateRequest(
-                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트", "주로 어디서 책을 읽는 편이세요?"
+                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트", "160cm 이상 ~ 165cm 미만","주로 어디서 책을 읽는 편이세요?"
         );
 
         // when
@@ -73,6 +74,7 @@ class MemberStyleServiceTest {
                 () -> assertThat(memberStyleResponse.getSmokeType()).isEqualTo("비흡연"),
                 () -> assertThat(memberStyleResponse.getContactType()).isEqualTo("느긋이"),
                 () -> assertThat(memberStyleResponse.getJustFriendType()).isEqualTo("허용 X"),
+                () -> assertThat(memberStyleResponse.getHeightType()).isEqualTo("160cm 이상 ~ 165cm 미만"),
                 () -> assertThat(memberStyleResponse.getDateStyleType()).isEqualTo("집 데이트"),
                 () -> assertThat(memberStyleResponse.getMemberAsk()).isEqualTo("주로 어디서 책을 읽는 편이세요?")
         );
@@ -91,6 +93,7 @@ class MemberStyleServiceTest {
                         .smokeType(SMOKE)
                         .justFriendType(ALCOHOL)
                         .dateStyleType(HOME)
+                        .heightType(HeightType.LESS_THAN_150)
                         .mbti(INTP)
                         .dateCostType(DATE_ACCOUNT)
                         .build())
@@ -112,6 +115,7 @@ class MemberStyleServiceTest {
                 () -> assertThat(memberStyleResponse.getDateCostType()).isEqualTo("데이트 통장"),
                 () -> assertThat(memberStyleResponse.getDateStyleType()).isEqualTo("집 데이트"),
                 () -> assertThat(memberStyleResponse.getJustFriendType()).isEqualTo("단둘이 술 먹기"),
+                () -> assertThat(memberStyleResponse.getHeightType()).isEqualTo("150cm 미만"),
                 () -> assertThat(memberStyleResponse.getDrinkType()).isEqualTo("X"),
                 () -> assertThat(memberStyleResponse.getMbti()).isEqualToIgnoringCase("intp"),
                 () -> assertThat(memberStyleResponse.getMemberAsk()).isEqualTo("주로 어디서 책을 읽으세요?")
@@ -169,7 +173,7 @@ class MemberStyleServiceTest {
                 .contents("어느 시간대에 책을 읽으시나요?")
                 .build());
         MemberStyleUpdateRequest memberStyleUpdateRequest = new MemberStyleUpdateRequest(
-                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트", "주로 어디서 책을 읽는 편이세요?"
+                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트", "160cm 이상 ~ 165cm 미만","주로 어디서 책을 읽는 편이세요?"
         );
 
         // when
@@ -193,7 +197,7 @@ class MemberStyleServiceTest {
         // given
         Long nonMemberId = -999999L;
         MemberStyleUpdateRequest memberStyleUpdateRequest = new MemberStyleUpdateRequest(
-                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트", "주로 어디서 책을 읽으세요?"
+                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트", "160cm 이상~165cm 미만","주로 어디서 책을 읽으세요?"
         );
 
         // when, then
@@ -210,7 +214,7 @@ class MemberStyleServiceTest {
                 .oauthEmail("bookbla@bookbla.com")
                 .build());
         MemberStyleUpdateRequest memberStyleUpdateRequest = new MemberStyleUpdateRequest(
-                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트", "주로 어디서 책을 읽으세요?"
+                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트", "160cm 이상~165cm 미만","주로 어디서 책을 읽으세요?"
         );
 
         // when, then

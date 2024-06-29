@@ -18,6 +18,7 @@ public class MemberStyleResponse {
     private final String justFriendType;
     private final String drinkType;
     private final String mbti;
+    private final String heightType;
     private final String memberAsk;
     private final Long memberAskId;
 
@@ -32,6 +33,7 @@ public class MemberStyleResponse {
                 memberStyle.getJustFriendType().getValue(),
                 memberStyle.getDrinkType().getValue(),
                 memberStyle.getMbti().name(),
+                memberStyle.getHeightType().getValue(),
                 memberAsk.getContents(),
                 memberAsk.getId()
         );
