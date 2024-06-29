@@ -81,4 +81,9 @@ public class MemberStyle {
         this.dateStyleType = dateStyleType;
         return this;
     }
+
+    public MemberStyle updateHeightType(HeightType heightType) {
+        this.heightType = heightType;
+        return this;
+    }
 }
