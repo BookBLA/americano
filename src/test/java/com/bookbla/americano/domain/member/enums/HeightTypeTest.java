@@ -17,7 +17,7 @@ class HeightTypeTest {
     @Test
     void 해당하는_키_범위를_찾을_수_있다() {
         // given
-        String expected = "160cm 이상~165cm 미만";
+        String expected = "160cm 이상 ~ 165cm 미만";
 
         // when
         HeightType actual = HeightType.from(expected);
