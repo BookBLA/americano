@@ -244,6 +244,79 @@ public class AlarmService {
         }
     }
 
+    @Transactional
+    public void sendPushAlarmToExpo(String token, String title, String body) {
+
+        String exponentPushToken = "ExponentPushToken[" + token + "]";
+
+        if (!PushClient.isExponentPushToken(exponentPushToken)) {
+            throw new BaseException(PushAlarmExceptionType.INVALID_EXPO_TOKEN);
+        }
+
+        ExpoPushMessage expoPushMessage = new ExpoPushMessage();
+        expoPushMessage.getTo().add(exponentPushToken);
+        expoPushMessage.setTitle(title);
+        expoPushMessage.setBody(body);
+
+        List<ExpoPushMessage> expoPushMessages = new ArrayList<>();
+        expoPushMessages.add(expoPushMessage);
+
+        PushClient client = null;
+        try {
+            client = new PushClient();
+        } catch (PushClientException e) {
+            throw new BaseException(PushAlarmExceptionType.INVALID_PUSH_CLIENT);
+        }
+        List<List<ExpoPushMessage>> chunks = client.chunkPushNotifications(expoPushMessages);
+
+        List<CompletableFuture<List<ExpoPushTicket>>> messageRepliesFutures = new ArrayList<>();
+
+        for (List<ExpoPushMessage> chunk : chunks) {
+            messageRepliesFutures.add(client.sendPushNotificationsAsync(chunk));
+        }
+
+        // Wait for each completable future to finish
+        List<ExpoPushTicket> allTickets = new ArrayList<>();
+        for (CompletableFuture<List<ExpoPushTicket>> messageReplyFuture : messageRepliesFutures) {
+            try {
+                allTickets.addAll(messageReplyFuture.get());
+            } catch (InterruptedException | ExecutionException e) {
+                throw new BaseException(PushAlarmExceptionType.FAIL_TO_SEND_EXPO_SERVER);
+            }
+        }
+
+        for (int i = 0; i < allTickets.size(); i++) {
+            if (allTickets.get(i).getStatus().toString().equals("error")) {
+                PushAlarmLog pushAlarmLog = PushAlarmLog.builder()
+                        .token(token)
+                        .pushAlarmType(PushAlarmType.EXPO)
+                        .title(title)
+                        .body(body)
+                        .pushAlarmStatus(PushAlarmStatus.FAIL)
+                        .build();
+
+                pushAlarmLogRepository.save(pushAlarmLog);
+            }
+        }
+    }
+
+    @Transactional
+    public void sendPushAlarm(Member member, String title, String body) {
+
+        if (member.getPushToken() == null) {
+            throw new BaseException(PushAlarmExceptionType.NOT_FOUND_TOKEN);
+        }
+
+        sendPushAlarmToExpo(member.getPushToken(), title, body);
+
+        MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
+                .member(member)
+                .title(title)
+                .body(body)
+                .build();
+
+        memberPushAlarmRepository.save(memberPushAlarm);
+    }
 }
 
 

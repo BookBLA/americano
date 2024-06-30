@@ -39,4 +39,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("DELETE FROM Member m WHERE m.deleteAt <= :cutoffDate AND m.memberStatus = 'DELETED'")
     void deleteAllByDeletedAtBeforeAndMemberStatus(LocalDateTime cutoffDate);
+
+    List<Member> findByMemberPolicyAdAgreementPolicy(boolean b);
 }

@@ -45,7 +45,7 @@ public class AdminMarketingController {
     public ResponseEntity<Void> sendAlarms(
             @RequestBody @Valid AdminNotificationRequest request
     ) {
-        adminMarketingService.sendNotifications(request.toDto());
+        adminMarketingService.sendPushAlarm(request.toDto());
         return ResponseEntity.ok().build();
     }
 }

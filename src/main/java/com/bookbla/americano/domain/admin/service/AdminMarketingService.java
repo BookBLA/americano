@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.admin.service;
 import java.util.List;
 
 import com.bookbla.americano.domain.admin.service.dto.NotificationDto;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.repository.MemberPushAlarmRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -11,7 +12,6 @@ import com.bookbla.americano.domain.notification.controller.dto.request.PushAlar
 import com.bookbla.americano.domain.notification.service.AlarmService;
 import com.bookbla.americano.domain.notification.service.NotificationClient;
 import com.bookbla.americano.domain.notification.service.dto.NotificationResponse;
-import com.sun.xml.bind.v2.TODO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -46,7 +46,7 @@ public class AdminMarketingService {
         transactionTemplate.executeWithoutResult(action -> memberPushAlarmRepository.save(memberPushAlarm));
     }
 
-//     TODO: 회원 별 성공/실패 결과 전달할 방법?
+    //     TODO: 회원 별 성공/실패 결과 전달할 방법?
 //     TODO: expo는 토큰 보낸 순서대로 data를 보내줌
     public void sendNotifications(NotificationDto dto) {
         alarmService.sendPushAlarmAll(new PushAlarmAllCreateRequest(dto.getTitle(), dto.getContents()));
@@ -65,5 +65,13 @@ public class AdminMarketingService {
 //                .map(memberTokens::get)
 //                .collect(Collectors.toList());
 //    }
+
+    public void sendPushAlarm(NotificationDto alarmDto) {
+        List<Member> possibleMembers = memberRepository.findByMemberStatus(MemberStatus.COMPLETED, MemberStatus.MATCHING_DISABLED);
+
+        possibleMembers.forEach(possibleMember ->
+                alarmService.sendPushAlarm(possibleMember, alarmDto.getTitle(), alarmDto.getContents())
+        );
+    }
 
 }
