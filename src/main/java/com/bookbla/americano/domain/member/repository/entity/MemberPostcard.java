@@ -53,4 +53,9 @@ public class MemberPostcard extends BaseUpdateEntity {
             throw new BaseException(MemberPostcardExceptionType.INVALID_POSTCARD_COUNTS);
         }
     }
+
+    // 엽서 -> 책갈피 변경시, 책갈피 150개
+    public void addInvitationPostcard() {
+        payPostcardCount += 150;
+    }
 }

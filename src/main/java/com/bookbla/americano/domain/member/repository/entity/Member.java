@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
@@ -193,5 +194,9 @@ public class Member extends BaseInsertEntity {
         MemberStatusLog memberStatusLog = memberStatusLogRepository.getByMemberIdOrThrow(this.getId());
         this.updateMemberStatus(memberStatusLog.getBeforeStatus(), LocalDateTime.now());
         memberStatusLogRepository.delete(memberStatusLog);
+    }
+
+    public boolean isMan() {
+        return memberProfile.getGender() == Gender.MALE;
     }
 }
