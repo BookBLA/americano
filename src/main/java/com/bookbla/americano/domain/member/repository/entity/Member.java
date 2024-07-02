@@ -12,7 +12,7 @@ import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.bookbla.americano.domain.member.exception.PolicyExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
-import com.bookbla.americano.domain.school.School;
+import com.bookbla.americano.domain.school.repository.entity.School;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -46,6 +46,8 @@ public class Member extends BaseInsertEntity {
     private String oauthEmail;
 
     private String oauthProfileImageUrl;
+
+    private String invitationCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private School school;
