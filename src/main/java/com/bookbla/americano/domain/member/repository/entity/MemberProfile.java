@@ -31,8 +31,6 @@ public class MemberProfile {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    private String schoolName;
-    
     private String schoolEmail;
 
     private String phoneNumber;
@@ -97,11 +95,6 @@ public class MemberProfile {
 
     public MemberProfile updateGender(Gender gender) {
         this.gender = gender;
-        return this;
-    }
-
-    public MemberProfile updateSchoolName(String schoolName) {
-        this.schoolName = schoolName;
         return this;
     }
 
