@@ -58,7 +58,7 @@ public class AdminMemberReadResponses {
                         .birthDate(memberProfile.getBirthDate())
                         .schoolEmail(memberProfile.getSchoolEmail())
                         .gender(memberProfile.getGenderName())
-                        .school(memberProfile.getSchoolName())
+                        .school(member.getSchool().getName())
                         .phone(memberProfile.getPhoneNumber())
                         .status(member.getMemberStatus().name())
                         .build();

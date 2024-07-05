@@ -1,7 +1,6 @@
 package com.bookbla.americano.domain.member.repository.custom.impl;
 
 
-import com.querydsl.core.types.dsl.BooleanExpression;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -20,16 +19,18 @@ import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.SmokeType;
 import com.bookbla.americano.domain.member.repository.custom.MemberRepositoryCustom;
 import com.bookbla.americano.domain.member.repository.entity.QMember;
+import com.bookbla.americano.domain.member.repository.entity.QMemberBlock;
 import com.bookbla.americano.domain.member.repository.entity.QMemberBook;
 import com.bookbla.americano.domain.member.repository.entity.QMemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.QMemberStyle;
-import com.bookbla.americano.domain.member.repository.entity.QMemberBlock;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+
+import static com.bookbla.americano.domain.school.repository.entity.QSchool.school;
 
 @Repository
 @RequiredArgsConstructor
@@ -45,12 +46,12 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
 
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(memberBook.book.id.in(
-                        JPAExpressions
-                                .select(memberBook.book.id)
-                                .from(member)
-                                .innerJoin(memberBook).on(member.eq(memberBook.member))
-                                .where(member.id.eq(memberId)
-                                        .and(memberBook.isDeleted.eq(false)))));
+                JPAExpressions
+                        .select(memberBook.book.id)
+                        .from(member)
+                        .innerJoin(memberBook).on(member.eq(memberBook.member))
+                        .where(member.id.eq(memberId)
+                                .and(memberBook.isDeleted.eq(false)))));
 
         builder.and(eqGender(member.memberProfile, requestDto.getGender()))
                 .and(eqSmokeType(member.memberStyle, requestDto.getSmokeType()))
@@ -68,13 +69,14 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                         , member.memberProfile.name.as("memberName")
                         , member.memberProfile.birthDate.year().subtract(LocalDate.now().getYear() + 1).abs().as("memberAge")
                         , member.memberProfile.gender.as("memberGender")
-                        , member.memberProfile.schoolName.as("memberSchoolName")
+                        , member.school.name.as("memberSchoolName")
                         , book.title.as("bookName")
                         , book.imageUrl.as("bookImageUrl")
                         , memberBook.isRepresentative.as("bookIsRepresentative"))
                 )
                 .from(member)
                 .innerJoin(memberBook).on(member.eq(memberBook.member))
+                .innerJoin(school).on(member.school.eq(school))
                 .innerJoin(book).on(memberBook.book.eq(book))
                 .where(builder.or(member.id.eq(memberId)))
                 .fetch();
@@ -101,17 +103,17 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
 
         // memberId가 차단해서 차단당한 멤버 ID List
         List<Long> blockedByIds = queryFactory
-            .select(memberBlock.blockedMember.id)
-            .from(memberBlock)
-            .where(memberBlock.blockerMember.id.eq(memberId))
-            .fetch();
+                .select(memberBlock.blockedMember.id)
+                .from(memberBlock)
+                .where(memberBlock.blockerMember.id.eq(memberId))
+                .fetch();
 
         // memberId를 차단한 유저의 ID 목록 List
         List<Long> blockerIds = queryFactory
-            .select(memberBlock.blockerMember.id)
-            .from(memberBlock)
-            .where(memberBlock.blockedMember.id.eq(memberId))
-            .fetch();
+                .select(memberBlock.blockerMember.id)
+                .from(memberBlock)
+                .where(memberBlock.blockedMember.id.eq(memberId))
+                .fetch();
 
         return queryFactory
                 .select(Projections.fields(BookProfileResponse.class
@@ -120,13 +122,14 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                         , member.memberProfile.name.as("memberName")
                         , member.memberProfile.birthDate.as("memberBirthDate")
                         , member.memberProfile.gender.as("memberGender")
-                        , member.memberProfile.schoolName.as("memberSchoolName")
+                        , member.school.name.as("memberSchoolName")
                         , book.title.as("bookName")
                         , book.imageUrl.as("bookImageUrl")
                         , memberBook.isRepresentative.as("bookIsRepresentative"))
                 )
                 .from(member)
                 .innerJoin(memberBook).on(member.eq(memberBook.member))
+                .innerJoin(school).on(member.school.eq(school))
                 .innerJoin(book).on(memberBook.book.eq(book).and(memberBook.isDeleted.eq(false)))
                 .where(builder.andNot(member.id.eq(memberId))
                         .and(member.memberStatus.eq(MemberStatus.COMPLETED))

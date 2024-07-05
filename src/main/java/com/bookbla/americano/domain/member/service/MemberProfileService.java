@@ -143,7 +143,6 @@ public class MemberProfileService {
 
         memberProfile.updateName(request.getName())
                 .updatePhoneNumber(request.getPhoneNumber())
-                .updateSchoolName(request.getSchoolName())
                 .updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl());
 //                .updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
 
@@ -180,7 +179,6 @@ public class MemberProfileService {
         member.getMemberProfile().updateName(request.getName())
                 .updateBirthDate(request.getBirthDate())
                 .updateGender(request.getGender())
-                .updateSchoolName(request.getSchoolName())
                 .updateSchoolEmail(request.getSchoolEmail())
                 .updatePhoneNumber(request.getPhoneNumber());
         memberRepository.save(member);

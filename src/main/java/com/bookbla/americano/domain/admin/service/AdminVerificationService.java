@@ -90,7 +90,6 @@ public class AdminVerificationService {
         memberProfile.updateStudentIdImageUrl(memberVerify.getContents())
                 .updateGender(Gender.from(descriptions.getOrDefault("gender", DESCRIPTION_PARSING_FAIL)))
                 .updateName(descriptions.getOrDefault("name", DESCRIPTION_PARSING_FAIL))
-                .updateSchoolName(descriptions.getOrDefault("schoolName", DESCRIPTION_PARSING_FAIL))
                 .updateBirthDate(LocalDate.parse(descriptions.getOrDefault("birthDate", DESCRIPTION_PARSING_FAIL), DATE_FORMAT));
     }
 

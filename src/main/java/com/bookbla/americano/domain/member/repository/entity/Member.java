@@ -199,4 +199,13 @@ public class Member extends BaseInsertEntity {
     public boolean isMan() {
         return memberProfile.getGender() == Gender.MALE;
     }
+
+    public Member updateInvitationCode(String invitationCode) {
+        this.invitationCode = invitationCode;
+        return this;
+    }
+
+    public void updateSchool(School school) {
+        this.school = school;
+    }
 }

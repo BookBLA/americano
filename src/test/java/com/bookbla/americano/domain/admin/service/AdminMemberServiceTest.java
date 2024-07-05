@@ -62,7 +62,6 @@ class AdminMemberServiceTest {
                         .birthDate(LocalDate.of(1999, 3, 3))
                         .phoneNumber("01012345678")
                         .gender(MALE)
-                        .schoolName("가천대")
                         .name("이준희")
                         .build()
                 ).build();
@@ -72,7 +71,7 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(STYLE)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().birthDate(LocalDate.of(1999, 3, 3)).phoneNumber("01012345678").gender(MALE).schoolName("가천대").name("이준희").build())
+                .memberProfile(MemberProfile.builder().birthDate(LocalDate.of(1999, 3, 3)).phoneNumber("01012345678").gender(MALE).name("이준희").build())
                 .build();
         memberRepository.saveAndFlush(member2);
 
@@ -80,7 +79,7 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().phoneNumber("01012345678").gender(MALE).schoolName("가천대").name("이준희").build())
+                .memberProfile(MemberProfile.builder().phoneNumber("01012345678").gender(MALE).name("이준희").build())
                 .build();
         memberRepository.saveAndFlush(member3);
 
@@ -96,7 +95,6 @@ class AdminMemberServiceTest {
                 () -> assertThat(adminMemberReadResponse.getAuthEmail()).isEqualTo("bookbla@bookbla.com"),
                 () -> assertThat(adminMemberReadResponse.getName()).isEqualTo("이준희"),
                 () -> assertThat(adminMemberReadResponse.getGender()).isEqualToIgnoringCase("male"),
-                () -> assertThat(adminMemberReadResponse.getSchool()).isEqualTo("가천대"),
                 () -> assertThat(adminMemberReadResponse.getBirthDate()).isEqualTo(LocalDate.of(1999, 3, 3)),
                 () -> assertThat(adminMemberReadResponse.getPhone()).isEqualTo("01012345678")
         );
@@ -109,7 +107,7 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().openKakaoRoomStatus(OpenKakaoRoomStatus.PENDING).name("이준희").profileImageUrl("프사1").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").name("이준희").build())
+                .memberProfile(MemberProfile.builder().openKakaoRoomStatus(OpenKakaoRoomStatus.PENDING).name("이준희").profileImageUrl("프사1").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).name("이준희").build())
                 .build();
         memberRepository.save(pendingMember);
         memberVerifyRepository.save(MemberVerify.builder()
@@ -122,7 +120,7 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().name("김진호").openKakaoRoomStatus(OpenKakaoRoomStatus.NOT_DEFAULT).profileImageUrl("프사2").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").name("이준희").build())
+                .memberProfile(MemberProfile.builder().name("김진호").openKakaoRoomStatus(OpenKakaoRoomStatus.NOT_DEFAULT).profileImageUrl("프사2").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).name("이준희").build())
                 .build();
         memberRepository.save(pendingMember2);
         memberVerifyRepository.save(MemberVerify.builder()
@@ -135,7 +133,7 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(COMPLETED)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().name("문성진").openKakaoRoomStatus(OpenKakaoRoomStatus.DONE).profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").name("이준희").build())
+                .memberProfile(MemberProfile.builder().name("문성진").openKakaoRoomStatus(OpenKakaoRoomStatus.DONE).profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).name("이준희").build())
                 .build();
         memberRepository.save(completedMember);
         memberVerifyRepository.save(MemberVerify.builder()
@@ -160,7 +158,7 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().profileImageStatus(ProfileImageStatus.PENDING).name("이준희").profileImageUrl("프사1").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").build())
+                .memberProfile(MemberProfile.builder().profileImageStatus(ProfileImageStatus.PENDING).name("이준희").profileImageUrl("프사1").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).build())
                 .build());
         memberVerifyRepository.save(MemberVerify.builder()
                 .memberId(pendingMember.getId())
@@ -173,7 +171,7 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().profileImageStatus(ProfileImageStatus.PENDING).name("문성진").profileImageUrl("프사2").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").build())
+                .memberProfile(MemberProfile.builder().profileImageStatus(ProfileImageStatus.PENDING).name("문성진").profileImageUrl("프사2").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).build())
                 .build());
         memberVerifyRepository.save(MemberVerify.builder()
                 .memberId(pendingMember2.getId())
@@ -186,7 +184,7 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().profileImageStatus(ProfileImageStatus.PENDING).name("고도현").profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").build())
+                .memberProfile(MemberProfile.builder().profileImageStatus(ProfileImageStatus.PENDING).name("고도현").profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).build())
                 .build());
         memberVerifyRepository.save(MemberVerify.builder()
                 .memberId(completedMember.getId())

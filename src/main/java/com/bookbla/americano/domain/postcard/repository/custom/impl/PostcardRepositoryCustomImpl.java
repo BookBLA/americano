@@ -1,5 +1,7 @@
 package com.bookbla.americano.domain.postcard.repository.custom.impl;
 
+import java.util.List;
+
 import com.bookbla.americano.domain.book.repository.entity.QBook;
 import com.bookbla.americano.domain.member.repository.entity.QMember;
 import com.bookbla.americano.domain.member.repository.entity.QMemberBook;
@@ -17,11 +19,12 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import static com.bookbla.americano.domain.school.repository.entity.QSchool.school;
 
 @Repository
 @RequiredArgsConstructor
 public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
+
     private final JPAQueryFactory queryFactory;
 
     @Override
@@ -34,7 +37,7 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                         , postcard.receiveMember.memberProfile.name.as("memberName")
                         , postcard.receiveMember.memberProfile.birthDate.as("memberBirthDate")
                         , postcard.receiveMember.memberProfile.gender.as("memberGender")
-                        , postcard.receiveMember.memberProfile.schoolName.as("memberSchoolName")
+                        , member.school.name.as("memberSchoolName")
                         , postcard.receiveMember.memberProfile.profileImageUrl.as("memberProfileImageUrl")
                         , postcard.receiveMember.memberProfile.openKakaoRoomUrl.as("memberOpenKakaoRoomUrl")
                         , postcard.id.as("postcardId")
@@ -42,6 +45,7 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                 )
                 .from(postcard)
                 .innerJoin(member).on(postcard.receiveMember.eq(member))
+                .innerJoin(school).on(member.school.eq(school))
                 .where(postcard.sendMember.id.eq(memberId))
                 .orderBy(postcard.createdAt.desc())
                 .fetch();
@@ -64,7 +68,7 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                         , postcard.sendMember.memberProfile.name.as("memberName")
                         , postcard.sendMember.memberProfile.birthDate.as("memberBirthDate")
                         , postcard.sendMember.memberProfile.gender.as("memberGender")
-                        , postcard.sendMember.memberProfile.schoolName.as("memberSchoolName")
+                        , member.school.name.as("memberSchoolName")
                         , postcard.sendMember.memberProfile.profileImageUrl.as("memberProfileImageUrl")
                         , postcard.sendMember.memberProfile.openKakaoRoomUrl.as("memberKakaoRoomUrl")
                         , postcard.sendMember.memberStyle.drinkType

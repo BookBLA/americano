@@ -49,7 +49,7 @@ class AdminVerificationServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().name("문성진").profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").name("이준희").build())
+                .memberProfile(MemberProfile.builder().name("문성진").profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).name("이준희").build())
                 .build());
         MemberVerify memberVerify = memberVerifyRepository.save(MemberVerify.builder()
                 .memberId(member.getId())
@@ -77,7 +77,7 @@ class AdminVerificationServiceTest {
                 .memberType(ADMIN)
                 .oauthEmail("bookbla@bookbla.com")
                 .memberStatus(APPROVAL)
-                .memberProfile(MemberProfile.builder().name("문성진").profileImageStatus(ProfileImageStatus.PENDING).profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).schoolName("가천대").build())
+                .memberProfile(MemberProfile.builder().name("문성진").profileImageStatus(ProfileImageStatus.PENDING).profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).build())
                 .build());
         MemberVerify memberVerify = MemberVerify.builder()
                 .memberId(member.getId())
@@ -117,7 +117,7 @@ class AdminVerificationServiceTest {
                 .verifyStatus(PENDING)
                 .verifyType(STUDENT_ID)
                 .contents("학생증 링크~")
-                .description("이름: 고도현, 학교: 가천대학교, 학과: 관광경영학과, 학번: 201900001")
+                .description("이름: 고도현, 학과: 관광경영학과, 학번: 201900001")
                 .build());
         StatusUpdateDto statusUpdateDto = new StatusUpdateDto(memberVerify.getId(), "denial", "흐릿해요");
 
