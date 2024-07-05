@@ -12,6 +12,6 @@ public interface MemberPostcardRepository extends JpaRepository<MemberPostcard, 
     Optional<MemberPostcard> findMemberPostcardByMemberId(@Param("memberId") Long memberId);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("UPDATE MemberPostcard mp SET mp.freePostcardCount = 1")
+    @Query("UPDATE MemberPostcard mp SET mp.freePostcardCount = 2")
     void initMemberFreePostcardCount();
 }
