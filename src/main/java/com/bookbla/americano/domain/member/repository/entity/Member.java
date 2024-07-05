@@ -217,4 +217,8 @@ public class Member extends BaseInsertEntity {
     public void updateSchool(School school) {
         this.school = school;
     }
+
+    public boolean isWoman() {
+        return memberProfile.getGender() == Gender.FEMALE;
+    }
 }

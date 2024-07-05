@@ -51,6 +51,7 @@ public class School extends BaseUpdateEntity {
 
     public int validMemberCounts() {
         return (int) members.stream()
+                .filter(Member::isWoman)
                 .filter(it -> it.getMemberStatus().isApproved())
                 .count();
     }
