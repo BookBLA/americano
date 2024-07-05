@@ -9,6 +9,8 @@ import com.bookbla.americano.domain.member.repository.MemberPostcardRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberPostcard;
+import com.bookbla.americano.domain.school.repository.SchoolRepository;
+import com.bookbla.americano.domain.school.repository.entity.School;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +41,8 @@ public class MemberInvitationService {
                 .orElseGet(() -> createMemberPostcard(member));
 
         memberPostcard.addInvitationPostcard();
+        School school = member.getSchool();
+        school.checkOpen();
         return MemberPostcardResponse.from(memberPostcard);
     }
 

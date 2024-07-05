@@ -59,7 +59,7 @@ public class School extends BaseUpdateEntity {
         if (schoolStatus == SchoolStatus.OPEN) {
             return;
         }
-        if (members.size() >= OPEN_STANDARD) {
+        if (validMemberCounts() >= OPEN_STANDARD) {
             schoolStatus = SchoolStatus.OPEN;
         }
     }
