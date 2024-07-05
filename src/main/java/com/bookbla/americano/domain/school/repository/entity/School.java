@@ -45,6 +45,10 @@ public class School extends BaseUpdateEntity {
     @Enumerated(value = EnumType.STRING)
     private SchoolStatus schoolStatus = SchoolStatus.CLOSED;
 
+    public static School notRegistered() {
+        return School.builder().name("등록되지 않음").build();
+    }
+
     public int validMemberCounts() {
         return (int) members.stream()
                 .filter(it -> it.getMemberStatus().isApproved())

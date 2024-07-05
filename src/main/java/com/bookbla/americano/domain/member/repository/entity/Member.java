@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.repository.entity;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import com.bookbla.americano.base.entity.BaseInsertEntity;
@@ -51,6 +52,7 @@ public class Member extends BaseInsertEntity {
     private String invitationCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @Getter(AccessLevel.NONE)
     private School school;
 
     private String pushToken;
@@ -188,6 +190,13 @@ public class Member extends BaseInsertEntity {
         if (this.memberStyle != null) {
             throw new BaseException(MemberExceptionType.STYLE_ALREADY_REGISTERD);
         }
+    }
+
+    public School getSchool() {
+        if (Objects.isNull(school)) {
+            return School.notRegistered();
+        }
+        return school;
     }
 
     public void revertStatus(MemberStatusLogRepository memberStatusLogRepository) {
