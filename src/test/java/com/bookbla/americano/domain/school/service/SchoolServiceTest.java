@@ -1,8 +1,10 @@
 package com.bookbla.americano.domain.school.service;
 
+import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.school.controller.SchoolInvitationResponse;
 import com.bookbla.americano.domain.school.repository.SchoolRepository;
 import com.bookbla.americano.domain.school.repository.entity.School;
@@ -47,6 +49,7 @@ class SchoolServiceTest {
     void 사용자의_학교_등록_현황을_알_수_있다() {
         // given
         Member member = memberRepository.save(Member.builder()
+                .memberProfile(MemberProfile.builder().gender(Gender.FEMALE).build())
                 .memberStatus(MemberStatus.STYLE)
                 .school(school)
                 .invitationCode("마법의인비코드")
