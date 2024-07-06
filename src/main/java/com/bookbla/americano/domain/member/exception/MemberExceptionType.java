@@ -29,6 +29,7 @@ public enum MemberExceptionType implements ExceptionType {
     ALREADY_MEMBER_DELETED(HttpStatus.BAD_REQUEST, "member_016", "회원이 이미 탈퇴 상태입니다."),
     MEMBER_STATUS_LOG_NOT_FOUND(HttpStatus.BAD_REQUEST, "member_017", "저장된 상태 변경 로그가 없습니다."),
     INVITATION_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "member_018", "유효하지 않은 초대코드입니다"),
+    HEIGHT_NOT_FOUND(HttpStatus.NOT_FOUND, "member_019", "유효하지 않은 키 범위입니다."),
     ;
 
     private final HttpStatus httpStatus;

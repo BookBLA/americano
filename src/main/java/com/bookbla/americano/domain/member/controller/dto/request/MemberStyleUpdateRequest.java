@@ -4,6 +4,7 @@ import com.bookbla.americano.domain.member.enums.ContactType;
 import com.bookbla.americano.domain.member.enums.DateCostType;
 import com.bookbla.americano.domain.member.enums.DateStyleType;
 import com.bookbla.americano.domain.member.enums.DrinkType;
+import com.bookbla.americano.domain.member.enums.HeightType;
 import com.bookbla.americano.domain.member.enums.JustFriendType;
 import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.SmokeType;
@@ -38,6 +39,9 @@ public class MemberStyleUpdateRequest {
     @NotNull(message = "데이트 스타일이 입력되지 않았습니다.")
     private String dateStyleType;
 
+    @NotNull(message = "키 범위가 입력되지 않았습니다.")
+    private String heightType;
+
     @NotBlank(message = "개인 질문이 입력되지 않았습니다.")
     private String memberAsk;
 
@@ -67,6 +71,10 @@ public class MemberStyleUpdateRequest {
 
     public DateStyleType getDateStyleType() {
         return DateStyleType.from(dateStyleType);
+    }
+
+    public HeightType getHeightType() {
+        return HeightType.from(heightType);
     }
 
     public String getMemberAsk() {
