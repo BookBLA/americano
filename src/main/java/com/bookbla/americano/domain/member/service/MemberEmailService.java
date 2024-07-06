@@ -1,5 +1,7 @@
 package com.bookbla.americano.domain.member.service;
 
+import com.bookbla.americano.domain.school.repository.SchoolRepository;
+import com.bookbla.americano.domain.school.repository.entity.School;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Random;
@@ -7,9 +9,9 @@ import java.util.Random;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.base.utils.RedisUtil;
-import com.bookbla.americano.domain.member.controller.dto.request.EmailSendRequest;
-import com.bookbla.americano.domain.member.controller.dto.request.EmailVerifyRequest;
-import com.bookbla.americano.domain.member.controller.dto.response.EmailResponse;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberEmailSendRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberEmailVerifyRequest;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberEmailResponse;
 import com.bookbla.americano.domain.member.enums.EmailVerifyStatus;
 import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberEmailRepository;
@@ -34,6 +36,7 @@ import org.thymeleaf.context.Context;
 @Slf4j
 public class MemberEmailService {
 
+    private final SchoolRepository schoolRepository;
     private final MemberRepository memberRepository;
     private final MemberEmailRepository memberEmailRepository;
     private final MemberPostcardRepository memberPostcardRepository;
@@ -42,8 +45,11 @@ public class MemberEmailService {
     private final RedisUtil redisUtil;
 
     @Transactional
-    public EmailResponse sendEmail(Long memberId, EmailSendRequest emailSendRequest) {
-        String schoolEmail = emailSendRequest.getSchoolEmail();
+    public MemberEmailResponse sendEmail(Long memberId, MemberEmailSendRequest memberEmailSendRequest) {
+        String schoolEmail = memberEmailSendRequest.getSchoolEmail();
+        String requestSchoolName = memberEmailSendRequest.getSchoolName();;
+
+        checkSchoolDomainUrl(requestSchoolName, schoolEmail);
 
         // 이메일 중복 체크
         checkDuplicatedEmail(schoolEmail);
@@ -70,13 +76,14 @@ public class MemberEmailService {
 
         memberEmailRepository.save(memberEmail);
 
-        return EmailResponse.from(memberEmail);
+        return MemberEmailResponse.from(memberEmail);
     }
 
+
     @Transactional
-    public EmailResponse verifyEmail(Long memberId, EmailVerifyRequest emailVerifyRequest) {
-        String requestSchoolEmail = emailVerifyRequest.getSchoolEmail();
-        String requestVerifyCode = emailVerifyRequest.getVerifyCode();
+    public MemberEmailResponse verifyEmail(Long memberId, MemberEmailVerifyRequest memberEmailVerifyRequest) {
+        String requestSchoolEmail = memberEmailVerifyRequest.getSchoolEmail();
+        String requestVerifyCode = memberEmailVerifyRequest.getVerifyCode();
 
         String redisSchoolEmail = redisUtil.getData(requestVerifyCode);
         String redisVerifyCode = redisUtil.getData(requestSchoolEmail);
@@ -105,7 +112,7 @@ public class MemberEmailService {
 
         redisUtil.deleteData(requestSchoolEmail);
         redisUtil.deleteData(redisVerifyCode);
-        return EmailResponse.from(memberEmail);
+        return MemberEmailResponse.from(memberEmail);
     }
 
     private void sendEmailMessage(String schoolEmail, String verifyCode) {
@@ -125,6 +132,14 @@ public class MemberEmailService {
         } catch (Exception e) {
             throw new BaseException(MemberEmailExceptionType.SEND_EMAIL_FAIL);
         }
+    }
+
+    private void checkSchoolDomainUrl(String requestSchoolName, String schoolEmail) {
+        String url = schoolEmail.replaceAll(".*@(?=[^@]+$)", "");
+        School school = schoolRepository.findByName(requestSchoolName);
+
+        if (school == null || !url.equals(school.getUrl()))
+            throw new BaseException(MemberEmailExceptionType.DOMAIN_URL_NOT_EQUAL);
     }
 
     private void checkDuplicatedEmail(String schoolEmail) {

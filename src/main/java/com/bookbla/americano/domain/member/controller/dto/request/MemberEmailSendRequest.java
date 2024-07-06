@@ -9,12 +9,13 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class EmailVerifyRequest {
+public class MemberEmailSendRequest {
+
+    @NotNull(message = "학교 이름이 입력되지 않았습니다.")
+    private String schoolName;
 
     @NotNull(message = "학교 이메일이 입력되지 않았습니다.")
     private String schoolEmail;
 
-    @NotNull(message = "인증코드가 입력되지 않았습니다.")
-    private String verifyCode;
-
 }
+

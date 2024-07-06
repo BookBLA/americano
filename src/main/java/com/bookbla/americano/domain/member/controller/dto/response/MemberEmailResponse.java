@@ -8,12 +8,12 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class EmailResponse {
+public class MemberEmailResponse {
     private String schoolEmail;
     private String emailVerifyStatus;
 
-    public static EmailResponse from(MemberEmail memberEmail) {
-        return EmailResponse.builder()
+    public static MemberEmailResponse from(MemberEmail memberEmail) {
+        return MemberEmailResponse.builder()
             .schoolEmail(memberEmail.getSchoolEmail())
             .emailVerifyStatus(memberEmail.getEmailVerifyStatus().name())
             .build();
