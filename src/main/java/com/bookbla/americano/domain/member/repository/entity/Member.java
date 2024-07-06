@@ -1,24 +1,29 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
 import com.bookbla.americano.base.entity.BaseInsertEntity;
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.auth.exception.LoginExceptionType;
+import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.bookbla.americano.domain.member.exception.PolicyExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import com.bookbla.americano.domain.school.repository.entity.School;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -43,6 +48,12 @@ public class Member extends BaseInsertEntity {
     private String oauthEmail;
 
     private String oauthProfileImageUrl;
+
+    private String invitationCode;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Getter(AccessLevel.NONE)
+    private School school;
 
     private String pushToken;
 
@@ -181,9 +192,33 @@ public class Member extends BaseInsertEntity {
         }
     }
 
+    public School getSchool() {
+        if (Objects.isNull(school)) {
+            return School.notRegistered();
+        }
+        return school;
+    }
+
     public void revertStatus(MemberStatusLogRepository memberStatusLogRepository) {
         MemberStatusLog memberStatusLog = memberStatusLogRepository.getByMemberIdOrThrow(this.getId());
         this.updateMemberStatus(memberStatusLog.getBeforeStatus(), LocalDateTime.now());
         memberStatusLogRepository.delete(memberStatusLog);
+    }
+
+    public boolean isMan() {
+        return memberProfile.getGender() == Gender.MALE;
+    }
+
+    public Member updateInvitationCode(String invitationCode) {
+        this.invitationCode = invitationCode;
+        return this;
+    }
+
+    public void updateSchool(School school) {
+        this.school = school;
+    }
+
+    public boolean isWoman() {
+        return memberProfile.getGender() == Gender.FEMALE;
     }
 }

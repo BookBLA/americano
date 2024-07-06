@@ -63,4 +63,9 @@ public class MemberEmail extends BaseInsertEntity {
         this.emailVerifyStatus = EmailVerifyStatus.DONE;
         return this;
     }
+
+    public String getEmailDomain() {
+        int dotIndex = schoolEmail.indexOf("@");
+        return schoolEmail.substring(dotIndex, schoolEmail.length());
+    }
 }

@@ -18,6 +18,9 @@ import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberEmail;
 import com.bookbla.americano.domain.member.repository.entity.MemberPostcard;
+import com.bookbla.americano.domain.school.exception.SchoolExceptionType;
+import com.bookbla.americano.domain.school.repository.SchoolRepository;
+import com.bookbla.americano.domain.school.repository.entity.School;
 import javax.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +40,7 @@ public class MemberEmailService {
     private final MemberRepository memberRepository;
     private final MemberEmailRepository memberEmailRepository;
     private final MemberPostcardRepository memberPostcardRepository;
+    private final SchoolRepository schoolRepository;
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
     private final RedisUtil redisUtil;
@@ -95,6 +99,10 @@ public class MemberEmailService {
         }
 
         memberEmail.updateEmailVerifyDone();
+        School school = schoolRepository.findByEmailDomain(memberEmail.getEmailDomain())
+                .orElseThrow(() -> new BaseException(SchoolExceptionType.EMAIL_DOMAIN_NOT_FOUND));
+        member.updateInvitationCode(createVerifyCode())
+                .updateSchool(school);
 
         // 메일 인증시 멤버 엽서 엔티티 생성, 중복 생성 방지용 로직 추가
         memberPostcardRepository.findMemberPostcardByMemberId(memberId)

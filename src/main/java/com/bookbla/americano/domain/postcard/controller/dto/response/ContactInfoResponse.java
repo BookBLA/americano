@@ -37,7 +37,7 @@ public class ContactInfoResponse {
         this.memberAge = getAge(member.getMemberProfile().getBirthDate());
         this.memberGender = member.getMemberProfile().getGender();
         this.memberProfileImageUrl = member.getMemberProfile().getProfileImageUrl();
-        this.memberSchoolName = member.getMemberProfile().getSchoolName();
+        this.memberSchoolName = member.getSchool().getName();
         this.memberOpenKakaoRoomUrl = member.getMemberProfile().getOpenKakaoRoomUrl();
         List<String> imageUrls = new ArrayList<>();
         for (MemberBook i : memberBooks) {

@@ -35,7 +35,6 @@ public class MemberProfileDto {
                 .name(name)
                 .birthDate(birthDate)
                 .gender(gender)
-                .schoolName(schoolName)
                 .schoolEmail(schoolEmail)
                 .phoneNumber(phoneNumber)
                 .profileImageUrl(profileImageUrl)
@@ -49,7 +48,6 @@ public class MemberProfileDto {
 
     public String toMemberVerifyDescription() {
         return "name: " + getName() +
-                ", schoolName: " + getSchoolName() +
                 ", birthDate: " + getBirthDate().format(DateTimeFormatter.BASIC_ISO_DATE) +
                 ", gender: " + gender.name();
     }
