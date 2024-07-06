@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.member.service;
 
+import com.bookbla.americano.domain.school.repository.entity.SchoolStatus;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Random;
@@ -7,8 +8,8 @@ import java.util.Random;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.base.utils.RedisUtil;
-import com.bookbla.americano.domain.member.controller.dto.request.EmailSendRequest;
-import com.bookbla.americano.domain.member.controller.dto.request.EmailVerifyRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberEmailSendRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberEmailVerifyRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.EmailResponse;
 import com.bookbla.americano.domain.member.enums.EmailVerifyStatus;
 import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
@@ -46,8 +47,15 @@ public class MemberEmailService {
     private final RedisUtil redisUtil;
 
     @Transactional
-    public EmailResponse sendEmail(Long memberId, EmailSendRequest emailSendRequest) {
-        String schoolEmail = emailSendRequest.getSchoolEmail();
+    public EmailResponse sendEmail(Long memberId, MemberEmailSendRequest memberEmailSendRequest) {
+        String schoolEmail = memberEmailSendRequest.getSchoolEmail();
+        String schoolName = memberEmailSendRequest.getSchoolName();
+
+        School requestSchool = schoolRepository.findByName(schoolName);
+
+        checkSchoolDomainUrl(requestSchool, schoolEmail);
+
+        checkSchoolStatus(requestSchool);
 
         // 이메일 중복 체크
         checkDuplicatedEmail(schoolEmail);
@@ -77,10 +85,11 @@ public class MemberEmailService {
         return EmailResponse.from(memberEmail);
     }
 
+
     @Transactional
-    public EmailResponse verifyEmail(Long memberId, EmailVerifyRequest emailVerifyRequest) {
-        String requestSchoolEmail = emailVerifyRequest.getSchoolEmail();
-        String requestVerifyCode = emailVerifyRequest.getVerifyCode();
+    public EmailResponse verifyEmail(Long memberId, MemberEmailVerifyRequest memberEmailVerifyRequest) {
+        String requestSchoolEmail = memberEmailVerifyRequest.getSchoolEmail();
+        String requestVerifyCode = memberEmailVerifyRequest.getVerifyCode();
 
         String redisSchoolEmail = redisUtil.getData(requestVerifyCode);
         String redisVerifyCode = redisUtil.getData(requestSchoolEmail);
@@ -132,6 +141,18 @@ public class MemberEmailService {
             mailSender.send(mimeMessage);
         } catch (Exception e) {
             throw new BaseException(MemberEmailExceptionType.SEND_EMAIL_FAIL);
+        }
+    }
+
+    private void checkSchoolDomainUrl(School school, String schoolEmail) {
+        String emailDomain = schoolEmail.replaceAll(".*@(?=[^@]+$)", "");
+        if (school == null || !emailDomain.equals(school.getEmailDomain()))
+            throw new BaseException(MemberEmailExceptionType.EMAIL_DOMAIN_NOT_EQUAL);
+    }
+
+    private void checkSchoolStatus(School requestSchool) {
+        if (requestSchool.getSchoolStatus() == SchoolStatus.CLOSED) {
+            throw new BaseException(SchoolExceptionType.SCHOOL_NOT_OPEN);
         }
     }
 

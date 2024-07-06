@@ -9,4 +9,6 @@ public interface SchoolRepository extends JpaRepository<School, Long> {
 
     Optional<School> findByEmailDomain(String emailPostfix);
 
+    School findByName(String Name);
+
 }
