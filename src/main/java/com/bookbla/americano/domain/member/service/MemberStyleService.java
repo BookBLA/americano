@@ -85,6 +85,7 @@ public class MemberStyleService  {
                 .updateDrinkType(request.getDrinkType())
                 .updateDateCostType(request.getDateCostType())
                 .updateSmokeType(request.getSmokeType())
+                .updateHeightType(request.getHeightType())
                 .updateContactType(request.getContactType())
                 .updateDateStyleType(request.getDateStyleType())
                 .updateJustFriendType(request.getJustFriendType());
