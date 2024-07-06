@@ -108,10 +108,9 @@ public class MemberEmailService {
         }
 
         memberEmail.updateEmailVerifyDone();
-        School school = schoolRepository.findByEmailDomain(memberEmail.getEmailDomain())
+        schoolRepository.findByEmailDomain(memberEmail.getEmailDomain())
                 .orElseThrow(() -> new BaseException(SchoolExceptionType.EMAIL_DOMAIN_NOT_FOUND));
-        member.updateInvitationCode(createVerifyCode())
-                .updateSchool(school);
+        member.updateInvitationCode(createVerifyCode());
 
         // 메일 인증시 멤버 엽서 엔티티 생성, 중복 생성 방지용 로직 추가
         memberPostcardRepository.findMemberPostcardByMemberId(memberId)
