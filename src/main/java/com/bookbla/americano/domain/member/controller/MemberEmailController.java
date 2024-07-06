@@ -2,8 +2,8 @@ package com.bookbla.americano.domain.member.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
-import com.bookbla.americano.domain.member.controller.dto.request.EmailSendRequest;
-import com.bookbla.americano.domain.member.controller.dto.request.EmailVerifyRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberEmailSendRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberEmailVerifyRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.EmailResponse;
 import com.bookbla.americano.domain.member.service.MemberEmailService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,10 +27,10 @@ public class MemberEmailController {
     @PostMapping("/sends")
     public ResponseEntity<EmailResponse> sendEmail(
             @Parameter(hidden = true) @User LoginUser loginUser,
-            @RequestBody @Valid EmailSendRequest emailSendRequest) {
+            @RequestBody @Valid MemberEmailSendRequest memberEmailSendRequest) {
 
         EmailResponse emailResponse = memberEmailService.sendEmail(loginUser.getMemberId(),
-                emailSendRequest);
+            memberEmailSendRequest);
 
         return ResponseEntity.ok(emailResponse);
     }
@@ -39,10 +39,10 @@ public class MemberEmailController {
     @PostMapping("/verifys")
     public ResponseEntity<EmailResponse> verifyEmail(
             @Parameter(hidden = true) @User LoginUser loginUser,
-            @RequestBody @Valid EmailVerifyRequest emailVerifyRequest) {
+            @RequestBody @Valid MemberEmailVerifyRequest memberEmailVerifyRequest) {
 
         EmailResponse emailResponse = memberEmailService.verifyEmail(
-                loginUser.getMemberId(), emailVerifyRequest);
+                loginUser.getMemberId(), memberEmailVerifyRequest);
 
         return ResponseEntity.ok(emailResponse);
     }

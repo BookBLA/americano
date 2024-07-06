@@ -18,7 +18,8 @@ public enum MemberEmailExceptionType implements ExceptionType {
     EXPIRED_TIME(HttpStatus.BAD_REQUEST, "member_email_007", "인증 시간이 만료되었습니다."),
     MAIL_VERIFY_STATUS_NOT_VALID(HttpStatus.BAD_REQUEST, "member_email_008", "유효하지 않은 메일 검증 상태입니다."),
     EMAIL_NOT_REGISTERED(HttpStatus.BAD_REQUEST, "member_email_009", "이메일이 등록되지 않은 멤버입니다."),
-    STILL_PENDING(HttpStatus.BAD_REQUEST, "member_email_010", "아직 이메일 인증 대기 상태입니다.")
+    STILL_PENDING(HttpStatus.BAD_REQUEST, "member_email_010", "아직 이메일 인증 대기 상태입니다."),
+    EMAIL_DOMAIN_NOT_EQUAL(HttpStatus.BAD_REQUEST, "member_email_011", "학교 이메일의 도메인 URL이 해당 학교와 맞지 않습니다. "),
     ;
 
     private final HttpStatus httpStatus;
