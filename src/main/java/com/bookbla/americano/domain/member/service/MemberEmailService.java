@@ -106,16 +106,16 @@ public class MemberEmailService {
         }
 
         memberEmail.updateEmailVerifyDone();
-        schoolRepository.findByEmailDomain(memberEmail.getEmailDomain())
+        School school = schoolRepository.findByEmailDomainAndName(memberEmail.getEmailDomain(), memberEmailVerifyRequest.getSchoolName())
                 .orElseThrow(() -> new BaseException(SchoolExceptionType.EMAIL_DOMAIN_NOT_FOUND));
-        member.updateInvitationCode(createVerifyCode());
+        member.updateInvitationCode(createVerifyCode())
+                .updateSchool(school);
 
         // 메일 인증시 멤버 엽서 엔티티 생성, 중복 생성 방지용 로직 추가
         memberPostcardRepository.findMemberPostcardByMemberId(memberId)
                 .orElseGet(() -> memberPostcardRepository.save(MemberPostcard.builder()
                         .member(member)
                         .build()));
-
 
         redisUtil.deleteData(requestSchoolEmail);
         redisUtil.deleteData(redisVerifyCode);
