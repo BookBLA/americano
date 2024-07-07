@@ -38,12 +38,12 @@ public class MemberProfileDto {
                 .schoolName(schoolName)
                 .schoolEmail(schoolEmail)
                 .phoneNumber(phoneNumber)
-                .profileImageUrl(profileImageUrl)
-                .openKakaoRoomUrl(openKakaoRoomUrl)
-                .studentIdImageUrl(studentIdImageUrl)
-                .openKakaoRoomStatus(OpenKakaoRoomStatus.DONE)
-                .studentIdImageStatus(StudentIdImageStatus.DONE)
-                .profileImageStatus(ProfileImageStatus.DONE)
+                .profileImageUrl("등록 대기중")
+                .openKakaoRoomUrl("등록 대기중")
+                .studentIdImageUrl("등록 대기중")
+                .openKakaoRoomStatus(OpenKakaoRoomStatus.PENDING)
+                .studentIdImageStatus(StudentIdImageStatus.PENDING)
+                .profileImageStatus(ProfileImageStatus.PENDING)
                 .build();
     }
 

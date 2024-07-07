@@ -74,7 +74,7 @@ public class MemberProfileService {
         MemberStatus beforeStatus = member.getMemberStatus();
         MemberProfile memberProfile = memberProfileDto.toMemberProfile();
         member.updateMemberProfile(memberProfile)
-                .updateMemberStatus(MemberStatus.STYLE, LocalDateTime.now());
+                .updateMemberStatus(MemberStatus.APPROVAL, LocalDateTime.now());
 
         // member 객체 명시적으로 save 선언
         memberRepository.save(member);
@@ -144,8 +144,8 @@ public class MemberProfileService {
         memberProfile.updateName(request.getName())
                 .updatePhoneNumber(request.getPhoneNumber())
                 .updateSchoolName(request.getSchoolName())
-                .updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl());
-//                .updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
+                .updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl())
+                .updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
 
         member.updateMemberProfile(memberProfile);
         memberRepository.save(member);
@@ -201,8 +201,8 @@ public class MemberProfileService {
         saveProfileImageVerify(member, request.getProfileImageUrl());
 
         MemberProfile memberProfile = member.getMemberProfile();
-        memberProfile.updateProfileImageUrl(request.getProfileImageUrl());
-//        memberProfile.updateProfileImageStatus(ProfileImageStatus.PENDING);
+        memberProfile.updateProfileImageStatus(ProfileImageStatus.PENDING);
+
         memberRepository.save(member);
     }
 
@@ -215,8 +215,8 @@ public class MemberProfileService {
         saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
 
         MemberProfile memberProfile = member.getMemberProfile();
-        memberProfile.updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl());
-//        memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
+        memberProfile.updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl())
+                .updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
         memberRepository.save(member);
     }
 
