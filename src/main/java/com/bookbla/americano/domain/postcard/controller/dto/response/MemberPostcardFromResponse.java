@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.postcard.controller.dto.response;
 
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
+import com.bookbla.americano.domain.postcard.service.dto.response.PostcardFromResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -49,30 +50,16 @@ public class MemberPostcardFromResponse {
 
     private PostcardStatus postcardStatus;
 
-    public MemberPostcardFromResponse(long memberId, String memberName, LocalDate memberBirthDate, Gender memberGender,
-                                      String memberSchoolName, String memberProfileImageUrl, String memberOpenKakaoRoomUrl,
-                                      long postcardId, PostcardStatus postcardStatus) {
-        this.memberId = memberId;
-//        if(postcardStatus.equals(PostcardStatus.ACCEPT)){
-            this.memberName = memberName;
-//        } else {
-//            this.memberName = transformMemberName(memberName);
-//        }
-        this.memberAge = getAge(memberBirthDate);
-        this.memberGender = memberGender;
-        this.memberSchoolName = memberSchoolName;
-        this.memberProfileImageUrl = memberProfileImageUrl;
-        this.memberOpenKakaoRoomUrl = memberOpenKakaoRoomUrl;
-        this.postcardId = postcardId;
-        this.postcardStatus = postcardStatus;
-    }
-
-    private String transformMemberName(String name){
-        if(name == null || name.isEmpty())
-            return "";
-        char lastName = name.charAt(0);
-        return lastName +
-                "O".repeat(name.length() - 1);
+    public MemberPostcardFromResponse(PostcardFromResponse i) {
+        this.memberId = i.getMemberId();
+        this.memberName = i.getMemberName();
+        this.memberAge = getAge(i.getMemberBirthDate());
+        this.memberGender = i.getMemberGender();
+        this.memberSchoolName = i.getMemberSchoolName();
+        this.memberProfileImageUrl = i.getMemberProfileImageUrl();
+        this.memberOpenKakaoRoomUrl = i.getMemberOpenKakaoRoomUrl();
+        this.postcardId = i.getPostcardId();
+        this.postcardStatus = i.getPostcardStatus();
     }
 
     private int getAge(LocalDate birthDay) {

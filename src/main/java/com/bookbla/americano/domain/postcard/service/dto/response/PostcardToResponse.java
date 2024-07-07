@@ -44,6 +44,8 @@ public class PostcardToResponse {
 
     private JustFriendType justFriendType;
 
+    private HeightType heightType;
+
     // 엽서 상태
     private PostcardStatus postcardStatus;
 
