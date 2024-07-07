@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.school.controller;
+package com.bookbla.americano.domain.school.controller.dto.response;
 
 import com.bookbla.americano.base.utils.CalculateUtil;
 import com.bookbla.americano.domain.member.repository.entity.Member;

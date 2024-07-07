@@ -49,7 +49,8 @@ public class Member extends BaseInsertEntity {
 
     private String oauthProfileImageUrl;
 
-    private String invitationCode;
+    @Builder.Default
+    private String invitationCode = "등록되지 않음";
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Getter(AccessLevel.NONE)

@@ -2,7 +2,7 @@ package com.bookbla.americano.domain.school.service;
 
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.bookbla.americano.domain.school.controller.SchoolInvitationResponse;
+import com.bookbla.americano.domain.school.controller.dto.response.SchoolInvitationResponse;
 import com.bookbla.americano.domain.school.controller.dto.response.SchoolReadResponse;
 import com.bookbla.americano.domain.school.repository.SchoolRepository;
 import com.bookbla.americano.domain.school.repository.entity.School;
