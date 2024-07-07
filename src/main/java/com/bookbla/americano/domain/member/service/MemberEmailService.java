@@ -55,8 +55,6 @@ public class MemberEmailService {
 
         checkSchoolDomainUrl(requestSchool, schoolEmail);
 
-        checkSchoolStatus(requestSchool);
-
         // 이메일 중복 체크
         checkDuplicatedEmail(schoolEmail);
 
@@ -147,12 +145,6 @@ public class MemberEmailService {
         String emailDomain = schoolEmail.replaceAll(".*@(?=[^@]+$)", "");
         if (school == null || !emailDomain.equals(school.getEmailDomain()))
             throw new BaseException(MemberEmailExceptionType.EMAIL_DOMAIN_NOT_EQUAL);
-    }
-
-    private void checkSchoolStatus(School requestSchool) {
-        if (requestSchool.getSchoolStatus() == SchoolStatus.CLOSED) {
-            throw new BaseException(SchoolExceptionType.SCHOOL_NOT_OPEN);
-        }
     }
 
     private void checkDuplicatedEmail(String schoolEmail) {
