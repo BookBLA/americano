@@ -31,12 +31,17 @@ public class InvitationService {
         Member invitingMember = memberRepository.findByInvitationCode(request.getInvitationCode())
                 .orElseThrow(() -> new BaseException(MemberExceptionType.INVITATION_CODE_NOT_FOUND));
 
-        Invitation invitation = Invitation.builder()
-                .invitedMemberId(memberId)
-                .invitingMemberId(invitingMember.getId())
-                .build();
-        invitationRepository.save(invitation);
+        invitationRepository.findByInvitedMemberId(memberId)
+                .orElseGet(() -> invite(memberId, invitingMember));
 
         return InvitationResponse.from(invitingMember);
+    }
+
+    private Invitation invite(Long invitedMemberId, Member invitingMember) {
+        Invitation invitation = Invitation.builder()
+                .invitedMemberId(invitedMemberId)
+                .invitingMemberId(invitingMember.getId())
+                .build();
+        return invitationRepository.save(invitation);
     }
 }
