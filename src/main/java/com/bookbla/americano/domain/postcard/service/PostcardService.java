@@ -154,10 +154,7 @@ public class PostcardService {
             MemberBookReadResponses memberBookList = memberBookService.readMemberBooks(
                     i.getMemberId());
             List<String> nowBookImageUrls = new ArrayList<>();
-            nowResponse = new MemberPostcardFromResponse(i.getMemberId(), i.getMemberName(),
-                    i.getMemberBirthDate(), i.getMemberGender(), i.getMemberSchoolName(),
-                    i.getMemberProfileImageUrl(),
-                    i.getMemberOpenKakaoRoomUrl(), i.getPostcardId(), i.getPostcardStatus());
+            nowResponse = new MemberPostcardFromResponse(i);
             for (MemberBookReadResponses.MemberBookReadResponse j : memberBookList.getMemberBookReadResponses()) {
                 if (j.isRepresentative()) {
                     nowResponse.setRepresentativeBookTitle(j.getTitle());
@@ -197,13 +194,7 @@ public class PostcardService {
                 }
                 // 초기화
                 now = i.getMemberId();
-                nowResponse = new MemberPostcardToResponse(i.getPostcardId(), i.getMemberId(),
-                        i.getMemberName(), i.getMemberProfileImageUrl(), i.getMemberBirthDate(),
-                        i.getMemberGender(),
-                        i.getDrinkType(), i.getSmokeType(), i.getContactType(), i.getDateStyleType(),
-                        i.getDateCostType(), i.getMbti(), i.getJustFriendType(),
-                        i.getMemberSchoolName(), i.getMemberReplyContent(), i.getPostcardStatus(),
-                        i.getPostcardImageUrl(), i.getMemberKakaoRoomUrl());
+                nowResponse = new MemberPostcardToResponse(i);
                 nowBookTitles = new ArrayList<>();
                 nowBookImageUrls = new ArrayList<>();
                 nowCorrectStatuses = new ArrayList<>();

@@ -78,6 +78,7 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                         , postcard.sendMember.memberStyle.dateCostType
                         , postcard.sendMember.memberStyle.mbti
                         , postcard.sendMember.memberStyle.justFriendType
+                        , postcard.sendMember.memberStyle.heightType
                         , postcard.postcardStatus
                         , postcard.postcardType.imageUrl.as("postcardImageUrl")
                         , book.title.as("bookTitle")

@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.postcard.controller.dto.response;
 
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
+import com.bookbla.americano.domain.postcard.service.dto.response.PostcardFromResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -49,26 +50,24 @@ public class MemberPostcardFromResponse {
 
     private PostcardStatus postcardStatus;
 
-    public MemberPostcardFromResponse(long memberId, String memberName, LocalDate memberBirthDate, Gender memberGender,
-                                      String memberSchoolName, String memberProfileImageUrl, String memberOpenKakaoRoomUrl,
-                                      long postcardId, PostcardStatus postcardStatus) {
-        this.memberId = memberId;
-//        if(postcardStatus.equals(PostcardStatus.ACCEPT)){
-            this.memberName = memberName;
+    public MemberPostcardFromResponse(PostcardFromResponse i) {
+        this.memberId = i.getMemberId();
+//        if(i.getPostcardStatus().equals(PostcardStatus.ACCEPT)){
+        this.memberName = i.getMemberName();
 //        } else {
-//            this.memberName = transformMemberName(memberName);
+//            this.memberName = transformMemberName(i.getMemberName());
 //        }
-        this.memberAge = getAge(memberBirthDate);
-        this.memberGender = memberGender;
-        this.memberSchoolName = memberSchoolName;
-        this.memberProfileImageUrl = memberProfileImageUrl;
-        this.memberOpenKakaoRoomUrl = memberOpenKakaoRoomUrl;
-        this.postcardId = postcardId;
-        this.postcardStatus = postcardStatus;
+        this.memberAge = getAge(i.getMemberBirthDate());
+        this.memberGender = i.getMemberGender();
+        this.memberSchoolName = i.getMemberSchoolName();
+        this.memberProfileImageUrl = i.getMemberProfileImageUrl();
+        this.memberOpenKakaoRoomUrl = i.getMemberOpenKakaoRoomUrl();
+        this.postcardId = i.getPostcardId();
+        this.postcardStatus = i.getPostcardStatus();
     }
 
-    private String transformMemberName(String name){
-        if(name == null || name.isEmpty())
+    private String transformMemberName(String name) {
+        if (name == null || name.isEmpty())
             return "";
         char lastName = name.charAt(0);
         return lastName +

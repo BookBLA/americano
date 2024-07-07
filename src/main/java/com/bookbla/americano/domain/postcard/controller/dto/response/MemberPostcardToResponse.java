@@ -1,9 +1,13 @@
 package com.bookbla.americano.domain.postcard.controller.dto.response;
 
-import com.bookbla.americano.domain.member.enums.*;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
+import com.bookbla.americano.domain.postcard.service.dto.response.PostcardToResponse;
 import com.bookbla.americano.domain.quiz.enums.CorrectStatus;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -45,6 +49,8 @@ public class MemberPostcardToResponse {
 
     private String justFriendType;
 
+    private String heightType;
+
     private String memberSchoolName;
 
     private int quizScore;
@@ -64,38 +70,35 @@ public class MemberPostcardToResponse {
 
     private List<String> bookImageUrls;
 
-    public MemberPostcardToResponse(long postcardId, long memberId, String memberName, String memberProfileImageUrl,
-                                    LocalDate memberBirthDate, Gender memberGender, DrinkType drinkType, SmokeType smokeType,
-                                    ContactType contactType, DateStyleType dateStyleType, DateCostType dateCostType,
-                                    Mbti mbti, JustFriendType justFriendType, String memberSchoolName, String memberReplyContent,
-                                    PostcardStatus postcardStatus, String postcardImageUrl, String memberKakaoRoomUrl) {
+    public MemberPostcardToResponse(PostcardToResponse i) {
 
-        this.postcardId = postcardId;
-        this.memberId = memberId;
-//        if(postcardStatus.equals(PostcardStatus.ACCEPT)){
-            this.memberName = memberName;
+        this.postcardId = i.getPostcardId();
+        this.memberId = i.getMemberId();
+//        if(i.getPostcardStatus().equals(PostcardStatus.ACCEPT)){
+        this.memberName = i.getMemberName();
 //        } else {
-//            this.memberName = transformMemberName(memberName);
+//            this.memberName = transformMemberName(i.getMemberName());
 //        }
-        this.memberProfileImageUrl = memberProfileImageUrl;
-        this.memberAge = getAge(memberBirthDate);
-        this.memberGender = memberGender.name();
-        this.drinkType = drinkType.getValue();
-        this.smokeType = smokeType.getValue();
-        this.contactType = contactType.getValue();
-        this.dateStyleType = dateStyleType.getValue();
-        this.dateCostType = dateCostType.getValue();
-        this.mbti = mbti.name();
-        this.justFriendType = justFriendType.getValue();
-        this.memberSchoolName = memberSchoolName;
-        this.memberReplyContent = memberReplyContent;
-        this.postcardStatus = postcardStatus;
-        this.postcardImageUrl = postcardImageUrl;
-        this.memberOpenKakaoRoomUrl = memberKakaoRoomUrl;
+        this.memberProfileImageUrl = i.getMemberProfileImageUrl();
+        this.memberAge = getAge(i.getMemberBirthDate());
+        this.memberGender = i.getMemberGender().name();
+        this.drinkType = i.getDrinkType().getValue();
+        this.smokeType = i.getSmokeType().getValue();
+        this.contactType = i.getContactType().getValue();
+        this.dateStyleType = i.getDateStyleType().getValue();
+        this.dateCostType = i.getDateCostType().getValue();
+        this.mbti = i.getMbti().name();
+        this.justFriendType = i.getJustFriendType().getValue();
+        this.heightType = i.getHeightType().getValue();
+        this.memberSchoolName = i.getMemberSchoolName();
+        this.memberReplyContent = i.getMemberReplyContent();
+        this.postcardStatus = i.getPostcardStatus();
+        this.postcardImageUrl = i.getPostcardImageUrl();
+        this.memberOpenKakaoRoomUrl = i.getMemberKakaoRoomUrl();
     }
 
-    private String transformMemberName(String name){
-        if(name == null || name.isEmpty())
+    private String transformMemberName(String name) {
+        if (name == null || name.isEmpty())
             return "";
         char lastName = name.charAt(0);
         return lastName +
