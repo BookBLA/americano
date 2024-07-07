@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.school.controller;
+package com.bookbla.americano.domain.school.controller.dto.response;
 
 import com.bookbla.americano.base.utils.CalculateUtil;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -17,8 +17,7 @@ public class SchoolInvitationResponse {
     private final int goalMemberCount;
     private final int percentage;
 
-    public static SchoolInvitationResponse of(Member member, School school) {
-        int currentMemberCount = school.validMemberCounts();
+    public static SchoolInvitationResponse of(Member member, School school, int currentMemberCount) {
         int goalMemberCount = school.getOpenStandard();
         return new SchoolInvitationResponse(
                 school.getSchoolStatus().name(),

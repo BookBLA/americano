@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.school.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
+import com.bookbla.americano.domain.school.controller.dto.response.SchoolInvitationResponse;
 import com.bookbla.americano.domain.school.controller.dto.response.SchoolReadResponse;
 import com.bookbla.americano.domain.school.service.SchoolService;
 import io.swagger.v3.oas.annotations.Parameter;

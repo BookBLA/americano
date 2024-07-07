@@ -1,19 +1,13 @@
 package com.bookbla.americano.domain.school.repository.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.bookbla.americano.base.entity.BaseUpdateEntity;
-import com.bookbla.americano.domain.member.repository.entity.Member;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,9 +33,7 @@ public class School extends BaseUpdateEntity {
     @Column(nullable = false)
     private String emailDomain;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "school")
-    private List<Member> members = new ArrayList<>();
-
+    @Builder.Default
     @Enumerated(value = EnumType.STRING)
     private SchoolStatus schoolStatus = SchoolStatus.CLOSED;
 
@@ -49,19 +41,9 @@ public class School extends BaseUpdateEntity {
         return School.builder().name("등록되지 않음").build();
     }
 
-    public int validMemberCounts() {
-        return (int) members.stream()
-                .filter(Member::isWoman)
-                .filter(it -> it.getMemberStatus().isApproved())
-                .count();
-    }
-
-    public void checkOpen() {
-        if (schoolStatus == SchoolStatus.OPEN) {
-            return;
-        }
-        if (validMemberCounts() >= OPEN_STANDARD) {
-            schoolStatus = SchoolStatus.OPEN;
+    public void checkOpen(int currentMemberCounts) {
+        if (currentMemberCounts > OPEN_STANDARD) {
+            this.schoolStatus = SchoolStatus.OPEN;
         }
     }
 

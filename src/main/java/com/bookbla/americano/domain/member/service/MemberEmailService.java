@@ -55,8 +55,6 @@ public class MemberEmailService {
 
         checkSchoolDomainUrl(requestSchool, schoolEmail);
 
-        checkSchoolStatus(requestSchool);
-
         // 이메일 중복 체크
         checkDuplicatedEmail(schoolEmail);
 
@@ -108,7 +106,7 @@ public class MemberEmailService {
         }
 
         memberEmail.updateEmailVerifyDone();
-        School school = schoolRepository.findByEmailDomain(memberEmail.getEmailDomain())
+        School school = schoolRepository.findByEmailDomainAndName(memberEmail.getEmailDomain(), memberEmailVerifyRequest.getSchoolName())
                 .orElseThrow(() -> new BaseException(SchoolExceptionType.EMAIL_DOMAIN_NOT_FOUND));
         member.updateInvitationCode(createVerifyCode())
                 .updateSchool(school);
@@ -118,7 +116,6 @@ public class MemberEmailService {
                 .orElseGet(() -> memberPostcardRepository.save(MemberPostcard.builder()
                         .member(member)
                         .build()));
-
 
         redisUtil.deleteData(requestSchoolEmail);
         redisUtil.deleteData(redisVerifyCode);
@@ -148,12 +145,6 @@ public class MemberEmailService {
         String emailDomain = schoolEmail.replaceAll(".*@(?=[^@]+$)", "");
         if (school == null || !emailDomain.equals(school.getEmailDomain()))
             throw new BaseException(MemberEmailExceptionType.EMAIL_DOMAIN_NOT_EQUAL);
-    }
-
-    private void checkSchoolStatus(School requestSchool) {
-        if (requestSchool.getSchoolStatus() == SchoolStatus.CLOSED) {
-            throw new BaseException(SchoolExceptionType.SCHOOL_NOT_OPEN);
-        }
     }
 
     private void checkDuplicatedEmail(String schoolEmail) {
