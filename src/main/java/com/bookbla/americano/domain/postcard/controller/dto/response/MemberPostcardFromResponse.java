@@ -52,11 +52,7 @@ public class MemberPostcardFromResponse {
 
     public MemberPostcardFromResponse(PostcardFromResponse i) {
         this.memberId = i.getMemberId();
-//        if(i.getPostcardStatus().equals(PostcardStatus.ACCEPT)){
         this.memberName = i.getMemberName();
-//        } else {
-//            this.memberName = transformMemberName(i.getMemberName());
-//        }
         this.memberAge = getAge(i.getMemberBirthDate());
         this.memberGender = i.getMemberGender();
         this.memberSchoolName = i.getMemberSchoolName();
@@ -64,14 +60,6 @@ public class MemberPostcardFromResponse {
         this.memberOpenKakaoRoomUrl = i.getMemberOpenKakaoRoomUrl();
         this.postcardId = i.getPostcardId();
         this.postcardStatus = i.getPostcardStatus();
-    }
-
-    private String transformMemberName(String name) {
-        if (name == null || name.isEmpty())
-            return "";
-        char lastName = name.charAt(0);
-        return lastName +
-                "O".repeat(name.length() - 1);
     }
 
     private int getAge(LocalDate birthDay) {
