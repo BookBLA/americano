@@ -15,6 +15,7 @@ public class MemberResponse {
     private String oauthProfileImageUrl;
     private String memberType;
     private String memberStatus;
+    private String memberGender;
 
     public static MemberResponse from(Member member) {
         return MemberResponse.builder()
@@ -23,6 +24,7 @@ public class MemberResponse {
             .oauthProfileImageUrl(member.getOauthProfileImageUrl())
             .memberType(member.getMemberType().name())
             .memberStatus(member.getMemberStatus().name())
+            .memberGender(member.getMemberProfile().getGender().name())
             .build();
     }
 
