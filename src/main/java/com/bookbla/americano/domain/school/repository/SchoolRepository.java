@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SchoolRepository extends JpaRepository<School, Long> {
 
-    Optional<School> findByEmailDomain(String emailPostfix);
+    Optional<School> findByEmailDomainAndName(String emailPostfix, String name);
 
-    School findByName(String Name);
+    School findByName(String name);
 
 }

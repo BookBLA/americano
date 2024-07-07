@@ -22,9 +22,14 @@ public class SchoolService {
     public SchoolInvitationResponse getSchoolInformation(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         School school = member.getSchool();
-        return SchoolInvitationResponse.of(member, school);
+
+        int currentMemberCounts = (int) memberRepository.countValidMembers(school.getId());
+
+        school.checkOpen(currentMemberCounts);
+        return SchoolInvitationResponse.of(member, school, currentMemberCounts);
     }
 
+    @Transactional(readOnly = true)
     public SchoolReadResponse readSchool() {
         List<School> schools = schoolRepository.findAll();
         return SchoolReadResponse.from(schools);

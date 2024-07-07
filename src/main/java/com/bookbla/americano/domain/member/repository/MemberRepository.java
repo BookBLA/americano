@@ -41,4 +41,15 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     void deleteAllByDeletedAtBeforeAndMemberStatus(LocalDateTime cutoffDate);
 
     Optional<Member> findByInvitationCode(String invitationCode);
+
+    @Query(nativeQuery = true,
+            value = "select count(m.school_id) " +
+                    "from member as m " +
+                    "inner join school as s on m.school_id = s.id " +
+                    "where s.id = :schoolId " +
+                    "and not m.member_status = 'DELETED' " +
+                    "and not m.member_status = 'PROFILE' " +
+                    "and m.gender = 'FEMALE'")
+    long countValidMembers(@Param("schoolId") Long schoolId);
+
 }

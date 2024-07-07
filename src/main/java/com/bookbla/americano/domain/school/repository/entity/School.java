@@ -41,17 +41,13 @@ public class School extends BaseUpdateEntity {
         return School.builder().name("등록되지 않음").build();
     }
 
-    public void checkOpen() {
-        if (schoolStatus == SchoolStatus.OPEN) {
-            return;
+    public void checkOpen(int currentMemberCounts) {
+        if (currentMemberCounts > OPEN_STANDARD) {
+            this.schoolStatus = SchoolStatus.OPEN;
         }
     }
 
     public int getOpenStandard() {
         return OPEN_STANDARD;
-    }
-
-    public int validMemberCounts() {
-        return 1;
     }
 }
