@@ -97,8 +97,8 @@ public class AlarmService {
             return;
         }
 
-        // 해당 멤버가 회원가입 완료상태가 아니라면
-        if (!member.getMemberStatus().equals(MemberStatus.COMPLETED)) {
+        // 해당 멤버가 승인 필요상태가 아니라면
+        if (!member.getMemberStatus().equals(MemberStatus.APPROVAL)) {
             throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
         }
 
