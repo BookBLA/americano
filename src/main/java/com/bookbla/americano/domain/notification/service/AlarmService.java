@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.notification.service;
 
+import com.bookbla.americano.domain.notification.enums.PushAlarmForm;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -32,11 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AlarmService {
 
-    private static final String POSTCARD_SEND_TITLE = "띵동~\uD83D\uDC8C 엽서가 도착했어요!";
-    private static final String POSTCARD_SEND_BODY = "%s님이 엽서를 보냈어요! 지금 확인해 보세요~\uD83E\uDD70";
-    private static final String POSTCARD_ACCEPT_TITLE = "축하합니다\uD83E\uDD73\uD83E\uDD73 매칭에 성공하셨습니다~!!\uD83D\uDC95";
-    private static final String POSTCARD_ACCEPT_BODY = "%s님이 엽서를 수락했어요! 지금 바로 채팅해보세요~\uD83E\uDD70";
-
     private final MemberRepository memberRepository;
     private final MemberPushAlarmRepository memberPushAlarmRepository;
     private final PushAlarmLogRepository pushAlarmLogRepository;
@@ -53,13 +49,15 @@ public class AlarmService {
             throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
         }
 
-        // 엽서 도착은 익명 처리
-        String body = String.format(POSTCARD_SEND_BODY, sendMember.getMemberProfile().getName());
-        sendToExpo(receiveMember.getPushToken(), POSTCARD_SEND_TITLE, body);
+        String title = PushAlarmForm.POSTCARD_SEND.getTitle();
+        String body = PushAlarmForm.POSTCARD_SEND.getBody();
+        body = String.format(body, sendMember.getMemberProfile().getName());
+
+        sendToExpo(receiveMember.getPushToken(), title, body);
 
         MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
                 .member(receiveMember)
-                .title(POSTCARD_SEND_TITLE)
+                .title(title)
                 .body(body)
                 .build();
 
@@ -79,16 +77,40 @@ public class AlarmService {
             throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
         }
 
-        // 엽서 수락은 실명 처리
-        String body = String.format(POSTCARD_ACCEPT_BODY, receiveMember.getMemberProfile().getName());
+        String title = PushAlarmForm.POSTCARD_ACCEPT.getTitle();
+        String body = PushAlarmForm.POSTCARD_ACCEPT.getBody();
+        body = String.format(body, receiveMember.getMemberProfile().getName());
 
-        sendToExpo(sendMember.getPushToken(), POSTCARD_ACCEPT_TITLE, body);
+        sendToExpo(sendMember.getPushToken(), title, body);
 
         MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
                 .member(sendMember)
-                .title(POSTCARD_ACCEPT_TITLE)
+                .title(title)
                 .body(body)
                 .build();
+
+        memberPushAlarmRepository.save(memberPushAlarm);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void sendPushAlarmForAdmin(Member member, PushAlarmForm pushAlarmForm){
+        // 해당 멤버가 푸시 토큰이 없다면 에러 발생
+        if (member.getPushToken() == null) {
+            return;
+        }
+
+        // 해당 멤버가 회원가입 완료상태가 아니라면
+        if (!member.getMemberStatus().equals(MemberStatus.COMPLETED)) {
+            throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
+        }
+
+        sendToExpo(member.getPushToken(), pushAlarmForm.getTitle(), pushAlarmForm.getBody());
+
+        MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
+            .member(member)
+            .title(pushAlarmForm.getTitle())
+            .body(pushAlarmForm.getBody())
+            .build();
 
         memberPushAlarmRepository.save(memberPushAlarm);
     }
@@ -132,6 +154,7 @@ public class AlarmService {
 
         return PushAlarmAllCreateResponse.from(title, body);
     }
+
 
     private void sendListToExpo(List<String> tokens, String title, String body) {
         List<String> exponentPushTokens = tokens.stream()
