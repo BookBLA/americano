@@ -110,7 +110,6 @@ public class AdminVerificationService {
         updateVerification(dto, status, memberVerify, member, memberProfile);
 
         memberProfile.updateOpenKakaoRoomStatus(status);
-        member.updateMemberStatus();
         checkMemberStatuses(member, memberProfile);
     }
 
@@ -126,8 +125,8 @@ public class AdminVerificationService {
         if (status.isPending()) {
             return;
         }
+        memberVerify.fail(dto.getReason());
         alarmService.sendPushAlarmForVerifyFail(member, PushAlarmForm.ADMIN_OPEN_KAKAO_ROOM_REJECT);
-
     }
 
     private void checkMemberStatuses(Member member, MemberProfile memberProfile) {
