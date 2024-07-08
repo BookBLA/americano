@@ -45,7 +45,7 @@ public class AdminVerificationService {
         updateVerification(dto, status, memberVerify, member, memberProfile);
 
         memberProfile.updateProfileImageStatus(status);
-        checkMemberStatuses(member, memberProfile);
+        checkInitialMemberApprove(member, memberProfile);
     }
 
     private void updateVerification(
@@ -73,7 +73,7 @@ public class AdminVerificationService {
         updateVerification(dto, status, memberVerify, member, memberProfile);
 
         memberProfile.updateStudentIdImageStatus(status);
-        checkMemberStatuses(member, memberProfile);
+        checkInitialMemberApprove(member, memberProfile);
     }
 
     private void updateVerification(
@@ -110,7 +110,7 @@ public class AdminVerificationService {
         updateVerification(dto, status, memberVerify, member, memberProfile);
 
         memberProfile.updateOpenKakaoRoomStatus(status);
-        checkMemberStatuses(member, memberProfile);
+        checkInitialMemberApprove(member, memberProfile);
     }
 
     private void updateVerification(
@@ -129,11 +129,10 @@ public class AdminVerificationService {
         alarmService.sendPushAlarmForVerifyFail(member, PushAlarmForm.ADMIN_OPEN_KAKAO_ROOM_REJECT);
     }
 
-    private void checkMemberStatuses(Member member, MemberProfile memberProfile) {
+    private void checkInitialMemberApprove(Member member, MemberProfile memberProfile) {
         if (memberProfile.isCertified() && member.getMemberStatus() == MemberStatus.APPROVAL) {
             member.updateMemberStatus(MemberStatus.STYLE, LocalDateTime.now());
             alarmService.sendPushAlarmForVerifySuccess(member, PushAlarmForm.ADMIN_VERIFICATION_ACCEPT);
         }
     }
-
 }
