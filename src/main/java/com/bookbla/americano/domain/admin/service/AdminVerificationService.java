@@ -61,7 +61,7 @@ public class AdminVerificationService {
             return;
         }
         memberVerify.fail(dto.getReason());
-        alarmService.sendPushAlarmForAdmin(member, PushAlarmForm.ADMIN_PROFILE_IMAGE_REJECT);
+        alarmService.sendPushAlarmForVerifyFail(member, PushAlarmForm.ADMIN_PROFILE_IMAGE_REJECT);
     }
 
     public void updateMemberStudentIdStatus(StatusUpdateDto dto) {
@@ -89,7 +89,7 @@ public class AdminVerificationService {
             return;
         }
         memberVerify.fail(dto.getReason());
-        alarmService.sendPushAlarmForAdmin(member, PushAlarmForm.ADMIN_STUDENT_ID_IMAGE_REJECT);
+        alarmService.sendPushAlarmForVerifyFail(member, PushAlarmForm.ADMIN_STUDENT_ID_IMAGE_REJECT);
     }
 
     private void updateMemberProfileByStudentIdElements(MemberVerify memberVerify, MemberProfile memberProfile) {
@@ -126,14 +126,14 @@ public class AdminVerificationService {
         if (status.isPending()) {
             return;
         }
-        alarmService.sendPushAlarmForAdmin(member, PushAlarmForm.ADMIN_OPEN_KAKAO_ROOM_REJECT);
+        alarmService.sendPushAlarmForVerifyFail(member, PushAlarmForm.ADMIN_OPEN_KAKAO_ROOM_REJECT);
 
     }
 
     private void checkMemberStatuses(Member member, MemberProfile memberProfile) {
         if (memberProfile.isCertified() && member.getMemberStatus() == MemberStatus.APPROVAL) {
             member.updateMemberStatus(MemberStatus.STYLE, LocalDateTime.now());
-            alarmService.sendPushAlarmForAdmin(member, PushAlarmForm.ADMIN_VERIFICATION_ACCEPT);
+            alarmService.sendPushAlarmForVerifySuccess(member, PushAlarmForm.ADMIN_VERIFICATION_ACCEPT);
         }
     }
 

@@ -46,7 +46,7 @@ public class AlarmService {
 
         // 해당 멤버가 회원가입 완료상태가 아니라면
         if (!receiveMember.getMemberStatus().equals(MemberStatus.COMPLETED)) {
-            throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
+            throw new BaseException(PushAlarmExceptionType.NOT_COMPLETED_STATUS);
         }
 
         String title = PushAlarmForm.POSTCARD_SEND.getTitle();
@@ -91,7 +91,7 @@ public class AlarmService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void sendPushAlarmForAdmin(Member member, PushAlarmForm pushAlarmForm){
+    public void sendPushAlarmForVerifyFail(Member member, PushAlarmForm pushAlarmForm){
         // 해당 멤버가 푸시 토큰이 없다면 에러 발생
         if (member.getPushToken() == null) {
             return;
@@ -99,7 +99,7 @@ public class AlarmService {
 
         // 해당 멤버가 승인 필요상태가 아니라면
         if (!member.getMemberStatus().equals(MemberStatus.APPROVAL)) {
-            throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
+            throw new BaseException(PushAlarmExceptionType.NOT_APPROVAL_STATUS);
         }
 
         sendToExpo(member.getPushToken(), pushAlarmForm.getTitle(), pushAlarmForm.getBody());
@@ -113,7 +113,28 @@ public class AlarmService {
         memberPushAlarmRepository.save(memberPushAlarm);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void sendPushAlarmForVerifySuccess(Member member, PushAlarmForm pushAlarmForm){
+        // 해당 멤버가 푸시 토큰이 없다면 에러 발생
+        if (member.getPushToken() == null) {
+            return;
+        }
 
+        // 해당 멤버가 승인 필요상태가 아니라면
+        if (!member.getMemberStatus().equals(MemberStatus.STYLE)) {
+            throw new BaseException(PushAlarmExceptionType.NOT_STYLE_STATUS);
+        }
+
+        sendToExpo(member.getPushToken(), pushAlarmForm.getTitle(), pushAlarmForm.getBody());
+
+        MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
+            .member(member)
+            .title(pushAlarmForm.getTitle())
+            .body(pushAlarmForm.getBody())
+            .build();
+
+        memberPushAlarmRepository.save(memberPushAlarm);
+    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public PushAlarmAllCreateResponse sendPushAlarmAll(
