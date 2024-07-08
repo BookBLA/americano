@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @Getter
-public class AdminNotificationEvent {
+public class AdminNotificationEventWithAfterCommit {
 
     private String title;
     private String contents;

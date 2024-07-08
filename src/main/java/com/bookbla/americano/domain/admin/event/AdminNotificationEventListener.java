@@ -1,7 +1,7 @@
 package com.bookbla.americano.domain.admin.event;
 
 import com.bookbla.americano.domain.admin.service.AdminNotificationClient;
-import com.bookbla.americano.domain.member.service.dto.event.AdminNotificationEvent;
+import com.bookbla.americano.domain.member.service.dto.event.AdminNotificationEventWithAfterCommit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
@@ -14,7 +14,7 @@ public class AdminNotificationEventListener {
     private final AdminNotificationClient adminNotificationClient;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void sendMessage(AdminNotificationEvent adminNotificationEvent) {
+    public void sendMessageAfterCommit(AdminNotificationEventWithAfterCommit adminNotificationEvent) {
         adminNotificationClient.send(adminNotificationEvent.getTitle(), adminNotificationEvent.getContents());
     }
 

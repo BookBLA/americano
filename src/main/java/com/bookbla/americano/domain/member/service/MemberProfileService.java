@@ -35,7 +35,7 @@ import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.MemberStatusLog;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
-import com.bookbla.americano.domain.member.service.dto.event.AdminNotificationEvent;
+import com.bookbla.americano.domain.member.service.dto.event.AdminNotificationEventWithAfterCommit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -98,7 +98,7 @@ public class MemberProfileService {
                 .contents(studentImageUrl)
                 .verifyType(STUDENT_ID)
                 .build();
-        eventPublisher.publishEvent(new AdminNotificationEvent(STUDENT_ID.name(), member.getId().toString()));
+        eventPublisher.publishEvent(new AdminNotificationEventWithAfterCommit(STUDENT_ID.name(), member.getId().toString()));
         memberVerifyRepository.save(studentIdVerify);
     }
 
@@ -110,7 +110,7 @@ public class MemberProfileService {
                 .verifyType(PROFILE_IMAGE)
                 .build();
         memberVerifyRepository.save(profileImageVerify);
-        eventPublisher.publishEvent(new AdminNotificationEvent(PROFILE_IMAGE.name(), member.getId().toString()));
+        eventPublisher.publishEvent(new AdminNotificationEventWithAfterCommit(PROFILE_IMAGE.name(), member.getId().toString()));
     }
 
     private void saveKakaoRoomVerify(Member member, String kakaoRoomUrl) {
@@ -121,7 +121,7 @@ public class MemberProfileService {
                 .verifyType(OPEN_KAKAO_ROOM_URL)
                 .build();
         memberVerifyRepository.save(kakaoRoomVerify);
-        eventPublisher.publishEvent(new AdminNotificationEvent(OPEN_KAKAO_ROOM_URL.name(), member.getId().toString()));
+        eventPublisher.publishEvent(new AdminNotificationEventWithAfterCommit(OPEN_KAKAO_ROOM_URL.name(), member.getId().toString()));
     }
 
     @Transactional(readOnly = true)
