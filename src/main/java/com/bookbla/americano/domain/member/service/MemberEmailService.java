@@ -142,7 +142,7 @@ public class MemberEmailService {
     }
 
     private void checkSchoolDomainUrl(School school, String schoolEmail) {
-        String emailDomain = schoolEmail.replaceAll(".*@(?=[^@]+$)", "");
+        String emailDomain = schoolEmail.replaceAll("^.*?(?=@[^@]+$)", "");
         if (school == null || !emailDomain.equals(school.getEmailDomain()))
             throw new BaseException(MemberEmailExceptionType.EMAIL_DOMAIN_NOT_EQUAL);
     }
