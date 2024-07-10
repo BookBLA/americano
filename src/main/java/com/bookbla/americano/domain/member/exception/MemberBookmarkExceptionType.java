@@ -7,9 +7,9 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum MemberPostcardExceptionType implements ExceptionType {
+public enum MemberBookmarkExceptionType implements ExceptionType {
 
-    INVALID_POSTCARD_COUNTS(HttpStatus.BAD_REQUEST, "member-post-card_001", "엽서 개수가 부족합니다. 충전 시간을 확인해주세요"),
+    INVALID_BOOKMARK_COUNTS(HttpStatus.BAD_REQUEST, "member-bookmark_001", "책갈피 개수가 부족합니다."),
     ;
 
     private final HttpStatus httpStatus;

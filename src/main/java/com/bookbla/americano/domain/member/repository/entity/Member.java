@@ -189,7 +189,7 @@ public class Member extends BaseInsertEntity {
 
     public void validateStyleRegistered() {
         if (this.memberStyle != null) {
-            throw new BaseException(MemberExceptionType.STYLE_ALREADY_REGISTERD);
+            throw new BaseException(MemberExceptionType.STYLE_ALREADY_REGISTERED);
         }
     }
 

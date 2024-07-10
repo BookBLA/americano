@@ -13,7 +13,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class MemberPostcardResponse {
-    private int freePostcardCount;
-    private int payPostcardCount;
+public class MemberBookmarkResponse {
+    private int bookmarkCount;
 }
