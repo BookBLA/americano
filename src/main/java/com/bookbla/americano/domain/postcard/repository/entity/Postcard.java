@@ -77,4 +77,8 @@ public class Postcard extends BaseInsertEntity {
     public boolean isRefused() {
         return postcardStatus.isRefused();
     }
+
+    public boolean isPending() {
+        return postcardStatus.isPending();
+    }
 }

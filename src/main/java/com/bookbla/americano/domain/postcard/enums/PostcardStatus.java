@@ -17,12 +17,16 @@ public enum PostcardStatus {
 
     private final String status;
 
-    public boolean isRefused() {
-        return this == REFUSED;
+    public boolean isPending() {
+        return this == PENDING;
     }
 
     public boolean isAccept() {
         return this == ACCEPT;
+    }
+
+    public boolean isRefused() {
+        return this == REFUSED;
     }
 
     public static PostcardStatus from(String status) {

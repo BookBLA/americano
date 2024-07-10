@@ -129,8 +129,9 @@ public class PostcardService {
             quizReplyRepository.save(quizReply);
         }
 
-        // 엽서를 받는 멤버에게 푸시 알림
-        alarmService.sendPushAlarmForReceivePostCard(member, targetMember);
+        if (postcard.isPending()) {
+            alarmService.sendPushAlarmForReceivePostCard(member, targetMember);
+        }
 
         return SendPostcardResponse.builder().isSendSuccess(isCorrect).build();
     }
