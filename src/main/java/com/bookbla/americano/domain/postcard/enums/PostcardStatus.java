@@ -17,6 +17,9 @@ public enum PostcardStatus {
 
     private final String status;
 
+    public boolean isPending() {
+        return this == PENDING;
+    }
     public boolean isRefused() {
         return this == REFUSED;
     }
