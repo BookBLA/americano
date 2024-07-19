@@ -76,7 +76,7 @@ public class MemberController {
         return ResponseEntity.ok(memberStatusResponse);
     }
 
-    @Operation(summary = "사용자 Bookmark 개수 조회", description = "책갈피 개수 조회")
+    @Operation(summary = "사용자 Bookmark 개수 조회", description = "책갈피 개수 조회 (기존:'/members/postcards')")
     @GetMapping("/bookmarks")
     public ResponseEntity<Integer> memberBookmarkCount(
         @Parameter(hidden = true) @User LoginUser loginUser) {

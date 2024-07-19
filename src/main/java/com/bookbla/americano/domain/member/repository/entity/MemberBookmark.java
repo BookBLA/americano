@@ -42,7 +42,7 @@ public class MemberBookmark extends BaseUpdateEntity {
     }
 
     public void validate() {
-        if (bookmarkCount <= 35) {
+        if (bookmarkCount < 35) {
             throw new BaseException(MemberBookmarkExceptionType.INVALID_BOOKMARK_COUNTS);
         }
     }
