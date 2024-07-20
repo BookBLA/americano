@@ -15,6 +15,8 @@ import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.bookbla.americano.domain.member.exception.PolicyExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
 import com.bookbla.americano.domain.school.repository.entity.School;
+import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -57,6 +59,11 @@ public class Member extends BaseInsertEntity {
     private School school;
 
     private String pushToken;
+
+    @Builder.Default
+    @Column(length = 1)
+    @Convert(converter = BooleanToYNConverter.class)
+    private Boolean pushAlarmEnabled = Boolean.TRUE;
 
     @Enumerated(EnumType.STRING)
     private MemberType memberType;
@@ -110,6 +117,11 @@ public class Member extends BaseInsertEntity {
 
     public Member updatePushToken(String pushToken) {
         this.pushToken = pushToken;
+        return this;
+    }
+
+    public Member updatePushTokenEnabled(Boolean pushAlarmEnabled) {
+        this.pushAlarmEnabled = pushAlarmEnabled;
         return this;
     }
 

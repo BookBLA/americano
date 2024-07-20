@@ -39,8 +39,8 @@ public class AlarmService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendPushAlarmForReceivePostCard(Member sendMember, Member receiveMember) {
-        // 해당 멤버가 푸시 토큰이 없다면 에러 발생
-        if (receiveMember.getPushToken() == null) {
+
+        if (isPushAlarmAble(receiveMember)) {
             return;
         }
 
@@ -66,8 +66,8 @@ public class AlarmService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendPushAlarmForAcceptPostcard(Member sendMember, Member receiveMember) {
-        // 해당 멤버가 푸시 토큰이 없다면 에러 발생
-        if (sendMember.getPushToken() == null) {
+
+        if (isPushAlarmAble(sendMember)) {
             return;
         }
 
@@ -94,8 +94,8 @@ public class AlarmService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendPushAlarmForAdmin(Member member, PushAlarmForm pushAlarmForm){
-        // 해당 멤버가 푸시 토큰이 없다면 에러 발생
-        if (member.getPushToken() == null) {
+
+        if (isPushAlarmAble(member)) {
             return;
         }
 
@@ -266,6 +266,10 @@ public class AlarmService {
                 pushAlarmLogRepository.save(pushAlarmLog);
             }
         }
+    }
+
+    private boolean isPushAlarmAble(Member member) {
+        return member.getPushToken() != null && member.getPushAlarmEnabled();
     }
 
 }
