@@ -1,10 +1,5 @@
 package com.bookbla.americano.domain.member.service;
 
-import com.bookbla.americano.domain.school.repository.entity.SchoolStatus;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Random;
-
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.base.utils.RedisUtil;
@@ -13,16 +8,15 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberEmailVer
 import com.bookbla.americano.domain.member.controller.dto.response.EmailResponse;
 import com.bookbla.americano.domain.member.enums.EmailVerifyStatus;
 import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
+import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberEmailRepository;
-import com.bookbla.americano.domain.member.repository.MemberPostcardRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.member.repository.entity.MemberEmail;
-import com.bookbla.americano.domain.member.repository.entity.MemberPostcard;
 import com.bookbla.americano.domain.school.exception.SchoolExceptionType;
 import com.bookbla.americano.domain.school.repository.SchoolRepository;
 import com.bookbla.americano.domain.school.repository.entity.School;
-import javax.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -32,6 +26,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import javax.mail.internet.MimeMessage;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Random;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -40,7 +39,7 @@ public class MemberEmailService {
 
     private final MemberRepository memberRepository;
     private final MemberEmailRepository memberEmailRepository;
-    private final MemberPostcardRepository memberPostcardRepository;
+    private final MemberBookmarkRepository memberBookmarkRepository;
     private final SchoolRepository schoolRepository;
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
@@ -111,9 +110,9 @@ public class MemberEmailService {
         member.updateInvitationCode(createVerifyCode())
                 .updateSchool(school);
 
-        // 메일 인증시 멤버 엽서 엔티티 생성, 중복 생성 방지용 로직 추가
-        memberPostcardRepository.findMemberPostcardByMemberId(memberId)
-                .orElseGet(() -> memberPostcardRepository.save(MemberPostcard.builder()
+        // 메일 인증시 멤버 책갈피 엔티티 생성, 중복 생성 방지용 로직 추가
+        memberBookmarkRepository.findMemberBookmarkByMemberId(memberId)
+                .orElseGet(() -> memberBookmarkRepository.save(MemberBookmark.builder()
                         .member(member)
                         .build()));
 

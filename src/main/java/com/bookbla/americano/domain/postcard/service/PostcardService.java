@@ -1,20 +1,16 @@
 package com.bookbla.americano.domain.postcard.service;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
-import com.bookbla.americano.domain.member.repository.MemberPostcardRepository;
+import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
-import com.bookbla.americano.domain.member.repository.entity.MemberPostcard;
+import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.member.service.MemberBookService;
 import com.bookbla.americano.domain.memberask.exception.MemberAskExceptionType;
 import com.bookbla.americano.domain.memberask.repository.MemberAskRepository;
@@ -47,6 +43,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -59,18 +59,18 @@ public class PostcardService {
     private final QuizQuestionRepository quizQuestionRepository;
     private final MemberRepository memberRepository;
     private final PostcardTypeRepository postcardTypeRepository;
-    private final MemberPostcardRepository memberPostcardRepository;
+    private final MemberBookmarkRepository memberBookmarkRepository;
     private final MemberBookRepository memberBookRepository;
     private final MemberBlockRepository memberBlockRepository;
     private final MemberBookService memberBookService;
     private final PostcardPushAlarmEventListener postcardPushAlarmEventListener;
 
     public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
-        MemberPostcard memberPostcard = memberPostcardRepository.findMemberPostcardByMemberId(
+        MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
                         memberId)
                 .orElseThrow(
-                        () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_POSTCARD_INFO));
-        memberPostcard.validate();
+                        () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
+        memberBookmark.validate();
 
         memberBlockRepository.findByBlockerMemberIdAndBlockedMemberId(request.getReceiveMemberId(), memberId)
                 .ifPresent(it -> {
@@ -113,7 +113,7 @@ public class PostcardService {
 
         PostcardStatus status = isCorrect ? PostcardStatus.PENDING : PostcardStatus.ALL_WRONG;
 
-        memberPostcard.use();
+        memberBookmark.use();
 
         PostcardType postCardType = postcardTypeRepository.getByIdOrThrow(
                 request.getPostcardTypeId());
@@ -242,11 +242,11 @@ public class PostcardService {
                 throw new BaseException(PostcardExceptionType.READ_POSTCARD_ALREADY);
             }
         }
-        MemberPostcard memberPostcard = memberPostcardRepository.findMemberPostcardByMemberId(
+        MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
                         memberId)
                 .orElseThrow(
-                        () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_POSTCARD_INFO));
-        memberPostcard.use();
+                        () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
+        memberBookmark.use();
         updatePostcardStatus(memberId, postcardId, PostcardStatus.READ);
     }
 
