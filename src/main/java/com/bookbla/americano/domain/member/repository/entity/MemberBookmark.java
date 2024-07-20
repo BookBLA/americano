@@ -2,7 +2,7 @@ package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.member.exception.MemberPostcardExceptionType;
+import com.bookbla.americano.domain.member.exception.MemberBookmarkExceptionType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberPostcard extends BaseEntity {
+public class MemberBookmark extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,29 +33,21 @@ public class MemberPostcard extends BaseEntity {
 
     @Column
     @Builder.Default
-    private int payPostcardCount = 8;
-
-    @Column
-    @Builder.Default
-    private int freePostcardCount = 2;
+    private int bookmarkCount = 0;
 
     public void use() {
-        if (freePostcardCount >= 1) {
-            freePostcardCount--;
-            return;
-        }
         validate();
-        payPostcardCount--;
+        bookmarkCount = bookmarkCount - 35;
     }
 
     public void validate() {
-        if (freePostcardCount <= 0 && payPostcardCount <= 0) {
-            throw new BaseException(MemberPostcardExceptionType.INVALID_POSTCARD_COUNTS);
+        if (bookmarkCount < 35) {
+            throw new BaseException(MemberBookmarkExceptionType.INVALID_BOOKMARK_COUNTS);
         }
     }
 
     // 엽서 -> 책갈피 변경시, 책갈피 150개
     public void addInvitationPostcard() {
-        payPostcardCount += 150;
+        bookmarkCount += 150;
     }
 }

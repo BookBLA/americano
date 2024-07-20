@@ -8,7 +8,7 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberBookPro
 import com.bookbla.americano.domain.member.controller.dto.response.MemberDeleteResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStatusResponse;
-import com.bookbla.americano.domain.member.service.MemberPostcardService;
+import com.bookbla.americano.domain.member.service.MemberBookmarkService;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
 import com.bookbla.americano.domain.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
-    private final MemberPostcardService memberPostcardService;
+    private final MemberBookmarkService memberBookmarkService;
     private final MemberProfileService memberProfileService;
 
     @Operation(summary = "멤버 조회 API")
@@ -76,12 +76,12 @@ public class MemberController {
         return ResponseEntity.ok(memberStatusResponse);
     }
 
-    @GetMapping("/postcards")
-    public ResponseEntity<Integer> memberPostcardCount(
+    @Operation(summary = "사용자 Bookmark 개수 조회", description = "책갈피 개수 조회 (기존:'/members/postcards')")
+    @GetMapping("/bookmarks")
+    public ResponseEntity<Integer> memberBookmarkCount(
         @Parameter(hidden = true) @User LoginUser loginUser) {
-        Integer memberPostcardCount = memberPostcardService.getMemberPostcardCount(
-            loginUser.getMemberId());
-        return ResponseEntity.ok(memberPostcardCount);
+        return ResponseEntity.ok(
+                memberBookmarkService.getMemberBookmarkCount(loginUser.getMemberId()));
     }
 
     @GetMapping("/same-book-members")

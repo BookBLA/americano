@@ -2,12 +2,10 @@ package com.bookbla.americano.domain.postcard.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
-import com.bookbla.americano.domain.member.service.MemberPostcardService;
 import com.bookbla.americano.domain.postcard.controller.dto.request.PostcardSendValidationRequest;
 import com.bookbla.americano.domain.postcard.controller.dto.request.PostcardStatusUpdateRequest;
 import com.bookbla.americano.domain.postcard.controller.dto.response.ContactInfoResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardFromResponse;
-import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardToResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardStatusResponse;
@@ -36,15 +34,6 @@ import java.util.List;
 public class PostcardController {
 
     private final PostcardService postcardService;
-    private final MemberPostcardService memberPostcardService;
-
-    @Operation(summary = "사용자 Postcard 타입 별 개수 조회", description = "Free Postcard / Pay Postcard 타입 별 개수 조회")
-    @GetMapping("")
-    public ResponseEntity<MemberPostcardResponse> getMemberPostcardCount(
-            @Parameter(hidden = true) @User LoginUser loginUser) {
-        return ResponseEntity.ok(
-                memberPostcardService.getMemberPostcardEachCount(loginUser.getMemberId()));
-    }
 
     @Operation(summary = "보낸 엽서 조회", description = "사용자가 보낸 엽서 조회")
     @GetMapping("/from")
