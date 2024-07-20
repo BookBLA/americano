@@ -2,6 +2,8 @@ package com.bookbla.americano.domain.notification.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
+import com.bookbla.americano.domain.notification.controller.dto.response.PushAlarmSettingResponse;
+import com.bookbla.americano.domain.notification.controller.dto.request.PushAlarmSettingCreateRequest;
 import com.bookbla.americano.domain.notification.controller.dto.response.MemberPushAlarmReadResponse;
 import com.bookbla.americano.domain.notification.service.MemberPushAlarmService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,7 +28,8 @@ public class MemberPushAlarmController {
     @GetMapping
     public ResponseEntity<MemberPushAlarmReadResponse> readPushAlarm(
         @Parameter(hidden = true) @User LoginUser loginUser) {
-        MemberPushAlarmReadResponse memberPushAlarmReadResponse = memberPushAlarmService.readPushAlarm(loginUser.getMemberId());
+        MemberPushAlarmReadResponse memberPushAlarmReadResponse = memberPushAlarmService.readPushAlarm(
+            loginUser.getMemberId());
         return ResponseEntity.ok(memberPushAlarmReadResponse);
     }
 
@@ -46,6 +50,26 @@ public class MemberPushAlarmController {
     ) {
         memberPushAlarmService.deleteAllPushAlarm(loginUser.getMemberId());
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "해당 회원의 푸시 알림 설정 수정 API")
+    @PostMapping("/settings")
+    public ResponseEntity<PushAlarmSettingResponse> updatePushAlarmSetting(
+        @Parameter(hidden = true) @User LoginUser loginUser, PushAlarmSettingCreateRequest request
+    ) {
+        PushAlarmSettingResponse response = memberPushAlarmService.updatePushAlarmSetting(
+            loginUser.getMemberId(), request);
+        return ResponseEntity.ok(response) ;
+    }
+
+    @Operation(summary = "해당 회원의 푸시 알림 설정 조회 API")
+    @GetMapping("/settings")
+    public ResponseEntity<PushAlarmSettingResponse> getPushAlarmSetting(
+        @Parameter(hidden = true) @User LoginUser loginUser
+    ) {
+        PushAlarmSettingResponse response = memberPushAlarmService.getPushAlarmSetting(
+            loginUser.getMemberId());
+        return ResponseEntity.ok(response) ;
     }
 
 }
