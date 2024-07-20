@@ -10,12 +10,14 @@ import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
+import com.bookbla.americano.domain.notification.service.AlarmService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static com.bookbla.americano.domain.member.enums.Gender.MALE;
 import static com.bookbla.americano.domain.member.enums.MemberStatus.APPROVAL;
@@ -38,6 +40,9 @@ class AdminVerificationServiceTest {
 
     @Autowired
     private MemberVerifyRepository memberVerifyRepository;
+
+    @MockBean
+    private AlarmService alarmService;
 
     @Autowired
     private AdminVerificationService adminVerificationService;
@@ -111,6 +116,7 @@ class AdminVerificationServiceTest {
                 .oauthEmail("bookbla@bookbla.com")
                 .memberProfile(MemberProfile.builder().studentIdImageStatus(StudentIdImageStatus.PENDING).build())
                 .memberStatus(APPROVAL)
+                .pushAlarmEnabled(Boolean.TRUE)
                 .build());
         MemberVerify memberVerify = memberVerifyRepository.save(MemberVerify.builder()
                 .memberId(member.getId())
