@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
-import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.domain.member.enums.MemberVerifyStatus;
 import com.bookbla.americano.domain.member.enums.MemberVerifyType;
 import javax.persistence.Entity;
@@ -24,7 +24,7 @@ import static com.bookbla.americano.domain.member.enums.MemberVerifyStatus.SUCCE
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberVerify extends BaseInsertEntity {
+public class MemberVerify extends BaseEntity {
 
     public static final String DESCRIPTION_PARSING_FAIL = "승인 도중 파싱 실패. 확인 필요";
 

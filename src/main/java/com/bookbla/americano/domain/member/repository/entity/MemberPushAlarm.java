@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
-import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.notification.exception.PushAlarmExceptionType;
 import javax.persistence.Entity;
@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberPushAlarm extends BaseInsertEntity {
+public class MemberPushAlarm extends BaseEntity {
 
     @Id
     @EqualsAndHashCode.Include

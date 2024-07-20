@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
-import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberStatusLog extends BaseInsertEntity {
+public class MemberStatusLog extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

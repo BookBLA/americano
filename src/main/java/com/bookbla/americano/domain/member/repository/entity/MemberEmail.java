@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
-import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.enums.EmailVerifyStatus;
 import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberEmail extends BaseInsertEntity {
+public class MemberEmail extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

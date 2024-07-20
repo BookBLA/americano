@@ -1,7 +1,7 @@
 package com.bookbla.americano.domain.admin.repository.entity;
 
 
-import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.admin.excpetion.AdminExceptionType;
 import javax.persistence.Column;
@@ -22,7 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Builder
 @Entity
 @Getter
-public class Admin extends BaseInsertEntity {
+public class Admin extends BaseEntity {
 
     private static final int MAX_FAIL_COUNT = 5;
 

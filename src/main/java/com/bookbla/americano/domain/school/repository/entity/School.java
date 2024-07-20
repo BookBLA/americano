@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.school.repository.entity;
 
-import com.bookbla.americano.base.entity.BaseUpdateEntity;
+import com.bookbla.americano.base.entity.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Getter
-public class School extends BaseUpdateEntity {
+public class School extends BaseEntity {
 
     public static final int OPEN_STANDARD = 30;
 
