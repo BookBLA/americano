@@ -99,11 +99,6 @@ public class AlarmService {
             return;
         }
 
-        // 해당 멤버가 회원가입 완료상태가 아니라면
-        if (!member.getMemberStatus().equals(MemberStatus.COMPLETED)) {
-            throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
-        }
-
         sendToExpo(member.getPushToken(), pushAlarmForm.getTitle(), pushAlarmForm.getBody());
 
         MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
