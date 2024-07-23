@@ -68,4 +68,17 @@ final class AppleJwtProvider {
             throw new RuntimeException("애플 전송시 사용할 토큰의 개인키 생성 중 예외가 발생했습니다.");
         }
     }
+
+    public ApplePaymentTransactionInfoHeader decodeTokenHeader(String token) {
+        String encodedHeader = token.split("\\.")[0];
+        Base64.Decoder base64Decoder = Base64.getUrlDecoder();
+        String payload = new String(base64Decoder.decode(encodedHeader));
+        ObjectMapper objectMapper = new ObjectMapper().configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        try {
+            return objectMapper.readValue(payload, ApplePaymentTransactionInfoHeader.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
