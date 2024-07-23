@@ -6,7 +6,8 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 
-import com.bookbla.americano.domain.payment.infrastructure.apple.config.ApplePaymentsProperty;
+import com.bookbla.americano.domain.payment.infrastructure.apple.config.ApplePaymentsConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.net.MediaType;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.bouncycastle.openssl.PEMException;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.springframework.stereotype.Component;
 
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static io.jsonwebtoken.JwsHeader.ALGORITHM;
 import static io.jsonwebtoken.JwsHeader.KEY_ID;
 import static io.jsonwebtoken.SignatureAlgorithm.ES256;
@@ -31,7 +33,7 @@ final class AppleJwtProvider {
     private static final String TOKEN_TYPE_KEY = "typ";
     private static final String BUNDLE_ID_KEY = "bid";
 
-    private final ApplePaymentsProperty property;
+    private final ApplePaymentsConfig config;
 
     // https://developer.apple.com/documentation/appstoreserverapi/generating_json_web_tokens_for_api_requests
     public String createToken() {
@@ -39,18 +41,18 @@ final class AppleJwtProvider {
 
         return Jwts.builder()
                 .setHeaderParams(toHeaders())
-                .setIssuer(property.getIssuerId())
+                .setIssuer(config.getIssuerId())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(expirations + currentTimeMillis()))
                 .setAudience(APPSTORE_CONNECT_AUDIENCE)
-                .setClaims(Map.of(BUNDLE_ID_KEY, property.getBundleId()))
+                .setClaims(Map.of(BUNDLE_ID_KEY, config.getBundleId()))
                 .signWith(generatePrivateKey(), ES256)
                 .compact();
     }
 
     private Map<String, Object> toHeaders() {
         return Map.of(
-                KEY_ID, property.getKeyId(),
+                KEY_ID, config.getKeyId(),
                 ALGORITHM, ES256.getValue(),
                 TOKEN_TYPE_KEY, MediaType.JWT.toString()
         );
@@ -60,7 +62,7 @@ final class AppleJwtProvider {
         Security.addProvider(new BouncyCastleProvider());
         JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
         try {
-            byte[] privateKeyBytes = Base64.getDecoder().decode(property.getPrivateKey());
+            byte[] privateKeyBytes = Base64.getDecoder().decode(config.getPrivateKey());
             return converter.getPrivateKey(PrivateKeyInfo.getInstance(privateKeyBytes));
         } catch (PEMException e) {
             throw new RuntimeException("애플 전송시 사용할 토큰의 개인키 생성 중 예외가 발생했습니다.");

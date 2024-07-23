@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 @Configuration
 @ConfigurationProperties(prefix = "payments.apple")
-public class ApplePaymentsProperty {
+public class ApplePaymentsConfig {
 
     private String serverDomain;
     private String keyId;
