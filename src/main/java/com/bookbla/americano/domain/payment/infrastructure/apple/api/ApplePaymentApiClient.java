@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import static org.apache.http.HttpHeaders.AUTHORIZATION;
 
-@FeignClient(name = "apple-payment", url = "${payments.apple.server-domain}")
+@FeignClient(name = "apple-payment", url = "${payments.apple.server-domain}/inApps/v1")
 public interface ApplePaymentApiClient {
 
     @GetMapping("/transactions/{transactionId}")
