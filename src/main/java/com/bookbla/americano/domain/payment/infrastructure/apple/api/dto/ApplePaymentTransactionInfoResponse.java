@@ -5,11 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @Getter
 public class ApplePaymentTransactionInfoResponse {
 
-    private String signedTransactionId;
+    private String signedTransactionInfo;
 
 }
