@@ -1,12 +1,12 @@
 package com.bookbla.americano.domain.payment.service;
 
-import com.bookbla.americano.domain.payment.repository.entity.PaymentType;
-import com.bookbla.americano.domain.payment.repository.entity.PaymentHistory;
+import com.bookbla.americano.domain.payment.enums.PaymentType;
+import com.bookbla.americano.domain.payment.repository.entity.Payment;
 
 public interface PaymentStrategy {
 
     PaymentType getPaymentType();
 
-    PaymentHistory getPaymentInformation(String id);
+    Payment getPaymentInformation(String id);
 
 }

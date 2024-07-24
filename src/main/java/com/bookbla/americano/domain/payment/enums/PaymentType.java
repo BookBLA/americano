@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.payment.repository.entity;
+package com.bookbla.americano.domain.payment.enums;
 
 import java.util.Arrays;
 
