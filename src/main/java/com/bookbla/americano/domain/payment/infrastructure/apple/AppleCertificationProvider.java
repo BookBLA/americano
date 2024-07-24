@@ -6,6 +6,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.bookbla.americano.base.exception.BaseException;
@@ -38,32 +39,33 @@ class AppleCertificationProvider {
     }
 
     public void validateCertificate(List<String> certificateChain) {
-        validateRootCertificate(certificateChain);
-        validateCertificateChain(certificateChain);
+        List<X509Certificate> x509CertificateChain = certificateChain.stream()
+                .map(this::toX509Certificate)
+                .collect(Collectors.toList());
+
+        validateRootCertificate(x509CertificateChain);
+        validateCertificateChain(x509CertificateChain);
     }
 
-    private void validateRootCertificate(List<String> certificateChain) {
-        int lastIndex = certificateChain.size() - 1;
-        String rootCertificate = certificateChain.get(lastIndex);
-        X509Certificate x509RootCertificate = toX509Certificate(rootCertificate);
+    private void validateRootCertificate(List<X509Certificate> x509certificateChain) {
+        int lastIndex = x509certificateChain.size() - 1;
+        X509Certificate x509RootCertificate = x509certificateChain.get(lastIndex);
 
         if (!x509RootCertificate.equals(appleRootCert)) {
             throw new BaseException(ApplePaymentExceptionType.INVALID_APPLE_KEY);
         }
     }
 
-    private void validateCertificateChain(List<String> certificateChain) {
-        IntStream.range(0, certificateChain.size() - 1)
-                .forEach(i -> verifyCertificateChain(certificateChain, i));
-    }
-
-    private void verifyCertificateChain(List<String> certificateChain, int i) {
-        X509Certificate current = toX509Certificate(certificateChain.get(i));
-        X509Certificate next = toX509Certificate(certificateChain.get(i + 1));
-        try {
-            current.verify(next.getPublicKey());
-        } catch (Exception e) {
-            throw new BaseException(ApplePaymentExceptionType.INVALID_APPLE_KEY);
-        }
+    private void validateCertificateChain(List<X509Certificate> x509certificateChain) {
+        IntStream.range(0, x509certificateChain.size() - 1)
+                .forEach(i -> {
+                    X509Certificate current = x509certificateChain.get(i);
+                    X509Certificate next = x509certificateChain.get(i + 1);
+                    try {
+                        current.verify(next.getPublicKey());
+                    } catch (Exception e) {
+                        throw new BaseException(ApplePaymentExceptionType.CERTIFICATION_CHAIN_INVALID);
+                    }
+                });
     }
 }

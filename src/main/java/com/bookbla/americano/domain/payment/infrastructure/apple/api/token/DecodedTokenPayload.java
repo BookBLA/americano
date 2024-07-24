@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.payment.infrastructure.apple;
+package com.bookbla.americano.domain.payment.infrastructure.apple.api.token;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class ApplePaymentTransactionInfoPayload {
+public class DecodedTokenPayload {
 
     private String transactionId;
     private String originalTransactionId;
@@ -27,5 +27,4 @@ public class ApplePaymentTransactionInfoPayload {
     public String getInAppPurchaseProductId() {
         return productId.replace(bundleId + ".", "");
     }
-
 }

@@ -4,6 +4,8 @@ import com.bookbla.americano.domain.payment.enums.PaymentTable;
 import com.bookbla.americano.domain.payment.enums.PaymentType;
 import com.bookbla.americano.domain.payment.infrastructure.apple.api.ApplePaymentApiClient;
 import com.bookbla.americano.domain.payment.infrastructure.apple.api.dto.ApplePaymentTransactionInfoResponse;
+import com.bookbla.americano.domain.payment.infrastructure.apple.api.token.DecodedTokenHeader;
+import com.bookbla.americano.domain.payment.infrastructure.apple.api.token.DecodedTokenPayload;
 import com.bookbla.americano.domain.payment.repository.entity.Payment;
 import com.bookbla.americano.domain.payment.service.PaymentStrategy;
 import lombok.RequiredArgsConstructor;
@@ -24,14 +26,14 @@ public class ApplePaymentStrategy implements PaymentStrategy {
 
     @Override
     public Payment getPaymentInformation(String transactionId) {
-        String tokenValue = "Bearer " + appleTokenProvider.createToken();
+        String tokenValue = "Bearer " + appleTokenProvider.createRequestToken();
         ApplePaymentTransactionInfoResponse response = apiClient.getTransactionInformation(tokenValue, transactionId);
         String responseToken = response.getSignedTransactionInfo();
 
-        ApplePaymentTransactionInfoHeader header = appleTokenProvider.decodeHeader(responseToken);
+        DecodedTokenHeader header = appleTokenProvider.decodeHeader(responseToken);
         appleCertificationProvider.validateCertificate(header.getX5c());
 
-        ApplePaymentTransactionInfoPayload payload = appleTokenProvider.decodePayload(responseToken);
+        DecodedTokenPayload payload = appleTokenProvider.decodePayload(responseToken);
         PaymentTable paymentTable = PaymentTable.from(payload.getInAppPurchaseProductId());
 
         return Payment.builder()

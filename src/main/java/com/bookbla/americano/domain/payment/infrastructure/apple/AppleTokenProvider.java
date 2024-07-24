@@ -6,6 +6,8 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 
+import com.bookbla.americano.domain.payment.infrastructure.apple.api.token.DecodedTokenHeader;
+import com.bookbla.americano.domain.payment.infrastructure.apple.api.token.DecodedTokenPayload;
 import com.bookbla.americano.domain.payment.infrastructure.apple.config.ApplePaymentsConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.net.MediaType;
@@ -36,7 +38,7 @@ class AppleTokenProvider {
     private final ApplePaymentsConfig config;
 
     // https://developer.apple.com/documentation/appstoreserverapi/generating_json_web_tokens_for_api_requests
-    public String createToken() {
+    public String createRequestToken() {
         long expirations = MILLISECONDS.convert(10, MINUTES);
 
         return Jwts.builder()
@@ -69,27 +71,27 @@ class AppleTokenProvider {
         }
     }
 
-    public ApplePaymentTransactionInfoHeader decodeHeader(String token) {
+    public DecodedTokenHeader decodeHeader(String token) {
         String encodedHeader = token.split("\\.")[0];
         Base64.Decoder base64Decoder = Base64.getUrlDecoder();
         String payload = new String(base64Decoder.decode(encodedHeader));
         ObjectMapper objectMapper = new ObjectMapper().configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         try {
-            return objectMapper.readValue(payload, ApplePaymentTransactionInfoHeader.class);
+            return objectMapper.readValue(payload, DecodedTokenHeader.class);
         } catch (Exception e) {
             throw new RuntimeException("토큰 디코딩 중 예외가 발생했습니다.", e);
         }
     }
 
-    public ApplePaymentTransactionInfoPayload decodePayload(String token) {
+    public DecodedTokenPayload decodePayload(String token) {
         String encodedPayload = token.split("\\.")[1];
         Base64.Decoder base64Decoder = Base64.getUrlDecoder();
         String payload = new String(base64Decoder.decode(encodedPayload));
         ObjectMapper objectMapper = new ObjectMapper().configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         try {
-            return objectMapper.readValue(payload, ApplePaymentTransactionInfoPayload.class);
+            return objectMapper.readValue(payload, DecodedTokenPayload.class);
         } catch (Exception e) {
             throw new RuntimeException("토큰 디코딩 중 예외가 발생했습니다.", e);
         }
