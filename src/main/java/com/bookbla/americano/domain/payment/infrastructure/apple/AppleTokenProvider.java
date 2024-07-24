@@ -27,7 +27,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 
 @RequiredArgsConstructor
 @Component
-final class AppleJwtProvider {
+class AppleTokenProvider {
 
     private static final String APPSTORE_CONNECT_AUDIENCE = "appstoreconnect-v1";
     private static final String TOKEN_TYPE_KEY = "typ";
@@ -69,7 +69,7 @@ final class AppleJwtProvider {
         }
     }
 
-    public ApplePaymentTransactionInfoHeader decodeTokenHeader(String token) {
+    public ApplePaymentTransactionInfoHeader decodeHeader(String token) {
         String encodedHeader = token.split("\\.")[0];
         Base64.Decoder base64Decoder = Base64.getUrlDecoder();
         String payload = new String(base64Decoder.decode(encodedHeader));
@@ -78,7 +78,20 @@ final class AppleJwtProvider {
         try {
             return objectMapper.readValue(payload, ApplePaymentTransactionInfoHeader.class);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("토큰 디코딩 중 예외가 발생했습니다.", e);
+        }
+    }
+
+    public ApplePaymentTransactionInfoPayload decodePayload(String token) {
+        String encodedPayload = token.split("\\.")[1];
+        Base64.Decoder base64Decoder = Base64.getUrlDecoder();
+        String payload = new String(base64Decoder.decode(encodedPayload));
+        ObjectMapper objectMapper = new ObjectMapper().configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        try {
+            return objectMapper.readValue(payload, ApplePaymentTransactionInfoPayload.class);
+        } catch (Exception e) {
+            throw new RuntimeException("토큰 디코딩 중 예외가 발생했습니다.", e);
         }
     }
 }
