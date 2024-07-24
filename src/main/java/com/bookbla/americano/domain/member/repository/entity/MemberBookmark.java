@@ -50,4 +50,8 @@ public class MemberBookmark extends BaseEntity {
     public void addInvitationPostcard() {
         bookmarkCount += 150;
     }
+
+    public void addBookmark(int count) {
+        this.bookmarkCount += count;
+    }
 }
