@@ -22,7 +22,7 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    @PostMapping("/${payType}")
+    @PostMapping("/{payType}")
     public ResponseEntity<PaymentPurchaseResponse> orderBookmark(
             @Parameter(hidden = true) @User LoginUser loginUser,
             @Valid @RequestBody PaymentBookmarkRequest request,
