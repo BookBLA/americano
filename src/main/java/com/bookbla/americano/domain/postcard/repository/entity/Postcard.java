@@ -5,7 +5,7 @@ import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.ALL_WRO
 import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.PENDING;
 import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.READ;
 
-import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.memberask.repository.entity.MemberReply;
@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Postcard extends BaseInsertEntity {
+public class Postcard extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

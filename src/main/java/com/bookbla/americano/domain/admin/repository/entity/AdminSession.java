@@ -3,7 +3,7 @@ package com.bookbla.americano.domain.admin.repository.entity;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.admin.excpetion.AdminExceptionType;
 import javax.persistence.Entity;
@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Getter
-public class AdminSession extends BaseInsertEntity {
+public class AdminSession extends BaseEntity {
 
     private static final int SESSION_SECONDS = 3600; // 1시간
 

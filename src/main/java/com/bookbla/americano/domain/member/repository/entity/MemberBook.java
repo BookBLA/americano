@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
-import com.bookbla.americano.base.entity.BaseInsertEntity;
+import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.book.repository.entity.Book;
 import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
@@ -26,7 +26,7 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "update member_book set is_deleted = true where id = ?")
 @Where(clause = "is_deleted = false")
-public class MemberBook extends BaseInsertEntity {
+public class MemberBook extends BaseEntity {
 
     public static final int MEMBER_BOOK_REMOVABLE_COUNT = 2;
     public static final int MAX_MEMBER_BOOK_COUNT = 3;
