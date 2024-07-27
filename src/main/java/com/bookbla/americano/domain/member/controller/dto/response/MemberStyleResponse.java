@@ -26,14 +26,14 @@ public class MemberStyleResponse {
                                          MemberAsk memberAsk) {
         return new MemberStyleResponse(
                 member.getId(),
-                memberStyle.getSmokeType().getValue(),
-                memberStyle.getContactType().getValue(),
-                memberStyle.getDateCostType().getValue(),
-                memberStyle.getDateStyleType().getValue(),
-                memberStyle.getJustFriendType().getValue(),
-                memberStyle.getDrinkType().getValue(),
+                memberStyle.getSmokeType().getDetailValue(),
+                memberStyle.getContactType().getDetailValue(),
+                memberStyle.getDateCostType().getDetailValue(),
+                memberStyle.getDateStyleType().getDetailValue(),
+                memberStyle.getJustFriendType().getDetailValue(),
+                memberStyle.getDrinkType().getDetailValue(),
                 memberStyle.getMbti().name(),
-                memberStyle.getHeightType().getValue(),
+                memberStyle.getHeightType().getDetailValue(),
                 memberAsk.getContents(),
                 memberAsk.getId()
         );
