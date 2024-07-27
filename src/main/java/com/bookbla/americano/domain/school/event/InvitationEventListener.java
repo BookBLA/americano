@@ -10,6 +10,7 @@ import com.bookbla.americano.domain.school.repository.InvitationRepository;
 import com.bookbla.americano.domain.school.repository.entity.Invitation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -22,6 +23,7 @@ public class InvitationEventListener {
     private final InvitationRepository invitationRepository;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Transactional
     public void invitationBookmarkEvent(MemberBookmark invitedmemberBookmark) {
         Long joinMemberId = invitedmemberBookmark.getMember().getId();
         Optional<Invitation> maybeInvitation = invitationRepository.findByInvitedMemberId(joinMemberId);
@@ -39,9 +41,7 @@ public class InvitationEventListener {
 
                 invitedmemberBookmark.addInvitationBookmark();
                 maybeInvitingMemberBookmark.get().addInvitationBookmark();
-
             }
         }
     }
-
 }
