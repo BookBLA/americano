@@ -21,14 +21,16 @@ public class SettingController {
 
     private final SettingService settingService;
 
-    @Operation(summary = "현재 버전 정보 조회 API")
+    @Operation(summary = "현재 버전 정보 조회 API",
+        description = "앱 버전에 대한 정보를 조회")
     @GetMapping("/versions")
     public ResponseEntity<VersionReadResponse> readVersion() {
         VersionReadResponse versionReadResponse = settingService.readVersion();
         return ResponseEntity.ok(versionReadResponse);
     }
 
-    @Operation(summary = "현재 버전 정보 생성 API")
+    @Operation(summary = "현재 버전 정보 생성 API",
+        description = "앱 버전에 대한 정보를 생성 및 수정")
     @PostMapping("/versions")
     public ResponseEntity<VersionCreateResponse> createVersion(
         @RequestBody @Valid VersionCreateRequest versionCreateRequest) {

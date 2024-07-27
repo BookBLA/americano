@@ -22,7 +22,8 @@ public class MemberTokenController {
 
     private final MemberTokenService memberTokenService;
 
-    @Operation(summary = "회원의 EXPO 서버 토큰 생성 API")
+    @Operation(summary = "사용자의 EXPO 서버 토큰 생성 API",
+        description = "사용자가 푸시 알림을 할 때 필요한 EXPO 서버의 토큰을 저장")
     @PostMapping
     public ResponseEntity<MemberTokenCreateResponse> createPushToken(
         @Parameter(hidden = true) @User LoginUser loginUser,
