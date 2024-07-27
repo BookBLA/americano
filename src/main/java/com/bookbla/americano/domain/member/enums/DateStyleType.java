@@ -12,11 +12,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum DateStyleType {
 
-    HOME("집 데이트"),
-    OUTSIDE("야외 데이트"),
+    HOME("집 데이트", "🏠실내 데이트를 선호해요"),
+    OUTSIDE("야외 데이트", "🏟️야외 데이트를 선호해요"),
     ;
 
     private final String value;
+    private final String detailValue;
 
     public static List<String> getValues() {
         return Arrays.stream(values())

@@ -12,12 +12,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum SmokeType {
 
-    SMOKE("흡연"),
-    NON_SMOKE("비흡연"),
-    SOMETIMES("가끔"),
+    SMOKE("흡연", "🚬흡연자에요"),
+    NON_SMOKE("비흡연", "🚭비흡연자에요"),
+    SOMETIMES("가끔", "🚬가끔 펴요"),
     ;
 
     private final String value;
+    private final String detailValue;
 
     public static List<String> getValues() {
         return Arrays.stream(values())
