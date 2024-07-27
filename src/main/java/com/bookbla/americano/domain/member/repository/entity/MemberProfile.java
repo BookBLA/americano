@@ -1,13 +1,12 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
-import java.time.LocalDate;
-import java.time.Period;
-import java.util.Objects;
-
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
@@ -25,7 +24,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MemberProfile {
 
+    @Column(unique = true)
     private String name;
+    
     private LocalDate birthDate;
 
     @Enumerated(EnumType.STRING)
