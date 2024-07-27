@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
+import com.bookbla.americano.domain.member.controller.docs.MemberStyleControllerDocs;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/members/styles")
-public class MemberStyleController {
+public class MemberStyleController implements MemberStyleControllerDocs {
 
     private final MemberStyleService memberStyleService;
 
