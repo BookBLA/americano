@@ -24,24 +24,31 @@ public class InvitationEventListener {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional
-    public void invitationBookmarkEvent(MemberBookmark invitedmemberBookmark) {
-        Long joinMemberId = invitedmemberBookmark.getMember().getId();
+    public void invitationBookmarkEvent(MemberBookmark invitedMemberBookmark) {
+        Long joinMemberId = invitedMemberBookmark.getMember().getId();
         Optional<Invitation> maybeInvitation = invitationRepository.findByInvitedMemberId(joinMemberId);
-        if (maybeInvitation.isEmpty()) {
-            return;
-        }
 
-        Invitation invitation = maybeInvitation.get();
+        maybeInvitation.ifPresent(invitation -> processInvitation(invitation, invitedMemberBookmark));
+    }
+
+    private void processInvitation(Invitation invitation, MemberBookmark invitedMemberBookmark) {
         Member invitedMember = memberRepository.getByIdOrThrow(invitation.getInvitedMemberId());
-
         if (invitedMember.isWoman()) {
-            Optional<MemberBookmark> maybeInvitingMemberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(invitation.getInvitingMemberId());
-
-            if (maybeInvitingMemberBookmark.isPresent()) {
-
-                invitedmemberBookmark.addInvitationBookmark();
-                maybeInvitingMemberBookmark.get().addInvitationBookmark();
-            }
+            handleWomanInvitation(invitation, invitedMemberBookmark);
+        } else {
+            invitation.complete();
         }
+    }
+
+    private void handleWomanInvitation(Invitation invitation, MemberBookmark invitedMemberBookmark) {
+        memberBookmarkRepository.findMemberBookmarkByMemberId(invitation.getInvitingMemberId())
+                .ifPresent(invitingMemberBookmark -> addBookmark(invitedMemberBookmark, invitingMemberBookmark));
+        invitation.bookmark();
+    }
+
+
+    private void addBookmark(MemberBookmark invitedmemberBookmark, MemberBookmark invitingMemberBookmark) {
+        invitedmemberBookmark.addInvitationBookmark();
+        invitingMemberBookmark.addInvitationBookmark();
     }
 }
