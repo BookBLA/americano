@@ -2,10 +2,13 @@ package com.bookbla.americano.domain.book.controller.docs;
 
 import com.bookbla.americano.domain.book.service.dto.BookSearchResponses;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+
+@Tag(name = "도서 검색")
 public interface BookControllerDocs {
 
     @Operation(summary = "작가 혹은 도서를 검색합니다")

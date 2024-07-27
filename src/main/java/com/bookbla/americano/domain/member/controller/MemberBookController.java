@@ -4,6 +4,7 @@ import java.net.URI;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
+import com.bookbla.americano.domain.member.controller.docs.MemberBookControllerDocs;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookQuizUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookReviewUpdateRequest;
@@ -28,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/member-books")
-public class MemberBookController {
+public class MemberBookController implements MemberBookControllerDocs {
 
     private final MemberBookService memberBookService;
 

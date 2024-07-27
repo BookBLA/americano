@@ -7,6 +7,7 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.base.jwt.JwtProvider;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.test.controller.docs.TestControllerDocs;
 import com.bookbla.americano.domain.test.controller.dto.request.TestCreateRequest;
 import com.bookbla.americano.domain.test.controller.dto.request.TestSignUpRequest;
 import com.bookbla.americano.domain.test.controller.dto.response.TestCreateResponse;
@@ -26,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/tests")
 @RequiredArgsConstructor
-public class TestController {
+public class TestController implements TestControllerDocs {
 
     private final TestService testService;
     private final JwtProvider jwtProvider;
