@@ -12,6 +12,7 @@ import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberStatusLog;
+import com.bookbla.americano.domain.school.repository.entity.School;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +33,8 @@ public class MemberService {
     @Transactional(readOnly = true)
     public MemberStatusResponse readMemberStatus(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        return MemberStatusResponse.from(member);
+        School school = member.getSchool();
+        return MemberStatusResponse.from(member, school);
     }
 
     @Transactional
@@ -73,7 +75,7 @@ public class MemberService {
         memberStatusLogRepository.save(memberStatusLogBuilder.build());
 
         member.updateMemberStatus(memberStatus, LocalDateTime.now());
-
-        return MemberStatusResponse.from(member);
+        School school = member.getSchool();
+        return MemberStatusResponse.from(member, school);
     }
 }
