@@ -1,10 +1,5 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-
 import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.enums.Gender;
@@ -15,6 +10,10 @@ import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.bookbla.americano.domain.member.exception.PolicyExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
 import com.bookbla.americano.domain.school.repository.entity.School;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Embedded;
@@ -142,7 +141,16 @@ public class Member extends BaseEntity {
     }
 
     public Member updateMemberProfile(MemberProfile memberProfile) {
-        this.memberProfile = memberProfile;
+        this.memberProfile
+                .updateName(memberProfile.getName())
+                .updateBirthDate(memberProfile.getBirthDate())
+                .updateGender(memberProfile.getGender())
+                .updateSchoolEmail(memberProfile.getSchoolEmail())
+                .updatePhoneNumber(memberProfile.getPhoneNumber())
+                .updateProfileImageUrl(memberProfile.getProfileImageUrl())
+                .updateOpenKakaoRoomUrl(memberProfile.getOpenKakaoRoomUrl())
+                .updateStudentIdImageUrl(memberProfile.getStudentIdImageUrl());
+
         return this;
     }
 
