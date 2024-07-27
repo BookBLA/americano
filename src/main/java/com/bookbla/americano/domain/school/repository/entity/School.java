@@ -14,6 +14,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static com.bookbla.americano.domain.school.repository.entity.SchoolStatus.CLOSED;
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -35,10 +37,10 @@ public class School extends BaseEntity {
 
     @Builder.Default
     @Enumerated(value = EnumType.STRING)
-    private SchoolStatus schoolStatus = SchoolStatus.CLOSED;
+    private SchoolStatus schoolStatus = CLOSED;
 
     public static School notRegistered() {
-        return School.builder().name("등록되지 않음").build();
+        return School.builder().name("등록되지 않음").schoolStatus(CLOSED).build();
     }
 
     public void checkOpen(int currentMemberCounts) {
