@@ -12,11 +12,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ContactType {
 
-    SLOW("느긋이"),
-    FAST("칼답"),
+    SLOW("느긋이", "⚡️칼답 하는게 좋아요"),
+    FAST("칼답", "💬할 일 다하고 연락하는게 좋아요"),
     ;
 
     private final String value;
+    private final String detailValue;
 
     public static List<String> getValues() {
         return Arrays.stream(values())

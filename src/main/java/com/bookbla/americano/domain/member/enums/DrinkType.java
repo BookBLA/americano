@@ -12,14 +12,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum DrinkType {
 
-    NONE("X"),
-    ONCE_A_MONTH("월 1~2회"),
-    ONCE_A_WEEK("주 1회"),
-    OVER_TWICE_A_WEEK("주 2회 이상"),
-    EVERYDAY("매일"),
+    NONE("X", "❌술을 안마셔요"),
+    ONCE_A_MONTH("월 1~2회", "🥂술은 월 1~2회 정도 마셔요"),
+    ONCE_A_WEEK("주 1회", "🍺술은 주 1회 정도 마셔요"),
+    OVER_TWICE_A_WEEK("주 2회 이상", "🍻술은 주 2회 이상 마셔요"),
+    EVERYDAY("매일", "🥃술은 매일 마셔요"),
     ;
 
     private final String value;
+    private final String detailValue;
 
     public static List<String> getValues() {
         return Arrays.stream(values())
