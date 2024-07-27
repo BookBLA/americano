@@ -46,8 +46,7 @@ public class MemberBookmark extends BaseEntity {
         }
     }
 
-    // 엽서 -> 책갈피 변경시, 책갈피 150개
-    public void addInvitationPostcard() {
+    public void addInvitationBookmark() {
         bookmarkCount += 150;
     }
 
