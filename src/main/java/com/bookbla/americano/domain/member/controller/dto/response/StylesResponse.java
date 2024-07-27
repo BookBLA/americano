@@ -14,6 +14,7 @@ public class StylesResponse {
     private final List<String> dateStyleTypes;
     private final List<String> dateCostTypes;
     private final List<String> justFriendTypes;
+    private final List<String> heightTypes;
 
     public static StylesResponse of(
             List<String> smokeTypes,
@@ -21,10 +22,11 @@ public class StylesResponse {
             List<String> contactTypes,
             List<String> dateStyleTypes,
             List<String> dateCostTypes,
-            List<String> justFriendTypes
+            List<String> justFriendTypes,
+            List<String> heightTypes
     ) {
         return new StylesResponse(smokeTypes, drinkTypes, contactTypes, dateStyleTypes,
-                dateCostTypes, justFriendTypes);
+                dateCostTypes, justFriendTypes, heightTypes);
     }
 
 }

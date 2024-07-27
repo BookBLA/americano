@@ -31,7 +31,6 @@ public class AdminVerificationController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "프로필 이미지 상태 변경 API")
     @PatchMapping("/member-verifies/{memberVerifyId}/pending/profile-image")
     public ResponseEntity<Void> updateProfileImagePendingMemberStatus(
             @PathVariable Long memberVerifyId,

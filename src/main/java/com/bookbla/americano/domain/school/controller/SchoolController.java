@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.school.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
+import com.bookbla.americano.domain.school.controller.docs.SchoolControllerDocs;
 import com.bookbla.americano.domain.school.controller.dto.response.SchoolInvitationResponse;
 import com.bookbla.americano.domain.school.controller.dto.response.SchoolReadResponse;
 import com.bookbla.americano.domain.school.service.SchoolService;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/schools")
-public class SchoolController {
+public class SchoolController implements SchoolControllerDocs {
 
     private final SchoolService schoolService;
 

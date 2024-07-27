@@ -42,7 +42,7 @@ public class School extends BaseEntity {
     }
 
     public void checkOpen(int currentMemberCounts) {
-        if (currentMemberCounts > OPEN_STANDARD) {
+        if (currentMemberCounts >= OPEN_STANDARD) {
             this.schoolStatus = SchoolStatus.OPEN;
         }
     }
