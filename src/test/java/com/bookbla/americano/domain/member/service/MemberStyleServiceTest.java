@@ -18,15 +18,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCreateRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpdateRequest;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
 import com.bookbla.americano.domain.member.enums.HeightType;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
-import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCreateRequest;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpdateRequest;
+import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
 import com.bookbla.americano.domain.memberask.repository.MemberAskRepository;
 import com.bookbla.americano.domain.memberask.repository.entity.MemberAsk;
 import org.junit.jupiter.api.AfterEach;
@@ -58,24 +58,33 @@ class MemberStyleServiceTest {
                 .oauthEmail("bookbla@bookbla.com")
                 .build());
         MemberStyleCreateRequest memberStyleCreateRequest = new MemberStyleCreateRequest(
-                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트", "160cm 이상 ~ 165cm 미만","주로 어디서 책을 읽는 편이세요?"
+                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트", "160cm 이상 ~ 165cm 미만",
+                "주로 어디서 책을 읽는 편이세요?"
         );
 
         // when
-        MemberStyleResponse memberStyleResponse = memberStyleService.createMemberStyle(member.getId(),
+        MemberStyleResponse memberStyleResponse = memberStyleService.createMemberStyle(
+                member.getId(),
                 memberStyleCreateRequest);
 
         // then
         assertAll(
                 () -> assertThat(memberStyleResponse.getMemberId()).isNotNull(),
-                () -> assertThat(memberStyleResponse.getMbti()).isEqualToIgnoringCase("infj"),
-                () -> assertThat(memberStyleResponse.getDrinkType()).isEqualTo("매일"),
-                () -> assertThat(memberStyleResponse.getDateCostType()).isEqualTo("더치페이"),
-                () -> assertThat(memberStyleResponse.getSmokeType()).isEqualTo("비흡연"),
-                () -> assertThat(memberStyleResponse.getContactType()).isEqualTo("느긋이"),
-                () -> assertThat(memberStyleResponse.getJustFriendType()).isEqualTo("허용 X"),
-                () -> assertThat(memberStyleResponse.getHeightType()).isEqualTo("160cm 이상 ~ 165cm 미만"),
-                () -> assertThat(memberStyleResponse.getDateStyleType()).isEqualTo("집 데이트"),
+                () -> assertThat(memberStyleResponse.getMbti()).isEqualToIgnoringCase(INFJ.name()),
+                () -> assertThat(memberStyleResponse.getDrinkType()).isEqualTo(
+                        EVERYDAY.getDetailValue()),
+                () -> assertThat(memberStyleResponse.getDateCostType()).isEqualTo(
+                        DUTCH_PAY.getDetailValue()),
+                () -> assertThat(memberStyleResponse.getSmokeType()).isEqualTo(
+                        NON_SMOKE.getDetailValue()),
+                () -> assertThat(memberStyleResponse.getContactType()).isEqualTo(
+                        SLOW.getDetailValue()),
+                () -> assertThat(memberStyleResponse.getJustFriendType()).isEqualTo(
+                        NEVER.getDetailValue()),
+                () -> assertThat(memberStyleResponse.getHeightType()).isEqualTo(
+                        HeightType.OVER_160_AND_LESS_THAN_165.getDetailValue()),
+                () -> assertThat(memberStyleResponse.getDateStyleType()).isEqualTo(
+                        HOME.getDetailValue()),
                 () -> assertThat(memberStyleResponse.getMemberAsk()).isEqualTo("주로 어디서 책을 읽는 편이세요?")
         );
     }
@@ -105,19 +114,27 @@ class MemberStyleServiceTest {
                 .build());
 
         // when
-        MemberStyleResponse memberStyleResponse = memberStyleService.readMemberStyle(member.getId());
+        MemberStyleResponse memberStyleResponse = memberStyleService.readMemberStyle(
+                member.getId());
 
         // then
         assertAll(
                 () -> assertThat(memberStyleResponse.getMemberId()).isNotNull(),
-                () -> assertThat(memberStyleResponse.getSmokeType()).isEqualTo("흡연"),
-                () -> assertThat(memberStyleResponse.getContactType()).isEqualTo("칼답"),
-                () -> assertThat(memberStyleResponse.getDateCostType()).isEqualTo("데이트 통장"),
-                () -> assertThat(memberStyleResponse.getDateStyleType()).isEqualTo("집 데이트"),
-                () -> assertThat(memberStyleResponse.getJustFriendType()).isEqualTo("단둘이 술 먹기"),
-                () -> assertThat(memberStyleResponse.getHeightType()).isEqualTo("150cm 미만"),
-                () -> assertThat(memberStyleResponse.getDrinkType()).isEqualTo("X"),
-                () -> assertThat(memberStyleResponse.getMbti()).isEqualToIgnoringCase("intp"),
+                () -> assertThat(memberStyleResponse.getSmokeType()).isEqualTo(
+                        SMOKE.getDetailValue()),
+                () -> assertThat(memberStyleResponse.getContactType()).isEqualTo(
+                        FAST.getDetailValue()),
+                () -> assertThat(memberStyleResponse.getDateCostType()).isEqualTo(
+                        DATE_ACCOUNT.getDetailValue()),
+                () -> assertThat(memberStyleResponse.getDateStyleType()).isEqualTo(
+                        HOME.getDetailValue()),
+                () -> assertThat(memberStyleResponse.getJustFriendType()).isEqualTo(
+                        ALCOHOL.getDetailValue()),
+                () -> assertThat(memberStyleResponse.getHeightType()).isEqualTo(
+                        HeightType.LESS_THAN_150.getDetailValue()),
+                () -> assertThat(memberStyleResponse.getDrinkType()).isEqualTo(
+                        NONE.getDetailValue()),
+                () -> assertThat(memberStyleResponse.getMbti()).isEqualToIgnoringCase(INTP.name()),
                 () -> assertThat(memberStyleResponse.getMemberAsk()).isEqualTo("주로 어디서 책을 읽으세요?")
         );
     }
@@ -173,7 +190,8 @@ class MemberStyleServiceTest {
                 .contents("어느 시간대에 책을 읽으시나요?")
                 .build());
         MemberStyleUpdateRequest memberStyleUpdateRequest = new MemberStyleUpdateRequest(
-                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트", "160cm 이상 ~ 165cm 미만","주로 어디서 책을 읽는 편이세요?"
+                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트", "160cm 이상 ~ 165cm 미만",
+                "주로 어디서 책을 읽는 편이세요?"
         );
 
         // when
@@ -197,11 +215,13 @@ class MemberStyleServiceTest {
         // given
         Long nonMemberId = -999999L;
         MemberStyleUpdateRequest memberStyleUpdateRequest = new MemberStyleUpdateRequest(
-                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트", "160cm 이상~165cm 미만","주로 어디서 책을 읽으세요?"
+                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트", "160cm 이상~165cm 미만",
+                "주로 어디서 책을 읽으세요?"
         );
 
         // when, then
-        assertThatThrownBy(() -> memberStyleService.updateMemberStyle(nonMemberId, memberStyleUpdateRequest))
+        assertThatThrownBy(
+                () -> memberStyleService.updateMemberStyle(nonMemberId, memberStyleUpdateRequest))
                 .isInstanceOf(BaseException.class)
                 .hasMessageContaining("해당 식별자를 가진 회원이 존재하지 않습니다");
     }
@@ -214,11 +234,13 @@ class MemberStyleServiceTest {
                 .oauthEmail("bookbla@bookbla.com")
                 .build());
         MemberStyleUpdateRequest memberStyleUpdateRequest = new MemberStyleUpdateRequest(
-                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트", "160cm 이상~165cm 미만","주로 어디서 책을 읽으세요?"
+                "infj", "매일", "더치페이", "비흡연", "느긋이", "허용 X", "집 데이트", "160cm 이상~165cm 미만",
+                "주로 어디서 책을 읽으세요?"
         );
 
         // when, then
-        assertThatThrownBy(() -> memberStyleService.updateMemberStyle(member.getId(), memberStyleUpdateRequest))
+        assertThatThrownBy(() -> memberStyleService.updateMemberStyle(member.getId(),
+                memberStyleUpdateRequest))
                 .isInstanceOf(BaseException.class)
                 .hasMessageContaining("스타일이 등록되지 않은 회원입니다");
     }
