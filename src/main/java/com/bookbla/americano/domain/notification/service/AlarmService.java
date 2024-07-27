@@ -118,7 +118,7 @@ public class AlarmService {
         String title = pushAlarmAllCreateRequest.getTitle();
         String body = pushAlarmAllCreateRequest.getBody();
 
-        List<Member> selectedMembers = memberRepository.findByMemberStatus(MemberStatus.COMPLETED,
+        List<Member> selectedMembers = memberRepository.findByMemberStatusAndAdAgreement(MemberStatus.COMPLETED,
                 MemberStatus.MATCHING_DISABLED);
 
         List<String> tokens = selectedMembers.stream()

@@ -1,5 +1,7 @@
 package com.bookbla.americano.domain.admin.service;
 
+import com.bookbla.americano.domain.notification.infra.expo.dto.ExpoNotificationResponse;
+import java.util.Arrays;
 import java.util.List;
 
 import com.bookbla.americano.domain.admin.service.dto.NotificationDto;
@@ -28,11 +30,21 @@ public class AdminMarketingService {
 
     public List<NotificationResponse> sendNotification(NotificationDto notificationDto, Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
+
+        if (!member.getMemberPolicy().getAdAgreementPolicy()) {
+            return List.of(new ExpoNotificationResponse(
+                "ad_declined",
+                "error",
+                "광고 수신 동의하지 않음"
+            ));
+        }
+
         List<NotificationResponse> response = notificationClient.send(member.getPushToken(), notificationDto.getTitle(), notificationDto.getContents());
 
         response.stream()
                 .filter(NotificationResponse::isSuccess)
                 .forEach(it -> saveMemberPushAlarm(notificationDto, member));
+
         return response;
     }
 
