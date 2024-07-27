@@ -1,28 +1,5 @@
 package com.bookbla.americano.domain.admin.service;
 
-import java.time.LocalDate;
-
-import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKakaoRoomResponses;
-import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
-import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
-import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
-import com.bookbla.americano.domain.member.enums.MemberVerifyStatus;
-import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
-import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
-import com.bookbla.americano.domain.member.repository.MemberRepository;
-import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
-import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
-import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-
 import static com.bookbla.americano.domain.member.enums.Gender.MALE;
 import static com.bookbla.americano.domain.member.enums.MemberStatus.APPROVAL;
 import static com.bookbla.americano.domain.member.enums.MemberStatus.COMPLETED;
@@ -36,9 +13,33 @@ import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKakaoRoomResponses;
+import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
+import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
+import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
+import com.bookbla.americano.domain.member.enums.MemberVerifyStatus;
+import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
+import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
+import com.bookbla.americano.domain.member.repository.MemberRepository;
+import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
+import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
+import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
+import java.time.LocalDate;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.transaction.annotation.Transactional;
+
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @SuppressWarnings("NonAsciiCharacters")
 @SpringBootTest
+@Transactional
 class AdminMemberServiceTest {
 
     @Autowired
@@ -51,7 +52,8 @@ class AdminMemberServiceTest {
     private MemberVerifyRepository memberVerifyRepository;
 
     @Test
-    @Disabled // github action NPE
+    @Disabled
+        // github action NPE
     void 회원들의_정보를_확인할_수_있다() {
         // given
         Member member1 = Member.builder()
@@ -71,7 +73,8 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(STYLE)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().birthDate(LocalDate.of(1999, 3, 3)).phoneNumber("01012345678").gender(MALE).name("이준희").build())
+                .memberProfile(MemberProfile.builder().birthDate(LocalDate.of(1999, 3, 3)).phoneNumber("01012345678")
+                        .gender(MALE).name("이준희").build())
                 .build();
         memberRepository.saveAndFlush(member2);
 
@@ -85,7 +88,8 @@ class AdminMemberServiceTest {
 
         // when
         AdminMemberReadResponses adminMemberReadResponses = adminMemberService.readMembers(PageRequest.of(0, 10));
-        AdminMemberReadResponses.AdminMemberReadResponse adminMemberReadResponse = adminMemberReadResponses.getData().get(0);
+        AdminMemberReadResponses.AdminMemberReadResponse adminMemberReadResponse = adminMemberReadResponses.getData()
+                .get(0);
 
         // then
         assertAll(
@@ -107,7 +111,9 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().openKakaoRoomStatus(OpenKakaoRoomStatus.PENDING).name("이준희").profileImageUrl("프사1").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).name("이준희").build())
+                .memberProfile(MemberProfile.builder().openKakaoRoomStatus(OpenKakaoRoomStatus.PENDING).name("이준희")
+                        .profileImageUrl("프사1").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE)
+                        .build())
                 .build();
         memberRepository.save(pendingMember);
         memberVerifyRepository.save(MemberVerify.builder()
@@ -120,7 +126,9 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().name("김진호").openKakaoRoomStatus(OpenKakaoRoomStatus.NOT_DEFAULT).profileImageUrl("프사2").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).name("이준희").build())
+                .memberProfile(MemberProfile.builder().name("김진호").openKakaoRoomStatus(OpenKakaoRoomStatus.NOT_DEFAULT)
+                        .profileImageUrl("프사2").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE)
+                        .build())
                 .build();
         memberRepository.save(pendingMember2);
         memberVerifyRepository.save(MemberVerify.builder()
@@ -133,7 +141,9 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(COMPLETED)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().name("문성진").openKakaoRoomStatus(OpenKakaoRoomStatus.DONE).profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).name("이준희").build())
+                .memberProfile(MemberProfile.builder().name("문성진").openKakaoRoomStatus(OpenKakaoRoomStatus.DONE)
+                        .profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE)
+                        .build())
                 .build();
         memberRepository.save(completedMember);
         memberVerifyRepository.save(MemberVerify.builder()
@@ -145,7 +155,8 @@ class AdminMemberServiceTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        AdminMemberKakaoRoomResponses adminMemberKakaoRoomResponses = adminMemberService.readKakaoRoomPendingMembers(pageRequest);
+        AdminMemberKakaoRoomResponses adminMemberKakaoRoomResponses = adminMemberService.readKakaoRoomPendingMembers(
+                pageRequest);
 
         // then
         assertThat(adminMemberKakaoRoomResponses.getData()).hasSize(2);
@@ -158,7 +169,9 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().profileImageStatus(ProfileImageStatus.PENDING).name("이준희").profileImageUrl("프사1").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).build())
+                .memberProfile(MemberProfile.builder().profileImageStatus(ProfileImageStatus.PENDING).name("이준희")
+                        .profileImageUrl("프사1").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE)
+                        .build())
                 .build());
         memberVerifyRepository.save(MemberVerify.builder()
                 .memberId(pendingMember.getId())
@@ -171,7 +184,9 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().profileImageStatus(ProfileImageStatus.PENDING).name("문성진").profileImageUrl("프사2").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).build())
+                .memberProfile(MemberProfile.builder().profileImageStatus(ProfileImageStatus.PENDING).name("문성진")
+                        .profileImageUrl("프사2").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE)
+                        .build())
                 .build());
         memberVerifyRepository.save(MemberVerify.builder()
                 .memberId(pendingMember2.getId())
@@ -184,7 +199,9 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().profileImageStatus(ProfileImageStatus.PENDING).name("고도현").profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE).build())
+                .memberProfile(MemberProfile.builder().profileImageStatus(ProfileImageStatus.PENDING).name("고도현")
+                        .profileImageUrl("프사3").phoneNumber("01012345678").openKakaoRoomUrl("비밀링크").gender(MALE)
+                        .build())
                 .build());
         memberVerifyRepository.save(MemberVerify.builder()
                 .memberId(completedMember.getId())
@@ -195,7 +212,8 @@ class AdminMemberServiceTest {
 
         // when
         PageRequest pageRequest = PageRequest.of(0, 10);
-        AdminMemberProfileImageResponses adminMemberProfileImageResponses = adminMemberService.readProfileImagePendingMembers(pageRequest);
+        AdminMemberProfileImageResponses adminMemberProfileImageResponses = adminMemberService.readProfileImagePendingMembers(
+                pageRequest);
 
         // then
         assertThat(adminMemberProfileImageResponses.getData()).hasSize(2);
@@ -234,7 +252,8 @@ class AdminMemberServiceTest {
 
         // when
         PageRequest pageRequest = PageRequest.of(0, 10);
-        AdminMemberStudentIdResponses adminMemberStudentIdResponses = adminMemberService.readStudentIdImagePendingMembers(pageRequest);
+        AdminMemberStudentIdResponses adminMemberStudentIdResponses = adminMemberService.readStudentIdImagePendingMembers(
+                pageRequest);
 
         // then
         assertThat(adminMemberStudentIdResponses.getData()).hasSize(2);

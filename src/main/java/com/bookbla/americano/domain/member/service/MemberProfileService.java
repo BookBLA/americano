@@ -1,13 +1,8 @@
 package com.bookbla.americano.domain.member.service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyType.OPEN_KAKAO_ROOM_URL;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyType.PROFILE_IMAGE;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT_ID;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
@@ -25,6 +20,7 @@ import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
+import com.bookbla.americano.domain.member.exception.MemberProfileException;
 import com.bookbla.americano.domain.member.repository.MemberEmailRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
@@ -36,14 +32,18 @@ import com.bookbla.americano.domain.member.repository.entity.MemberStatusLog;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
 import com.bookbla.americano.domain.member.service.dto.event.AdminNotificationEvent;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.bookbla.americano.domain.member.enums.MemberVerifyType.OPEN_KAKAO_ROOM_URL;
-import static com.bookbla.americano.domain.member.enums.MemberVerifyType.PROFILE_IMAGE;
-import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT_ID;
 
 
 @Service
@@ -65,6 +65,7 @@ public class MemberProfileService {
                 .orElseThrow(
                         () -> new BaseException(MemberEmailExceptionType.EMAIL_NOT_REGISTERED));
         memberEmail.validatePending();
+        validateDuplicatedNickname(memberProfileDto.getName());
 
         saveProfileImageVerify(member, memberProfileDto.getProfileImageUrl());
         saveKakaoRoomVerify(member, memberProfileDto.getOpenKakaoRoomUrl());
@@ -141,6 +142,8 @@ public class MemberProfileService {
             saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
         }
 
+        validateDuplicatedNickname(request.getName());
+
         memberProfile.updateName(request.getName())
                 .updatePhoneNumber(request.getPhoneNumber())
                 .updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl());
@@ -150,6 +153,7 @@ public class MemberProfileService {
         memberRepository.save(member);
     }
 
+    @Transactional
     public MemberProfileResponse updateMemberProfile(Long memberId, MemberProfileUpdateRequest request) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
@@ -168,6 +172,8 @@ public class MemberProfileService {
             saveStudentIdVerify(member, request.toMemberVerifyDescription(), request.getStudentIdImageUrl());
             memberProfile.updateStudentIdImageStatus(StudentIdImageStatus.PENDING);
         }
+
+        validateDuplicatedNickname(request.getName());
 
         update(member, memberProfile, request);
 
@@ -208,7 +214,6 @@ public class MemberProfileService {
             Long memberId, MemberProfileOpenKakaoRoomUrlUpdateRequest request
     ) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-
 
         saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
 
@@ -338,5 +343,12 @@ public class MemberProfileService {
         } else {
             list.add(i);
         }
+    }
+
+    private void validateDuplicatedNickname(String nickname) {
+        memberRepository.findByMemberProfileName(nickname)
+                .ifPresent(profile -> {
+                    throw new BaseException(MemberProfileException.ALREADY_EXISTS_NICKNAME);
+                });
     }
 }
