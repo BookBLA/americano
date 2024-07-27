@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.admin.controller;
 
+import com.bookbla.americano.domain.admin.controller.docs.AdminAuthControllerDocs;
 import com.bookbla.americano.domain.admin.controller.dto.request.AdminLoginRequest;
 import com.bookbla.americano.domain.admin.controller.dto.request.AdminLogoutRequest;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminLoginResponse;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/admin/auth")
 @RequiredArgsConstructor
 @RestController
-public class AdminAuthController {
+public class AdminAuthController implements AdminAuthControllerDocs {
 
     private final AdminAuthService adminAuthService;
 

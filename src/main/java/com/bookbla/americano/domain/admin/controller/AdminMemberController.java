@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.admin.controller;
 
+import com.bookbla.americano.domain.admin.controller.docs.AdminMemberControllerDocs;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKakaoRoomResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileStatusResponse;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 @RestController
-public class AdminMemberController {
+public class AdminMemberController implements AdminMemberControllerDocs {
 
     private final AdminMemberService adminMemberService;
 

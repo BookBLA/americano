@@ -3,8 +3,13 @@ package com.bookbla.americano.domain.member.enums;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import static java.util.stream.Collectors.*;
 
 @RequiredArgsConstructor
 @Getter
@@ -30,5 +35,11 @@ public enum HeightType {
                 .filter(it -> it.getValue().equalsIgnoreCase(value))
                 .findFirst()
                 .orElseThrow(() -> new BaseException(MemberExceptionType.HEIGHT_NOT_FOUND));
+    }
+
+    public static List<String> getValues() {
+        return Arrays.stream(values())
+                .map(HeightType::getValue)
+                .collect(toList());
     }
 }

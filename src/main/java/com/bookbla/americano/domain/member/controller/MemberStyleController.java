@@ -6,7 +6,6 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCre
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
 import com.bookbla.americano.domain.member.service.MemberStyleService;
-import io.swagger.v3.oas.annotations.Parameter;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +26,7 @@ public class MemberStyleController {
 
     @PostMapping
     public ResponseEntity<MemberStyleResponse> createMemberStyle(
-            @Parameter(hidden = true) @User LoginUser loginUser,
+            @User LoginUser loginUser,
             @RequestBody @Valid MemberStyleCreateRequest memberStyleCreateRequest
     ) {
         MemberStyleResponse memberStyleResponse = memberStyleService.createMemberStyle(loginUser.getMemberId(), memberStyleCreateRequest);
@@ -42,8 +41,9 @@ public class MemberStyleController {
 
     @PutMapping
     public ResponseEntity<Void> updateMemberStyle(
-            @Parameter(hidden = true) @User LoginUser loginUser,
-            @RequestBody @Valid MemberStyleUpdateRequest memberStyleUpdateRequest) {
+            @User LoginUser loginUser,
+            @RequestBody @Valid MemberStyleUpdateRequest memberStyleUpdateRequest
+    ) {
         memberStyleService.updateMemberStyle(loginUser.getMemberId(), memberStyleUpdateRequest);
         return ResponseEntity.noContent().build();
     }

@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.book.controller;
 
+import com.bookbla.americano.domain.book.controller.docs.BookControllerDocs;
 import com.bookbla.americano.domain.book.service.BookService;
 import com.bookbla.americano.domain.book.service.dto.BookSearchResponses;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/books")
 @RequiredArgsConstructor
-public class BookController {
+public class BookController implements BookControllerDocs {
 
     private final BookService bookService;
 
