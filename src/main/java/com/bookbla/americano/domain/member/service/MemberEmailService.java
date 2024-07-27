@@ -14,6 +14,7 @@ import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.member.repository.entity.MemberEmail;
+import com.bookbla.americano.domain.school.event.InvitationEventListener;
 import com.bookbla.americano.domain.school.exception.SchoolExceptionType;
 import com.bookbla.americano.domain.school.repository.SchoolRepository;
 import com.bookbla.americano.domain.school.repository.entity.School;
@@ -37,6 +38,7 @@ import java.util.Random;
 @Slf4j
 public class MemberEmailService {
 
+    private final InvitationEventListener invitationEventListener;
     private final MemberRepository memberRepository;
     private final MemberEmailRepository memberEmailRepository;
     private final MemberBookmarkRepository memberBookmarkRepository;
@@ -111,10 +113,12 @@ public class MemberEmailService {
                 .updateSchool(school);
 
         // 메일 인증시 멤버 책갈피 엔티티 생성, 중복 생성 방지용 로직 추가
-        memberBookmarkRepository.findMemberBookmarkByMemberId(memberId)
+        MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(memberId)
                 .orElseGet(() -> memberBookmarkRepository.save(MemberBookmark.builder()
                         .member(member)
                         .build()));
+
+        invitationEventListener.invitationBookmarkEvent(memberBookmark);
 
         redisUtil.deleteData(requestSchoolEmail);
         redisUtil.deleteData(redisVerifyCode);

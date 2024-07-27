@@ -33,10 +33,13 @@ public class InvitationEventListener {
         Member invitedMember = memberRepository.getByIdOrThrow(invitation.getInvitedMemberId());
 
         if (invitedMember.isWoman()) {
-            invitedmemberBookmark.addInvitationBookmark();
             Optional<MemberBookmark> maybeInvitingMemberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(invitation.getInvitingMemberId());
+
             if (maybeInvitingMemberBookmark.isPresent()) {
+
+                invitedmemberBookmark.addInvitationBookmark();
                 maybeInvitingMemberBookmark.get().addInvitationBookmark();
+
             }
         }
     }
