@@ -26,9 +26,8 @@ public class InvitationEventListener {
     @Transactional
     public void invitationBookmarkEvent(MemberBookmark invitedMemberBookmark) {
         Long joinMemberId = invitedMemberBookmark.getMember().getId();
-        Optional<Invitation> maybeInvitation = invitationRepository.findByInvitedMemberId(joinMemberId);
-
-        maybeInvitation.ifPresent(invitation -> processInvitation(invitation, invitedMemberBookmark));
+        invitationRepository.findByInvitedMemberId(joinMemberId)
+                .ifPresent(invitation -> processInvitation(invitation, invitedMemberBookmark));
     }
 
     private void processInvitation(Invitation invitation, MemberBookmark invitedMemberBookmark) {
