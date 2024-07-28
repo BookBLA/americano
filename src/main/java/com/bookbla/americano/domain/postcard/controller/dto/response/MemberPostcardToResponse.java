@@ -3,15 +3,14 @@ package com.bookbla.americano.domain.postcard.controller.dto.response;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardToResponse;
 import com.bookbla.americano.domain.quiz.enums.CorrectStatus;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.time.Period;
-import java.util.List;
 
 @Getter
 @Setter
@@ -78,14 +77,14 @@ public class MemberPostcardToResponse {
         this.memberProfileImageUrl = i.getMemberProfileImageUrl();
         this.memberAge = getAge(i.getMemberBirthDate());
         this.memberGender = i.getMemberGender().name();
-        this.drinkType = i.getDrinkType().getValue();
-        this.smokeType = i.getSmokeType().getValue();
-        this.contactType = i.getContactType().getValue();
-        this.dateStyleType = i.getDateStyleType().getValue();
-        this.dateCostType = i.getDateCostType().getValue();
+        this.drinkType = i.getDrinkType().getDetailValue();
+        this.smokeType = i.getSmokeType().getDetailValue();
+        this.contactType = i.getContactType().getDetailValue();
+        this.dateStyleType = i.getDateStyleType().getDetailValue();
+        this.dateCostType = i.getDateCostType().getDetailValue();
         this.mbti = i.getMbti().name();
-        this.justFriendType = i.getJustFriendType().getValue();
-        this.heightType = i.getHeightType().getValue();
+        this.justFriendType = i.getJustFriendType().getDetailValue();
+        this.heightType = i.getHeightType().getDetailValue();
         this.memberSchoolName = i.getMemberSchoolName();
         this.memberReplyContent = i.getMemberReplyContent();
         this.postcardStatus = i.getPostcardStatus();
