@@ -4,6 +4,7 @@ import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardToResponse;
 import com.bookbla.americano.domain.quiz.enums.CorrectStatus;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -54,6 +55,8 @@ public class MemberPostcardToResponse {
 
     private int quizScore;
 
+    private LocalDateTime receivedTime;
+
     private PostcardStatus postcardStatus;
 
     private String postcardImageUrl;
@@ -87,6 +90,7 @@ public class MemberPostcardToResponse {
         this.heightType = i.getHeightType().getDetailValue();
         this.memberSchoolName = i.getMemberSchoolName();
         this.memberReplyContent = i.getMemberReplyContent();
+        this.receivedTime = i.getReceivedTime();
         this.postcardStatus = i.getPostcardStatus();
         this.postcardImageUrl = i.getPostcardImageUrl();
         this.memberOpenKakaoRoomUrl = i.getMemberKakaoRoomUrl();
