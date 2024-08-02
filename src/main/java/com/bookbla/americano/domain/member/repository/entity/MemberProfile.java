@@ -1,9 +1,12 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
+import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
+import com.bookbla.americano.domain.member.exception.MemberProfileException;
+import com.vane.badwordfiltering.BadWordFiltering;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Objects;
@@ -26,7 +29,7 @@ public class MemberProfile {
 
     @Column(unique = true)
     private String name;
-    
+
     private LocalDate birthDate;
 
     @Enumerated(EnumType.STRING)
@@ -85,7 +88,14 @@ public class MemberProfile {
     }
 
     public MemberProfile updateName(String name) {
+        BadWordFiltering badWordFiltering = new BadWordFiltering();
+
+        if (badWordFiltering.blankCheck(name)) {
+            throw new BaseException(MemberProfileException.CONTAIN_BAD_WORDS);
+        }
+
         this.name = name;
+
         return this;
     }
 
