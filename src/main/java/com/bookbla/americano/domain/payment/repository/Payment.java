@@ -35,4 +35,8 @@ public class Payment extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
+
+    public void updateMemberId(Long memberId) {
+        this.memberId = memberId;
+    }
 }
