@@ -1,7 +1,8 @@
-package com.bookbla.americano.domain.payment.controller.dto;
+package com.bookbla.americano.domain.payment.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
+import com.bookbla.americano.domain.payment.controller.docs.PaymentControllerDocs;
 import com.bookbla.americano.domain.payment.controller.dto.request.PaymentBookmarkRequest;
 import com.bookbla.americano.domain.payment.controller.dto.response.PaymentPurchaseResponse;
 import com.bookbla.americano.domain.payment.service.PaymentService;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/payments")
-public class PaymentController {
+public class PaymentController implements PaymentControllerDocs {
 
     private final PaymentService paymentService;
 
