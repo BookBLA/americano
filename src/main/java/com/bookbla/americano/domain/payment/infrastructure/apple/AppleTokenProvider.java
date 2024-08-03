@@ -11,7 +11,6 @@ import com.bookbla.americano.domain.payment.infrastructure.apple.dto.DecodedToke
 import com.bookbla.americano.domain.payment.infrastructure.apple.dto.DecodedTokenPayload;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.net.MediaType;
-import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
