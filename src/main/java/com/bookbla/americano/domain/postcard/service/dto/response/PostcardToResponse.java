@@ -6,6 +6,7 @@ import com.bookbla.americano.domain.quiz.enums.CorrectStatus;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -45,6 +46,9 @@ public class PostcardToResponse {
     private JustFriendType justFriendType;
 
     private HeightType heightType;
+
+    // 엽서 받은 시간
+    private LocalDateTime receivedTime;
 
     // 엽서 상태
     private PostcardStatus postcardStatus;

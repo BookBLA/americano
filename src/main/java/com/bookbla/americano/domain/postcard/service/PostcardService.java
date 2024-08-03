@@ -44,8 +44,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -227,7 +229,9 @@ public class PostcardService {
             // 리스트에 추가
             memberPostcardToResponseList.add(nowResponse);
         }
-        return memberPostcardToResponseList;
+        return memberPostcardToResponseList.stream()
+                .sorted(Comparator.comparing(MemberPostcardToResponse::getReceivedTime).reversed())
+                .collect(Collectors.toList());
     }
 
     public void readMemberPostcard(Long memberId, Long postcardId) {
