@@ -6,7 +6,6 @@ import com.bookbla.americano.domain.payment.controller.docs.PaymentControllerDoc
 import com.bookbla.americano.domain.payment.controller.dto.request.PaymentBookmarkRequest;
 import com.bookbla.americano.domain.payment.controller.dto.response.PaymentPurchaseResponse;
 import com.bookbla.americano.domain.payment.service.PaymentService;
-import io.swagger.v3.oas.annotations.Parameter;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,15 +16,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
-@RestController
 @RequestMapping("/payments")
+@RestController
 public class PaymentController implements PaymentControllerDocs {
 
     private final PaymentService paymentService;
 
     @PostMapping("/{payType}")
     public ResponseEntity<PaymentPurchaseResponse> orderBookmark(
-            @Parameter(hidden = true) @User LoginUser loginUser,
+            @User LoginUser loginUser,
             @Valid @RequestBody PaymentBookmarkRequest request,
             @PathVariable String payType
     ) {

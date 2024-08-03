@@ -5,12 +5,11 @@ import java.util.Set;
 import java.util.function.Function;
 
 import com.bookbla.americano.domain.payment.enums.PaymentType;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.toMap;
 
-@RequiredArgsConstructor
+
 @Component
 public class PaymentStrategies {
 

@@ -8,11 +8,11 @@ import com.bookbla.americano.domain.payment.infrastructure.apple.dto.DecodedToke
 import com.bookbla.americano.domain.payment.infrastructure.apple.dto.DecodedTokenPayload;
 import com.bookbla.americano.domain.payment.repository.Payment;
 import com.bookbla.americano.domain.payment.service.PaymentStrategy;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
-@Getter
+@Component
 public class ApplePaymentStrategy implements PaymentStrategy {
 
     private final ApplePaymentApiClient apiClient;
