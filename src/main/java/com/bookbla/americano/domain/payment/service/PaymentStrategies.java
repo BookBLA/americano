@@ -16,7 +16,7 @@ public class PaymentStrategies {
     private final Map<PaymentType, PaymentStrategy> paymentStrategyMap;
 
     public PaymentStrategies(Set<PaymentStrategy> paymentTypes) {
-        this.paymentStrategies = paymentTypes.stream()
+        this.paymentStrategyMap = paymentTypes.stream()
                 .collect(toMap(
                         PaymentStrategy::getPaymentType,
                         Function.identity()
@@ -24,11 +24,11 @@ public class PaymentStrategies {
     }
 
     public PaymentStrategy get(PaymentType paymentType) {
-        return paymentStrategies.get(paymentType);
+        return paymentStrategyMap.get(paymentType);
     }
 
     public PaymentStrategy get(String value) {
         PaymentType paymentType = PaymentType.from(value);
-        return paymentStrategies.get(paymentType);
+        return paymentStrategyMap.get(paymentType);
     }
 }
