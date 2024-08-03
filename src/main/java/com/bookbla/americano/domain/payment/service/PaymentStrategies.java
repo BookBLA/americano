@@ -13,7 +13,7 @@ import static java.util.stream.Collectors.toMap;
 @Component
 public class PaymentStrategies {
 
-    private final Map<PaymentType, PaymentStrategy> paymentStrategies;
+    private final Map<PaymentType, PaymentStrategy> paymentStrategyMap;
 
     public PaymentStrategies(Set<PaymentStrategy> paymentTypes) {
         this.paymentStrategies = paymentTypes.stream()
