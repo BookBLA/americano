@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.payment.infrastructure.apple.dto;
+package com.bookbla.americano.domain.payment.infrastructure.apple.tokens;
 
 import java.util.List;
 

@@ -7,8 +7,8 @@ import java.util.Date;
 import java.util.Map;
 
 import com.bookbla.americano.domain.payment.infrastructure.apple.config.ApplePaymentsConfig;
-import com.bookbla.americano.domain.payment.infrastructure.apple.dto.DecodedTokenHeader;
-import com.bookbla.americano.domain.payment.infrastructure.apple.dto.DecodedTokenPayload;
+import com.bookbla.americano.domain.payment.infrastructure.apple.tokens.DecodedTokenHeader;
+import com.bookbla.americano.domain.payment.infrastructure.apple.tokens.DecodedTokenPayload;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.net.MediaType;
 import io.jsonwebtoken.Jwts;
