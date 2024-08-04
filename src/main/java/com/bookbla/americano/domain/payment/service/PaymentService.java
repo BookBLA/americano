@@ -31,7 +31,7 @@ public class PaymentService {
         paymentRepository.save(payment);
 
         MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(memberId)
-                .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.INVALID_BOOKMARK_COUNTS));
+                .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
 
         int updateCount = payment.getBookmarks();
         memberBookmark.addBookmark(updateCount);
