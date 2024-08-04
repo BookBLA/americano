@@ -30,50 +30,59 @@ public class MemberProfileController {
 
     private final MemberProfileService memberProfileService;
 
-    @Operation(summary = "멤버 프로필 생성 API")
+    @Operation(summary = "사용자 프로필 정보 생성 API",
+        description = "해당 사용자의 프로필 정보들을 생성<br>"
+            + "gender(성별) -> [MALE, FEMALE] | schoolEmail(학교 이메일) -> abc123@gachon.ac.kr")
     @PostMapping("/member-profiles")
     public ResponseEntity<MemberProfileResponse> createMemberProfile(
-            @Parameter(hidden = true) @User LoginUser loginUser,
-            @RequestBody @Valid MemberProfileCreateRequest memberProfileCreateRequest) {
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MemberProfileCreateRequest memberProfileCreateRequest) {
         MemberProfileResponse memberProfileResponse = memberProfileService.createMemberProfile(
-                loginUser.getMemberId(), memberProfileCreateRequest.toMemberProfileDto());
+            loginUser.getMemberId(), memberProfileCreateRequest.toMemberProfileDto());
 
         return ResponseEntity.ok(memberProfileResponse);
     }
 
-    @Operation(summary = "멤버 프로필 조회 API")
+    @Operation(summary = "사용자 프로필 정보 조회 API",
+        description = "해당 사용자의 프로필 정보들을 확인<br>"
+            + "gender(성별) -> [MALE, FEMALE] | schoolEmail(학교 이메일) -> abc123@gachon.ac.kr")
     @GetMapping("/member-profiles")
     public ResponseEntity<MemberProfileResponse> readMemberProfile(
-            @Parameter(hidden = true) @User LoginUser loginUser) {
+        @Parameter(hidden = true) @User LoginUser loginUser) {
         MemberProfileResponse memberProfileResponse = memberProfileService.readMemberProfile(
-                loginUser.getMemberId());
+            loginUser.getMemberId());
         return ResponseEntity.ok(memberProfileResponse);
     }
 
-    @Operation(summary = "멤버 프로필 수정 API")
+    @Operation(summary = "사용자 프로필 정보 수정 API",
+        description = "해당 사용자의 프로필 정보들을 수정<br>"
+            + "gender(성별) -> [MALE, FEMALE] | schoolEmail(학교 이메일) -> abc123@gachon.ac.kr")
     @PutMapping("/member-profiles")
     public ResponseEntity<MemberProfileResponse> updateMemberProfile(
-            @Parameter(hidden = true) @User LoginUser loginUser,
-            @RequestBody @Valid MemberProfileUpdateRequest memberProfileUpdateRequest
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MemberProfileUpdateRequest memberProfileUpdateRequest
     ) {
         MemberProfileResponse memberProfileResponse = memberProfileService.updateMemberProfile(
-                loginUser.getMemberId(), memberProfileUpdateRequest);
+            loginUser.getMemberId(), memberProfileUpdateRequest);
         return ResponseEntity.ok(memberProfileResponse);
     }
-
+    @Operation(summary = "사용자 프로필 정보 中 상태 조회 API",
+        description = "해당 사용자가 회원 승인할 때 필요한 상태를 조회<br>"
+            + "profileImageUrlStatus, studentIdImageStatus : [PENDING, DENIAL, DONE]<br>"
+            + "openKakaoRoomStatus : [PENDING, INACCESSIBLE, NOT_DEFAULT, DONE]")
     @GetMapping("/member-profiles/statuses")
     public ResponseEntity<MemberProfileStatusResponse> readMemberProfileStatus(
-            @Parameter(hidden = true) @User LoginUser loginUser) {
+        @Parameter(hidden = true) @User LoginUser loginUser) {
         MemberProfileStatusResponse memberProfileStatusResponse = memberProfileService.readMemberProfileStatus(
-                loginUser.getMemberId());
+            loginUser.getMemberId());
 
         return ResponseEntity.ok(memberProfileStatusResponse);
     }
 
     @PatchMapping("/members/me/profile/profile-image")
     public ResponseEntity<Void> updateMemberProfileImage(
-            @Parameter(hidden = true) @User LoginUser loginUser,
-            @RequestBody @Valid MemberProfileImageUpdateRequest request
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MemberProfileImageUpdateRequest request
     ) {
         memberProfileService.updateMemberProfileImage(loginUser.getMemberId(), request);
         return ResponseEntity.ok().build();
@@ -81,8 +90,8 @@ public class MemberProfileController {
 
     @PatchMapping("/members/me/profile/open-kakao-room")
     public ResponseEntity<Void> updateMemberOpenKakaoRoom(
-            @Parameter(hidden = true) @User LoginUser loginUser,
-            @RequestBody @Valid MemberProfileOpenKakaoRoomUrlUpdateRequest request
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MemberProfileOpenKakaoRoomUrlUpdateRequest request
     ) {
         memberProfileService.updateMemberProfileKakaoRoom(loginUser.getMemberId(), request);
         return ResponseEntity.ok().build();
@@ -90,8 +99,8 @@ public class MemberProfileController {
 
     @PatchMapping("/members/me/member-profile")
     public ResponseEntity<Void> updateProfile(
-            @Parameter(hidden = true) @User LoginUser loginUser,
-            @RequestBody @Valid ProfileModifyRequest request
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid ProfileModifyRequest request
     ) {
         memberProfileService.modifyProfile(loginUser.getMemberId(), request);
         return ResponseEntity.ok().build();

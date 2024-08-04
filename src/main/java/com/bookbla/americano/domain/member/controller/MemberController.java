@@ -38,7 +38,10 @@ public class MemberController {
     private final MemberBookmarkService memberBookmarkService;
     private final MemberProfileService memberProfileService;
 
-    @Operation(summary = "멤버 조회 API")
+    @Operation(summary = "사용자 정보 조회 API",
+        description = "사용자의 oauth 정보, 타입, 상태 등을 조회<br>"
+            + "memberType : [APPLE, KAKAO, ADMIN]<br>"
+            + "memberStatus : [PROFILE, APPROVAL, STYLE, BOOK, COMPLETED, DELETED, BLOCKED, MATCHING_DISABLED, REPORTED]")
     @GetMapping
     public ResponseEntity<MemberResponse> readMember(
         @Parameter(hidden = true) @User LoginUser loginUser) {
@@ -58,7 +61,8 @@ public class MemberController {
         return ResponseEntity.ok(memberStatusResponse);
     }
 
-    @Operation(summary = "멤버 탈퇴 API", description = "탈퇴하고나서 30일 뒤에 회원 정보 삭제")
+    @Operation(summary = "사용자 계정 탈퇴 API",
+        description = "탈퇴 시점(deletedAt)을 저장한 뒤에 30일 뒤에 회원 정보 삭제")
     @DeleteMapping
     public ResponseEntity<MemberDeleteResponse> deleteMember(
         @Parameter(hidden = true) @User LoginUser loginUser) {
@@ -67,7 +71,9 @@ public class MemberController {
         return ResponseEntity.ok(memberDeleteResponse);
     }
 
-    @Operation(summary = "멤버 상태 조회 API")
+    @Operation(summary = "사용자 상태 조회 API",
+        description = "사용자의 상태를 조회<br>"
+            + "memberStatus : [PROFILE, APPROVAL, STYLE, BOOK, COMPLETED, DELETED, BLOCKED, MATCHING_DISABLED, REPORTED]")
     @GetMapping("/statuses")
     public ResponseEntity<MemberStatusResponse> readMemberStatus(
         @Parameter(hidden = true) @User LoginUser loginUser) {

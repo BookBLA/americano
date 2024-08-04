@@ -23,7 +23,9 @@ public class MemberEmailController {
 
     private final MemberEmailService memberEmailService;
 
-    @Operation(summary = "이메일 인증 코드 전송 API")
+    @Operation(summary = "이메일 인증 코드 전송 API",
+        description = "학교 이메일 인증을 위해 인증 코드를 전송<br>"
+            + "학교의 도메인과 학교 정보가 일치가 필요 (ex, 가천대 = @gachon.ac.kr)")
     @PostMapping("/sends")
     public ResponseEntity<EmailResponse> sendEmail(
             @Parameter(hidden = true) @User LoginUser loginUser,
@@ -35,7 +37,9 @@ public class MemberEmailController {
         return ResponseEntity.ok(emailResponse);
     }
 
-    @Operation(summary = "이메일 인증 코드 확인 API")
+    @Operation(summary = "이메일 인증 코드 확인 API",
+        description = "학교 이메일 인증을 위해 인증 코드를 검증<br>"
+            + "학교의 도메인과 학교 정보가 일치가 필요 (ex, 가천대 = @gachon.ac.kr)")
     @PostMapping("/verifys")
     public ResponseEntity<EmailResponse> verifyEmail(
             @Parameter(hidden = true) @User LoginUser loginUser,
