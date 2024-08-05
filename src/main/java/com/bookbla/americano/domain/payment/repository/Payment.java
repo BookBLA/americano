@@ -33,6 +33,8 @@ public class Payment extends BaseEntity {
 
     private int bookmarks;
 
+    private String receipt;
+
     @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
 

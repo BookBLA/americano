@@ -35,6 +35,7 @@ public class ApplePaymentStrategy implements PaymentStrategy {
                 .money(paymentTable.getPrice())
                 .bookmarks(paymentTable.getCount())
                 .paymentType(PaymentType.APPLE)
+                .receipt(transactionId)
                 .build();
     }
 
