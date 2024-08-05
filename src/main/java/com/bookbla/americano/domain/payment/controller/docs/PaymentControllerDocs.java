@@ -2,7 +2,7 @@ package com.bookbla.americano.domain.payment.controller.docs;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
-import com.bookbla.americano.domain.payment.controller.dto.request.PaymentBookmarkRequest;
+import com.bookbla.americano.domain.payment.controller.dto.request.PaymentInAppPurchaseRequest;
 import com.bookbla.americano.domain.payment.controller.dto.response.PaymentPurchaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Tag(name = "결제", description = "결제와 관련된 API 모음")
 public interface PaymentControllerDocs {
 
-    @Operation(summary = "인앱결제 모음입니당")
+    @Operation(summary = "인앱결제 API입니다")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -48,7 +48,7 @@ public interface PaymentControllerDocs {
     @PostMapping
     ResponseEntity<PaymentPurchaseResponse> orderBookmark(
             @Parameter(hidden = true) @User LoginUser loginUser,
-            @Valid @RequestBody PaymentBookmarkRequest request,
-            @PathVariable String payType
+            @Valid @RequestBody PaymentInAppPurchaseRequest request,
+            @PathVariable @Parameter(name = "payType", description = "인앱결제 유형잉ㅂ니다", example = "apple, google") String payType
     );
 }
