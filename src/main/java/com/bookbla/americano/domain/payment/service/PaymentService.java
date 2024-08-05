@@ -4,7 +4,7 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.exception.MemberBookmarkExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
-import com.bookbla.americano.domain.payment.controller.dto.request.PaymentBookmarkRequest;
+import com.bookbla.americano.domain.payment.controller.dto.request.PaymentInAppPurchaseRequest;
 import com.bookbla.americano.domain.payment.controller.dto.response.PaymentPurchaseResponse;
 import com.bookbla.americano.domain.payment.enums.PaymentType;
 import com.bookbla.americano.domain.payment.repository.Payment;
@@ -22,7 +22,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final MemberBookmarkRepository memberBookmarkRepository;
 
-    public PaymentPurchaseResponse orderBookmark(String payType, PaymentBookmarkRequest request, Long memberId) {
+    public PaymentPurchaseResponse orderBookmark(String payType, PaymentInAppPurchaseRequest request, Long memberId) {
         PaymentType paymentType = PaymentType.from(payType);
         PaymentStrategy paymentStrategy = paymentStrategies.get(paymentType);
 
