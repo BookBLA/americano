@@ -34,8 +34,8 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
 
     long countByMemberStatus(MemberStatus memberStatus);
 
-    @Query("SELECT m FROM Member m WHERE m.memberStatus = :status1 OR m.memberStatus = :status2")
-    List<Member> findByMemberStatus(@Param("status1") MemberStatus status1, @Param("status2") MemberStatus status2);
+    @Query("SELECT m FROM Member m WHERE (m.memberStatus = :status1 OR m.memberStatus = :status2) AND m.memberPolicy.adAgreementPolicy = true")
+    List<Member> findByMemberStatusAndAdAgreement(@Param("status1") MemberStatus status1, @Param("status2") MemberStatus status2);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("DELETE FROM Member m WHERE m.deleteAt <= :cutoffDate AND m.memberStatus = 'DELETED'")
