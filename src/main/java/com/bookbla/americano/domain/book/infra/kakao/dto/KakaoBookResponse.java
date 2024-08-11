@@ -1,12 +1,13 @@
 package com.bookbla.americano.domain.book.infra.kakao.dto;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.bookbla.americano.domain.book.service.dto.BookSearchResponses;
 import com.bookbla.americano.domain.book.service.dto.BookSearchResponses.BookSearchResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -44,7 +45,7 @@ public class KakaoBookResponse {
 
     public BookSearchResponses toBookSearchResponsesWith(int page) {
         List<BookSearchResponse> bookSearchResponses = documents.stream()
-                .map(it -> new BookSearchResponse(it.title, it.authors, it.isbn, it.thumbnail))
+                .map(it -> new BookSearchResponse(it.title, it.authors, toIsbn13(it.getIsbn()), it.thumbnail))
                 .collect(Collectors.toList());
         return BookSearchResponses.builder()
                 .totalCount(getMeta().pageableCount)
@@ -52,5 +53,12 @@ public class KakaoBookResponse {
                 .isEnd(getMeta().isEnd())
                 .bookSearchResponses(bookSearchResponses)
                 .build();
+    }
+
+    private String toIsbn13(String rawIsbn) {
+        if (rawIsbn.contains(" ")) {
+            return rawIsbn.split(" ")[1];
+        }
+        return rawIsbn;
     }
 }
