@@ -27,8 +27,9 @@ public class AladinBookResponse {
     private List<Item> item;
 
     @Data
+    @Getter
     @NoArgsConstructor
-    static class Item {
+    public static class Item {
 
         private String title;
         private String link;
@@ -43,7 +44,7 @@ public class AladinBookResponse {
         private int priceStandard;
         private String stockStatus;
         private int mileage;
-        private String cover;
+        private String cover; // 프로필 이미지
         private int categoryId;
         private String categoryName;
         private String publisher;

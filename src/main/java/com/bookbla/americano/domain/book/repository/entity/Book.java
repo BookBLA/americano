@@ -39,4 +39,7 @@ public class Book extends BaseEntity {
 
     private String imageUrl;
 
+    public void updateImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }
