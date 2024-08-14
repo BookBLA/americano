@@ -63,10 +63,9 @@ public class SchedulerService {
             String txName = SchedulerService.class.getName() + "(deleteMemberEmailSchedule)";
             String message = "임시 메일 테이블 초기화 작업이 실패하였습니다. 확인 부탁드립니다." + CLRF
                     + e.toString() + CLRF
-                    + e.getMessage() + CLRF
-                    + stackTraceToString(e);
+                    + e.getMessage() + CLRF;
 
-            mailService.sendTransactionFailureEmail(txName, message);
+            mailService.sendTransactionFailureEmail(txName, message + stackTraceToString(e));
             bookblaLogDiscord.sendMessage(message);
 
             log.debug("Exception in {}", SchedulerService.class.getName());
@@ -87,10 +86,9 @@ public class SchedulerService {
             String txName = SchedulerService.class.getName() + "(deleteMemberSchedule)";
             String message = "멤버 테이블의 탈퇴한 멤버 삭제 작업이 실패하였습니다. 확인 부탁드립니다." + CLRF
                     + e.toString() + CLRF
-                    + e.getMessage() + CLRF
-                    + stackTraceToString(e);
+                    + e.getMessage() + CLRF;
 
-            mailService.sendTransactionFailureEmail(txName, message);
+            mailService.sendTransactionFailureEmail(txName, message + stackTraceToString(e));
             bookblaLogDiscord.sendMessage(message);
 
             log.debug("Exception in {}", SchedulerService.class.getName());
