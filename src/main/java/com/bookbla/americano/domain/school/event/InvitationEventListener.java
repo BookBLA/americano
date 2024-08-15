@@ -1,7 +1,5 @@
 package com.bookbla.americano.domain.school.event;
 
-import java.util.Optional;
-
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -31,6 +29,11 @@ public class InvitationEventListener {
     }
 
     private void processInvitation(Invitation invitation, MemberBookmark invitedMemberBookmark) {
+        if (invitation.isFestivalTemporaryInvitation()) {
+            invitedMemberBookmark.addBookmark(105);
+            return;
+        }
+
         Member invitedMember = memberRepository.getByIdOrThrow(invitation.getInvitedMemberId());
         if (invitedMember.isWoman()) {
             handleWomanInvitation(invitation, invitedMemberBookmark);
