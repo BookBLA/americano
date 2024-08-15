@@ -26,6 +26,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -40,14 +42,17 @@ public class Postcard extends BaseInsertEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "send_member_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member sendMember;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receive_member_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member receiveMember;
 
     @OneToOne
     @JoinColumn(name = "member_reply_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private MemberReply memberReply;
 
     @ManyToOne(fetch = FetchType.LAZY)

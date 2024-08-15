@@ -18,6 +18,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -32,16 +34,19 @@ public class QuizReply extends BaseInsertEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_question_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private QuizQuestion quizQuestion;
 
     private String answer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "postcard_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Postcard postcard;
 
     @Enumerated(EnumType.STRING)
