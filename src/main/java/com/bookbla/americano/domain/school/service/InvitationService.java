@@ -37,7 +37,7 @@ public class InvitationService {
     }
 
     public InvitationResponse entryInvitationCode(Long invitedMemberId, InvitationCodeEntryRequest request) {
-        if (isFestivalInvitationCode(request.getInvitationCode())) {
+        if (isFestivalTemporaryInvitationCode(request.getInvitationCode())) {
             invitationRepository.save(Invitation.builder()
                     .invitedMemberId(invitedMemberId)
                     .invitingMemberId(FESTIVAL_TEMPORARY_INVITING_MEMBER_ID)
@@ -54,7 +54,7 @@ public class InvitationService {
         return InvitationResponse.from(invitingMember);
     }
 
-    private boolean isFestivalInvitationCode(String invitationCode) {
+    private boolean isFestivalTemporaryInvitationCode(String invitationCode) {
         return FESTIVAL_TEMPORARY_INVITATION_CODE.equals(invitationCode);
     }
 
