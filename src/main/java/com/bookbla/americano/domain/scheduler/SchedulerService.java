@@ -79,10 +79,7 @@ public class SchedulerService {
     @Scheduled(cron = EVERY_4_AM, zone = "Asia/Seoul")
     public void deleteMemberSchedule() {
         try {
-            LocalDateTime currentDate = LocalDateTime.now();
-            LocalDateTime thirtyDaysAgo = currentDate.minusDays(30);
-
-            memberRepository.deleteAllByDeletedAtBeforeAndMemberStatus(thirtyDaysAgo);
+            memberRepository.deleteOldDeletedMembers();
         } catch (Exception e) {
             String txName = SchedulerService.class.getName() + "(deleteMemberSchedule)";
             String message = "멤버 테이블의 탈퇴한 멤버 삭제 작업이 실패하였습니다. 확인 부탁드립니다." + CLRF

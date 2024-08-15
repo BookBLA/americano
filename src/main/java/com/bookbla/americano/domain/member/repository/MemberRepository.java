@@ -1,7 +1,6 @@
 package com.bookbla.americano.domain.member.repository;
 
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +36,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     List<Member> findByMemberStatus(@Param("status1") MemberStatus status1, @Param("status2") MemberStatus status2);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("DELETE FROM Member m WHERE m.deleteAt <= :cutoffDate AND m.memberStatus = 'DELETED'")
-    void deleteAllByDeletedAtBeforeAndMemberStatus(LocalDateTime cutoffDate);
+    @Query("DELETE FROM Member m WHERE m.memberStatus = 'DELETED' AND m.deleteAt <= CURRENT_DATE - 30")
+    void deleteOldDeletedMembers();
 }
