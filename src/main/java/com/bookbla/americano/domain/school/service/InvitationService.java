@@ -55,7 +55,7 @@ public class InvitationService {
     }
 
     private boolean isFestivalInvitationCode(String invitationCode) {
-        return FESTIVAL_TEMPORARY_INVITATION_CODE.equalsIgnoreCase(invitationCode);
+        return FESTIVAL_TEMPORARY_INVITATION_CODE.equals(invitationCode);
     }
 
     private Invitation invite(Long invitedMemberId, Member invitingMember) {
