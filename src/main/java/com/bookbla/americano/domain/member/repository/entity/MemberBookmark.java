@@ -47,7 +47,7 @@ public class MemberBookmark extends BaseEntity {
     }
 
     public void addInvitationBookmark() {
-        bookmarkCount += 150;
+        bookmarkCount += 70;
     }
 
     public void addBookmark(int count) {
