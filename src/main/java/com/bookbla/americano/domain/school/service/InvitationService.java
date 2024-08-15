@@ -36,10 +36,10 @@ public class InvitationService {
         return MemberInvitationResponse.from(member);
     }
 
-    public InvitationResponse entryInvitationCode(Long memberId, InvitationCodeEntryRequest request) {
+    public InvitationResponse entryInvitationCode(Long invitedMemberId, InvitationCodeEntryRequest request) {
         if (isFestivalInvitationCode(request.getInvitationCode())) {
             invitationRepository.save(Invitation.builder()
-                    .invitedMemberId(memberId)
+                    .invitedMemberId(invitedMemberId)
                     .invitingMemberId(FESTIVAL_TEMPORARY_INVITING_MEMBER_ID)
                     .build());
             return InvitationResponse.createFestivalTemporaryInvitationCode();
@@ -48,8 +48,8 @@ public class InvitationService {
         Member invitingMember = memberRepository.findByInvitationCode(request.getInvitationCode())
                 .orElseThrow(() -> new BaseException(MemberExceptionType.INVITATION_CODE_NOT_FOUND));
 
-        invitationRepository.findByInvitedMemberId(memberId)
-                .orElseGet(() -> invite(memberId, invitingMember));
+        invitationRepository.findByInvitedMemberId(invitedMemberId)
+                .orElseGet(() -> invite(invitedMemberId, invitingMember));
 
         return InvitationResponse.from(invitingMember);
     }
