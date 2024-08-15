@@ -17,8 +17,8 @@ on:
   pull_request:
     # 특정 브랜치만
     branches: [dev]
-#    # pr이 생성 되었을 때, 담당 유저가 등록되었을 때, PR에 코드가 머지되었을 때, 라벨이 달렸을 때 동작
-#    types: [opened, assigned, synchronize, labeled, reopened]
+  #    # pr이 생성 되었을 때, 담당 유저가 등록되었을 때, PR에 코드가 머지되었을 때, 라벨이 달렸을 때 동작
+  #    types: [opened, assigned, synchronize, labeled, reopened]
   push:
     branches: [dev]
 
@@ -162,8 +162,67 @@ jobs:
           script: |
             chmod +x /home/${{ secrets.REMOTE_USERNAME_DEV }}/deploy/deploy.sh && sh /home/${{ secrets.REMOTE_USERNAME_DEV }}/deploy/deploy.sh
 
-      - name : Send Success Notification
-        uses: tsickert/discord-webhook@v5.3.0
-        with:
-          webhook-url: ${{ secrets.DEV_WEBHOOK_URL }}
-          content: "개발서버 배포가 완료되었습니다🎉"
+      - name: Send Success Message
+        if: ${{ success() }}
+        uses: Ilshidur/action-discord@0.3.2
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DEV_WEBHOOK_URL }}
+          DISCORD_USERNAME: 개발서버 배포봇
+          DISCORD_AVATAR: https://cdn.imweb.me/thumbnail/20240606/39684ae3c2783.png
+          DISCORD_EMBEDS: |
+            [
+              {
+                "author": {
+                  "name": "${{ github.event.pull_request.user.login }}",
+                  "url": "https://github.com/boookbla/americano",
+                  "icon_url": "${{ github.event.pull_request.user.avatar_url }}"
+                },
+                "title": "개발서버 배포에 성공하였습니다🫡 \n#${{ github.event.pull_request.number }} : ${{ github.event.pull_request.title }}",
+                "color": 10478271,
+                "description": "${{ github.event.pull_request.html_url }}",
+                "fields": [
+                  {
+                    "name": "Base Branch",
+                    "value": "${{ github.base_ref }}",
+                    "inline": true
+                  },
+                  {
+                    "name": "Compare Branch",
+                    "value": "${{ github.head_ref }}",
+                    "inline": true
+                  }
+                ]
+              }
+            ]
+      - name: Send Failure Message
+        if: ${{ failure() }}
+        uses: Ilshidur/action-discord@0.3.2
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DEV_WEBHOOK_URL }}
+          DISCORD_USERNAME: 개발서버 배포봇
+          DISCORD_AVATAR: https://cdn.imweb.me/thumbnail/20240606/39684ae3c2783.png
+          DISCORD_EMBEDS: |
+            [
+              {
+                "author": {
+                  "name": "${{ github.event.pull_request.user.login }}",
+                  "url": "https://github.com/boookbla/americano",
+                  "icon_url": "${{ github.event.pull_request.user.avatar_url }}"
+                },
+                "title": "개발서버 배포에 실패하였습니다 한결쨩 출동🚀 \n#${{ github.event.pull_request.number }} : ${{ github.event.pull_request.title }}",
+                "color": 13458524,
+                "description": "${{ github.event.pull_request.html_url }}",
+                "fields": [
+                  {
+                    "name": "Base Branch",
+                    "value": "${{ github.base_ref }}",
+                    "inline": true
+                  },
+                  {
+                    "name": "Compare Branch",
+                    "value": "${{ github.head_ref }}",
+                    "inline": true
+                  }
+                ]
+              }
+            ]
