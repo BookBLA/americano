@@ -22,6 +22,8 @@ import static com.bookbla.americano.domain.school.repository.entity.InvitationSt
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Invitation extends BaseEntity {
 
+    public static final long FESTIVAL_TEMPORARY_INVITING_MEMBER_ID = 0L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -40,6 +42,10 @@ public class Invitation extends BaseEntity {
 
     public void complete() {
         this.invitationStatus = COMPLETED;
+    }
+
+    public boolean isFestivalTemporaryInvitation() {
+        return FESTIVAL_TEMPORARY_INVITING_MEMBER_ID == invitingMemberId;
     }
 }
 

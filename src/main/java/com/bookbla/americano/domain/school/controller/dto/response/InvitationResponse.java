@@ -15,4 +15,8 @@ public class InvitationResponse {
                 invitingMember.getMemberProfile().getGenderName()
         );
     }
+
+    public static InvitationResponse createFestivalTemporaryInvitationCode() {
+        return new InvitationResponse("축제 임시 코드입니다");
+    }
 }
