@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.book.infra.aladin.AladinBookClient;
+import com.bookbla.americano.domain.book.infra.aladin.dto.AladinBookResponse;
 import com.bookbla.americano.domain.book.repository.BookRepository;
 import com.bookbla.americano.domain.book.repository.entity.Book;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookCreateRequest;
@@ -39,6 +41,7 @@ public class MemberBookService {
 
     private static final int OLD_MEMBER_BOOK = 0;
 
+    private final AladinBookClient aladinBookClient;
     private final BookRepository bookRepository;
     private final MemberRepository memberRepository;
     private final MemberStatusLogRepository memberStatusLogRepository;
@@ -51,6 +54,8 @@ public class MemberBookService {
                 .orElseGet(() -> bookRepository.save(request.toBook()));
 
         validateAddMemberBook(member, book);
+
+        updateImageQuality(book);
 
         MemberBook savedMemberBook = memberBookRepository.save(request.toMemberBook(book, member));
         QuizQuestion savedQuizQuestion = quizQuestionRepository.save(
@@ -77,6 +82,16 @@ public class MemberBookService {
         if (memberBookCounts >= MAX_MEMBER_BOOK_COUNT) {
             throw new BaseException(MemberBookExceptionType.MAX_MEMBER_BOOK_COUNT);
         }
+    }
+
+    private void updateImageQuality(Book book) {
+        AladinBookResponse response = aladinBookClient.findByIsbn13(book.getIsbn());
+        String image = response.getItem()
+                .stream()
+                .map(AladinBookResponse.Item::getCover)
+                .findFirst()
+                .orElse(book.getImageUrl());
+        book.updateImageUrl(image);
     }
 
     @Transactional(readOnly = true)
