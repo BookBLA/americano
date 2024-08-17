@@ -1,20 +1,25 @@
 package com.bookbla.americano.domain.book.infra.kakao;
 
 import com.bookbla.americano.domain.book.infra.kakao.dto.KakaoBookResponse;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-@FeignClient(value = "kakao-book", url = "https://dapi.kakao.com/v3")
-public interface KakaoBookClient {
+@Component
+public class KakaoBookClient {
 
-    @GetMapping("/search/book")
-    KakaoBookResponse getBookInformation(
-            @RequestHeader("Authorization") String tokenValue,
-            @RequestParam String query,
-            @RequestParam(required = false) int size,
-            @RequestParam(required = false) int page
-    );
+    private static final String AUTH_TYPE = "KakaoAK ";
 
+    private final KakaoBookApi kakaoBookApi;
+
+    @Value("${book.kakao.token}")
+    private String kakaoToken;
+
+    public KakaoBookClient(KakaoBookApi kakaoBookApi) {
+        this.kakaoBookApi = kakaoBookApi;
+    }
+
+    public KakaoBookResponse searchBook(String text, int size, int page) {
+        String tokenValue = AUTH_TYPE + kakaoToken;
+        return kakaoBookApi.getBookInformation(tokenValue, text, size, page);
+    }
 }
