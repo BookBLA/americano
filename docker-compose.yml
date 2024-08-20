@@ -1,6 +1,6 @@
 version: "3.9"
 services:
-  db:
+  americano-mysql:
     image: mysql:8.0.28
     platform: linux/x86_64
     restart: always
@@ -12,5 +12,9 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
       TZ: Asia/Seoul
+  americano-redis:
+    image: redis:latest
+    ports:
+      - '6379:6379'
 
 # docker compose --build -up
