@@ -38,8 +38,6 @@ import static com.bookbla.americano.domain.member.repository.entity.MemberBook.M
 @RequiredArgsConstructor
 public class MemberBookService {
 
-    private static final int OLD_MEMBER_BOOK = 0;
-
     private final AladinBookClient aladinBookClient;
     private final BookRepository bookRepository;
     private final MemberRepository memberRepository;
@@ -60,16 +58,15 @@ public class MemberBookService {
         QuizQuestion savedQuizQuestion = quizQuestionRepository.save(
                 request.toQuizQuestion(savedMemberBook));
 
-        if (request.getIsRepresentative()) {
-            memberStatusLogRepository.save(
-                    MemberStatusLog.builder()
-                            .memberId(member.getId())
-                            .beforeStatus(member.getMemberStatus())
-                            .afterStatus(MemberStatus.COMPLETED)
-                            .build()
-            );
-            member.updateMemberStatus(COMPLETED, LocalDateTime.now());
-        }
+        memberStatusLogRepository.save(
+                MemberStatusLog.builder()
+                        .memberId(member.getId())
+                        .beforeStatus(member.getMemberStatus())
+                        .afterStatus(MemberStatus.COMPLETED)
+                        .build()
+        );
+        member.updateMemberStatus(COMPLETED, LocalDateTime.now());
+
         return MemberBookCreateResponse.from(savedMemberBook, savedQuizQuestion);
     }
 
@@ -159,11 +156,7 @@ public class MemberBookService {
 
         validateDeleteMemberBook(memberBook, member);
 
-        if (memberBook.isNotRepresentative()) {
-            memberBookRepository.deleteById(memberBookId);
-            return;
-        }
-        deleteRepresentativeBook(memberBookId, member);
+        memberBookRepository.deleteById(memberBookId);
     }
 
     private void validateDeleteMemberBook(MemberBook memberBook, Member member) {
@@ -171,14 +164,6 @@ public class MemberBookService {
         long memberBookCounts = memberBookRepository.countByMember(member);
         if (memberBookCounts < MEMBER_BOOK_REMOVABLE_COUNT) {
             throw new BaseException(MemberBookExceptionType.MIN_MEMBER_REMOVABLE_BOOK_COUNT);
-        }
-    }
-
-    private void deleteRepresentativeBook(Long memberBookId, Member member) {
-        memberBookRepository.deleteById(memberBookId);
-        List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
-        if (!memberBooks.isEmpty()) {
-            memberBooks.get(OLD_MEMBER_BOOK).updateRepresentative();
         }
     }
 }

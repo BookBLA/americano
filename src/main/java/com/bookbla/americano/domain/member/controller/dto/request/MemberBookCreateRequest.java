@@ -17,9 +17,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MemberBookCreateRequest {
 
-    @NotNull(message = "대표책 여부가 입력되지 않았습니다.")
-    private Boolean isRepresentative;
-
     @NotNull(message = "책 제목이 입력되지 않았습니다.")
     private String title;
 
@@ -65,7 +62,6 @@ public class MemberBookCreateRequest {
     public MemberBook toMemberBook(Book book, Member member) {
         return MemberBook.builder()
                 .book(book)
-                .isRepresentative(isRepresentative)
                 .review(review)
                 .member(member)
                 .build();
