@@ -31,7 +31,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.bookbla.americano.domain.member.enums.MemberStatus.COMPLETED;
-import static com.bookbla.americano.domain.member.repository.entity.MemberBook.MAX_MEMBER_BOOK_COUNT;
 import static com.bookbla.americano.domain.member.repository.entity.MemberBook.MEMBER_BOOK_REMOVABLE_COUNT;
 
 @Service
@@ -53,7 +52,7 @@ public class MemberBookService {
         Book book = bookRepository.findByIsbn(request.getIsbn())
                 .orElseGet(() -> bookRepository.save(request.toBook()));
 
-        validateAddMemberBook(member, book);
+        validateMemberBookExists(member, book);
 
         updateImageQuality(book);
 
@@ -74,13 +73,9 @@ public class MemberBookService {
         return MemberBookCreateResponse.from(savedMemberBook, savedQuizQuestion);
     }
 
-    private void validateAddMemberBook(Member member, Book book) {
+    private void validateMemberBookExists(Member member, Book book) {
         if (memberBookRepository.existsByMemberAndBook(member, book)) {
             throw new BaseException(MemberBookExceptionType.MEMBER_BOOK_EXISTS);
-        }
-        long memberBookCounts = memberBookRepository.countByMember(member);
-        if (memberBookCounts >= MAX_MEMBER_BOOK_COUNT) {
-            throw new BaseException(MemberBookExceptionType.MAX_MEMBER_BOOK_COUNT);
         }
     }
 
