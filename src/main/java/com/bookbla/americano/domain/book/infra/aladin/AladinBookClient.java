@@ -38,9 +38,12 @@ public class AladinBookClient {
             return Optional.empty();
         }
 
-        return aladinResponse.getItem()
-                .stream()
-                .map(AladinBookResponse.Item::getCover)
-                .findFirst();
+        if (aladinResponse.isCoverExists()) {
+            return aladinResponse.getItem()
+                    .stream()
+                    .map(AladinBookResponse.Item::getCover)
+                    .findFirst();
+        }
+        return Optional.empty();
     }
 }
