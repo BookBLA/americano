@@ -29,7 +29,7 @@ public class AladinBookResponse {
 
     }
 
-    public boolean isCoverExists() {
-        return item != null && !item.isEmpty();
+    public boolean hasNotCover() {
+        return item == null || item.isEmpty();
     }
 }

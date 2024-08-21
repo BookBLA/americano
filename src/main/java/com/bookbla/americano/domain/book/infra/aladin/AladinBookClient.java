@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import static io.netty.util.internal.ThrowableUtil.stackTraceToString;
+
 @Component
 @Slf4j
 public class AladinBookClient {
@@ -21,29 +23,31 @@ public class AladinBookClient {
     private String key;
 
     private final AladinBookApi aladinBookApi;
+    private final ObjectMapper objectMapper;
 
-    public AladinBookClient(AladinBookApi aladinBookApi) {
+    public AladinBookClient(AladinBookApi aladinBookApi, ObjectMapper objectMapper) {
         this.aladinBookApi = aladinBookApi;
+        this.objectMapper = objectMapper;
     }
 
     public Optional<String> findImageByIsbn13(String isbn) {
         AladinBookResponse aladinResponse = null;
         String response = aladinBookApi.getBook(key, isbn, ITEM_ID_TYPE, OUTPUT_FORMAT, IMG_SIZE);
 
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
             aladinResponse = objectMapper.readValue(response, AladinBookResponse.class);
         } catch (JsonProcessingException e) {
             log.info(e.getMessage());
+            log.info(stackTraceToString(e));
+            return Optional.empty();
+        }
+        if (aladinResponse.hasNotCover()) {
             return Optional.empty();
         }
 
-        if (aladinResponse.isCoverExists()) {
-            return aladinResponse.getItem()
-                    .stream()
-                    .map(AladinBookResponse.Item::getCover)
-                    .findFirst();
-        }
-        return Optional.empty();
+        return aladinResponse.getItem()
+                .stream()
+                .map(AladinBookResponse.Item::getCover)
+                .findFirst();
     }
 }
