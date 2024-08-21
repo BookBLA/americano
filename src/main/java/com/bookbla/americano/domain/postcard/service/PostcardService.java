@@ -1,6 +1,12 @@
 package com.bookbla.americano.domain.postcard.service;
 
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
@@ -42,12 +48,6 @@ import com.bookbla.americano.domain.quiz.repository.entity.QuizReply;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -159,13 +159,9 @@ public class PostcardService {
             List<String> nowBookImageUrls = new ArrayList<>();
             nowResponse = new MemberPostcardFromResponse(i);
             for (MemberBookReadResponses.MemberBookReadResponse j : memberBookList.getMemberBookReadResponses()) {
-                if (j.isRepresentative()) {
-                    nowResponse.setRepresentativeBookTitle(j.getTitle());
-                    nowResponse.setRepresentativeBookAuthor(j.getAuthors());
-                    nowBookImageUrls.add(0, j.getThumbnail());
-                } else {
-                    nowBookImageUrls.add(j.getThumbnail());
-                }
+                nowResponse.setRepresentativeBookTitle(j.getTitle());
+                nowResponse.setRepresentativeBookAuthor(j.getAuthors());
+                nowBookImageUrls.add(0, j.getThumbnail());
             }
             nowResponse.setBookImageUrls(nowBookImageUrls);
             memberPostcardFromResponseList.add(nowResponse);
@@ -284,7 +280,9 @@ public class PostcardService {
     @Transactional(readOnly = true)
     public PostcardSendValidateResponse validateSendPostcard(Long sendMemberId, Long targetMemberId) {
         memberBlockRepository.findByBlockerMemberIdAndBlockedMemberId(targetMemberId, sendMemberId)
-                .ifPresent(it -> {throw new BaseException(PostcardExceptionType.BLOCKED);});
+                .ifPresent(it -> {
+                    throw new BaseException(PostcardExceptionType.BLOCKED);
+                });
         List<Postcard> sendPostcards = postcardRepository.findBySendMemberIdAndReceiveMemberId(
                 sendMemberId, targetMemberId);
         sendPostcards.forEach(Postcard::validateSendPostcard);

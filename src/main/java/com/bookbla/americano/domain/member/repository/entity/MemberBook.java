@@ -47,9 +47,6 @@ public class MemberBook extends BaseEntity {
     private String review;
 
     @Builder.Default
-    private boolean isRepresentative = false;
-
-    @Builder.Default
     private boolean isDeleted = false;
 
     public void validateOwner(Member other) {
@@ -67,13 +64,5 @@ public class MemberBook extends BaseEntity {
             throw new BaseException(MemberBookExceptionType.REVIEW_LENGTH_NOT_VALID);
         }
         this.review = review;
-    }
-
-    public boolean isNotRepresentative() {
-        return this.isRepresentative == false;
-    }
-
-    public void updateRepresentative() {
-        this.isRepresentative = true;
     }
 }

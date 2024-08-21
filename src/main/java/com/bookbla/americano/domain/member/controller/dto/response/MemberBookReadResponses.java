@@ -20,7 +20,6 @@ public class MemberBookReadResponses {
     public static class MemberBookReadResponse {
 
         private final Long memberBookId;
-        private final boolean isRepresentative;
         private final String title;
         private final String thumbnail;
         private final List<String> authors;
@@ -31,7 +30,6 @@ public class MemberBookReadResponses {
         List<MemberBookReadResponses.MemberBookReadResponse> memberBookReadResponses = memberBooks.stream()
                 .map(memberBook -> new MemberBookReadResponses.MemberBookReadResponse(
                         memberBook.getId(),
-                        memberBook.isRepresentative(),
                         memberBook.getBook().getTitle(),
                         memberBook.getBook().getImageUrl(),
                         memberBook.getBook().getAuthors()

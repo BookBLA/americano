@@ -53,11 +53,9 @@ public class MemberController {
     @PostMapping("/status")
     public ResponseEntity<MemberStatusResponse> updateMemberStatus(
         @Parameter(hidden = true) @User LoginUser loginUser,
-        @RequestBody @Valid MemberStatusUpdateRequest memberStatusUpdateRequest) {
-        MemberStatusResponse memberStatusResponse = memberService.updateStatus(
-            loginUser.getMemberId(), memberStatusUpdateRequest.getMemberStatus(),
-            memberStatusUpdateRequest.getReason());
-
+        @RequestBody @Valid MemberStatusUpdateRequest memberStatusUpdateRequest
+    ) {
+        MemberStatusResponse memberStatusResponse = memberService.updateStatus(loginUser.getMemberId(), memberStatusUpdateRequest);
         return ResponseEntity.ok(memberStatusResponse);
     }
 

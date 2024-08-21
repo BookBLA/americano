@@ -12,7 +12,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
       TZ: Asia/Seoul
-  americano- =redis:
+  americano-redis:
     image: redis:latest
     ports:
       - '6379:6379'

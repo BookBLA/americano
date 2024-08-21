@@ -30,14 +30,13 @@ public class MemberLibraryProfileReadResponse {
     public static class BookResponse {
 
         private final Long memberBookId;
-        private final boolean isRepresentative;
         private final String bookImageUrl;
 
     }
 
     public static MemberLibraryProfileReadResponse ofPendingProfileImage(Member member, List<MemberBook> memberBooks, String pendingProfileImageUrl) {
         List<BookResponse> bookResponses = memberBooks.stream()
-                .map(it -> new BookResponse(it.getId(), it.isRepresentative(), it.getBook().getImageUrl()))
+                .map(it -> new BookResponse(it.getId(), it.getBook().getImageUrl()))
                 .collect(Collectors.toList());
         MemberProfile memberProfile = member.getMemberProfile();
         return new MemberLibraryProfileReadResponse(
@@ -56,7 +55,7 @@ public class MemberLibraryProfileReadResponse {
 
     public static MemberLibraryProfileReadResponse of(Member member, List<MemberBook> memberBooks) {
         List<BookResponse> bookResponses = memberBooks.stream()
-                .map(it -> new BookResponse(it.getId(), it.isRepresentative(), it.getBook().getImageUrl()))
+                .map(it -> new BookResponse(it.getId(), it.getBook().getImageUrl()))
                 .collect(Collectors.toList());
         MemberProfile memberProfile = member.getMemberProfile();
         return new MemberLibraryProfileReadResponse(
