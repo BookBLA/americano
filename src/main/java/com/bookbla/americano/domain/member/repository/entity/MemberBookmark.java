@@ -53,4 +53,14 @@ public class MemberBookmark extends BaseEntity {
     public void addBookmark(int count) {
         this.bookmarkCount += count;
     }
+
+    public void updateInitialBookBookmarks(int memberBooks) {
+        if (memberBooks >= 4) {
+            this.bookmarkCount += 60;
+            return;
+        }
+
+        int counts = memberBooks * 15;
+        this.bookmarkCount += counts;
+    }
 }

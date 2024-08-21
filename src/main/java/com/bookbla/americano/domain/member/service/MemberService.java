@@ -3,14 +3,19 @@ package com.bookbla.americano.domain.member.service;
 import java.time.LocalDateTime;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberStatusUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberDeleteResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStatusResponse;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
+import com.bookbla.americano.domain.member.exception.MemberBookmarkExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
+import com.bookbla.americano.domain.member.repository.MemberBookRepository;
+import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.member.repository.entity.MemberStatusLog;
 import com.bookbla.americano.domain.school.repository.entity.School;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MemberService {
 
+    private final MemberBookRepository memberBookRepository;
     private final MemberRepository memberRepository;
     private final MemberStatusLogRepository memberStatusLogRepository;
+    private final MemberBookmarkRepository memberBookmarkRepository;
 
     @Transactional(readOnly = true)
     public MemberResponse readMember(Long memberId) {
@@ -58,23 +65,24 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberStatusResponse updateStatus(Long memberId,
-                                             MemberStatus memberStatus,
-                                             String reason) {
+    public MemberStatusResponse updateStatus(
+            Long memberId,
+            MemberStatusUpdateRequest request
+    ) {
         Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberStatus afterStatus = MemberStatus.from(request.getMemberStatus());
 
-        MemberStatusLog.MemberStatusLogBuilder memberStatusLogBuilder = MemberStatusLog.builder()
-                .memberId(memberId)
-                .beforeStatus(member.getMemberStatus())
-                .afterStatus(memberStatus);
+        if (member.getMemberStatus() == MemberStatus.BOOK
+                && afterStatus == MemberStatus.COMPLETED
+        ) {
+            int memberBooks = (int) memberBookRepository.countByMember(member);
+            MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(member.getId())
+                    .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
 
-        if (memberStatus.isMatchingDisabled()) {
-            memberStatusLogBuilder.description(reason);
+            memberBookmark.updateInitialBookBookmarks(memberBooks);
         }
 
-        memberStatusLogRepository.save(memberStatusLogBuilder.build());
-
-        member.updateMemberStatus(memberStatus, LocalDateTime.now());
+        member.updateMemberStatus(afterStatus, LocalDateTime.now());
         School school = member.getSchool();
         return MemberStatusResponse.from(member, school);
     }
