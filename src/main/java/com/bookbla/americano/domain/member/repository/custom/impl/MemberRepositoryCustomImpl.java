@@ -71,8 +71,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                         , member.memberProfile.gender.as("memberGender")
                         , member.school.name.as("memberSchoolName")
                         , book.title.as("bookName")
-                        , book.imageUrl.as("bookImageUrl")
-                        , memberBook.isRepresentative.as("bookIsRepresentative"))
+                        , book.imageUrl.as("bookImageUrl"))
                 )
                 .from(member)
                 .innerJoin(memberBook).on(member.eq(memberBook.member))
@@ -98,8 +97,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .and(eqDateStyleType(member.memberStyle, requestDto.getDateStyleType()))
                 .and(eqDateCostType(member.memberStyle, requestDto.getDateCostType()))
                 .and(eqMbtiType(member.memberStyle, requestDto.getMbti()))
-                .and(eqJustFriendType(member.memberStyle, requestDto.getJustFriendType()))
-                .and(new BooleanBuilder(memberBook.isRepresentative.eq(Boolean.TRUE)));
+                .and(eqJustFriendType(member.memberStyle, requestDto.getJustFriendType()));
 
         // memberId가 차단해서 차단당한 멤버 ID List
         List<Long> blockedByIds = queryFactory
@@ -124,8 +122,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                         , member.memberProfile.gender.as("memberGender")
                         , member.school.name.as("memberSchoolName")
                         , book.title.as("bookName")
-                        , book.imageUrl.as("bookImageUrl")
-                        , memberBook.isRepresentative.as("bookIsRepresentative"))
+                        , book.imageUrl.as("bookImageUrl"))
                 )
                 .from(member)
                 .innerJoin(memberBook).on(member.eq(memberBook.member))
