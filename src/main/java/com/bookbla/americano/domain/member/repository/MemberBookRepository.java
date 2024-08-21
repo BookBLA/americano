@@ -23,6 +23,4 @@ public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
     long countByMember(Member member);
 
     List<MemberBook> findByMemberOrderByCreatedAt(Member member);
-
-    List<MemberBook> findByMemberAndIsDeletedFalseOrderByCreatedAt(Member member);
 }
