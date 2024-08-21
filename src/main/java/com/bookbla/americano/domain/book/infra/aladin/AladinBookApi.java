@@ -1,6 +1,5 @@
 package com.bookbla.americano.domain.book.infra.aladin;
 
-import com.bookbla.americano.domain.book.infra.aladin.dto.AladinBookResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -9,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface AladinBookApi {
 
     @GetMapping("/itemLookup.aspx")
-    AladinBookResponse getBook(
+    String getBook(
             @RequestParam String ttbKey,
             @RequestParam String itemId,
             @RequestParam(required = false, defaultValue = "ISBN13") String itemIdType,

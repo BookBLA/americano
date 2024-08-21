@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.book.infra.aladin.AladinBookClient;
-import com.bookbla.americano.domain.book.infra.aladin.dto.AladinBookResponse;
 import com.bookbla.americano.domain.book.repository.BookRepository;
 import com.bookbla.americano.domain.book.repository.entity.Book;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookCreateRequest;
@@ -48,7 +47,8 @@ public class MemberBookService {
 
         validateMemberBookExists(member, book);
 
-        updateImageQuality(book);
+        aladinBookClient.findImageByIsbn13(book.getIsbn())
+                .ifPresent(book::updateImageUrl);
 
         MemberBook savedMemberBook = memberBookRepository.save(request.toMemberBook(book, member));
         QuizQuestion savedQuizQuestion = quizQuestionRepository.save(request.toQuizQuestion(savedMemberBook));
@@ -62,15 +62,6 @@ public class MemberBookService {
         }
     }
 
-    private void updateImageQuality(Book book) {
-        AladinBookResponse response = aladinBookClient.findByIsbn13(book.getIsbn());
-        String image = response.getItem()
-                .stream()
-                .map(AladinBookResponse.Item::getCover)
-                .findFirst()
-                .orElse(book.getImageUrl());
-        book.updateImageUrl(image);
-    }
 
     @Transactional(readOnly = true)
     public MemberBookReadResponses readMemberBooks(Long memberId) {
