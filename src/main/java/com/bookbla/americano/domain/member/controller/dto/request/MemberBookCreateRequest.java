@@ -23,6 +23,8 @@ public class MemberBookCreateRequest {
     @NotNull(message = "책 작가가 입력되지 않았습니다.")
     private List<String> authors;
 
+    private String thumbnail;
+
     @NotNull(message = "도서번호가 입력되지 않았습니다.")
     private String isbn;
 
@@ -45,6 +47,7 @@ public class MemberBookCreateRequest {
         return Book.builder()
                 .title(title)
                 .isbn(isbn)
+                .imageUrl(thumbnail)
                 .authors(authors)
                 .build();
     }

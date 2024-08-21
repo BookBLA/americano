@@ -16,7 +16,6 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberBookRea
 import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
-import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import com.bookbla.americano.domain.quiz.exception.QuizQuestionExceptionType;
@@ -36,7 +35,6 @@ public class MemberBookService {
     private final AladinBookClient aladinBookClient;
     private final BookRepository bookRepository;
     private final MemberRepository memberRepository;
-    private final MemberStatusLogRepository memberStatusLogRepository;
     private final MemberBookRepository memberBookRepository;
     private final QuizQuestionRepository quizQuestionRepository;
 
