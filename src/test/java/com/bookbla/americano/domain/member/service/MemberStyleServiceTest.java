@@ -18,11 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static com.bookbla.americano.domain.member.enums.ContactType.FAST;
-import static com.bookbla.americano.domain.member.enums.DateCostType.DATE_ACCOUNT;
-import static com.bookbla.americano.domain.member.enums.DateStyleType.HOME;
-import static com.bookbla.americano.domain.member.enums.DrinkType.NONE;
-import static com.bookbla.americano.domain.member.enums.JustFriendType.ALCOHOL;
 import static com.bookbla.americano.domain.member.enums.Mbti.INFJ;
 import static com.bookbla.americano.domain.member.enums.Mbti.INTP;
 import static com.bookbla.americano.domain.member.enums.SmokeType.SMOKE;
@@ -135,13 +130,8 @@ class MemberStyleServiceTest {
                 .memberStatus(MemberStatus.COMPLETED)
                 .memberStyle(
                         MemberStyle.builder()
-                                .contactType(FAST)
-                                .drinkType(NONE)
                                 .smokeType(SMOKE)
-                                .justFriendType(ALCOHOL)
-                                .dateStyleType(HOME)
                                 .mbti(INTP)
-                                .dateCostType(DATE_ACCOUNT)
                                 .build()
                 ).build());
         MemberStyleUpdateRequest memberStyleUpdateRequest = new MemberStyleUpdateRequest(
