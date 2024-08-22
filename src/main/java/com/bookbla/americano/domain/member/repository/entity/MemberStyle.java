@@ -7,6 +7,7 @@ import com.bookbla.americano.domain.member.enums.DrinkType;
 import com.bookbla.americano.domain.member.enums.HeightType;
 import com.bookbla.americano.domain.member.enums.JustFriendType;
 import com.bookbla.americano.domain.member.enums.Mbti;
+import com.bookbla.americano.domain.member.enums.ProfileImageType;
 import com.bookbla.americano.domain.member.enums.SmokeType;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
@@ -24,7 +25,35 @@ import lombok.NoArgsConstructor;
 public class MemberStyle {
 
     @Enumerated(EnumType.STRING)
+    private Mbti mbti;
+
+    @Enumerated(EnumType.STRING)
     private SmokeType smokeType;
+
+    private Integer height;
+
+    @Enumerated(EnumType.STRING)
+    private ProfileImageType profileImageType;
+
+    public MemberStyle updateHeight(int height) {
+        this.height = height;
+        return this;
+    }
+
+    public MemberStyle updateMbti(Mbti mbti) {
+        this.mbti = mbti;
+        return this;
+    }
+
+    public MemberStyle updateSmokeType(SmokeType smokeType) {
+        this.smokeType = smokeType;
+        return this;
+    }
+
+    public MemberStyle updateProfileImageType(ProfileImageType profileImageType) {
+        this.profileImageType = profileImageType;
+        return this;
+    }
 
     @Enumerated(EnumType.STRING)
     private DrinkType drinkType;
@@ -44,14 +73,6 @@ public class MemberStyle {
     @Enumerated(EnumType.STRING)
     private HeightType heightType;
 
-    @Enumerated(EnumType.STRING)
-    private Mbti mbti;
-
-    public MemberStyle updateSmokeType(SmokeType smokeType) {
-        this.smokeType = smokeType;
-        return this;
-    }
-
     public MemberStyle updateDrinkType(DrinkType drinkType) {
         this.drinkType = drinkType;
         return this;
@@ -69,11 +90,6 @@ public class MemberStyle {
 
     public MemberStyle updateJustFriendType(JustFriendType justFriendType) {
         this.justFriendType = justFriendType;
-        return this;
-    }
-
-    public MemberStyle updateMbti(Mbti mbti) {
-        this.mbti = mbti;
         return this;
     }
 
