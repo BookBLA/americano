@@ -5,8 +5,6 @@ import java.util.List;
 import com.bookbla.americano.domain.book.repository.entity.QBook;
 import com.bookbla.americano.domain.member.repository.entity.QMember;
 import com.bookbla.americano.domain.member.repository.entity.QMemberBook;
-import com.bookbla.americano.domain.memberask.repository.entity.QMemberAsk;
-import com.bookbla.americano.domain.memberask.repository.entity.QMemberReply;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.custom.PostcardRepositoryCustom;
 import com.bookbla.americano.domain.postcard.repository.entity.QPostcard;
@@ -59,8 +57,6 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
         QBook book = QBook.book;
         QQuizQuestion quizQuestion = QQuizQuestion.quizQuestion;
         QQuizReply quizReply = QQuizReply.quizReply;
-        QMemberAsk memberAsk = QMemberAsk.memberAsk;
-        QMemberReply memberReply = QMemberReply.memberReply;
 
         return queryFactory.select(Projections.fields(PostcardToResponse.class
                         , postcard.id.as("postcardId")
@@ -84,8 +80,7 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                         , postcard.postcardType.imageUrl.as("postcardImageUrl")
                         , book.title.as("bookTitle")
                         , book.imageUrl.as("bookImageUrl")
-                        , quizReply.correctStatus
-                        , memberReply.content.as("memberReplyContent"))
+                        , quizReply.correctStatus)
                 )
                 .from(postcard)
                 .innerJoin(quizReply).on(postcard.eq(quizReply.postcard))
@@ -93,8 +88,6 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                 .innerJoin(memberBook).on(quizQuestion.memberBook.eq(memberBook))
                 .innerJoin(book).on(memberBook.book.eq(book))
                 .innerJoin(member).on(memberBook.member.eq(member))
-                .innerJoin(memberAsk).on(member.eq(memberAsk.member))
-                .innerJoin(memberReply).on(postcard.memberReply.eq(memberReply))
                 .where(postcard.receiveMember.id.eq(memberId)
                         .and(postcard.postcardStatus.eq(PostcardStatus.PENDING)
                                 .or(postcard.postcardStatus.eq(PostcardStatus.READ))
