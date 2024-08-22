@@ -6,12 +6,14 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpd
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.MemberType;
-import com.bookbla.americano.domain.member.enums.ProfileImageType;
 import com.bookbla.americano.domain.member.enums.SmokeType;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
+import com.bookbla.americano.domain.member.repository.ProfileImageTypeRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
+import com.bookbla.americano.domain.member.repository.entity.ProfileImageType;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.Test;
@@ -37,6 +39,16 @@ class MemberStyleServiceTest {
     @Autowired
     private MemberRepository memberRepository;
 
+    @Autowired
+    private ProfileImageTypeRepository profileImageTypeRepository;
+
+    private ProfileImageType profileImageType;
+
+    @BeforeEach
+    void setUp() {
+        profileImageType = profileImageTypeRepository.save(ProfileImageType.builder().build());
+    }
+
     @Test
     void 회원의_스타일을_생성할_수_있다() {
         // given
@@ -45,7 +57,7 @@ class MemberStyleServiceTest {
                 .oauthEmail("bookbla@bookbla.com")
                 .build());
         MemberStyleCreateRequest memberStyleCreateRequest = new MemberStyleCreateRequest(
-                "infj", "가끔", 160, 1
+                "infj", "가끔", 160, 1L
         );
 
         // when
@@ -59,7 +71,7 @@ class MemberStyleServiceTest {
                 () -> assertThat(memberStyleResponse.getMbti()).isEqualToIgnoringCase(INFJ.name()),
                 () -> assertThat(memberStyleResponse.getSmokeType()).isEqualTo(SmokeType.SOMETIMES.getDetailValue()),
                 () -> assertThat(memberStyleResponse.getHeight()).isEqualTo(160),
-                () -> assertThat(memberStyleResponse.getProfileImageTypeId()).isEqualTo(1)
+                () -> assertThat(memberStyleResponse.getProfileImageTypeId()).isEqualTo(1L)
         );
     }
 
@@ -74,7 +86,7 @@ class MemberStyleServiceTest {
                         .smokeType(SMOKE)
                         .mbti(INTP)
                         .height(160)
-                        .profileImageType(ProfileImageType.MALE_FIRST)
+                        .profileImageType(profileImageType)
                         .build())
                 .build());
 
@@ -88,8 +100,7 @@ class MemberStyleServiceTest {
                 () -> assertThat(memberStyleResponse.getSmokeType()).isEqualTo(
                         SMOKE.getDetailValue()),
                 () -> assertThat(memberStyleResponse.getMbti()).isEqualToIgnoringCase(INTP.name()),
-                () -> assertThat(memberStyleResponse.getHeight()).isEqualTo(160),
-                () -> assertThat(memberStyleResponse.getProfileImageTypeId()).isEqualTo(1)
+                () -> assertThat(memberStyleResponse.getHeight()).isEqualTo(160)
         );
     }
 
@@ -135,7 +146,7 @@ class MemberStyleServiceTest {
                                 .build()
                 ).build());
         MemberStyleUpdateRequest memberStyleUpdateRequest = new MemberStyleUpdateRequest(
-                "infj", "가끔", 160, 1
+                "infj", "가끔", 160, 1L
         );
 
         // when
@@ -147,7 +158,7 @@ class MemberStyleServiceTest {
                 () -> assertThat(memberStyle.getMbti()).isEqualTo(INFJ),
                 () -> assertThat(memberStyle.getSmokeType()).isEqualTo(SOMETIMES),
                 () -> assertThat(memberStyle.getHeight()).isEqualTo(160),
-                () -> assertThat(memberStyle.getProfileImageType()).isEqualTo(ProfileImageType.MALE_FIRST)
+                () -> assertThat(memberStyle.getProfileImageType().getId()).isEqualTo(1L)
         );
     }
 
@@ -156,7 +167,7 @@ class MemberStyleServiceTest {
         // given
         Long nonMemberId = -999999L;
         MemberStyleUpdateRequest memberStyleUpdateRequest = new MemberStyleUpdateRequest(
-                "infj", "가끔", 160, 1
+                "infj", "가끔", 160, 1L
         );
 
         // when, then
@@ -174,7 +185,7 @@ class MemberStyleServiceTest {
                 .oauthEmail("bookbla@bookbla.com")
                 .build());
         MemberStyleUpdateRequest memberStyleUpdateRequest = new MemberStyleUpdateRequest(
-                "infj", "가끔", 160, 1
+                "infj", "가끔", 160, 1L
         );
 
         // when, then

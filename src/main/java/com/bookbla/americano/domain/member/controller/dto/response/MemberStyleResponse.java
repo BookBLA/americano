@@ -13,7 +13,7 @@ public class MemberStyleResponse {
     private final String smokeType;
     private final String mbti;
     private final int height;
-    private final int profileImageTypeId;
+    private final Long profileImageTypeId;
     private final String profileImageUrl;
 
     public static MemberStyleResponse of(Member member, MemberStyle memberStyle) {

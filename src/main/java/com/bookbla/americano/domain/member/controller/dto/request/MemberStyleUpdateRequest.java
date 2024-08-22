@@ -1,8 +1,8 @@
 package com.bookbla.americano.domain.member.controller.dto.request;
 
 import com.bookbla.americano.domain.member.enums.Mbti;
-import com.bookbla.americano.domain.member.enums.ProfileImageType;
 import com.bookbla.americano.domain.member.enums.SmokeType;
+import com.bookbla.americano.domain.member.repository.entity.ProfileImageType;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -25,7 +25,7 @@ public class MemberStyleUpdateRequest {
     private Integer height;
 
     @NotNull(message = "프로필 사진 id가 입력되지 않았습니다.")
-    private Integer profileImageTypeId;
+    private Long profileImageTypeId;
 
     public Mbti getMbti() {
         return Mbti.from(mbti);
@@ -39,7 +39,7 @@ public class MemberStyleUpdateRequest {
         return height;
     }
 
-    public ProfileImageType getProfileImageType() {
-        return ProfileImageType.fromId(profileImageTypeId);
+    public Long getProfileImageTypeId() {
+        return profileImageTypeId;
     }
 }

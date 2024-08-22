@@ -1,11 +1,13 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.domain.member.enums.Mbti;
-import com.bookbla.americano.domain.member.enums.ProfileImageType;
 import com.bookbla.americano.domain.member.enums.SmokeType;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,7 +28,7 @@ public class MemberStyle {
 
     private Integer height;
 
-    @Enumerated(EnumType.STRING)
+    @ManyToOne(fetch = FetchType.LAZY)
     private ProfileImageType profileImageType;
 
     public MemberStyle updateHeight(int height) {

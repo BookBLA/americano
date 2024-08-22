@@ -9,9 +9,11 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleRe
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
+import com.bookbla.americano.domain.member.repository.ProfileImageTypeRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberStatusLog;
 import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
+import com.bookbla.americano.domain.member.repository.entity.ProfileImageType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,7 @@ import static com.bookbla.americano.domain.member.enums.MemberStatus.BOOK;
 @RequiredArgsConstructor
 public class MemberStyleService {
 
+    private final ProfileImageTypeRepository profileImageTypeRepository;
     private final MemberRepository memberRepository;
     private final MemberStatusLogRepository memberStatusLogRepository;
 
@@ -35,10 +38,13 @@ public class MemberStyleService {
     }
 
     public MemberStyleResponse createMemberStyle(Long memberId,
-                                                 MemberStyleCreateRequest memberStyleCreateRequest) {
+                                                 MemberStyleCreateRequest request) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         member.validateStyleRegistered();
-        member.updateMemberStyle(memberStyleCreateRequest.toMemberStyle());
+
+        ProfileImageType profileImageType = profileImageTypeRepository.getByIdOrThrow(request.getProfileImageTypeId());
+
+        member.updateMemberStyle(request.toMemberStyle(profileImageType));
 
         MemberStatus beforeStatus = member.getMemberStatus();
         member.updateMemberStatus(BOOK, LocalDateTime.now());
@@ -59,9 +65,11 @@ public class MemberStyleService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberStyle memberStyle = member.getMemberStyle();
 
+        ProfileImageType profileImageType = profileImageTypeRepository.getByIdOrThrow(request.getProfileImageTypeId());
+
         memberStyle.updateMbti(request.getMbti())
                 .updateSmokeType(request.getSmokeType())
                 .updateHeight(request.getHeight())
-                .updateProfileImageType(request.getProfileImageType());
+                .updateProfileImageType(profileImageType);
     }
 }
