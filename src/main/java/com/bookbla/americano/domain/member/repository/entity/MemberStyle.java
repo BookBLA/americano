@@ -1,11 +1,5 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
-import com.bookbla.americano.domain.member.enums.ContactType;
-import com.bookbla.americano.domain.member.enums.DateCostType;
-import com.bookbla.americano.domain.member.enums.DateStyleType;
-import com.bookbla.americano.domain.member.enums.DrinkType;
-import com.bookbla.americano.domain.member.enums.HeightType;
-import com.bookbla.americano.domain.member.enums.JustFriendType;
 import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.ProfileImageType;
 import com.bookbla.americano.domain.member.enums.SmokeType;
@@ -52,54 +46,6 @@ public class MemberStyle {
 
     public MemberStyle updateProfileImageType(ProfileImageType profileImageType) {
         this.profileImageType = profileImageType;
-        return this;
-    }
-
-    @Enumerated(EnumType.STRING)
-    private DrinkType drinkType;
-
-    @Enumerated(EnumType.STRING)
-    private ContactType contactType;
-
-    @Enumerated(EnumType.STRING)
-    private DateStyleType dateStyleType;
-
-    @Enumerated(EnumType.STRING)
-    private DateCostType dateCostType;
-
-    @Enumerated(EnumType.STRING)
-    private JustFriendType justFriendType;
-
-    @Enumerated(EnumType.STRING)
-    private HeightType heightType;
-
-    public MemberStyle updateDrinkType(DrinkType drinkType) {
-        this.drinkType = drinkType;
-        return this;
-    }
-
-    public MemberStyle updateContactType(ContactType contactType) {
-        this.contactType = contactType;
-        return this;
-    }
-
-    public MemberStyle updateDateCostType(DateCostType dateCostType) {
-        this.dateCostType = dateCostType;
-        return this;
-    }
-
-    public MemberStyle updateJustFriendType(JustFriendType justFriendType) {
-        this.justFriendType = justFriendType;
-        return this;
-    }
-
-    public MemberStyle updateDateStyleType(DateStyleType dateStyleType) {
-        this.dateStyleType = dateStyleType;
-        return this;
-    }
-
-    public MemberStyle updateHeightType(HeightType heightType) {
-        this.heightType = heightType;
         return this;
     }
 }

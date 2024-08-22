@@ -31,21 +31,9 @@ public class PostcardToResponse {
 
     private String memberProfileImageUrl;
 
-    private DrinkType drinkType;
-
     private SmokeType smokeType;
 
-    private ContactType contactType;
-
-    private DateStyleType dateStyleType;
-
-    private DateCostType dateCostType;
-
     private Mbti mbti;
-
-    private JustFriendType justFriendType;
-
-    private HeightType heightType;
 
     // 엽서 받은 시간
     private LocalDateTime receivedTime;

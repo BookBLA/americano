@@ -67,14 +67,8 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                         , member.school.name.as("memberSchoolName")
                         , postcard.sendMember.memberProfile.profileImageUrl.as("memberProfileImageUrl")
                         , postcard.sendMember.memberProfile.openKakaoRoomUrl.as("memberKakaoRoomUrl")
-                        , postcard.sendMember.memberStyle.drinkType
                         , postcard.sendMember.memberStyle.smokeType
-                        , postcard.sendMember.memberStyle.contactType
-                        , postcard.sendMember.memberStyle.dateStyleType
-                        , postcard.sendMember.memberStyle.dateCostType
                         , postcard.sendMember.memberStyle.mbti
-                        , postcard.sendMember.memberStyle.justFriendType
-                        , postcard.sendMember.memberStyle.heightType
                         , postcard.createdAt.as("receivedTime")
                         , postcard.postcardStatus
                         , postcard.postcardType.imageUrl.as("postcardImageUrl")

@@ -8,12 +8,7 @@ import com.bookbla.americano.domain.book.repository.entity.QBook;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.response.BookProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
-import com.bookbla.americano.domain.member.enums.ContactType;
-import com.bookbla.americano.domain.member.enums.DateCostType;
-import com.bookbla.americano.domain.member.enums.DateStyleType;
-import com.bookbla.americano.domain.member.enums.DrinkType;
 import com.bookbla.americano.domain.member.enums.Gender;
-import com.bookbla.americano.domain.member.enums.JustFriendType;
 import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.SmokeType;
@@ -55,12 +50,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
 
         builder.and(eqGender(member.memberProfile, requestDto.getGender()))
                 .and(eqSmokeType(member.memberStyle, requestDto.getSmokeType()))
-                .and(eqDrinkType(member.memberStyle, requestDto.getDrinkType()))
-                .and(eqContactType(member.memberStyle, requestDto.getContactType()))
-                .and(eqDateStyleType(member.memberStyle, requestDto.getDateStyleType()))
-                .and(eqDateCostType(member.memberStyle, requestDto.getDateCostType()))
-                .and(eqMbtiType(member.memberStyle, requestDto.getMbti()))
-                .and(eqJustFriendType(member.memberStyle, requestDto.getJustFriendType()));
+                .and(eqMbtiType(member.memberStyle, requestDto.getMbti()));
 
         return queryFactory
                 .select(Projections.fields(MemberBookProfileResponse.class
@@ -92,12 +82,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
 
         builder.and(eqGender(member.memberProfile, requestDto.getGender()))
                 .and(eqSmokeType(member.memberStyle, requestDto.getSmokeType()))
-                .and(eqDrinkType(member.memberStyle, requestDto.getDrinkType()))
-                .and(eqContactType(member.memberStyle, requestDto.getContactType()))
-                .and(eqDateStyleType(member.memberStyle, requestDto.getDateStyleType()))
-                .and(eqDateCostType(member.memberStyle, requestDto.getDateCostType()))
-                .and(eqMbtiType(member.memberStyle, requestDto.getMbti()))
-                .and(eqJustFriendType(member.memberStyle, requestDto.getJustFriendType()));
+                .and(eqMbtiType(member.memberStyle, requestDto.getMbti()));
 
         // memberId가 차단해서 차단당한 멤버 ID List
         List<Long> blockedByIds = queryFactory
@@ -151,46 +136,10 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
         return new BooleanBuilder(memberStyle.smokeType.eq(smokeType));
     }
 
-    private BooleanBuilder eqDrinkType(QMemberStyle memberStyle, DrinkType drinkType) {
-        if (drinkType == null) {
-            return null;
-        }
-        return new BooleanBuilder(memberStyle.drinkType.eq(drinkType));
-    }
-
-    private BooleanBuilder eqContactType(QMemberStyle memberStyle, ContactType contactType) {
-        if (contactType == null) {
-            return null;
-        }
-        return new BooleanBuilder(memberStyle.contactType.eq(contactType));
-    }
-
-    private BooleanBuilder eqDateStyleType(QMemberStyle memberStyle, DateStyleType dateStyleType) {
-        if (dateStyleType == null) {
-            return null;
-        }
-        return new BooleanBuilder(memberStyle.dateStyleType.eq(dateStyleType));
-    }
-
-    private BooleanBuilder eqDateCostType(QMemberStyle memberStyle, DateCostType dateCostType) {
-        if (dateCostType == null) {
-            return null;
-        }
-        return new BooleanBuilder(memberStyle.dateCostType.eq(dateCostType));
-    }
-
     private BooleanBuilder eqMbtiType(QMemberStyle memberStyle, Mbti mbti) {
         if (mbti == null) {
             return null;
         }
         return new BooleanBuilder(memberStyle.mbti.eq(mbti));
     }
-
-    private BooleanBuilder eqJustFriendType(QMemberStyle memberStyle, JustFriendType justFriendType) {
-        if (justFriendType == null) {
-            return null;
-        }
-        return new BooleanBuilder(memberStyle.justFriendType.eq(justFriendType));
-    }
-
 }
