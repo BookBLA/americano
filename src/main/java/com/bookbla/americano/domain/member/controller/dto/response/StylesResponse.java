@@ -1,32 +1,32 @@
 package com.bookbla.americano.domain.member.controller.dto.response;
 
+import java.util.Arrays;
 import java.util.List;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
+import com.bookbla.americano.domain.member.enums.ProfileImageType;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
 @Getter
 public class StylesResponse {
 
-    private final List<String> smokeTypes;
-    private final List<String> drinkTypes;
-    private final List<String> contactTypes;
-    private final List<String> dateStyleTypes;
-    private final List<String> dateCostTypes;
-    private final List<String> justFriendTypes;
-    private final List<String> heightTypes;
+    private List<ProfileImageResponse> profileImageResponseTypes;
 
-    public static StylesResponse of(
-            List<String> smokeTypes,
-            List<String> drinkTypes,
-            List<String> contactTypes,
-            List<String> dateStyleTypes,
-            List<String> dateCostTypes,
-            List<String> justFriendTypes,
-            List<String> heightTypes
-    ) {
-        return new StylesResponse(smokeTypes, drinkTypes, contactTypes, dateStyleTypes,
-                dateCostTypes, justFriendTypes, heightTypes);
+    public static StylesResponse from(ProfileImageType[] values) {
+        List<ProfileImageResponse> response = Arrays.stream(values)
+                .map(it -> new ProfileImageResponse(it.getId(), it.getImageUrl()))
+                .collect(Collectors.toList());
+        return new StylesResponse(response);
+    }
+
+    @AllArgsConstructor
+    public static class ProfileImageResponse {
+
+        private int profileImageTypeId;
+        private String profileImageUrl;
+
     }
 
 }
