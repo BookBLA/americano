@@ -67,7 +67,7 @@ public class MemberLibraryProfileReadResponse {
                 memberProfile.getOpenKakaoRoomStatus().name(),
                 memberProfile.getStudentIdImageStatus().name(),
                 memberProfile.getProfileImageStatus().name(),
-                memberProfile.getProfileImageUrl(),
+                member.getMemberStyle().getProfileImageType().getImageUrl(),
                 bookResponses
         );
     }

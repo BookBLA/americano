@@ -102,18 +102,6 @@ public class Member extends BaseEntity {
     @Builder.Default
     private Integer reportedCount = 0; // 신고당한 횟수
 
-    // 첫 가입시 확인용
-    public void updateMemberStatus() {
-        if (memberProfile.isCertified() && memberStatus == MemberStatus.APPROVAL) {
-            this.memberStatus = MemberStatus.STYLE;
-        }
-    }
-
-    public Member updateOauthEmail(String oauthEmail) {
-        this.oauthEmail = oauthEmail;
-        return this;
-    }
-
     public Member updatePushToken(String pushToken) {
         this.pushToken = pushToken;
         return this;
@@ -121,11 +109,6 @@ public class Member extends BaseEntity {
 
     public Member updatePushTokenEnabled(Boolean pushAlarmEnabled) {
         this.pushAlarmEnabled = pushAlarmEnabled;
-        return this;
-    }
-
-    public Member updateMemberType(MemberType memberType) {
-        this.memberType = memberType;
         return this;
     }
 
@@ -178,10 +161,6 @@ public class Member extends BaseEntity {
         return this;
     }
 
-    public boolean canSendAdvertisementAlarm() {
-        return pushToken != null && memberPolicy.getAdAgreementPolicy();
-    }
-
     public boolean hasProfile() {
         return memberProfile != null;
     }
@@ -224,10 +203,6 @@ public class Member extends BaseEntity {
         MemberStatusLog memberStatusLog = memberStatusLogRepository.getByMemberIdOrThrow(this.getId());
         this.updateMemberStatus(memberStatusLog.getBeforeStatus(), LocalDateTime.now());
         memberStatusLogRepository.delete(memberStatusLog);
-    }
-
-    public boolean isMan() {
-        return memberProfile.getGender() == Gender.MALE;
     }
 
     public Member updateInvitationCode(String invitationCode) {
