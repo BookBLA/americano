@@ -35,6 +35,10 @@ public class MemberBookmark extends BaseEntity {
     @Builder.Default
     private int bookmarkCount = 0;
 
+    @Column
+    @Builder.Default
+    private Integer admobCount = 2;
+
     public void use() {
         validate();
         bookmarkCount = bookmarkCount - 35;
@@ -62,5 +66,13 @@ public class MemberBookmark extends BaseEntity {
 
         int counts = memberBooks * 15;
         this.bookmarkCount += counts;
+    }
+
+    public void watchAdmob() {
+        if (admobCount <= 0) {
+            throw new BaseException(MemberBookmarkExceptionType.ADMOB_COUNT_NOT_VALID);
+        }
+        this.admobCount--;
+        this.bookmarkCount += 2;
     }
 }

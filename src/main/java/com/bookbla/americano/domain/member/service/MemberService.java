@@ -86,4 +86,5 @@ public class MemberService {
         School school = member.getSchool();
         return MemberStatusResponse.from(member, school);
     }
+
 }
