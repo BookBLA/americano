@@ -7,6 +7,7 @@ import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStatusUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberBookmarkResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberDeleteResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStatusResponse;
@@ -91,10 +92,11 @@ public class MemberController {
 
     @Operation(summary = "애드몹 시청", description = "애드몹 시청 종료 후 해당 API 호출")
     @PostMapping("/me/admob")
-    public void watchAdmob(
+    public ResponseEntity<MemberBookmarkResponse> watchAdmob(
             @Parameter(hidden = true) @User LoginUser loginUser
     ) {
-        memberBookmarkService.updateBookmarkByAdmob(loginUser.getMemberId());
+        var memberBookmarkResponse = memberBookmarkService.updateBookmarkByAdmob(loginUser.getMemberId());
+        return ResponseEntity.ok(memberBookmarkResponse);
     }
 
     @GetMapping("/same-book-members")
