@@ -15,15 +15,17 @@ public class ProfileImageTypeReadResponse {
 
     public static ProfileImageTypeReadResponse from(List<ProfileImageType> profileImageTypes) {
         List<ProfileImageResponse> response = profileImageTypes.stream()
-                .map(it -> new ProfileImageResponse(it.getId(), it.getImageUrl()))
+                .map(it -> new ProfileImageResponse(it.getId(), it.getGender().name(), it.getImageUrl()))
                 .collect(Collectors.toList());
         return new ProfileImageTypeReadResponse(response);
     }
 
     @AllArgsConstructor
+    @Getter
     public static class ProfileImageResponse {
 
         private Long profileImageTypeId;
+        private String gender;
         private String profileImageUrl;
 
     }

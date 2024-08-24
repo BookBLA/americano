@@ -1,6 +1,8 @@
 package com.bookbla.americano.domain.member.controller;
 
 
+import com.bookbla.americano.base.resolver.LoginUser;
+import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.docs.ProfileImageTypeControllerDocs;
 import com.bookbla.americano.domain.member.controller.dto.response.ProfileImageTypeReadResponse;
 import com.bookbla.americano.domain.member.service.ProfileImageTypeService;
@@ -19,7 +21,15 @@ public class ProfileImageTypeController implements ProfileImageTypeControllerDoc
 
     @GetMapping
     public ResponseEntity<ProfileImageTypeReadResponse> readProfileImageTypes() {
-        return ResponseEntity.ok(profileImageTypeService.readStyles());
+        return ResponseEntity.ok(profileImageTypeService.readAll());
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<ProfileImageTypeReadResponse> readMemberProfileGenderTypes(
+            @User LoginUser loginUser
+    ) {
+        var profileImageTypeReadResponse = profileImageTypeService.readMemberGenderProfileImageTypes(
+                loginUser.getMemberId());
+        return ResponseEntity.ok(profileImageTypeReadResponse);
+    }
 }
