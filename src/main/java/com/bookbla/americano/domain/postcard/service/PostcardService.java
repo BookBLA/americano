@@ -18,11 +18,6 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.member.service.MemberBookService;
-import com.bookbla.americano.domain.memberask.exception.MemberAskExceptionType;
-import com.bookbla.americano.domain.memberask.repository.MemberAskRepository;
-import com.bookbla.americano.domain.memberask.repository.MemberReplyRepository;
-import com.bookbla.americano.domain.memberask.repository.entity.MemberAsk;
-import com.bookbla.americano.domain.memberask.repository.entity.MemberReply;
 import com.bookbla.americano.domain.notification.service.PostcardAlarmEvent;
 import com.bookbla.americano.domain.notification.service.PostcardPushAlarmEventListener;
 import com.bookbla.americano.domain.postcard.controller.dto.response.ContactInfoResponse;
@@ -55,8 +50,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostcardService {
 
     private final PostcardRepository postcardRepository;
-    private final MemberReplyRepository memberReplyRepository;
-    private final MemberAskRepository memberAskRepository;
     private final QuizReplyRepository quizReplyRepository;
     private final QuizQuestionRepository quizQuestionRepository;
     private final MemberRepository memberRepository;
@@ -84,14 +77,6 @@ public class PostcardService {
 
         Member member = memberRepository.getByIdOrThrow(memberId);
         Member targetMember = memberRepository.getByIdOrThrow(request.getReceiveMemberId());
-
-        MemberAsk memberAsk = memberAskRepository.findByMember(member)
-                .orElseThrow(() -> new BaseException(MemberAskExceptionType.NOT_REGISTERED_MEMBER));
-        MemberReply memberReply = MemberReply.builder()
-                .memberAsk(memberAsk)
-                .content(request.getMemberReply())
-                .build();
-        memberReplyRepository.save(memberReply);
 
         List<QuizReply> correctReplies = new ArrayList<>();
         boolean isCorrect = false;
@@ -123,7 +108,6 @@ public class PostcardService {
                 .sendMember(member)
                 .receiveMember(targetMember)
                 .postcardStatus(status)
-                .memberReply(memberReply)
                 .postcardType(postCardType)
                 .imageUrl(postCardType.getImageUrl())
                 .build();

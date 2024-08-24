@@ -1,16 +1,13 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
-import com.bookbla.americano.domain.member.enums.ContactType;
-import com.bookbla.americano.domain.member.enums.DateCostType;
-import com.bookbla.americano.domain.member.enums.DateStyleType;
-import com.bookbla.americano.domain.member.enums.DrinkType;
-import com.bookbla.americano.domain.member.enums.HeightType;
-import com.bookbla.americano.domain.member.enums.JustFriendType;
 import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.SmokeType;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,51 +21,18 @@ import lombok.NoArgsConstructor;
 public class MemberStyle {
 
     @Enumerated(EnumType.STRING)
-    private SmokeType smokeType;
-
-    @Enumerated(EnumType.STRING)
-    private DrinkType drinkType;
-
-    @Enumerated(EnumType.STRING)
-    private ContactType contactType;
-
-    @Enumerated(EnumType.STRING)
-    private DateStyleType dateStyleType;
-
-    @Enumerated(EnumType.STRING)
-    private DateCostType dateCostType;
-
-    @Enumerated(EnumType.STRING)
-    private JustFriendType justFriendType;
-
-    @Enumerated(EnumType.STRING)
-    private HeightType heightType;
-
-    @Enumerated(EnumType.STRING)
     private Mbti mbti;
 
-    public MemberStyle updateSmokeType(SmokeType smokeType) {
-        this.smokeType = smokeType;
-        return this;
-    }
+    @Enumerated(EnumType.STRING)
+    private SmokeType smokeType;
 
-    public MemberStyle updateDrinkType(DrinkType drinkType) {
-        this.drinkType = drinkType;
-        return this;
-    }
+    private Integer height;
 
-    public MemberStyle updateContactType(ContactType contactType) {
-        this.contactType = contactType;
-        return this;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    private ProfileImageType profileImageType;
 
-    public MemberStyle updateDateCostType(DateCostType dateCostType) {
-        this.dateCostType = dateCostType;
-        return this;
-    }
-
-    public MemberStyle updateJustFriendType(JustFriendType justFriendType) {
-        this.justFriendType = justFriendType;
+    public MemberStyle updateHeight(int height) {
+        this.height = height;
         return this;
     }
 
@@ -77,13 +41,13 @@ public class MemberStyle {
         return this;
     }
 
-    public MemberStyle updateDateStyleType(DateStyleType dateStyleType) {
-        this.dateStyleType = dateStyleType;
+    public MemberStyle updateSmokeType(SmokeType smokeType) {
+        this.smokeType = smokeType;
         return this;
     }
 
-    public MemberStyle updateHeightType(HeightType heightType) {
-        this.heightType = heightType;
+    public MemberStyle updateProfileImageType(ProfileImageType profileImageType) {
+        this.profileImageType = profileImageType;
         return this;
     }
 }

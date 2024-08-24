@@ -1,15 +1,11 @@
 package com.bookbla.americano.domain.member.controller.dto.request;
 
-import com.bookbla.americano.domain.member.enums.HeightType;
-import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
-import com.bookbla.americano.domain.member.enums.ContactType;
-import com.bookbla.americano.domain.member.enums.DateCostType;
-import com.bookbla.americano.domain.member.enums.DateStyleType;
-import com.bookbla.americano.domain.member.enums.DrinkType;
-import com.bookbla.americano.domain.member.enums.JustFriendType;
 import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.SmokeType;
-import javax.validation.constraints.NotBlank;
+import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
+import com.bookbla.americano.domain.member.repository.entity.ProfileImageType;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,40 +20,22 @@ public class MemberStyleCreateRequest {
     @NotNull(message = "mbti가 입력되지 않았습니다.")
     private String mbti;
 
-    @NotNull(message = "음주 취향이 입력되지 않았습니다.")
-    private String drinkType;
-
-    @NotNull(message = "데이트 취향이 입력되지 않았습니다.")
-    private String dateCostType;
-
     @NotNull(message = "흡연 타입이 입력되지 않았습니다.")
     private String smokeType;
 
-    @NotNull(message = "연락 취향이 입력되지 않았습니다.")
-    private String contactType;
+    @Max(value = 230, message = "최대 키는 230까지 입력 가능합니다.")
+    @Min(value = 140, message = "최소 키는 140까지 입력 가능합니다.")
+    private Integer height;
 
-    @NotNull(message = "남-여사친 취향이 입력되지 않았습니다.")
-    private String justFriendType;
+    @NotNull(message = "프로필 사진 id가 입력되지 않았습니다.")
+    private Long profileImageTypeId;
 
-    @NotNull(message = "데이트 스타일이 입력되지 않았습니다.")
-    private String dateStyleType;
-
-    @NotNull(message = "키 범위가 입력되지 않았습니다.")
-    private String heightType;
-
-    @NotBlank(message = "개인 질문이 입력되지 않았습니다.")
-    private String memberAsk;
-
-    public MemberStyle toMemberStyle() {
+    public MemberStyle toMemberStyle(ProfileImageType profileImageType) {
         return MemberStyle.builder()
-                .dateStyleType(DateStyleType.from(dateStyleType))
-                .contactType(ContactType.from(contactType))
                 .smokeType(SmokeType.from(smokeType))
                 .mbti(Mbti.from(mbti))
-                .heightType(HeightType.from(heightType))
-                .drinkType(DrinkType.from(drinkType))
-                .justFriendType(JustFriendType.from(justFriendType))
-                .dateCostType(DateCostType.from(dateCostType))
+                .profileImageType(profileImageType)
+                .height(height)
                 .build();
     }
 }

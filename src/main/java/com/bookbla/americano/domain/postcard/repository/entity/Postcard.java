@@ -8,7 +8,6 @@ import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.READ;
 import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.bookbla.americano.domain.memberask.repository.entity.MemberReply;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
 import javax.persistence.Entity;
@@ -20,7 +19,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,10 +43,6 @@ public class Postcard extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receive_member_id")
     private Member receiveMember;
-
-    @OneToOne
-    @JoinColumn(name = "member_reply_id")
-    private MemberReply memberReply;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "postcard_type_id")

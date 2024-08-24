@@ -80,14 +80,8 @@ public class MemberPostcardToResponse {
         this.memberProfileImageUrl = i.getMemberProfileImageUrl();
         this.memberAge = getAge(i.getMemberBirthDate());
         this.memberGender = i.getMemberGender().name();
-        this.drinkType = i.getDrinkType().getDetailValue();
         this.smokeType = i.getSmokeType().getDetailValue();
-        this.contactType = i.getContactType().getDetailValue();
-        this.dateStyleType = i.getDateStyleType().getDetailValue();
-        this.dateCostType = i.getDateCostType().getDetailValue();
         this.mbti = i.getMbti().name();
-        this.justFriendType = i.getJustFriendType().getDetailValue();
-        this.heightType = i.getHeightType().getDetailValue();
         this.memberSchoolName = i.getMemberSchoolName();
         this.memberReplyContent = i.getMemberReplyContent();
         this.receivedTime = i.getReceivedTime();

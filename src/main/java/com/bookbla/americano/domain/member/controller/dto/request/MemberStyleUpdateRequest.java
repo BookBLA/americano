@@ -1,14 +1,10 @@
 package com.bookbla.americano.domain.member.controller.dto.request;
 
-import com.bookbla.americano.domain.member.enums.ContactType;
-import com.bookbla.americano.domain.member.enums.DateCostType;
-import com.bookbla.americano.domain.member.enums.DateStyleType;
-import com.bookbla.americano.domain.member.enums.DrinkType;
-import com.bookbla.americano.domain.member.enums.HeightType;
-import com.bookbla.americano.domain.member.enums.JustFriendType;
 import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.SmokeType;
-import javax.validation.constraints.NotBlank;
+import com.bookbla.americano.domain.member.repository.entity.ProfileImageType;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -21,63 +17,29 @@ public class MemberStyleUpdateRequest {
     @NotNull(message = "mbti가 입력되지 않았습니다.")
     private String mbti;
 
-    @NotNull(message = "음주 취향이 입력되지 않았습니다.")
-    private String drinkType;
-
-    @NotNull(message = "데이트 취향이 입력되지 않았습니다.")
-    private String dateCostType;
-
     @NotNull(message = "흡연 타입이 입력되지 않았습니다.")
     private String smokeType;
 
-    @NotNull(message = "연락 취향이 입력되지 않았습니다.")
-    private String contactType;
+    @Max(value = 230, message = "최대 키는 230까지 입력 가능합니다.")
+    @Min(value = 140, message = "최소 키는 140까지 입력 가능합니다.")
+    private Integer height;
 
-    @NotNull(message = "남-여사친 취향이 입력되지 않았습니다.")
-    private String justFriendType;
-
-    @NotNull(message = "데이트 스타일이 입력되지 않았습니다.")
-    private String dateStyleType;
-
-    @NotNull(message = "키 범위가 입력되지 않았습니다.")
-    private String heightType;
-
-    @NotBlank(message = "개인 질문이 입력되지 않았습니다.")
-    private String memberAsk;
+    @NotNull(message = "프로필 사진 id가 입력되지 않았습니다.")
+    private Long profileImageTypeId;
 
     public Mbti getMbti() {
         return Mbti.from(mbti);
-    }
-
-    public DrinkType getDrinkType() {
-        return DrinkType.from(drinkType);
-    }
-
-    public DateCostType getDateCostType() {
-        return DateCostType.from(dateCostType);
     }
 
     public SmokeType getSmokeType() {
         return SmokeType.from(smokeType);
     }
 
-    public ContactType getContactType() {
-        return ContactType.from(contactType);
+    public Integer getHeight() {
+        return height;
     }
 
-    public JustFriendType getJustFriendType() {
-        return JustFriendType.from(justFriendType);
-    }
-
-    public DateStyleType getDateStyleType() {
-        return DateStyleType.from(dateStyleType);
-    }
-
-    public HeightType getHeightType() {
-        return HeightType.from(heightType);
-    }
-
-    public String getMemberAsk() {
-        return memberAsk;
+    public Long getProfileImageTypeId() {
+        return profileImageTypeId;
     }
 }
