@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/profiles")
+@RequestMapping("/profile-image-types")
 public class ProfileImageTypeController implements ProfileImageTypeControllerDocs {
 
     private final ProfileImageTypeService profileImageTypeService;
