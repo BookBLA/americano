@@ -65,7 +65,7 @@ public class PostcardService {
                         memberId)
                 .orElseThrow(
                         () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
-        memberBookmark.validateUsePostcard();
+        memberBookmark.validateSendPostcard();
 
         memberBlockRepository.findByBlockerMemberIdAndBlockedMemberId(request.getReceiveMemberId(), memberId)
                 .ifPresent(it -> {
@@ -100,7 +100,7 @@ public class PostcardService {
 
         PostcardStatus status = isCorrect ? PostcardStatus.PENDING : PostcardStatus.ALL_WRONG;
 
-        memberBookmark.use();
+        memberBookmark.sendPostcard();
 
         PostcardType postCardType = postcardTypeRepository.getByIdOrThrow(
                 request.getPostcardTypeId());
@@ -230,7 +230,7 @@ public class PostcardService {
                         memberId)
                 .orElseThrow(
                         () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
-        memberBookmark.use();
+        memberBookmark.sendPostcard();
         updatePostcardStatus(memberId, postcardId, PostcardStatus.READ);
     }
 

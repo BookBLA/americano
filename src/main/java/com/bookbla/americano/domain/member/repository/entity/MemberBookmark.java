@@ -39,12 +39,12 @@ public class MemberBookmark extends BaseEntity {
     @Builder.Default
     private Integer admobCount = 2;
 
-    public void use() {
-        validateUsePostcard();
+    public void sendPostcard() {
+        validateSendPostcard();
         bookmarkCount = bookmarkCount - 35;
     }
 
-    public void validateUsePostcard() {
+    public void validateSendPostcard() {
         if (bookmarkCount < 35) {
             throw new BaseException(MemberBookmarkExceptionType.INVALID_BOOKMARK_COUNTS);
         }
