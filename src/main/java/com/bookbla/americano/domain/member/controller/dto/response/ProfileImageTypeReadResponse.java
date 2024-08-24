@@ -9,15 +9,15 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class StylesResponse {
+public class ProfileImageTypeReadResponse {
 
     private List<ProfileImageResponse> profileImageResponseTypes;
 
-    public static StylesResponse from(List<ProfileImageType> profileImageTypes) {
+    public static ProfileImageTypeReadResponse from(List<ProfileImageType> profileImageTypes) {
         List<ProfileImageResponse> response = profileImageTypes.stream()
                 .map(it -> new ProfileImageResponse(it.getId(), it.getImageUrl()))
                 .collect(Collectors.toList());
-        return new StylesResponse(response);
+        return new ProfileImageTypeReadResponse(response);
     }
 
     @AllArgsConstructor
@@ -27,5 +27,4 @@ public class StylesResponse {
         private String profileImageUrl;
 
     }
-
 }
