@@ -40,11 +40,11 @@ public class MemberBookmark extends BaseEntity {
     private Integer admobCount = 2;
 
     public void use() {
-        validate();
+        validateUsePostcard();
         bookmarkCount = bookmarkCount - 35;
     }
 
-    public void validate() {
+    public void validateUsePostcard() {
         if (bookmarkCount < 35) {
             throw new BaseException(MemberBookmarkExceptionType.INVALID_BOOKMARK_COUNTS);
         }
@@ -58,7 +58,7 @@ public class MemberBookmark extends BaseEntity {
         this.bookmarkCount += count;
     }
 
-    public void updateInitialBookBookmarks(int memberBooks) {
+    public void updateBookmarksByInitialBook(int memberBooks) {
         if (memberBooks >= 4) {
             this.bookmarkCount += 60;
             return;

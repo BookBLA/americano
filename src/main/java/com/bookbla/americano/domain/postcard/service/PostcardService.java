@@ -65,7 +65,7 @@ public class PostcardService {
                         memberId)
                 .orElseThrow(
                         () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
-        memberBookmark.validate();
+        memberBookmark.validateUsePostcard();
 
         memberBlockRepository.findByBlockerMemberIdAndBlockedMemberId(request.getReceiveMemberId(), memberId)
                 .ifPresent(it -> {
