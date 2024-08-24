@@ -32,7 +32,7 @@ class ProfileImageTypeServiceTest {
             .build();
 
     @Autowired
-    private ProfileImageTypeService profileImageTypeService;
+    private ProfileImageTypeService sut;
 
     @Autowired
     private ProfileImageTypeRepository profileImageTypeRepository;
@@ -48,7 +48,7 @@ class ProfileImageTypeServiceTest {
         Member male = memberRepository.save(MALE_MEMBER);
 
         // when
-        var response = profileImageTypeService.readMemberGenderProfileImageTypes(male.getId());
+        var response = sut.readMemberGenderProfileImageTypes(male.getId());
 
         // then
         assertThat(response.getProfileImageResponseTypes())
