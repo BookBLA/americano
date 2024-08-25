@@ -38,62 +38,11 @@ class MemberBookmarkRepositoryTest {
     }
 
     private void setUp() {
-        sut.save(MemberBookmark.builder().admobCount(1).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(2).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(3).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(4).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(5).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(6).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(7).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(8).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(10).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(11).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(12).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(13).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(14).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(15).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(16).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(17).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(18).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
-        sut.save(MemberBookmark.builder().admobCount(9999).member(memberRepository.save(MALE_MEMBER)).build());
+        for (int i = 0; i < 100; i++) {
+            sut.save(MemberBookmark.builder()
+                    .admobCount(i)
+                    .member(memberRepository.save(MALE_MEMBER))
+                    .build());
+        }
     }
 }

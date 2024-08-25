@@ -37,7 +37,7 @@ public class MemberBookmark extends BaseEntity {
 
     @Column
     @Builder.Default
-    private Integer admobCount = 2;
+    private int admobCount = 2;
 
     public void sendPostcard() {
         validateSendPostcard();
