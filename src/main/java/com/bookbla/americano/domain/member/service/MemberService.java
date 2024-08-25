@@ -79,11 +79,12 @@ public class MemberService {
             MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(member.getId())
                     .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
 
-            memberBookmark.updateInitialBookBookmarks(memberBooks);
+            memberBookmark.updateBookmarksByInitialBook(memberBooks);
         }
 
         member.updateMemberStatus(afterStatus, LocalDateTime.now());
         School school = member.getSchool();
         return MemberStatusResponse.from(member, school);
     }
+
 }

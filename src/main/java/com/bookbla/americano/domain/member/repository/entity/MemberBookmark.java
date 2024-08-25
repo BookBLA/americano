@@ -35,12 +35,16 @@ public class MemberBookmark extends BaseEntity {
     @Builder.Default
     private int bookmarkCount = 0;
 
-    public void use() {
-        validate();
+    @Column
+    @Builder.Default
+    private int admobCount = 2;
+
+    public void sendPostcard() {
+        validateSendPostcard();
         bookmarkCount = bookmarkCount - 35;
     }
 
-    public void validate() {
+    public void validateSendPostcard() {
         if (bookmarkCount < 35) {
             throw new BaseException(MemberBookmarkExceptionType.INVALID_BOOKMARK_COUNTS);
         }
@@ -54,7 +58,7 @@ public class MemberBookmark extends BaseEntity {
         this.bookmarkCount += count;
     }
 
-    public void updateInitialBookBookmarks(int memberBooks) {
+    public void updateBookmarksByInitialBook(int memberBooks) {
         if (memberBooks >= 4) {
             this.bookmarkCount += 60;
             return;
@@ -62,5 +66,13 @@ public class MemberBookmark extends BaseEntity {
 
         int counts = memberBooks * 15;
         this.bookmarkCount += counts;
+    }
+
+    public void watchAdmob() {
+        if (admobCount <= 0) {
+            throw new BaseException(MemberBookmarkExceptionType.ADMOB_COUNT_NOT_VALID);
+        }
+        this.admobCount--;
+        this.bookmarkCount += 2;
     }
 }
