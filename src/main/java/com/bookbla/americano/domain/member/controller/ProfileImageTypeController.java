@@ -16,11 +16,6 @@ public class ProfileImageTypeController implements ProfileImageTypeControllerDoc
 
     private final ProfileImageTypeService profileImageTypeService;
 
-    @GetMapping("/profile-image-types")
-    public ResponseEntity<ProfileImageTypeReadResponse> readProfileImageTypes() {
-        return ResponseEntity.ok(profileImageTypeService.readAll());
-    }
-
     @GetMapping("/members/me/profile-image-types")
     public ResponseEntity<ProfileImageTypeReadResponse> readMemberProfileGenderTypes(
             @User LoginUser loginUser

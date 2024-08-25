@@ -8,6 +8,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCre
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
 import com.bookbla.americano.domain.member.service.MemberStyleService;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;

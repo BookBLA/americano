@@ -6,7 +6,6 @@ import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileImageUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileOpenKakaoRoomUrlUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.ProfileModifyRequest;
@@ -195,19 +194,6 @@ public class MemberProfileService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
         return MemberProfileStatusResponse.from(memberProfile);
-    }
-
-    public void updateMemberProfileImage(
-            Long memberId, MemberProfileImageUpdateRequest request
-    ) {
-        Member member = memberRepository.getByIdOrThrow(memberId);
-
-        saveProfileImageVerify(member, request.getProfileImageUrl());
-
-        MemberProfile memberProfile = member.getMemberProfile();
-        memberProfile.updateProfileImageUrl(request.getProfileImageUrl());
-//        memberProfile.updateProfileImageStatus(ProfileImageStatus.PENDING);
-        memberRepository.save(member);
     }
 
     public void updateMemberProfileKakaoRoom(
