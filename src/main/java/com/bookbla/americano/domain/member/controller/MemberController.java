@@ -60,7 +60,7 @@ public class MemberController {
             @Parameter(hidden = true) @User LoginUser loginUser,
             @RequestBody @Valid MemberStatusUpdateRequest memberStatusUpdateRequest
     ) {
-        MemberStatusResponse memberStatusResponse = memberService.updateStatus(loginUser.getMemberId(), memberStatusUpdateRequest);
+        MemberStatusResponse memberStatusResponse = memberService.updateStatus(loginUser.getMemberId(), memberStatusUpdateRequest.getMemberStatus());
         return ResponseEntity.ok(memberStatusResponse);
     }
 

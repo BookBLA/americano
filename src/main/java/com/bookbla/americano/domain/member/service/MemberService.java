@@ -72,10 +72,9 @@ public class MemberService {
     @Transactional
     public MemberStatusResponse updateStatus(
             Long memberId,
-            MemberStatusUpdateRequest request
+            MemberStatus afterStatus
     ) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberStatus afterStatus = MemberStatus.from(request.getMemberStatus());
 
         if (member.canChangeToComplete(afterStatus)) {
             int memberBooks = (int) memberBookRepository.countByMember(member);
