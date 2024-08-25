@@ -9,6 +9,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberStatusUp
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookmarkResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberDeleteResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberInformationReadResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStatusResponse;
 import com.bookbla.americano.domain.member.service.MemberBookmarkService;
@@ -97,6 +98,13 @@ public class MemberController {
     ) {
         var memberBookmarkResponse = memberBookmarkService.updateBookmarkByAdmob(loginUser.getMemberId());
         return ResponseEntity.ok(memberBookmarkResponse);
+    }
+
+    @Operation(summary = "본인의 회원정보 조회")
+    @GetMapping("/me/information")
+    public ResponseEntity<MemberInformationReadResponse> readMemberInformation(@Parameter(hidden = true) @User LoginUser loginUser) {
+        var response = memberService.readMemberInformation(loginUser.getMemberId());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/same-book-members")
