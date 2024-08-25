@@ -102,10 +102,9 @@ public class MemberService {
                 .build());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public MemberInformationReadResponse readMemberInformation(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         return MemberInformationReadResponse.from(member);
     }
-
 }
