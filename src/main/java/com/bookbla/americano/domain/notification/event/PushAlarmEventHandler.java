@@ -1,5 +1,6 @@
-package com.bookbla.americano.domain.notification.service;
+package com.bookbla.americano.domain.notification.event;
 
+import com.bookbla.americano.domain.notification.service.AlarmService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -8,7 +9,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 @RequiredArgsConstructor
 @Component
-public class PostcardPushAlarmEventListener {
+public class PushAlarmEventHandler {
 
     private final AlarmService alarmService;
 

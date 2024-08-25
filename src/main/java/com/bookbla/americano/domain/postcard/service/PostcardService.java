@@ -18,8 +18,8 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.member.service.MemberBookService;
-import com.bookbla.americano.domain.notification.service.PostcardAlarmEvent;
-import com.bookbla.americano.domain.notification.service.PostcardPushAlarmEventListener;
+import com.bookbla.americano.domain.notification.event.PostcardAlarmEvent;
+import com.bookbla.americano.domain.notification.event.PushAlarmEventHandler;
 import com.bookbla.americano.domain.postcard.controller.dto.response.ContactInfoResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardFromResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardToResponse;
@@ -58,7 +58,7 @@ public class PostcardService {
     private final MemberBookRepository memberBookRepository;
     private final MemberBlockRepository memberBlockRepository;
     private final MemberBookService memberBookService;
-    private final PostcardPushAlarmEventListener postcardPushAlarmEventListener;
+    private final PushAlarmEventHandler postcardPushAlarmEventListener;
 
     public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
         MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(

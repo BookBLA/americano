@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.notification.service;
+package com.bookbla.americano.domain.notification.event;
 
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import lombok.Getter;
