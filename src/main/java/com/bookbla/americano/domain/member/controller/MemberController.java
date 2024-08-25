@@ -5,6 +5,7 @@ import java.util.List;
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberInformationUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStatusUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookmarkResponse;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -98,6 +100,16 @@ public class MemberController {
     ) {
         var memberBookmarkResponse = memberBookmarkService.updateBookmarkByAdmob(loginUser.getMemberId());
         return ResponseEntity.ok(memberBookmarkResponse);
+    }
+
+    @Operation(summary = "본인의 회원정보 수정")
+    @PutMapping("/me/information")
+    public ResponseEntity<Void> updateMemberInformation(
+            @Parameter(hidden = true) @User LoginUser loginUser,
+            @RequestBody @Valid MemberInformationUpdateRequest memberInformationUpdateRequest
+    ) {
+        memberService.updateMemberInformation(loginUser.getMemberId(), memberInformationUpdateRequest);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "본인의 회원정보 조회")

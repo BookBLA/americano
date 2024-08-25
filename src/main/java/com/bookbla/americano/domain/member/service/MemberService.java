@@ -91,6 +91,18 @@ public class MemberService {
     }
 
     @Transactional
+    public void updateMemberInformation(Long memberId, MemberInformationUpdateRequest request) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberStyle memberStyle = member.getMemberStyle();
+        member.updateMemberStyle(MemberStyle.builder()
+                .profileImageType(memberStyle.getProfileImageType())
+                .mbti(Mbti.from(request.getMbti()))
+                .smokeType(SmokeType.from(request.getSmokeType()))
+                .height(request.getHeight())
+                .build());
+    }
+
+    @Transactional
     public MemberInformationReadResponse readMemberInformation(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         return MemberInformationReadResponse.from(member);
