@@ -217,4 +217,8 @@ public class Member extends BaseEntity {
     public boolean isWoman() {
         return memberProfile.getGender() == Gender.FEMALE;
     }
+
+    public boolean canChangeToComplete(MemberStatus afterStatus) {
+        return memberStatus == MemberStatus.BOOK && afterStatus == MemberStatus.COMPLETED;
+    }
 }

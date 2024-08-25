@@ -72,9 +72,7 @@ public class MemberService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberStatus afterStatus = MemberStatus.from(request.getMemberStatus());
 
-        if (member.getMemberStatus() == MemberStatus.BOOK
-                && afterStatus == MemberStatus.COMPLETED
-        ) {
+        if (member.canChangeToComplete(afterStatus)) {
             int memberBooks = (int) memberBookRepository.countByMember(member);
             MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(member.getId())
                     .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
