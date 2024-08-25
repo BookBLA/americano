@@ -72,4 +72,17 @@ public class MemberStyleService {
                 .updateHeight(request.getHeight())
                 .updateProfileImageType(profileImageType);
     }
+
+    public void updateMemberProfileImageType(Long memberId, Long profileImageTypeId) {
+        ProfileImageType profileImageType = profileImageTypeRepository.getByIdOrThrow(profileImageTypeId);
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberStyle memberStyle = member.getMemberStyle();
+
+        member.updateMemberStyle(MemberStyle.builder()
+                .profileImageType(profileImageType)
+                .height(memberStyle.getHeight())
+                .mbti(memberStyle.getMbti())
+                .smokeType(memberStyle.getSmokeType())
+                .build());
+    }
 }

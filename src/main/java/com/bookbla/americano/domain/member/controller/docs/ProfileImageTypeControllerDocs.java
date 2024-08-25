@@ -13,11 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Tag(name = "기본 프로필 이미지 관련 정보")
 public interface ProfileImageTypeControllerDocs {
 
-    @Operation(summary = "기본 설정 프로필 사진 값들을 읽어들입니다.")
-    @ApiResponse(responseCode = "200")
-    @GetMapping
-    ResponseEntity<ProfileImageTypeReadResponse> readProfileImageTypes();
-
     @Operation(summary = "사용자와 같은 성별의 기본 프로필 설정 값들을 읽어들입니다.")
     @ApiResponse(responseCode = "200")
     @GetMapping

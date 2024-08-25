@@ -21,12 +21,6 @@ public class ProfileImageTypeService {
     private final ProfileImageTypeRepository profileImageTypeRepository;
 
     @Transactional(readOnly = true)
-    public ProfileImageTypeReadResponse readAll() {
-        List<ProfileImageType> profileImageTypes = profileImageTypeRepository.findAll();
-        return ProfileImageTypeReadResponse.from(profileImageTypes);
-    }
-
-    @Transactional(readOnly = true)
     public ProfileImageTypeReadResponse readMemberGenderProfileImageTypes(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         Gender gender = member.getMemberProfile().getGender();
