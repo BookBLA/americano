@@ -1,5 +1,7 @@
 package com.bookbla.americano.domain.notification.event;
 
+import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.notification.enums.PushAlarmForm;
 import com.bookbla.americano.domain.notification.service.AlarmService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -23,5 +25,11 @@ public class PushAlarmEventHandler {
     @Async
     public void acceptPostcard(PostcardAlarmEvent postcardAlarmEvent) {
         alarmService.sendPushAlarmForAcceptPostcard(postcardAlarmEvent.getSendMember(), postcardAlarmEvent.getReceiveMember());
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Async
+    public void sendMessage(Member member) {
+        alarmService.sendPushAlarm(member, PushAlarmForm.INVITATION_SUCCESS);
     }
 }
