@@ -93,7 +93,7 @@ public class AlarmService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void sendPushAlarmForAdmin(Member member, PushAlarmForm pushAlarmForm){
+    public void sendPushAlarm(Member member, PushAlarmForm pushAlarmForm){
 
         if (isPushAlarmAble(member)) {
             return;

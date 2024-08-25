@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.notification.service;
+package com.bookbla.americano.domain.notification.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

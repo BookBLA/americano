@@ -1,9 +1,12 @@
 package com.bookbla.americano.domain.school.event;
 
+import com.bookbla.americano.domain.admin.event.AdminNotificationEventListener;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
+import com.bookbla.americano.domain.member.service.dto.event.AdminNotificationEvent;
+import com.bookbla.americano.domain.notification.event.PushAlarmEventHandler;
 import com.bookbla.americano.domain.school.repository.InvitationRepository;
 import com.bookbla.americano.domain.school.repository.entity.Invitation;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +19,8 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Component
 public class InvitationEventListener {
 
+    private final PushAlarmEventHandler pushAlarmEventHandler;
+    private final AdminNotificationEventListener adminNotificationEventListener;
     private final MemberBookmarkRepository memberBookmarkRepository;
     private final MemberRepository memberRepository;
     private final InvitationRepository invitationRepository;
@@ -31,6 +36,7 @@ public class InvitationEventListener {
     private void processInvitation(Invitation invitation, MemberBookmark invitedMemberBookmark) {
         if (invitation.isFestivalTemporaryInvitation()) {
             invitedMemberBookmark.addBookmark(105);
+            adminNotificationEventListener.sendMessage(new AdminNotificationEvent("[축제 코드 입력 +1]", "memberId " + invitation.getInvitedMemberId()));
             return;
         }
 
@@ -52,5 +58,7 @@ public class InvitationEventListener {
     private void addBookmark(MemberBookmark invitedmemberBookmark, MemberBookmark invitingMemberBookmark) {
         invitedmemberBookmark.addInvitationBookmark();
         invitingMemberBookmark.addInvitationBookmark();
+
+        pushAlarmEventHandler.sendMessage(invitingMemberBookmark.getMember());
     }
 }
