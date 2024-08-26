@@ -8,14 +8,11 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCre
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
 import com.bookbla.americano.domain.member.service.MemberStyleService;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,9 +35,11 @@ public class MemberStyleController implements MemberStyleControllerDocs {
         return ResponseEntity.ok(memberStyleResponse);
     }
 
-    @GetMapping("/{memberId}")
-    public ResponseEntity<MemberStyleResponse> readMemberStyle(@PathVariable Long memberId) {
-        MemberStyleResponse memberStyleResponse = memberStyleService.readMemberStyle(memberId);
+    @GetMapping
+    public ResponseEntity<MemberStyleResponse> readMemberStyle(
+            @User LoginUser loginUser
+    ) {
+        MemberStyleResponse memberStyleResponse = memberStyleService.readMemberStyle(loginUser.getMemberId());
         return ResponseEntity.ok(memberStyleResponse);
     }
 
@@ -53,10 +52,6 @@ public class MemberStyleController implements MemberStyleControllerDocs {
         return ResponseEntity.noContent().build();
     }
 
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "수정 성공"),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 프로필 이미지 id")
-    })
     @PatchMapping("/profile-image-type")
     public ResponseEntity<Void> updateMemberStyleProfileImageType(
             @User LoginUser loginUser,
