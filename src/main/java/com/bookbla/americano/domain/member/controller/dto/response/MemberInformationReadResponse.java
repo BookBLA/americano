@@ -19,7 +19,7 @@ public class MemberInformationReadResponse {
         return new MemberInformationReadResponse(
                 member.getMemberProfile().getName(),
                 memberStyle.getMbti().name(),
-                memberStyle.getSmokeType().name(),
+                memberStyle.getSmokeType().getValue(),
                 memberStyle.getHeight()
         );
     }
