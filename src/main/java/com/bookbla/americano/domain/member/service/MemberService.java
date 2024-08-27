@@ -20,6 +20,7 @@ import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
+import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.MemberStatusLog;
 import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
 import com.bookbla.americano.domain.school.repository.entity.School;
@@ -92,6 +93,10 @@ public class MemberService {
     @Transactional
     public void updateMemberInformation(Long memberId, MemberInformationUpdateRequest request) {
         Member member = memberRepository.getByIdOrThrow(memberId);
+
+        MemberProfile memberProfile = member.getMemberProfile();
+        memberProfile.updateName(request.getName());
+
         MemberStyle memberStyle = member.getMemberStyle();
         member.updateMemberStyle(MemberStyle.builder()
                 .profileImageType(memberStyle.getProfileImageType())
