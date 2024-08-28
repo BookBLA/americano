@@ -40,7 +40,7 @@ public class QuizController {
     }
 
     @GetMapping("/{memberBookId}")
-    public ResponseEntity<QuizQuestionReadResponse> createQuizQuestion(
+    public ResponseEntity<QuizQuestionReadResponse> readQuizQuestion(
         @Parameter(hidden = true) @User LoginUser loginUser, @PathVariable Long memberBookId
     ) {
         QuizQuestionReadResponse quizQuestionReadResponse = quizQuestionService.getQuizQuestion(
@@ -57,5 +57,4 @@ public class QuizController {
                 quizQuestionUpdateRequest);
         return ResponseEntity.noContent().build();
     }
-
 }
