@@ -40,6 +40,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,14 +67,12 @@ public class MemberProfileService {
         memberEmail.validatePending();
         validateDuplicatedNickname(memberProfileDto.getName());
 
-        saveProfileImageVerify(member, memberProfileDto.getProfileImageUrl());
-        saveKakaoRoomVerify(member, memberProfileDto.getOpenKakaoRoomUrl());
-        saveStudentIdVerify(member, memberProfileDto.toMemberVerifyDescription(),
-                memberProfileDto.getStudentIdImageUrl());
+//        saveKakaoRoomVerify(member, memberProfileDto.getOpenKakaoRoomUrl());
 
         MemberStatus beforeStatus = member.getMemberStatus();
-        MemberProfile memberProfile = memberProfileDto.toMemberProfile();
-        member.updateMemberProfile(memberProfile)
+
+        MemberProfile profile = memberProfileDto.toMemberProfile();
+        member.updateMemberProfile(profile)
                 .updateMemberStatus(MemberStatus.STYLE, LocalDateTime.now());
 
         // member 객체 명시적으로 save 선언
@@ -86,7 +85,7 @@ public class MemberProfileService {
                         .build()
         );
 
-        return MemberProfileResponse.from(member, memberProfile);
+        return MemberProfileResponse.from(member, profile);
     }
 
     private void saveStudentIdVerify(Member member, String verifyDescription,
@@ -137,9 +136,9 @@ public class MemberProfileService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
 
-        if (!memberProfile.getOpenKakaoRoomUrl().equals(request.getOpenKakaoRoomUrl())) {
-            saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
-        }
+//        if (!memberProfile.getOpenKakaoRoomUrl().equals(request.getOpenKakaoRoomUrl())) {
+//            saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
+//        }
 
         validateDuplicatedNickname(request.getName());
 
@@ -157,20 +156,10 @@ public class MemberProfileService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
 
-        if (!memberProfile.getOpenKakaoRoomUrl().equals(request.getOpenKakaoRoomUrl())) {
-            saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
-            memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
-        }
-
-        if (!memberProfile.getProfileImageUrl().equals(request.getProfileImageUrl())) {
-            saveProfileImageVerify(member, request.getProfileImageUrl());
-            memberProfile.updateProfileImageStatus(ProfileImageStatus.PENDING);
-        }
-
-        if (!memberProfile.getStudentIdImageUrl().equals(request.getStudentIdImageUrl())) {
-            saveStudentIdVerify(member, request.toMemberVerifyDescription(), request.getStudentIdImageUrl());
-            memberProfile.updateStudentIdImageStatus(StudentIdImageStatus.PENDING);
-        }
+//        if (!memberProfile.getOpenKakaoRoomUrl().equals(request.getOpenKakaoRoomUrl())) {
+//            saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
+//            memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
+//        }
 
         validateDuplicatedNickname(request.getName());
 

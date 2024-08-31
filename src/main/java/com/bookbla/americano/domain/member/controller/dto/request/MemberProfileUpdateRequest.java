@@ -34,14 +34,8 @@ public class MemberProfileUpdateRequest {
     @NotNull(message = "전화번호가 입력되지 않았습니다.")
     private String phoneNumber;
 
-    @NotNull(message = "프로필 사진 링크가 입력되지 않았습니다.")
-    private String profileImageUrl;
-
-    @NotNull(message = "카톡방 링크가 입력되지 않았습니다.")
-    private String openKakaoRoomUrl;
-
-    @NotNull(message = "학생증 링크가 입력되지 않았습니다.")
-    private String studentIdImageUrl;
+//    @NotNull(message = "카톡방 링크가 입력되지 않았습니다.")
+//    private String openKakaoRoomUrl;
 
     public LocalDate getBirthDate() {
         return LocalDate.parse(birthDate);
