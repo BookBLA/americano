@@ -1,7 +1,5 @@
 package com.bookbla.americano.domain.admin.controller.docs;
 
-import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKakaoRoomResponses;
-import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileStatusResponse;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
@@ -38,22 +36,6 @@ public interface AdminMemberControllerDocs {
     )
     @GetMapping
     ResponseEntity<AdminMemberReadResponses> readDeletedMembers(Pageable pageable);
-
-    @Operation(summary = "카카오톡 오픈 승인 채팅방 대기 회원 조회 API")
-    @ApiResponse(
-            responseCode = "200",
-            description = "카카오톡 승인 대기중인 회원 목록을 조회합니다"
-    )
-    @GetMapping
-    ResponseEntity<AdminMemberKakaoRoomResponses> readKakaoOpenRoomUrlPendingMembers(Pageable pageable);
-
-    @Operation(summary = "프로필 이미지 승인 대기 회원 조회 API")
-    @ApiResponse(
-            responseCode = "200",
-            description = "프로필 승인 대기중인 회원 목록을 조회합니다."
-    )
-    @GetMapping
-    ResponseEntity<AdminMemberProfileImageResponses> readProfileImagePendingMembers(Pageable pageable);
 
     @Operation(summary = "학생증 승인 대기 회원 조회 API")
     @ApiResponse(
