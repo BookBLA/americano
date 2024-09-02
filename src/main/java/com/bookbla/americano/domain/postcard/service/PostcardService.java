@@ -61,6 +61,10 @@ public class PostcardService {
     private final PushAlarmEventHandler postcardPushAlarmEventListener;
 
     public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
+        if (isAnswerWrong(request.getQuizAnswer())) {
+            return SendPostcardResponse.builder().isSendSuccess(false).build();
+        }
+
         MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
                         memberId)
                 .orElseThrow(
@@ -77,28 +81,7 @@ public class PostcardService {
 
         Member member = memberRepository.getByIdOrThrow(memberId);
         Member targetMember = memberRepository.getByIdOrThrow(request.getReceiveMemberId());
-
-        List<QuizReply> correctReplies = new ArrayList<>();
-        boolean isCorrect = false;
-        for (SendPostcardRequest.QuizAnswer quizAnswer : request.getQuizAnswerList()) {
-            QuizQuestion quizQuestion = quizQuestionRepository.getByIdOrThrow(
-                    quizAnswer.getQuizId());
-            CorrectStatus status = quizQuestion.solve(quizAnswer.getQuizAnswer());
-
-            QuizReply quizReply = QuizReply.builder()
-                    .quizQuestion(quizQuestion)
-                    .answer(quizAnswer.getQuizAnswer())
-                    .member(member)
-                    .correctStatus(status)
-                    .build();
-            correctReplies.add(quizReply);
-
-            if (status == CorrectStatus.CORRECT) {
-                isCorrect = true;
-            }
-        }
-
-        PostcardStatus status = isCorrect ? PostcardStatus.PENDING : PostcardStatus.ALL_WRONG;
+        PostcardStatus status = PostcardStatus.PENDING;
 
         memberBookmark.sendPostcard();
 
@@ -113,16 +96,15 @@ public class PostcardService {
                 .build();
         postcardRepository.save(postcard);
 
-        for (QuizReply quizReply : correctReplies) {
-            quizReply.updatePostcard(postcard);
-            quizReplyRepository.save(quizReply);
-        }
+        postcardPushAlarmEventListener.sendPostcard(new PostcardAlarmEvent(member, targetMember));
 
-        if (postcard.isPending()) {
-            postcardPushAlarmEventListener.sendPostcard(new PostcardAlarmEvent(member, targetMember));
-        }
+        return SendPostcardResponse.builder().isSendSuccess(true).build();
+    }
 
-        return SendPostcardResponse.builder().isSendSuccess(isCorrect).build();
+    private boolean isAnswerWrong(SendPostcardRequest.QuizAnswer quizAnswer) {
+        QuizQuestion quizQuestion = quizQuestionRepository.getByIdOrThrow(
+                quizAnswer.getQuizId());
+        return quizQuestion.solve(quizAnswer.getQuizAnswer()) == CorrectStatus.WRONG;
     }
 
     public PostcardTypeResponse getPostcardTypeList() {
