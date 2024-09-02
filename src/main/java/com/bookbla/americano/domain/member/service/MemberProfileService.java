@@ -131,26 +131,6 @@ public class MemberProfileService {
     }
 
     @Transactional
-    public void modifyProfile(Long memberId, ProfileModifyRequest request) {
-        Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = member.getMemberProfile();
-
-//        if (!memberProfile.getOpenKakaoRoomUrl().equals(request.getOpenKakaoRoomUrl())) {
-//            saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
-//        }
-
-        validateDuplicateName(request.getName());
-
-        memberProfile.updateName(request.getName())
-                .updatePhoneNumber(request.getPhoneNumber())
-                .updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl());
-//                .updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
-
-        member.updateMemberProfile(memberProfile);
-        memberRepository.save(member);
-    }
-
-    @Transactional
     public MemberProfileResponse updateMemberProfile(Long memberId, MemberProfileUpdateRequest request) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
