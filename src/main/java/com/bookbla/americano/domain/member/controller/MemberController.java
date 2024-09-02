@@ -119,30 +119,6 @@ public class MemberController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/same-book-members")
-    public ResponseEntity<Page<MemberBookProfileResponse>> sameBookMembersPage(
-            @Parameter(hidden = true) @User LoginUser loginUser,
-            @ModelAttribute MemberBookProfileRequestDto memberBookProfileRequestDto,
-            Pageable pageable) {
-        List<MemberBookProfileResponse> memberBookProfileResponseList = memberProfileService.findSameBookMembers(
-                loginUser.getMemberId(), memberBookProfileRequestDto);
-        if (pageable == null) {
-            pageable = PageRequest.of(0, 0);
-        }
-
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), memberBookProfileResponseList.size());
-        Page<MemberBookProfileResponse> memberBookProfileResponsePage;
-        if (start >= memberBookProfileResponseList.size()) {
-            memberBookProfileResponsePage = Page.empty();
-        } else {
-            memberBookProfileResponsePage = new PageImpl<>(
-                    memberBookProfileResponseList.subList(start, end), pageable,
-                    memberBookProfileResponseList.size());
-        }
-        return ResponseEntity.ok(memberBookProfileResponsePage);
-    }
-
     @GetMapping("/all-other-members")
     public ResponseEntity<Page<MemberBookProfileResponse>> getAllMembersProfile(
             @Parameter(hidden = true) @User LoginUser loginUser,
