@@ -18,9 +18,7 @@ public class MemberProfileResponse {
     private String schoolEmail;
     private String phoneNumber;
     private String gender;
-    private String profileImageUrl;
-    private String openKakaoRoomUrl;
-    private String studentIdImageUrl;
+//    private String openKakaoRoomUrl;
 
     public static MemberProfileResponse from(Member member, MemberProfile memberProfile) {
         return MemberProfileResponse.builder()
@@ -31,9 +29,7 @@ public class MemberProfileResponse {
                 .schoolEmail(memberProfile.getSchoolEmail())
                 .phoneNumber(memberProfile.getPhoneNumber())
                 .gender(memberProfile.getGender().name())
-                .profileImageUrl(memberProfile.getProfileImageUrl())
-                .openKakaoRoomUrl(memberProfile.getOpenKakaoRoomUrl())
-                .studentIdImageUrl(memberProfile.getStudentIdImageUrl())
+//                .openKakaoRoomUrl(memberProfile.getOpenKakaoRoomUrl())
                 .build();
     }
 }

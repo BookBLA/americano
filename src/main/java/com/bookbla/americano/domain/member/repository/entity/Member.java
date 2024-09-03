@@ -53,7 +53,7 @@ public class Member extends BaseEntity {
     @Builder.Default
     private String invitationCode = "등록되지 않음";
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @Getter(AccessLevel.NONE)
     private School school;
 
@@ -129,11 +129,8 @@ public class Member extends BaseEntity {
                 .updateBirthDate(memberProfile.getBirthDate())
                 .updateGender(memberProfile.getGender())
                 .updateSchoolEmail(memberProfile.getSchoolEmail())
-                .updatePhoneNumber(memberProfile.getPhoneNumber())
-                .updateProfileImageUrl(memberProfile.getProfileImageUrl())
-                .updateOpenKakaoRoomUrl(memberProfile.getOpenKakaoRoomUrl())
-                .updateStudentIdImageUrl(memberProfile.getStudentIdImageUrl());
-
+                .updatePhoneNumber(memberProfile.getPhoneNumber());
+//                .updateOpenKakaoRoomUrl(memberProfile.getOpenKakaoRoomUrl());
         return this;
     }
 

@@ -26,9 +26,7 @@ public class MemberProfileDto {
     private String schoolName;
     private String schoolEmail;
     private String phoneNumber;
-    private String profileImageUrl;
-    private String openKakaoRoomUrl;
-    private String studentIdImageUrl;
+//    private String openKakaoRoomUrl;
 
     public MemberProfile toMemberProfile() {
         return MemberProfile.builder()
@@ -37,12 +35,8 @@ public class MemberProfileDto {
                 .gender(gender)
                 .schoolEmail(schoolEmail)
                 .phoneNumber(phoneNumber)
-                .profileImageUrl(profileImageUrl)
-                .openKakaoRoomUrl(openKakaoRoomUrl)
-                .studentIdImageUrl(studentIdImageUrl)
-                .openKakaoRoomStatus(OpenKakaoRoomStatus.DONE)
-                .studentIdImageStatus(StudentIdImageStatus.DONE)
-                .profileImageStatus(ProfileImageStatus.DONE)
+//                .openKakaoRoomUrl(openKakaoRoomUrl)
+//                .openKakaoRoomStatus(OpenKakaoRoomStatus.DONE)
                 .build();
     }
 

@@ -1,10 +1,11 @@
 package com.bookbla.americano.domain.quiz.repository;
 
+import java.util.Optional;
+
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import com.bookbla.americano.domain.quiz.exception.QuizQuestionExceptionType;
 import com.bookbla.americano.domain.quiz.repository.entity.QuizQuestion;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Long> {
@@ -15,6 +16,4 @@ public interface QuizQuestionRepository extends JpaRepository<QuizQuestion, Long
     }
 
     Optional<QuizQuestion> findByMemberBook(MemberBook memberBook);
-
-    void deleteByMemberBook(MemberBook memberBook);
 }

@@ -1,9 +1,10 @@
 package com.bookbla.americano.base.config;
 
+import java.util.List;
+
 import com.bookbla.americano.base.interceptor.AdminInterceptor;
 import com.bookbla.americano.base.interceptor.AuthInterceptor;
 import com.bookbla.americano.base.resolver.AuthArgumentResolver;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -29,12 +30,11 @@ public class AuthConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/api-docs/**")
                 .excludePathPatterns("/styles/**")
                 .excludePathPatterns("/admin/**")
-                .excludePathPatterns("/aws/s3/**")
                 .excludePathPatterns("/error/**")
                 .excludePathPatterns("/expoes/**")
-            .excludePathPatterns("/alarms/sends/**")
-            .excludePathPatterns("/settings/**")
-            .excludePathPatterns("/schools")
+                .excludePathPatterns("/alarms/sends/**")
+                .excludePathPatterns("/settings/**")
+                .excludePathPatterns("/schools")
         ;
 
         // 어드민 인터셉터

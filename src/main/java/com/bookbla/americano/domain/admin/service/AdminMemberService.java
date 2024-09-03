@@ -2,8 +2,6 @@ package com.bookbla.americano.domain.admin.service;
 
 import java.util.List;
 
-import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKakaoRoomResponses;
-import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileStatusResponse;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
@@ -24,8 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.bookbla.americano.domain.member.enums.MemberVerifyStatus.PENDING;
-import static com.bookbla.americano.domain.member.enums.MemberVerifyType.OPEN_KAKAO_ROOM_URL;
-import static com.bookbla.americano.domain.member.enums.MemberVerifyType.PROFILE_IMAGE;
 import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT_ID;
 
 @RequiredArgsConstructor
@@ -59,22 +55,6 @@ public class AdminMemberService {
         Page<Member> memberPaging = memberRepository.findByMemberStatus(MemberStatus.DELETED, pageable);
         List<Member> members = memberPaging.getContent();
         return AdminMemberReadResponses.from(count, members);
-    }
-
-    @Transactional(readOnly = true)
-    public AdminMemberKakaoRoomResponses readKakaoRoomPendingMembers(Pageable pageable) {
-        long count = memberVerifyRepository.countByVerifyTypeAndVerifyStatus(OPEN_KAKAO_ROOM_URL, PENDING);
-        Page<MemberVerify> paging = memberVerifyRepository.findByVerifyTypeAndVerifyStatus(OPEN_KAKAO_ROOM_URL, PENDING, pageable);
-        List<MemberVerify> memberVerifies = paging.getContent();
-        return AdminMemberKakaoRoomResponses.from(count, memberVerifies);
-    }
-
-    @Transactional(readOnly = true)
-    public AdminMemberProfileImageResponses readProfileImagePendingMembers(Pageable pageable) {
-        long count = memberVerifyRepository.countByVerifyTypeAndVerifyStatus(PROFILE_IMAGE, PENDING);
-        Page<MemberVerify> paging = memberVerifyRepository.findByVerifyTypeAndVerifyStatus(PROFILE_IMAGE, PENDING, pageable);
-        List<MemberVerify> memberVerifies = paging.getContent();
-        return AdminMemberProfileImageResponses.from(count, memberVerifies);
     }
 
     @Transactional(readOnly = true)
