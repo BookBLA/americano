@@ -71,11 +71,11 @@ class PostcardServiceTest {
                 .member(sendMember)
                 .bookmarkCount(100).build();
         bookmarkRepository.save(memberBookmark);
-        quizQuestionRepository.save(QuizQuestion.builder().firstChoice("answer").build());
-        postcardTypeRepository.save(PostcardType.builder().build());
+        QuizQuestion quizQuestion = quizQuestionRepository.save(QuizQuestion.builder().firstChoice("answer").build());
+        PostcardType postcardType = postcardTypeRepository.save(PostcardType.builder().build());
 
-        SendPostcardRequest.QuizAnswer quizAnswer = new SendPostcardRequest.QuizAnswer(1L, "answer");
-        SendPostcardRequest request = new SendPostcardRequest(quizAnswer, 1L, reciveMember.getId(), "memberReply");
+        SendPostcardRequest.QuizAnswer quizAnswer = new SendPostcardRequest.QuizAnswer(quizQuestion.getId(), "answer");
+        SendPostcardRequest request = new SendPostcardRequest(quizAnswer, postcardType.getId(), reciveMember.getId(), "memberReply");
 
         //when
         SendPostcardResponse response = postcardService.send(sendMember.getId(), request);
@@ -93,11 +93,11 @@ class PostcardServiceTest {
                 .member(sendMember)
                 .bookmarkCount(100).build();
         bookmarkRepository.save(memberBookmark);
-        quizQuestionRepository.save(QuizQuestion.builder().firstChoice("answer").build());
-        postcardTypeRepository.save(PostcardType.builder().build());
+        QuizQuestion quizQuestion = quizQuestionRepository.save(QuizQuestion.builder().firstChoice("answer").build());
+        PostcardType postcardType = postcardTypeRepository.save(PostcardType.builder().build());
 
-        SendPostcardRequest.QuizAnswer quizAnswer = new SendPostcardRequest.QuizAnswer(1L, "Wrong answer");
-        SendPostcardRequest request = new SendPostcardRequest(quizAnswer, 1L, reciveMember.getId(), "memberReply");
+        SendPostcardRequest.QuizAnswer quizAnswer = new SendPostcardRequest.QuizAnswer(quizQuestion.getId(), "Wrong answer");
+        SendPostcardRequest request = new SendPostcardRequest(quizAnswer, postcardType.getId(), reciveMember.getId(), "memberReply");
 
         //when
         SendPostcardResponse response = postcardService.send(sendMember.getId(), request);
@@ -177,7 +177,10 @@ class PostcardServiceTest {
     @AfterEach
     void tearDown() {
         quizReplyRepository.deleteAllInBatch();
+        quizQuestionRepository.deleteAllInBatch();
+        bookmarkRepository.deleteAllInBatch();
         postcardRepository.deleteAllInBatch();
+        postcardTypeRepository.deleteAllInBatch();
         memberBlockRepository.deleteAllInBatch();
     }
 }
