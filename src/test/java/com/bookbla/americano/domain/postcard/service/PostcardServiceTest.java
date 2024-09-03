@@ -17,6 +17,7 @@ import com.bookbla.americano.domain.postcard.repository.entity.PostcardType;
 import com.bookbla.americano.domain.postcard.service.dto.request.SendPostcardRequest;
 import com.bookbla.americano.domain.postcard.service.dto.response.SendPostcardResponse;
 import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
+import com.bookbla.americano.domain.quiz.repository.QuizReplyRepository;
 import com.bookbla.americano.domain.quiz.repository.entity.QuizQuestion;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -58,8 +59,11 @@ class PostcardServiceTest {
     @Autowired
     private PostcardTypeRepository postcardTypeRepository;
 
+    @Autowired
+    private QuizReplyRepository quizReplyRepository;
+
     @Test
-    void 문제를_맞추면_엽서를_보낼_수_있다() throws Exception {
+    void 문제를_맞추면_엽서를_보낼_수_있다() {
         //given
         Member sendMember = memberRepository.save(Member.builder().build());
         Member reciveMember = memberRepository.save(Member.builder().build());
@@ -81,7 +85,7 @@ class PostcardServiceTest {
     }
 
     @Test
-    void 문제를_틀리면_엽서를_보낼_수_없다() throws Exception {
+    void 문제를_틀리면_엽서를_보낼_수_없다() {
         //given
         Member sendMember = memberRepository.save(Member.builder().build());
         Member reciveMember = memberRepository.save(Member.builder().build());
@@ -172,6 +176,7 @@ class PostcardServiceTest {
 
     @AfterEach
     void tearDown() {
+        quizReplyRepository.deleteAllInBatch();
         postcardRepository.deleteAllInBatch();
         memberBlockRepository.deleteAllInBatch();
     }

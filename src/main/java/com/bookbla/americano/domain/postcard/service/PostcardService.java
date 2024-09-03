@@ -61,7 +61,10 @@ public class PostcardService {
     private final PushAlarmEventHandler postcardPushAlarmEventListener;
 
     public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
-        if (isAnswerWrong(request.getQuizAnswer())) {
+        QuizQuestion quizQuestion = quizQuestionRepository.getByIdOrThrow(request.getQuizAnswer().getQuizId());
+        CorrectStatus isCorrect = quizQuestion.solve(request.getQuizAnswer().getQuizAnswer());
+
+        if (isCorrect == CorrectStatus.WRONG) {
             return SendPostcardResponse.builder().isSendSuccess(false).build();
         }
 
@@ -78,11 +81,10 @@ public class PostcardService {
         List<Postcard> sentPostcards = postcardRepository.findBySendMemberIdAndReceiveMemberId(
                 memberId, request.getReceiveMemberId());
         sentPostcards.forEach(Postcard::validateSendPostcard);
+        PostcardStatus status = PostcardStatus.PENDING;
 
         Member member = memberRepository.getByIdOrThrow(memberId);
         Member targetMember = memberRepository.getByIdOrThrow(request.getReceiveMemberId());
-        PostcardStatus status = PostcardStatus.PENDING;
-
         memberBookmark.sendPostcard();
 
         PostcardType postCardType = postcardTypeRepository.getByIdOrThrow(
@@ -96,15 +98,19 @@ public class PostcardService {
                 .build();
         postcardRepository.save(postcard);
 
+        QuizReply quizReply = QuizReply.builder()
+                .quizQuestion(quizQuestion)
+                .answer(request.getQuizAnswer().getQuizAnswer())
+                .member(member)
+                .correctStatus(isCorrect)
+                .build();
+
+        quizReply.updatePostcard(postcard);
+        quizReplyRepository.save(quizReply);
+
         postcardPushAlarmEventListener.sendPostcard(new PostcardAlarmEvent(member, targetMember));
 
         return SendPostcardResponse.builder().isSendSuccess(true).build();
-    }
-
-    private boolean isAnswerWrong(SendPostcardRequest.QuizAnswer quizAnswer) {
-        QuizQuestion quizQuestion = quizQuestionRepository.getByIdOrThrow(
-                quizAnswer.getQuizId());
-        return quizQuestion.solve(quizAnswer.getQuizAnswer()) == CorrectStatus.WRONG;
     }
 
     public PostcardTypeResponse getPostcardTypeList() {
