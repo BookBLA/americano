@@ -46,22 +46,6 @@ public class AdminMemberController implements AdminMemberControllerDocs {
         return ResponseEntity.ok(adminMemberReadResponses);
     }
 
-    @Operation(summary = "카카오톡 오픈 승인 채팅방 대기 회원 조회 API")
-    @GetMapping("/members/pending/kakao")
-    public ResponseEntity<AdminMemberKakaoRoomResponses> readKakaoOpenRoomUrlPendingMembers(Pageable pageable) {
-        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
-        AdminMemberKakaoRoomResponses adminMemberKakaoRoomResponses = adminMemberService.readKakaoRoomPendingMembers(pageRequest);
-        return ResponseEntity.ok(adminMemberKakaoRoomResponses);
-    }
-
-    @Operation(summary = "프로필 이미지 승인 대기 회원 조회 API")
-    @GetMapping("/members/pending/profile-image")
-    public ResponseEntity<AdminMemberProfileImageResponses> readProfileImagePendingMembers(Pageable pageable) {
-        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
-        AdminMemberProfileImageResponses adminMemberProfileImageResponses = adminMemberService.readProfileImagePendingMembers(pageRequest);
-        return ResponseEntity.ok(adminMemberProfileImageResponses);
-    }
-
     @Operation(summary = "학생증 승인 대기 회원 조회 API")
     @GetMapping("/members/pending/student-id/image")
     public ResponseEntity<AdminMemberStudentIdResponses> readStudentIdPendingMembers(Pageable pageable) {

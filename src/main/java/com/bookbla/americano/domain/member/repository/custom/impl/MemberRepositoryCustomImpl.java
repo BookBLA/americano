@@ -1,13 +1,11 @@
 package com.bookbla.americano.domain.member.repository.custom.impl;
 
 
-import java.time.LocalDate;
 import java.util.List;
 
 import com.bookbla.americano.domain.book.repository.entity.QBook;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.response.BookProfileResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
@@ -20,7 +18,6 @@ import com.bookbla.americano.domain.member.repository.entity.QMemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.QMemberStyle;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -32,44 +29,6 @@ import static com.bookbla.americano.domain.school.repository.entity.QSchool.scho
 public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
-
-    @Override
-    public List<MemberBookProfileResponse> searchSameBookMember(Long memberId, MemberBookProfileRequestDto requestDto) {
-        QMember member = QMember.member;
-        QMemberBook memberBook = QMemberBook.memberBook;
-        QBook book = QBook.book;
-
-        BooleanBuilder builder = new BooleanBuilder();
-        builder.and(memberBook.book.id.in(
-                JPAExpressions
-                        .select(memberBook.book.id)
-                        .from(member)
-                        .innerJoin(memberBook).on(member.eq(memberBook.member))
-                        .where(member.id.eq(memberId)
-                                .and(memberBook.isDeleted.eq(false)))));
-
-        builder.and(eqGender(member.memberProfile, requestDto.getGender()))
-                .and(eqSmokeType(member.memberStyle, requestDto.getSmokeType()))
-                .and(eqMbtiType(member.memberStyle, requestDto.getMbti()));
-
-        return queryFactory
-                .select(Projections.fields(MemberBookProfileResponse.class
-                        , member.id.as("memberId")
-                        , memberBook.book.id.as("bookId")
-                        , member.memberProfile.name.as("memberName")
-                        , member.memberProfile.birthDate.year().subtract(LocalDate.now().getYear() + 1).abs().as("memberAge")
-                        , member.memberProfile.gender.as("memberGender")
-                        , member.school.name.as("memberSchoolName")
-                        , book.title.as("bookName")
-                        , book.imageUrl.as("bookImageUrl"))
-                )
-                .from(member)
-                .innerJoin(memberBook).on(member.eq(memberBook.member))
-                .innerJoin(school).on(member.school.eq(school))
-                .innerJoin(book).on(memberBook.book.eq(book))
-                .where(builder.or(member.id.eq(memberId)))
-                .fetch();
-    }
 
     @Override
     public List<BookProfileResponse> getAllMembers(Long memberId, MemberBookProfileRequestDto requestDto) {
