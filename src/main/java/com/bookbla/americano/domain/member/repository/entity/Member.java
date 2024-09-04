@@ -13,6 +13,7 @@ import com.bookbla.americano.domain.school.repository.entity.School;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -124,6 +125,9 @@ public class Member extends BaseEntity {
     }
 
     public Member updateMemberProfile(MemberProfile memberProfile) {
+        this.memberProfile = Optional.ofNullable(this.memberProfile)
+            .orElse(new MemberProfile());
+
         this.memberProfile
                 .updateName(memberProfile.getName())
                 .updateBirthDate(memberProfile.getBirthDate())
