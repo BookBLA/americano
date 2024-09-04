@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class SendPostcardRequest {
 
     @NotNull(message = "퀴즈가 입력되지 않았습니다.")
-    private List<QuizAnswer> quizAnswerList;
+    private QuizAnswer quizAnswer;
 
     @NotNull(message = "postcardTypeId가 입력되지 않았습니다.")
     private Long postcardTypeId;

@@ -86,13 +86,4 @@ public class MemberProfileController {
         memberProfileService.updateMemberProfileKakaoRoom(loginUser.getMemberId(), request);
         return ResponseEntity.ok().build();
     }
-
-    @PatchMapping("/members/me/member-profile")
-    public ResponseEntity<Void> updateProfile(
-        @Parameter(hidden = true) @User LoginUser loginUser,
-        @RequestBody @Valid ProfileModifyRequest request
-    ) {
-        memberProfileService.modifyProfile(loginUser.getMemberId(), request);
-        return ResponseEntity.ok().build();
-    }
 }

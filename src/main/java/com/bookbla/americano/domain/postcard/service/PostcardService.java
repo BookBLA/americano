@@ -61,6 +61,13 @@ public class PostcardService {
     private final PushAlarmEventHandler postcardPushAlarmEventListener;
 
     public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
+        QuizQuestion quizQuestion = quizQuestionRepository.getByIdOrThrow(request.getQuizAnswer().getQuizId());
+        CorrectStatus isCorrect = quizQuestion.solve(request.getQuizAnswer().getQuizAnswer());
+
+        if (isCorrect == CorrectStatus.WRONG) {
+            return SendPostcardResponse.builder().isSendSuccess(false).build();
+        }
+
         MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
                         memberId)
                 .orElseThrow(
@@ -74,32 +81,10 @@ public class PostcardService {
         List<Postcard> sentPostcards = postcardRepository.findBySendMemberIdAndReceiveMemberId(
                 memberId, request.getReceiveMemberId());
         sentPostcards.forEach(Postcard::validateSendPostcard);
+        PostcardStatus status = PostcardStatus.PENDING;
 
         Member member = memberRepository.getByIdOrThrow(memberId);
         Member targetMember = memberRepository.getByIdOrThrow(request.getReceiveMemberId());
-
-        List<QuizReply> correctReplies = new ArrayList<>();
-        boolean isCorrect = false;
-        for (SendPostcardRequest.QuizAnswer quizAnswer : request.getQuizAnswerList()) {
-            QuizQuestion quizQuestion = quizQuestionRepository.getByIdOrThrow(
-                    quizAnswer.getQuizId());
-            CorrectStatus status = quizQuestion.solve(quizAnswer.getQuizAnswer());
-
-            QuizReply quizReply = QuizReply.builder()
-                    .quizQuestion(quizQuestion)
-                    .answer(quizAnswer.getQuizAnswer())
-                    .member(member)
-                    .correctStatus(status)
-                    .build();
-            correctReplies.add(quizReply);
-
-            if (status == CorrectStatus.CORRECT) {
-                isCorrect = true;
-            }
-        }
-
-        PostcardStatus status = isCorrect ? PostcardStatus.PENDING : PostcardStatus.ALL_WRONG;
-
         memberBookmark.sendPostcard();
 
         PostcardType postCardType = postcardTypeRepository.getByIdOrThrow(
@@ -113,16 +98,19 @@ public class PostcardService {
                 .build();
         postcardRepository.save(postcard);
 
-        for (QuizReply quizReply : correctReplies) {
-            quizReply.updatePostcard(postcard);
-            quizReplyRepository.save(quizReply);
-        }
+        QuizReply quizReply = QuizReply.builder()
+                .quizQuestion(quizQuestion)
+                .answer(request.getQuizAnswer().getQuizAnswer())
+                .member(member)
+                .correctStatus(isCorrect)
+                .build();
 
-        if (postcard.isPending()) {
-            postcardPushAlarmEventListener.sendPostcard(new PostcardAlarmEvent(member, targetMember));
-        }
+        quizReply.updatePostcard(postcard);
+        quizReplyRepository.save(quizReply);
 
-        return SendPostcardResponse.builder().isSendSuccess(isCorrect).build();
+        postcardPushAlarmEventListener.sendPostcard(new PostcardAlarmEvent(member, targetMember));
+
+        return SendPostcardResponse.builder().isSendSuccess(true).build();
     }
 
     public PostcardTypeResponse getPostcardTypeList() {

@@ -22,24 +22,6 @@ public class AdminVerificationController implements AdminVerificationControllerD
 
     private final AdminVerificationService adminVerificationService;
 
-    @PatchMapping("/member-verifies/{memberVerifyId}/pending/kakao")
-    public ResponseEntity<Void> updateKakaoRoomUrlPendingMemberStatus(
-            @PathVariable Long memberVerifyId,
-            @RequestBody @Valid AdminMemberKakaoRoomStatusUpdateRequest request
-    ) {
-        adminVerificationService.updateMemberKakaoRoomStatus(request.toDto(memberVerifyId));
-        return ResponseEntity.ok().build();
-    }
-
-    @PatchMapping("/member-verifies/{memberVerifyId}/pending/profile-image")
-    public ResponseEntity<Void> updateProfileImagePendingMemberStatus(
-            @PathVariable Long memberVerifyId,
-            @RequestBody @Valid AdminMemberProfileImageStatusUpdateRequest request
-    ) {
-        adminVerificationService.updateMemberImageStatus(request.toDto(memberVerifyId));
-        return ResponseEntity.ok().build();
-    }
-
     @PatchMapping("/member-verifies/{memberVerifyId}/pending/student-id/image")
     public ResponseEntity<Void> updateStudentIdPendingMemberStatus(
             @PathVariable Long memberVerifyId,

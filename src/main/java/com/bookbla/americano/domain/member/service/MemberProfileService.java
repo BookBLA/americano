@@ -14,9 +14,6 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberBookPro
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
-import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
-import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
-import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileException;
@@ -32,15 +29,10 @@ import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
 import com.bookbla.americano.domain.member.service.dto.event.AdminNotificationEvent;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,7 +57,7 @@ public class MemberProfileService {
                 .orElseThrow(
                         () -> new BaseException(MemberEmailExceptionType.EMAIL_NOT_REGISTERED));
         memberEmail.validatePending();
-        validateDuplicatedNickname(memberProfileDto.getName());
+        validateDuplicateName(memberProfileDto.getName());
 
 //        saveKakaoRoomVerify(member, memberProfileDto.getOpenKakaoRoomUrl());
 
@@ -86,6 +78,13 @@ public class MemberProfileService {
         );
 
         return MemberProfileResponse.from(member, profile);
+    }
+
+    private void validateDuplicateName(String nickname) {
+        memberRepository.findByMemberProfileName(nickname)
+                .ifPresent(profile -> {
+                    throw new BaseException(MemberProfileException.ALREADY_EXISTS_NICKNAME);
+                });
     }
 
     private void saveStudentIdVerify(Member member, String verifyDescription,
@@ -132,26 +131,6 @@ public class MemberProfileService {
     }
 
     @Transactional
-    public void modifyProfile(Long memberId, ProfileModifyRequest request) {
-        Member member = memberRepository.getByIdOrThrow(memberId);
-        MemberProfile memberProfile = member.getMemberProfile();
-
-//        if (!memberProfile.getOpenKakaoRoomUrl().equals(request.getOpenKakaoRoomUrl())) {
-//            saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
-//        }
-
-        validateDuplicatedNickname(request.getName());
-
-        memberProfile.updateName(request.getName())
-                .updatePhoneNumber(request.getPhoneNumber())
-                .updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl());
-//                .updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
-
-        member.updateMemberProfile(memberProfile);
-        memberRepository.save(member);
-    }
-
-    @Transactional
     public MemberProfileResponse updateMemberProfile(Long memberId, MemberProfileUpdateRequest request) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
@@ -160,8 +139,7 @@ public class MemberProfileService {
 //            saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
 //            memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
 //        }
-
-        validateDuplicatedNickname(request.getName());
+        validateDuplicateName(request.getName());
 
         update(member, memberProfile, request);
 
@@ -199,77 +177,6 @@ public class MemberProfileService {
     }
 
     @Transactional(readOnly = true)
-    public List<MemberBookProfileResponse> findSameBookMembers(Long memberId,
-                                                               MemberBookProfileRequestDto requestDto) {
-        List<MemberBookProfileResponse> allResult = memberRepository.searchSameBookMember(
-                memberId, requestDto);
-        // 탐색 결과가 없을 때, EMPTY_MEMBER_BOOK Exception(해당 사용자의 선호 책도 없음)
-        if (allResult.isEmpty()) {
-            throw new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOK);
-        }
-        // 해당 사용자의 선호 책
-        List<MemberBookProfileResponse> userBookProfiles = new ArrayList<>();
-        List<MemberBookProfileResponse> otherBookProfiles = new ArrayList<>(allResult);
-        for (MemberBookProfileResponse i : allResult) {
-            if (i.getMemberId() == memberId) {
-                addBookProfileToList(userBookProfiles, i);
-                otherBookProfiles.remove(i);
-            }
-        }
-        // 해당 사용자의 선호책이 없을 때, EMPTY_MEMBER_BOOK Exception
-        if (userBookProfiles.isEmpty()) {
-            throw new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOK);
-        }
-
-        // 1순위 : 대표책 - 대표책
-        List<MemberBookProfileResponse> firstResults = findMatches(
-                userBookProfiles,
-                otherBookProfiles,
-                MemberBookProfileResponse::isBookIsRepresentative,
-                MemberBookProfileResponse::isBookIsRepresentative
-        );
-
-        Collections.shuffle(firstResults);
-        removeMemberToOtherBookProfiles(otherBookProfiles, firstResults);
-
-        // 2순위 : 대표책 - 선호책
-        List<MemberBookProfileResponse> secondResults = findMatches(
-                userBookProfiles,
-                otherBookProfiles,
-                MemberBookProfileResponse::isBookIsRepresentative,
-                otherBookProfile -> !otherBookProfile.isBookIsRepresentative()
-        );
-
-        Collections.shuffle(secondResults);
-        removeMemberToOtherBookProfiles(otherBookProfiles, secondResults);
-
-        // 3순위 : 선호책 - 대표책
-        List<MemberBookProfileResponse> thirdResults = findMatches(
-                userBookProfiles,
-                otherBookProfiles,
-                userBookProfile -> !userBookProfile.isBookIsRepresentative(),
-                MemberBookProfileResponse::isBookIsRepresentative
-        );
-
-        Collections.shuffle(thirdResults);
-        removeMemberToOtherBookProfiles(otherBookProfiles, thirdResults);
-
-        // 4순위 : 선호책 - 선호책
-        List<MemberBookProfileResponse> fourthResults = findMatches(
-                userBookProfiles,
-                otherBookProfiles,
-                userBookProfile -> !userBookProfile.isBookIsRepresentative(),
-                otherBookProfile -> !otherBookProfile.isBookIsRepresentative()
-        );
-
-        Collections.shuffle(fourthResults);
-
-        return Stream.of(firstResults, secondResults, thirdResults, fourthResults)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
     public List<MemberBookProfileResponse> getAllMembers(Long memberId,
                                                          MemberBookProfileRequestDto requestDto) {
         List<BookProfileResponse> allResult = memberRepository.getAllMembers(memberId, requestDto);
@@ -281,49 +188,5 @@ public class MemberProfileService {
         return allResult.stream()
                 .map(MemberBookProfileResponse::new)
                 .collect(Collectors.toList());
-    }
-
-    private List<MemberBookProfileResponse> findMatches(
-            List<MemberBookProfileResponse> userBookProfiles,
-            List<MemberBookProfileResponse> otherBookProfiles,
-            Predicate<MemberBookProfileResponse> userPredicate,
-            Predicate<MemberBookProfileResponse> otherPredicate) {
-
-        return new ArrayList<>(userBookProfiles.stream()
-                .filter(userPredicate)
-                .flatMap(userBookProfile -> otherBookProfiles.stream()
-                        .filter(otherBookProfile -> otherBookProfile.getBookId()
-                                == userBookProfile.getBookId())
-                        .filter(otherPredicate)
-                ).collect(Collectors.groupingBy(MemberBookProfileResponse::getMemberId,
-                        Collectors.collectingAndThen(
-                                Collectors.toList(),
-                                memberBookProfileList -> memberBookProfileList.get(0)
-                        )))
-                .values());
-    }
-
-    private void removeMemberToOtherBookProfiles(
-            List<MemberBookProfileResponse> otherBookProfiles,
-            List<MemberBookProfileResponse> resultBookProfiles) {
-        otherBookProfiles.removeIf(otherBookProfile -> resultBookProfiles.stream()
-                .anyMatch(resultBookProfile -> resultBookProfile.getMemberId()
-                        == otherBookProfile.getMemberId()));
-    }
-
-    private void addBookProfileToList(List<MemberBookProfileResponse> list,
-                                      MemberBookProfileResponse i) {
-        if (i.isBookIsRepresentative()) {
-            list.add(0, i);
-        } else {
-            list.add(i);
-        }
-    }
-
-    private void validateDuplicatedNickname(String nickname) {
-        memberRepository.findByMemberProfileName(nickname)
-                .ifPresent(profile -> {
-                    throw new BaseException(MemberProfileException.ALREADY_EXISTS_NICKNAME);
-                });
     }
 }
