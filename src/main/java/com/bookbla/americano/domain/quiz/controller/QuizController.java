@@ -23,8 +23,7 @@ public class QuizController {
     public ResponseEntity<QuizQuestionReadResponse> createQuizQuestion(
             @Parameter(hidden = true) @User LoginUser loginUser, @PathVariable Long memberBookId
     ) {
-        QuizQuestionReadResponse quizQuestionReadResponse = quizQuestionService.getQuizQuestion(
-                loginUser.getMemberId(), memberBookId);
+        QuizQuestionReadResponse quizQuestionReadResponse = quizQuestionService.getQuizQuestion(loginUser.getMemberId(), memberBookId);
         return ResponseEntity.ok(quizQuestionReadResponse);
     }
 
