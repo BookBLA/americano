@@ -43,7 +43,7 @@ public class AdminVerificationService {
         updateVerification(dto, status, memberVerify, member, memberProfile);
         memberProfile.updateStudentIdImageStatus(status);
 
-        checkMemberStatuses(member, memberProfile);
+//        checkMemberStatuses(member, memberProfile);
     }
 
     private void updateVerification(
@@ -53,6 +53,7 @@ public class AdminVerificationService {
         if (status.isDone()) {
             updateMemberProfileByStudentIdElements(memberVerify, memberProfile);
             memberVerify.success(dto.getReason());
+            alarmService.sendPushAlarm(member, PushAlarmForm.ADMIN_STUDENT_ID_IMAGE_ACCEPT);
             return;
         }
         if (status.isPending()) {

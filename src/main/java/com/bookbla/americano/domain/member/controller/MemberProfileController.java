@@ -4,10 +4,11 @@ import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileOpenKakaoRoomUrlUpdateRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileStudentIdImageUrlUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
-import com.bookbla.americano.domain.member.controller.dto.request.ProfileModifyRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStudentIdReadResponse;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -86,4 +87,25 @@ public class MemberProfileController {
         memberProfileService.updateMemberProfileKakaoRoom(loginUser.getMemberId(), request);
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "사용자 학생증 이미지 저장 API")
+    @PostMapping("/member-profiles/student-id/image")
+    public ResponseEntity<Void> updateMemberStudentIdImage(
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        @RequestBody @Valid MemberProfileStudentIdImageUrlUpdateRequest request
+    ) {
+        memberProfileService.updateMemberProfileStudentId(loginUser.getMemberId(), request);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "사용자 학생증 검증 상태 조회 API")
+    @GetMapping("/member-profiles/student-id/status")
+    public ResponseEntity<MemberProfileStudentIdReadResponse> getMemberStudentIdStatus(
+        @Parameter(hidden = true) @User LoginUser loginUser
+    ) {
+        MemberProfileStudentIdReadResponse response = memberProfileService.readMemberProfileStudentIdStatus(
+            loginUser.getMemberId());
+        return ResponseEntity.ok(response);
+    }
+
 }

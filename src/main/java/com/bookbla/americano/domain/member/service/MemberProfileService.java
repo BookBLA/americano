@@ -7,13 +7,15 @@ import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileOpenKakaoRoomUrlUpdateRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileStudentIdImageUrlUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
-import com.bookbla.americano.domain.member.controller.dto.request.ProfileModifyRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.BookProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStudentIdReadResponse;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
+import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileException;
@@ -29,6 +31,7 @@ import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
 import com.bookbla.americano.domain.member.service.dto.event.AdminNotificationEvent;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,7 +76,7 @@ public class MemberProfileService {
                 MemberStatusLog.builder()
                         .memberId(member.getId())
                         .beforeStatus(beforeStatus)
-                        .afterStatus(MemberStatus.APPROVAL)
+                        .afterStatus(MemberStatus.STYLE)
                         .build()
         );
 
@@ -188,5 +191,34 @@ public class MemberProfileService {
         return allResult.stream()
                 .map(MemberBookProfileResponse::new)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void updateMemberProfileStudentId(Long memberId, MemberProfileStudentIdImageUrlUpdateRequest request) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberProfile memberProfile = member.getMemberProfile();
+
+        if (!memberProfile.getStudentIdImageUrl().equals(request.getStudentIdImageUrl())) {
+            String memberVerifyDescription = createMemberVerifyDescription(member, memberProfile);
+            saveStudentIdVerify(member, memberVerifyDescription, request.getStudentIdImageUrl());
+            memberProfile.updateStudentIdImageStatus(StudentIdImageStatus.PENDING);
+        }
+
+        memberProfile.updateStudentIdImageUrl(request.getStudentIdImageUrl());
+        memberProfile.updateStudentIdImageStatus(StudentIdImageStatus.PENDING);
+        memberRepository.save(member);
+    }
+
+    private String createMemberVerifyDescription(Member member, MemberProfile memberProfile) {
+        return "name: " + memberProfile.getName() +
+            ", schoolName: " + member.getSchool() +
+            ", birthDate: " + memberProfile.getBirthDate().format(DateTimeFormatter.BASIC_ISO_DATE) +
+            ", gender: " + memberProfile.getGender();
+    }
+
+    public MemberProfileStudentIdReadResponse readMemberProfileStudentIdStatus(Long memberId) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberProfile memberProfile = member.getMemberProfile();
+        return MemberProfileStudentIdReadResponse.from(memberProfile);
     }
 }
