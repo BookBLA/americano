@@ -4,7 +4,9 @@ package com.bookbla.americano.domain.postcard.service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import com.bookbla.americano.base.exception.BaseException;
@@ -49,6 +51,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PostcardService {
 
+    private static final Map<Long, Member> LOCK = new ConcurrentHashMap<>();
+
     private final PostcardRepository postcardRepository;
     private final QuizReplyRepository quizReplyRepository;
     private final QuizQuestionRepository quizQuestionRepository;
@@ -89,14 +93,19 @@ public class PostcardService {
 
         PostcardType postCardType = postcardTypeRepository.getByIdOrThrow(
                 request.getPostcardTypeId());
+        if (LOCK.containsKey(memberId)) {
+            return SendPostcardResponse.builder().isSendSuccess(false).build();
+        }
+        LOCK.put(memberId, targetMember);
         Postcard postcard = Postcard.builder()
                 .sendMember(member)
-                .receiveMember(targetMember)
+                .receiveMember(LOCK.get(memberId))
                 .postcardStatus(status)
                 .postcardType(postCardType)
                 .imageUrl(postCardType.getImageUrl())
                 .build();
         postcardRepository.save(postcard);
+        LOCK.remove(memberId);
 
         QuizReply quizReply = QuizReply.builder()
                 .quizQuestion(quizQuestion)

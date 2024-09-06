@@ -1,5 +1,10 @@
 package com.bookbla.americano.domain.postcard.service;
 
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
@@ -19,7 +24,9 @@ import com.bookbla.americano.domain.postcard.service.dto.response.SendPostcardRe
 import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
 import com.bookbla.americano.domain.quiz.repository.QuizReplyRepository;
 import com.bookbla.americano.domain.quiz.repository.entity.QuizQuestion;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -29,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.REFUSED;
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.params.provider.EnumSource.Mode.INCLUDE;
@@ -39,7 +47,7 @@ import static org.junit.jupiter.params.provider.EnumSource.Mode.INCLUDE;
 class PostcardServiceTest {
 
     @Autowired
-    private PostcardService postcardService;
+    private PostcardService sut;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -62,6 +70,45 @@ class PostcardServiceTest {
     @Autowired
     private QuizReplyRepository quizReplyRepository;
 
+    private PostcardType postcardType;
+
+    @BeforeEach
+    void setUp() {
+        postcardType = postcardTypeRepository.save(PostcardType.builder().build());
+    }
+
+    @Test
+    void 동일한_사람이_동시에_요청_보내도_한_건만_전송된다() throws InterruptedException {
+        // given
+        Member sendMember = memberRepository.save(Member.builder().build());
+        Member reciveMember = memberRepository.save(Member.builder().build());
+        MemberBookmark memberBookmark = MemberBookmark.builder()
+                .member(sendMember)
+                .bookmarkCount(100).build();
+        bookmarkRepository.save(memberBookmark);
+        QuizQuestion quizQuestion = quizQuestionRepository.save(QuizQuestion.builder().firstChoice("answer").build());
+
+        SendPostcardRequest.QuizAnswer quizAnswer = new SendPostcardRequest.QuizAnswer(quizQuestion.getId(), "answer");
+        SendPostcardRequest request = new SendPostcardRequest(quizAnswer, postcardType.getId(), reciveMember.getId(), "memberReply");
+
+        ExecutorService executorService = Executors.newFixedThreadPool(20);
+        CountDownLatch latch = new CountDownLatch(10);
+
+        // when
+        for (int i = 0; i < 10; i++) {
+            executorService.submit(() -> {
+                sut.send(sendMember.getId(), request);
+                latch.countDown();
+            });
+        }
+        latch.await();
+
+        // then
+        List<Postcard> postcards = postcardRepository.findBySendMemberIdAndReceiveMemberId(sendMember.getId(), reciveMember.getId());
+        assertThat(postcards).hasSize(1);
+    }
+
+
     @Test
     void 문제를_맞추면_엽서를_보낼_수_있다() {
         //given
@@ -78,7 +125,7 @@ class PostcardServiceTest {
         SendPostcardRequest request = new SendPostcardRequest(quizAnswer, postcardType.getId(), reciveMember.getId(), "memberReply");
 
         //when
-        SendPostcardResponse response = postcardService.send(sendMember.getId(), request);
+        SendPostcardResponse response = sut.send(sendMember.getId(), request);
 
         //then
         assertThat(response.getIsSendSuccess()).isTrue();
@@ -100,7 +147,7 @@ class PostcardServiceTest {
         SendPostcardRequest request = new SendPostcardRequest(quizAnswer, postcardType.getId(), reciveMember.getId(), "memberReply");
 
         //when
-        SendPostcardResponse response = postcardService.send(sendMember.getId(), request);
+        SendPostcardResponse response = sut.send(sendMember.getId(), request);
 
         //then
         assertThat(response.getIsSendSuccess()).isFalse();
@@ -118,7 +165,7 @@ class PostcardServiceTest {
                 .build());
 
         // when, then
-        assertThatThrownBy(() -> postcardService.validateSendPostcard(blockedMember.getId(), blockerMember.getId()))
+        assertThatThrownBy(() -> sut.validateSendPostcard(blockedMember.getId(), blockerMember.getId()))
                 .isInstanceOf(BaseException.class)
                 .hasMessageContaining(PostcardExceptionType.BLOCKED.getMessage());
     }
@@ -137,7 +184,7 @@ class PostcardServiceTest {
                 .build());
 
         // when, then
-        assertThatThrownBy(() -> postcardService.validateSendPostcard(sendMember.getId(), reciveMember.getId()))
+        assertThatThrownBy(() -> sut.validateSendPostcard(sendMember.getId(), reciveMember.getId()))
                 .isInstanceOf(BaseException.class)
                 .hasMessageContaining(" 엽서가 존재합니다");
     }
@@ -149,7 +196,7 @@ class PostcardServiceTest {
         Member reciveMember = memberRepository.save(Member.builder().build());
 
         // when
-        PostcardSendValidateResponse response = postcardService.validateSendPostcard(sendMember.getId(), reciveMember.getId());
+        PostcardSendValidateResponse response = sut.validateSendPostcard(sendMember.getId(), reciveMember.getId());
 
         // then
         assertThat(response.getIsRefused()).isFalse();
@@ -168,7 +215,7 @@ class PostcardServiceTest {
                 .build());
 
         // when
-        PostcardSendValidateResponse response = postcardService.validateSendPostcard(sendMember.getId(), reciveMember.getId());
+        PostcardSendValidateResponse response = sut.validateSendPostcard(sendMember.getId(), reciveMember.getId());
 
         // then
         assertThat(response.getIsRefused()).isTrue();
