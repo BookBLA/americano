@@ -90,12 +90,11 @@ public class MemberProfileService {
                 });
     }
 
-    private void saveStudentIdVerify(Member member, String verifyDescription,
+    private void saveStudentIdVerify(Member member,
                                      String studentImageUrl) {
         memberVerifyRepository.deleteMemberPendingVerifies(member.getId(), STUDENT_ID);
         MemberVerify studentIdVerify = MemberVerify.builder()
                 .memberId(member.getId())
-                .description(verifyDescription)
                 .contents(studentImageUrl)
                 .verifyType(STUDENT_ID)
                 .build();
@@ -199,21 +198,9 @@ public class MemberProfileService {
         MemberProfile memberProfile = member.getMemberProfile();
 
         if (!memberProfile.getStudentIdImageUrl().equals(request.getStudentIdImageUrl())) {
-            String memberVerifyDescription = createMemberVerifyDescription(member, memberProfile);
-            saveStudentIdVerify(member, memberVerifyDescription, request.getStudentIdImageUrl());
+            saveStudentIdVerify(member, request.getStudentIdImageUrl());
             memberProfile.updateStudentIdImageStatus(StudentIdImageStatus.PENDING);
         }
-
-        memberProfile.updateStudentIdImageUrl(request.getStudentIdImageUrl());
-        memberProfile.updateStudentIdImageStatus(StudentIdImageStatus.PENDING);
-        memberRepository.save(member);
-    }
-
-    private String createMemberVerifyDescription(Member member, MemberProfile memberProfile) {
-        return "name: " + memberProfile.getName() +
-            ", schoolName: " + member.getSchool() +
-            ", birthDate: " + memberProfile.getBirthDate().format(DateTimeFormatter.BASIC_ISO_DATE) +
-            ", gender: " + memberProfile.getGender();
     }
 
     public MemberProfileStudentIdReadResponse readMemberProfileStudentIdStatus(Long memberId) {
