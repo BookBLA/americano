@@ -6,11 +6,11 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class MemberBookmarkResponse {
+public class MemberBookmarkAdmobResponse {
 
     private final int admobCount;
 
-    public static MemberBookmarkResponse from(MemberBookmark memberBookmark) {
-        return new MemberBookmarkResponse(memberBookmark.getAdmobCount());
+    public static MemberBookmarkAdmobResponse from(MemberBookmark memberBookmark) {
+        return new MemberBookmarkAdmobResponse(memberBookmark.getAdmobCount());
     }
 }

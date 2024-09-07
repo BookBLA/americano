@@ -8,7 +8,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProf
 import com.bookbla.americano.domain.member.controller.dto.request.MemberInformationUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStatusUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberBookmarkResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberBookmarkAdmobResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberDeleteResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberInformationReadResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
@@ -95,11 +95,20 @@ public class MemberController {
 
     @Operation(summary = "애드몹 시청", description = "애드몹 시청 종료 후 해당 API 호출")
     @PostMapping("/me/admob")
-    public ResponseEntity<MemberBookmarkResponse> watchAdmob(
+    public ResponseEntity<MemberBookmarkAdmobResponse> watchAdmob(
             @Parameter(hidden = true) @User LoginUser loginUser
     ) {
-        var memberBookmarkResponse = memberBookmarkService.updateBookmarkByAdmob(loginUser.getMemberId());
-        return ResponseEntity.ok(memberBookmarkResponse);
+        var memberBookmarkAdmobResponse = memberBookmarkService.updateBookmarkByAdmob(loginUser.getMemberId());
+        return ResponseEntity.ok(memberBookmarkAdmobResponse);
+    }
+
+    @Operation(summary = "애드몹 개수 조회", description = "잔여 애드몹 개수 조회")
+    @GetMapping("/me/admob")
+    public ResponseEntity<MemberBookmarkAdmobResponse> getAdmob(
+            @Parameter(hidden = true) @User LoginUser loginUser
+    ) {
+        var memberBookmarkAdmobResponse = memberBookmarkService.getMemberAdmob(loginUser.getMemberId());
+        return ResponseEntity.ok(memberBookmarkAdmobResponse);
     }
 
     @Operation(summary = "본인의 회원정보 수정")
