@@ -25,7 +25,6 @@ public class SchoolService {
 
         int currentMemberCounts = (int) memberRepository.countValidMembers(school.getId());
 
-        school.checkOpen(currentMemberCounts);
         return SchoolInvitationResponse.of(member, school, currentMemberCounts);
     }
 
