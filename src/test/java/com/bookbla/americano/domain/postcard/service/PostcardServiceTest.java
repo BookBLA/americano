@@ -63,7 +63,7 @@ class PostcardServiceTest {
     private QuizReplyRepository quizReplyRepository;
 
     @Test
-    void 문제를_맞추면_엽서를_보낼_수_있다() {
+    void 엽서를_보낼_수_있다() {
         //given
         Member sendMember = memberRepository.save(Member.builder().build());
         Member reciveMember = memberRepository.save(Member.builder().build());
@@ -71,11 +71,9 @@ class PostcardServiceTest {
                 .member(sendMember)
                 .bookmarkCount(100).build();
         bookmarkRepository.save(memberBookmark);
-        QuizQuestion quizQuestion = quizQuestionRepository.save(QuizQuestion.builder().firstChoice("answer").build());
         PostcardType postcardType = postcardTypeRepository.save(PostcardType.builder().build());
 
-        SendPostcardRequest.QuizAnswer quizAnswer = new SendPostcardRequest.QuizAnswer(quizQuestion.getId(), "answer");
-        SendPostcardRequest request = new SendPostcardRequest(quizAnswer, postcardType.getId(), reciveMember.getId(), "memberReply");
+        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), reciveMember.getId(), "memberReply");
 
         //when
         SendPostcardResponse response = postcardService.send(sendMember.getId(), request);
@@ -85,25 +83,22 @@ class PostcardServiceTest {
     }
 
     @Test
-    void 문제를_틀리면_엽서를_보낼_수_없다() {
+    void 북마크_개수가_부족하면_엽서를_보낼_수_없다() {
         //given
         Member sendMember = memberRepository.save(Member.builder().build());
         Member reciveMember = memberRepository.save(Member.builder().build());
         MemberBookmark memberBookmark = MemberBookmark.builder()
                 .member(sendMember)
-                .bookmarkCount(100).build();
+                .bookmarkCount(10).build();
         bookmarkRepository.save(memberBookmark);
-        QuizQuestion quizQuestion = quizQuestionRepository.save(QuizQuestion.builder().firstChoice("answer").build());
         PostcardType postcardType = postcardTypeRepository.save(PostcardType.builder().build());
 
-        SendPostcardRequest.QuizAnswer quizAnswer = new SendPostcardRequest.QuizAnswer(quizQuestion.getId(), "Wrong answer");
-        SendPostcardRequest request = new SendPostcardRequest(quizAnswer, postcardType.getId(), reciveMember.getId(), "memberReply");
+        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), reciveMember.getId(), "memberReply");
 
-        //when
-        SendPostcardResponse response = postcardService.send(sendMember.getId(), request);
-
-        //then
-        assertThat(response.getIsSendSuccess()).isFalse();
+        // when & then
+        assertThatThrownBy(() -> postcardService.send(sendMember.getId(), request))
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining("책갈피 개수가 부족합니다.");
     }
 
     @Test
