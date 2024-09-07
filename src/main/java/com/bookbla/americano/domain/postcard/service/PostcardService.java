@@ -1,12 +1,6 @@
 package com.bookbla.americano.domain.postcard.service;
 
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
@@ -36,13 +30,15 @@ import com.bookbla.americano.domain.postcard.service.dto.response.PostcardToResp
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardTypeResponse;
 import com.bookbla.americano.domain.postcard.service.dto.response.SendPostcardResponse;
 import com.bookbla.americano.domain.quiz.enums.CorrectStatus;
-import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
-import com.bookbla.americano.domain.quiz.repository.QuizReplyRepository;
-import com.bookbla.americano.domain.quiz.repository.entity.QuizQuestion;
-import com.bookbla.americano.domain.quiz.repository.entity.QuizReply;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -50,8 +46,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostcardService {
 
     private final PostcardRepository postcardRepository;
-    private final QuizReplyRepository quizReplyRepository;
-    private final QuizQuestionRepository quizQuestionRepository;
     private final MemberRepository memberRepository;
     private final PostcardTypeRepository postcardTypeRepository;
     private final MemberBookmarkRepository memberBookmarkRepository;
@@ -61,13 +55,6 @@ public class PostcardService {
     private final PushAlarmEventHandler postcardPushAlarmEventListener;
 
     public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
-        QuizQuestion quizQuestion = quizQuestionRepository.getByIdOrThrow(request.getQuizAnswer().getQuizId());
-        CorrectStatus isCorrect = quizQuestion.solve(request.getQuizAnswer().getQuizAnswer());
-
-        if (isCorrect == CorrectStatus.WRONG) {
-            return SendPostcardResponse.builder().isSendSuccess(false).build();
-        }
-
         MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
                         memberId)
                 .orElseThrow(
@@ -97,16 +84,6 @@ public class PostcardService {
                 .imageUrl(postCardType.getImageUrl())
                 .build();
         postcardRepository.save(postcard);
-
-        QuizReply quizReply = QuizReply.builder()
-                .quizQuestion(quizQuestion)
-                .answer(request.getQuizAnswer().getQuizAnswer())
-                .member(member)
-                .correctStatus(isCorrect)
-                .build();
-
-        quizReply.updatePostcard(postcard);
-        quizReplyRepository.save(quizReply);
 
         postcardPushAlarmEventListener.sendPostcard(new PostcardAlarmEvent(member, targetMember));
 
