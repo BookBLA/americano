@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.member.exception.MemberProfileException;
+import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 
 public enum OpenKakaoRoomStatus {
 
@@ -19,7 +19,7 @@ public enum OpenKakaoRoomStatus {
         return Arrays.stream(values())
                 .filter(it -> it.name().equalsIgnoreCase(name))
                 .findFirst()
-                .orElseThrow(() -> new BaseException(MemberProfileException.OKA_STATUS_NOT_VALID));
+                .orElseThrow(() -> new BaseException(MemberProfileExceptionType.OKA_STATUS_NOT_VALID));
     }
 
     public static List<String> getValues() {

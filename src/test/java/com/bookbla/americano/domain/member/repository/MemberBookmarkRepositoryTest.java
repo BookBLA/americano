@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-import static com.bookbla.americano.fixture.Fixture.MALE_MEMBER;
+import static com.bookbla.americano.fixture.Fixture.스타일_등록_완료_남성_고도리;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -41,7 +41,7 @@ class MemberBookmarkRepositoryTest {
         for (int i = 0; i < 100; i++) {
             sut.save(MemberBookmark.builder()
                     .admobCount(i)
-                    .member(memberRepository.save(MALE_MEMBER))
+                    .member(memberRepository.save(스타일_등록_완료_남성_고도리))
                     .build());
         }
     }

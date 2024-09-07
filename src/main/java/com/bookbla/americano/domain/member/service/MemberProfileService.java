@@ -18,7 +18,7 @@ import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
-import com.bookbla.americano.domain.member.exception.MemberProfileException;
+import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberEmailRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
@@ -31,7 +31,6 @@ import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
 import com.bookbla.americano.domain.member.service.dto.event.AdminNotificationEvent;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,7 +85,7 @@ public class MemberProfileService {
     private void validateDuplicateName(String nickname) {
         memberRepository.findByMemberProfileName(nickname)
                 .ifPresent(profile -> {
-                    throw new BaseException(MemberProfileException.ALREADY_EXISTS_NICKNAME);
+                    throw new BaseException(MemberProfileExceptionType.ALREADY_EXISTS_NICKNAME);
                 });
     }
 

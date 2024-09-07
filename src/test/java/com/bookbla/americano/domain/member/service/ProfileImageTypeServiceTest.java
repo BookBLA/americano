@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static com.bookbla.americano.domain.member.enums.Gender.FEMALE;
 import static com.bookbla.americano.domain.member.enums.Gender.MALE;
-import static com.bookbla.americano.fixture.Fixture.MALE_MEMBER;
+import static com.bookbla.americano.fixture.Fixture.스타일_등록_완료_남성_고도리;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 
@@ -45,7 +45,7 @@ class ProfileImageTypeServiceTest {
         // given
         profileImageTypeRepository.save(FEMALE_DEFAULT);
         profileImageTypeRepository.save(MALE_DEFAULT);
-        Member male = memberRepository.save(MALE_MEMBER);
+        Member male = memberRepository.save(스타일_등록_완료_남성_고도리);
 
         // when
         var response = sut.readMemberGenderProfileImageTypes(male.getId());
