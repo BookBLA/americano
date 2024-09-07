@@ -35,11 +35,11 @@ class MemberServiceTest {
         void 다른_이가_사용중인_닉네임으로_변경할_수_없다() {
             // given
             memberRepository.save(프로필_등록_완료_남성_리준희);
-            Member dohyeonKoh = memberRepository.save(스타일_등록_완료_남성_고도리);
+            Member 고도리 = memberRepository.save(스타일_등록_완료_남성_고도리);
             var request = new MemberInformationUpdateRequest("리준희", "istp", "가끔", 180);
 
             // when, then
-            assertThatThrownBy(() -> sut.updateMemberInformation(dohyeonKoh.getId(), request))
+            assertThatThrownBy(() -> sut.updateMemberInformation(고도리.getId(), request))
                     .isInstanceOf(BaseException.class)
                     .hasMessageContaining("이미 사용중인 닉네임입니다.");
         }
@@ -47,14 +47,14 @@ class MemberServiceTest {
         @Test
         void 본인이_사용중인_닉네임과_동일한_닉네임으로_변경하면_닉네임이_유지된다() {
             // given
-            Member dohyeonKoh = memberRepository.save(스타일_등록_완료_남성_고도리);
+            Member 고도리 = memberRepository.save(스타일_등록_완료_남성_고도리);
             var request = new MemberInformationUpdateRequest("고도리", "istp", "가끔", 180);
 
             // when
-            sut.updateMemberInformation(dohyeonKoh.getId(), request);
+            sut.updateMemberInformation(고도리.getId(), request);
 
             // then
-            assertThat(dohyeonKoh.getMemberProfile().getName()).isEqualTo("고도리");
+            assertThat(고도리.getMemberProfile().getName()).isEqualTo("고도리");
         }
 
     }
