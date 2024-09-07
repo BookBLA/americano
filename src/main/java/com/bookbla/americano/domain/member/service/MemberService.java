@@ -13,7 +13,7 @@ import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.SmokeType;
 import com.bookbla.americano.domain.member.exception.MemberBookmarkExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
-import com.bookbla.americano.domain.member.exception.MemberProfileException;
+import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
@@ -115,7 +115,7 @@ public class MemberService {
 
         memberRepository.findByMemberProfileName(name)
                 .ifPresent(profile -> {
-                    throw new BaseException(MemberProfileException.ALREADY_EXISTS_NICKNAME);
+                    throw new BaseException(MemberProfileExceptionType.ALREADY_EXISTS_NICKNAME);
                 });
     }
 
