@@ -93,6 +93,7 @@ public class PostcardService {
                 .sendMember(member)
                 .receiveMember(targetMember)
                 .postcardStatus(status)
+                .message(request.getMemberReply())
                 .postcardType(postCardType)
                 .imageUrl(postCardType.getImageUrl())
                 .build();

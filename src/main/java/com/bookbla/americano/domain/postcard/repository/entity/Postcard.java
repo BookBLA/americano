@@ -50,6 +50,8 @@ public class Postcard extends BaseEntity {
 
     private String imageUrl;
 
+    private String message;
+
     @Enumerated(EnumType.STRING)
     private PostcardStatus postcardStatus;
 
