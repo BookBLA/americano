@@ -1,12 +1,9 @@
 package com.bookbla.americano.domain.member.service;
 
-import static com.bookbla.americano.domain.member.enums.MemberVerifyType.OPEN_KAKAO_ROOM_URL;
-import static com.bookbla.americano.domain.member.enums.MemberVerifyType.PROFILE_IMAGE;
 import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT_ID;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileOpenKakaoRoomUrlUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileStudentIdImageUrlUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.BookProfileResponse;
