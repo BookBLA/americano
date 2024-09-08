@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.scheduler;
+package com.bookbla.americano.scheduler;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -15,14 +15,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.bookbla.americano.domain.scheduler.Crons.EVERY_0_AM;
-import static com.bookbla.americano.domain.scheduler.Crons.EVERY_4_AM;
+import static com.bookbla.americano.scheduler.Crons.*;
 
 @RequiredArgsConstructor
 @Transactional
 @Service
 @Slf4j
-public class SchedulerService {
+class ScheduleWorker {
 
     private static final String CLRF = "\n\n";
 
@@ -40,7 +39,7 @@ public class SchedulerService {
             memberEmailRepository.deleteMemberEmailSchedule(twoDaysAgo);
 
         } catch (Exception e) {
-            String txName = SchedulerService.class.getName() + "(deleteMemberEmailSchedule)";
+            String txName = ScheduleWorker.class.getName() + "(deleteMemberEmailSchedule)";
             String message = "임시 메일 테이블 초기화 작업이 실패하였습니다. 확인 부탁드립니다." + CLRF
                     + e.getMessage() + CLRF
                     + stackTraceToString(e);
@@ -48,7 +47,7 @@ public class SchedulerService {
             mailService.sendTransactionFailureEmail(txName, message);
             bookblaLogDiscord.sendMessage(message);
 
-            log.debug("Exception in {}", SchedulerService.class.getName());
+            log.debug("Exception in {}", ScheduleWorker.class.getName());
             log.error(e.toString());
             log.error(stackTraceToString(e));
         }
@@ -62,7 +61,7 @@ public class SchedulerService {
 
             memberRepository.deleteAllByDeletedAtBeforeAndMemberStatus(thirtyDaysAgo);
         } catch (Exception e) {
-            String txName = SchedulerService.class.getName() + "(deleteMemberSchedule)";
+            String txName = ScheduleWorker.class.getName() + "(deleteMemberSchedule)";
             String message = "멤버 테이블의 탈퇴한 멤버 삭제 작업이 실패하였습니다. 확인 부탁드립니다. " + CLRF
                     + e.getMessage() + CLRF
                     + stackTraceToString(e);
@@ -70,7 +69,7 @@ public class SchedulerService {
             mailService.sendTransactionFailureEmail(txName, message);
             bookblaLogDiscord.sendMessage(message);
 
-            log.debug("Exception in {}", SchedulerService.class.getName());
+            log.debug("Exception in {}", ScheduleWorker.class.getName());
             log.error(e.toString());
             log.error(stackTraceToString(e));
         }
@@ -81,7 +80,7 @@ public class SchedulerService {
         try {
             memberBookmarkRepository.resetAdmobCount(2);
         } catch (Exception e) {
-            String txName = SchedulerService.class.getName() + "(resetAdmobCount)";
+            String txName = ScheduleWorker.class.getName() + "(resetAdmobCount)";
             String message = "애드몹 시청 횟수 초기화 기능 실패  " + CLRF
                     + e.getMessage() + CLRF
                     + stackTraceToString(e);
@@ -89,7 +88,7 @@ public class SchedulerService {
             mailService.sendTransactionFailureEmail(txName, message);
             bookblaLogDiscord.sendMessage(message);
 
-            log.debug("Exception in {}", SchedulerService.class.getName());
+            log.debug("Exception in {}", ScheduleWorker.class.getName());
             log.error(e.toString());
             log.error(stackTraceToString(e));
         }
