@@ -45,9 +45,10 @@ public class InvitationService {
 
         Member invitingMember = memberRepository.findByInvitationCode(request.getInvitationCode())
                 .orElseThrow(() -> new BaseException(MemberExceptionType.INVITATION_CODE_NOT_FOUND));
+        Member invitedMember = memberRepository.getByIdOrThrow(invitedMemberId);
 
         Invitation invitation = invitationRepository.findByInvitedMemberId(invitedMemberId)
-                .orElseGet(() -> createInvitationWithInvitingMemberGender(invitedMemberId, invitingMember));
+                .orElseGet(() -> createInvitationWithInvitedMemberGender(invitedMember, invitingMember));
 
         return InvitationResponse.from(invitation);
     }
@@ -56,11 +57,11 @@ public class InvitationService {
         return FESTIVAL_TEMPORARY_INVITATION_CODE.equals(invitationCode);
     }
 
-    private Invitation createInvitationWithInvitingMemberGender(Long invitedMemberId, Member invitingMember) {
-        InvitationType invitationType = invitingMember.isWoman() ? WOMAN : MAN;
+    private Invitation createInvitationWithInvitedMemberGender(Member invitedMember, Member invitingMember) {
+        InvitationType invitationType = invitedMember.isWoman() ? WOMAN : MAN;
 
         Invitation invitation = Invitation.builder()
-                .invitedMemberId(invitedMemberId)
+                .invitedMemberId(invitedMember.getId())
                 .invitingMemberId(invitingMember.getId())
                 .invitationType(invitationType)
                 .build();
