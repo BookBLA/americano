@@ -58,5 +58,10 @@ public class Invitation extends BaseEntity {
     public boolean isFestivalTemporaryInvitation() {
         return FESTIVAL_TEMPORARY_INVITING_MEMBER_ID == invitingMemberId;
     }
+
+    public Invitation updateInvitationType(InvitationType invitationType) {
+        this.invitationType = invitationType;
+        return this;
+    }
 }
 

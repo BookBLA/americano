@@ -9,17 +9,16 @@ import com.bookbla.americano.domain.school.controller.dto.request.InvitationCode
 import com.bookbla.americano.domain.school.controller.dto.response.InvitationResponse;
 import com.bookbla.americano.domain.school.repository.InvitationRepository;
 import com.bookbla.americano.domain.school.repository.entity.Invitation;
+import com.bookbla.americano.domain.school.repository.entity.InvitationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.bookbla.americano.domain.school.repository.entity.Invitation.FESTIVAL_TEMPORARY_INVITING_MEMBER_ID;
-
 
 /*
-* 8. 15 도현님 요청
-* 축제용 임시 초대코드 발급
-* */
+ * 8. 15 도현님 요청
+ * 축제용 임시 초대코드 발급
+ * */
 @RequiredArgsConstructor
 @Transactional
 @Service
@@ -46,7 +45,7 @@ public class InvitationService {
                 .orElseThrow(() -> new BaseException(MemberExceptionType.INVITATION_CODE_NOT_FOUND));
 
         Invitation invitation = invitationRepository.findByInvitedMemberId(invitedMemberId)
-                .orElseGet(() -> invite(invitedMemberId, invitingMember));
+                .orElseGet(() -> createWithInvitingMemberGender(invitedMemberId, invitingMember));
 
         return InvitationResponse.from(invitation);
     }
@@ -55,11 +54,18 @@ public class InvitationService {
         return FESTIVAL_TEMPORARY_INVITATION_CODE.equals(invitationCode);
     }
 
-    private Invitation invite(Long invitedMemberId, Member invitingMember) {
+    private Invitation createWithInvitingMemberGender(Long invitedMemberId, Member invitingMember) {
         Invitation invitation = Invitation.builder()
                 .invitedMemberId(invitedMemberId)
                 .invitingMemberId(invitingMember.getId())
                 .build();
+
+        if (invitingMember.isWoman()) {
+            invitation.updateInvitationType(InvitationType.WOMAN);
+        } else {
+            invitation.updateInvitationType(InvitationType.MAN);
+        }
+
         return invitationRepository.save(invitation);
     }
 }
