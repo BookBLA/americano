@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.library.controller.dto;
+package com.bookbla.americano.view.library.controller.dto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class MemberLibraryProfileReadResponse {
+public class MyLibraryReadResponse {
 
     private final Long memberId;
     private final String name;
@@ -31,12 +31,12 @@ public class MemberLibraryProfileReadResponse {
 
     }
 
-    public static MemberLibraryProfileReadResponse ofPendingProfileImage(Member member, List<MemberBook> memberBooks, String pendingProfileImageUrl) {
+    public static MyLibraryReadResponse ofPendingProfileImage(Member member, List<MemberBook> memberBooks, String pendingProfileImageUrl) {
         List<BookResponse> bookResponses = memberBooks.stream()
                 .map(it -> new BookResponse(it.getId(), it.getBook().getImageUrl()))
                 .collect(Collectors.toList());
         MemberProfile memberProfile = member.getMemberProfile();
-        return new MemberLibraryProfileReadResponse(
+        return new MyLibraryReadResponse(
                 member.getId(),
                 memberProfile.getName(),
                 memberProfile.calculateAge(LocalDate.now()),
@@ -47,12 +47,12 @@ public class MemberLibraryProfileReadResponse {
         );
     }
 
-    public static MemberLibraryProfileReadResponse of(Member member, List<MemberBook> memberBooks) {
+    public static MyLibraryReadResponse of(Member member, List<MemberBook> memberBooks) {
         List<BookResponse> bookResponses = memberBooks.stream()
                 .map(it -> new BookResponse(it.getId(), it.getBook().getImageUrl()))
                 .collect(Collectors.toList());
         MemberProfile memberProfile = member.getMemberProfile();
-        return new MemberLibraryProfileReadResponse(
+        return new MyLibraryReadResponse(
                 member.getId(),
                 memberProfile.getName(),
                 memberProfile.calculateAge(LocalDate.now()),

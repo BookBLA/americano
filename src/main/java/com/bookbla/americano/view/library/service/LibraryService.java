@@ -1,9 +1,9 @@
-package com.bookbla.americano.domain.library.service;
+package com.bookbla.americano.view.library.service;
 
 import java.util.List;
 
-import com.bookbla.americano.domain.library.controller.dto.MemberLibraryProfileReadResponse;
-import com.bookbla.americano.domain.library.controller.dto.MemberTargetLibraryProfileReadResponse;
+import com.bookbla.americano.view.library.controller.dto.MyLibraryReadResponse;
+import com.bookbla.americano.view.library.controller.dto.OtherLibraryReadResponse;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
@@ -18,25 +18,25 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class MemberLibraryService {
+public class LibraryService {
 
     private final MemberRepository memberRepository;
     private final MemberVerifyRepository memberVerifyRepository;
     private final MemberBookRepository memberBookRepository;
     private final PostcardRepository postcardRepository;
 
-    public MemberLibraryProfileReadResponse getLibraryProfile(Long memberId) {
+    public MyLibraryReadResponse getLibraryProfile(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
 
         return memberVerifyRepository.findMemberPendingProfileImage(member.getId())
                 .stream()
                 .findFirst()
-                .map(image -> MemberLibraryProfileReadResponse.ofPendingProfileImage(member, memberBooks, image))
-                .orElseGet(() -> MemberLibraryProfileReadResponse.of(member, memberBooks));
+                .map(image -> MyLibraryReadResponse.ofPendingProfileImage(member, memberBooks, image))
+                .orElseGet(() -> MyLibraryReadResponse.of(member, memberBooks));
     }
 
-    public MemberTargetLibraryProfileReadResponse getTargetLibraryProfile(Long memberId, Long targetMemberId) {
+    public OtherLibraryReadResponse getTargetLibraryProfile(Long memberId, Long targetMemberId) {
         Member targetMember = memberRepository.getByIdOrThrow(targetMemberId);
         List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(targetMember);
 
@@ -48,6 +48,6 @@ public class MemberLibraryService {
             isMatched = true;
         }
 
-        return MemberTargetLibraryProfileReadResponse.of(targetMember, memberBooks, isMatched);
+        return OtherLibraryReadResponse.of(targetMember, memberBooks, isMatched);
     }
 }
