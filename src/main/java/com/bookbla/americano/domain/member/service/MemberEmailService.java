@@ -120,6 +120,9 @@ public class MemberEmailService {
 
         invitationEventListener.invitationBookmarkEvent(memberBookmark);
 
+        int currentMemberCounts = (int) memberRepository.countValidMembers(school.getId());
+        school.checkOpen(currentMemberCounts);
+
         redisUtil.deleteData(requestSchoolEmail);
         redisUtil.deleteData(redisVerifyCode);
         return EmailResponse.from(memberEmail);

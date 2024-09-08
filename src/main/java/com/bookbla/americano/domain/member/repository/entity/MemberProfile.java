@@ -5,7 +5,7 @@ import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
 import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
-import com.bookbla.americano.domain.member.exception.MemberProfileException;
+import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.vane.badwordfiltering.BadWordFiltering;
 import java.time.LocalDate;
 import java.time.Period;
@@ -91,7 +91,7 @@ public class MemberProfile {
         BadWordFiltering badWordFiltering = new BadWordFiltering();
 
         if (badWordFiltering.blankCheck(name)) {
-            throw new BaseException(MemberProfileException.CONTAIN_BAD_WORDS);
+            throw new BaseException(MemberProfileExceptionType.CONTAIN_BAD_WORDS);
         }
 
         this.name = name;

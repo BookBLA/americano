@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberInformationUpdateRequest;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberStatusUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberDeleteResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberInformationReadResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
@@ -14,6 +13,7 @@ import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.SmokeType;
 import com.bookbla.americano.domain.member.exception.MemberBookmarkExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
+import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
@@ -94,6 +94,8 @@ public class MemberService {
     public void updateMemberInformation(Long memberId, MemberInformationUpdateRequest request) {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
+        validateName(member, request.getName());
+
         MemberProfile memberProfile = member.getMemberProfile();
         memberProfile.updateName(request.getName());
 
@@ -104,6 +106,17 @@ public class MemberService {
                 .smokeType(SmokeType.from(request.getSmokeType()))
                 .height(request.getHeight())
                 .build());
+    }
+
+    private void validateName(Member member, String name) {
+        if (name.equals(member.getMemberProfile().getName())) {
+            return;
+        }
+
+        memberRepository.findByMemberProfileName(name)
+                .ifPresent(profile -> {
+                    throw new BaseException(MemberProfileExceptionType.ALREADY_EXISTS_NICKNAME);
+                });
     }
 
     @Transactional(readOnly = true)
