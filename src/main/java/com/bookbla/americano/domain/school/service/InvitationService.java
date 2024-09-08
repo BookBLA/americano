@@ -38,20 +38,17 @@ public class InvitationService {
 
     public InvitationResponse entryInvitationCode(Long invitedMemberId, InvitationCodeEntryRequest request) {
         if (isFestivalTemporaryInvitationCode(request.getInvitationCode())) {
-            invitationRepository.save(Invitation.builder()
-                    .invitedMemberId(invitedMemberId)
-                    .invitingMemberId(FESTIVAL_TEMPORARY_INVITING_MEMBER_ID)
-                    .build());
-            return InvitationResponse.createFestivalTemporaryInvitationCode();
+            Invitation invitation = invitationRepository.save(Invitation.fromTempFestival(invitedMemberId));
+            return InvitationResponse.from(invitation);
         }
 
         Member invitingMember = memberRepository.findByInvitationCode(request.getInvitationCode())
                 .orElseThrow(() -> new BaseException(MemberExceptionType.INVITATION_CODE_NOT_FOUND));
 
-        invitationRepository.findByInvitedMemberId(invitedMemberId)
+        Invitation invitation = invitationRepository.findByInvitedMemberId(invitedMemberId)
                 .orElseGet(() -> invite(invitedMemberId, invitingMember));
 
-        return InvitationResponse.from(invitingMember);
+        return InvitationResponse.from(invitation);
     }
 
     private boolean isFestivalTemporaryInvitationCode(String invitationCode) {

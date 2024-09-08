@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.school.controller.dto.response;
 
-import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.school.repository.entity.Invitation;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -8,15 +8,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class InvitationResponse {
 
-    private final String invitingMemberGender;
+    private final String invitationType;
 
-    public static InvitationResponse from(Member invitingMember) {
-        return new InvitationResponse(
-                invitingMember.getMemberProfile().getGenderName()
-        );
-    }
-
-    public static InvitationResponse createFestivalTemporaryInvitationCode() {
-        return new InvitationResponse("축제 임시 코드입니다");
+    public static InvitationResponse from(Invitation invitation) {
+        return new InvitationResponse(invitation.getInvitationType().name());
     }
 }

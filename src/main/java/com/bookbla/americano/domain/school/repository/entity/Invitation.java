@@ -36,6 +36,17 @@ public class Invitation extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private InvitationStatus invitationStatus = PENDING;
 
+    @Enumerated(EnumType.STRING)
+    private InvitationType invitationType;
+
+    public static Invitation fromTempFestival(Long invitedMemberId) {
+        return Invitation.builder()
+                .invitedMemberId(invitedMemberId)
+                .invitingMemberId(FESTIVAL_TEMPORARY_INVITING_MEMBER_ID)
+                .invitationType(InvitationType.FESTIVAL)
+                .build();
+    }
+
     public void bookmark() {
         this.invitationStatus = BOOKMARK;
     }
