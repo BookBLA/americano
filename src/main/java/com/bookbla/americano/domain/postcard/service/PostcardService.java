@@ -2,10 +2,8 @@ package com.bookbla.americano.domain.postcard.service;
 
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
@@ -22,7 +20,6 @@ import com.bookbla.americano.domain.notification.event.PostcardAlarmEvent;
 import com.bookbla.americano.domain.notification.event.PushAlarmEventHandler;
 import com.bookbla.americano.domain.postcard.controller.dto.response.ContactInfoResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardFromResponse;
-import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardToResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
@@ -32,14 +29,11 @@ import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
 import com.bookbla.americano.domain.postcard.repository.entity.PostcardType;
 import com.bookbla.americano.domain.postcard.service.dto.request.SendPostcardRequest;
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardFromResponse;
-import com.bookbla.americano.domain.postcard.service.dto.response.PostcardToResponse;
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardTypeResponse;
 import com.bookbla.americano.domain.postcard.service.dto.response.SendPostcardResponse;
 import com.bookbla.americano.domain.quiz.enums.CorrectStatus;
 import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
-import com.bookbla.americano.domain.quiz.repository.QuizReplyRepository;
 import com.bookbla.americano.domain.quiz.repository.entity.QuizQuestion;
-import com.bookbla.americano.domain.quiz.repository.entity.QuizReply;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +44,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostcardService {
 
     private final PostcardRepository postcardRepository;
-    private final QuizReplyRepository quizReplyRepository;
     private final QuizQuestionRepository quizQuestionRepository;
     private final MemberRepository memberRepository;
     private final PostcardTypeRepository postcardTypeRepository;
@@ -99,27 +92,19 @@ public class PostcardService {
                 .build();
         postcardRepository.save(postcard);
 
-        QuizReply quizReply = QuizReply.builder()
-                .quizQuestion(quizQuestion)
-                .answer(request.getQuizAnswer().getQuizAnswer())
-                .member(member)
-                .correctStatus(isCorrect)
-                .build();
-
-        quizReply.updatePostcard(postcard);
-        quizReplyRepository.save(quizReply);
-
         postcardPushAlarmEventListener.sendPostcard(new PostcardAlarmEvent(member, targetMember));
 
         return SendPostcardResponse.builder().isSendSuccess(true).build();
     }
 
+    @Transactional(readOnly = true)
     public PostcardTypeResponse getPostcardTypeList() {
         List<PostcardType> postcardTypeList = postcardTypeRepository.findAll();
         return PostcardTypeResponse.of(postcardTypeList);
     }
 
     // 보낸 엽서
+    @Transactional(readOnly = true)
     public List<MemberPostcardFromResponse> getPostcardsFromMember(Long memberId) {
         List<PostcardFromResponse> postcardFromResponseList = postcardRepository.getPostcardsFromMember(
                 memberId);
@@ -143,66 +128,7 @@ public class PostcardService {
         return memberPostcardFromResponseList;
     }
 
-    // 받은 엽서
-    public List<MemberPostcardToResponse> getPostcardsToMember(Long memberId) {
-        List<PostcardToResponse> postcardToResponseList = postcardRepository.getPostcardsToMember(
-                memberId);
-        List<MemberPostcardToResponse> memberPostcardToResponseList = new ArrayList<>();
-        long now = -1;
-        MemberPostcardToResponse nowResponse = new MemberPostcardToResponse();
-        List<String> nowBookTitles = new ArrayList<>();
-        List<String> nowBookImageUrls = new ArrayList<>();
-        List<CorrectStatus> nowCorrectStatuses = new ArrayList<>();
-        int nowScore = 0;
-        for (PostcardToResponse i : postcardToResponseList) {
-            if (i.getMemberId() != now) {
-                if (now != -1) {
-                    nowResponse.setBookTitles(nowBookTitles);
-                    nowResponse.setBookImageUrls(nowBookImageUrls);
-                    nowResponse.setCorrectStatuses(nowCorrectStatuses);
-                    nowResponse.setQuizScore(nowScore);
-                    // 리스트에 추가
-                    memberPostcardToResponseList.add(nowResponse);
-                }
-                // 초기화
-                now = i.getMemberId();
-                nowResponse = new MemberPostcardToResponse(i);
-                nowBookTitles = new ArrayList<>();
-                nowBookImageUrls = new ArrayList<>();
-                nowCorrectStatuses = new ArrayList<>();
-                nowScore = 0;
-
-                // 책 퀴즈 정답 여부 저장
-                nowBookTitles.add(i.getBookTitle());
-                nowBookImageUrls.add(i.getBookImageUrl());
-                nowCorrectStatuses.add(i.getCorrectStatus());
-                if (i.getCorrectStatus().equals(CorrectStatus.CORRECT)) {
-                    nowScore++;
-                }
-            } else {
-                // 책 퀴즈 정답 여부 저장
-                nowBookTitles.add(i.getBookTitle());
-                nowBookImageUrls.add(i.getBookImageUrl());
-                nowCorrectStatuses.add(i.getCorrectStatus());
-                if (i.getCorrectStatus().equals(CorrectStatus.CORRECT)) {
-                    nowScore++;
-                }
-            }
-        }
-        if (!nowBookTitles.isEmpty()) {
-            nowResponse.setBookTitles(nowBookTitles);
-            nowResponse.setBookImageUrls(nowBookImageUrls);
-            nowResponse.setCorrectStatuses(nowCorrectStatuses);
-            nowResponse.setQuizScore(nowScore);
-
-            // 리스트에 추가
-            memberPostcardToResponseList.add(nowResponse);
-        }
-        return memberPostcardToResponseList.stream()
-                .sorted(Comparator.comparing(MemberPostcardToResponse::getReceivedTime).reversed())
-                .collect(Collectors.toList());
-    }
-
+    @Transactional(readOnly = true)
     public void readMemberPostcard(Long memberId, Long postcardId) {
         Postcard postcard = postcardRepository.findById(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
@@ -223,6 +149,7 @@ public class PostcardService {
         updatePostcardStatus(memberId, postcardId, PostcardStatus.READ);
     }
 
+    @Transactional(readOnly = true)
     public PostcardStatus getPostcardStatus(Long postcardId) {
         Postcard postcard = postcardRepository.findById(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
@@ -265,6 +192,7 @@ public class PostcardService {
         return PostcardSendValidateResponse.from(isRefused);
     }
 
+    @Transactional(readOnly = true)
     public ContactInfoResponse getContactInfo(Long memberId, Long postcardId) {
         Postcard postcard = postcardRepository.findById(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
