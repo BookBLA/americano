@@ -44,7 +44,6 @@ public class AdminMemberReadResponses {
         private final String schoolEmail;
         private final String gender;
         private final String school;
-        private final String phone;
         private final String status;
 
         public static AdminMemberReadResponse from(Member member) {
@@ -59,7 +58,6 @@ public class AdminMemberReadResponses {
                         .schoolEmail(memberProfile.getSchoolEmail())
                         .gender(memberProfile.getGenderName())
                         .school(member.getSchool().getName())
-                        .phone(memberProfile.getPhoneNumber())
                         .status(member.getMemberStatus().name())
                         .build();
             }
@@ -73,7 +71,6 @@ public class AdminMemberReadResponses {
                     .schoolEmail(NOT_REGISTERED)
                     .gender(NOT_REGISTERED)
                     .school(NOT_REGISTERED)
-                    .phone(NOT_REGISTERED)
                     .build();
         }
     }

@@ -36,8 +36,7 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                         , postcard.receiveMember.memberProfile.birthDate.as("memberBirthDate")
                         , postcard.receiveMember.memberProfile.gender.as("memberGender")
                         , member.school.name.as("memberSchoolName")
-                        , postcard.receiveMember.memberProfile.profileImageUrl.as("memberProfileImageUrl")
-                        , postcard.receiveMember.memberProfile.openKakaoRoomUrl.as("memberOpenKakaoRoomUrl")
+                        , postcard.receiveMember.memberStyle.profileImageType.imageUrl.as("memberProfileImageUrl")
                         , postcard.id.as("postcardId")
                         , postcard.postcardStatus.as("postcardStatus"))
                 )
@@ -65,8 +64,7 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                         , postcard.sendMember.memberProfile.birthDate.as("memberBirthDate")
                         , postcard.sendMember.memberProfile.gender.as("memberGender")
                         , member.school.name.as("memberSchoolName")
-                        , postcard.sendMember.memberProfile.profileImageUrl.as("memberProfileImageUrl")
-                        , postcard.sendMember.memberProfile.openKakaoRoomUrl.as("memberKakaoRoomUrl")
+                        , postcard.sendMember.memberStyle.profileImageType.imageUrl.as("memberProfileImageUrl")
                         , postcard.sendMember.memberStyle.smokeType
                         , postcard.sendMember.memberStyle.mbti
                         , postcard.createdAt.as("receivedTime")

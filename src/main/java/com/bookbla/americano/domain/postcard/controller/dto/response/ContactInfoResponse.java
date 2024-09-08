@@ -27,8 +27,6 @@ public class ContactInfoResponse {
 
     private String memberSchoolName;
 
-    private String memberOpenKakaoRoomUrl;
-
     private List<String> bookImageUrls;
 
     public ContactInfoResponse(Member member, List<MemberBook> memberBooks) {
@@ -38,7 +36,6 @@ public class ContactInfoResponse {
         this.memberGender = member.getMemberProfile().getGender();
         this.memberProfileImageUrl = member.getMemberStyle().getProfileImageType().getImageUrl();
         this.memberSchoolName = member.getSchool().getName();
-        this.memberOpenKakaoRoomUrl = member.getMemberProfile().getOpenKakaoRoomUrl();
         List<String> imageUrls = new ArrayList<>();
         for (MemberBook i : memberBooks) {
             imageUrls.add(i.getBook().getImageUrl());

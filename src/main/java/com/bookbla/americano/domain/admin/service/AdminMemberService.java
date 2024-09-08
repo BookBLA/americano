@@ -7,8 +7,6 @@ import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberRea
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.MemberVerifyStatus;
-import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
-import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
@@ -42,8 +40,6 @@ public class AdminMemberService {
 
     public AdminMemberProfileStatusResponse readProfileStatuses() {
         return AdminMemberProfileStatusResponse.of(
-                ProfileImageStatus.getValues(),
-                OpenKakaoRoomStatus.getValues(),
                 StudentIdImageStatus.getValues(),
                 MemberVerifyStatus.getValues()
         );

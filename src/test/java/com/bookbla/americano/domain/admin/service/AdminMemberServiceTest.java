@@ -56,7 +56,6 @@ class AdminMemberServiceTest {
                 .oauthEmail("bookbla@bookbla.com")
                 .memberProfile(MemberProfile.builder()
                         .birthDate(LocalDate.of(1999, 3, 3))
-                        .phoneNumber("01012345678")
                         .gender(MALE)
                         .name("이준희")
                         .build()
@@ -67,7 +66,7 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(STYLE)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().birthDate(LocalDate.of(1999, 3, 3)).phoneNumber("01012345678")
+                .memberProfile(MemberProfile.builder().birthDate(LocalDate.of(1999, 3, 3))
                         .gender(MALE).name("이준희").build())
                 .build();
         memberRepository.saveAndFlush(member2);
@@ -76,7 +75,7 @@ class AdminMemberServiceTest {
                 .memberType(ADMIN)
                 .memberStatus(APPROVAL)
                 .oauthEmail("bookbla@bookbla.com")
-                .memberProfile(MemberProfile.builder().phoneNumber("01012345678").gender(MALE).name("이준희").build())
+                .memberProfile(MemberProfile.builder().gender(MALE).name("이준희").build())
                 .build();
         memberRepository.saveAndFlush(member3);
 
@@ -93,8 +92,7 @@ class AdminMemberServiceTest {
                 () -> assertThat(adminMemberReadResponse.getAuthEmail()).isEqualTo("bookbla@bookbla.com"),
                 () -> assertThat(adminMemberReadResponse.getName()).isEqualTo("이준희"),
                 () -> assertThat(adminMemberReadResponse.getGender()).isEqualToIgnoringCase("male"),
-                () -> assertThat(adminMemberReadResponse.getBirthDate()).isEqualTo(LocalDate.of(1999, 3, 3)),
-                () -> assertThat(adminMemberReadResponse.getPhone()).isEqualTo("01012345678")
+                () -> assertThat(adminMemberReadResponse.getBirthDate()).isEqualTo(LocalDate.of(1999, 3, 3))
         );
     }
 

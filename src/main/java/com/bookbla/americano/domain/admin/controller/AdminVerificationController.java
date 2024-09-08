@@ -1,11 +1,8 @@
 package com.bookbla.americano.domain.admin.controller;
 
 import com.bookbla.americano.domain.admin.controller.docs.AdminVerificationControllerDocs;
-import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberKakaoRoomStatusUpdateRequest;
-import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberProfileImageStatusUpdateRequest;
 import com.bookbla.americano.domain.admin.controller.dto.request.AdminMemberProfileStudentIdStatusUpdateRequest;
 import com.bookbla.americano.domain.admin.service.AdminVerificationService;
-import io.swagger.v3.oas.annotations.Operation;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -19,9 +19,6 @@ public class MemberLibraryProfileReadResponse {
     private final int age;
     private final String gender;
     private final String school;
-    private final String openKakaoRoomStatus;
-    private final String studentIdStatus;
-    private final String profileImageStatus;
     private final String profileImageUrl;
     private final List<BookResponse> bookResponses;
 
@@ -45,10 +42,7 @@ public class MemberLibraryProfileReadResponse {
                 memberProfile.calculateAge(LocalDate.now()),
                 memberProfile.getGender().name(),
                 member.getSchool().getName(),
-                memberProfile.getOpenKakaoRoomStatus().name(),
-                memberProfile.getStudentIdImageStatus().name(),
-                memberProfile.getProfileImageStatus().name(),
-                pendingProfileImageUrl,
+                member.getMemberStyle().getProfileImageType().getImageUrl(),
                 bookResponses
         );
     }
@@ -64,9 +58,6 @@ public class MemberLibraryProfileReadResponse {
                 memberProfile.calculateAge(LocalDate.now()),
                 memberProfile.getGender().name(),
                 member.getSchool().getName(),
-                memberProfile.getOpenKakaoRoomStatus().name(),
-                memberProfile.getStudentIdImageStatus().name(),
-                memberProfile.getProfileImageStatus().name(),
                 member.getMemberStyle().getProfileImageType().getImageUrl(),
                 bookResponses
         );

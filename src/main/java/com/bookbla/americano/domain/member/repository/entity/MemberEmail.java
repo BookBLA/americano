@@ -49,11 +49,6 @@ public class MemberEmail extends BaseEntity {
         return this;
     }
 
-    public MemberEmail updateEmailVerifyStatus(EmailVerifyStatus emailVerifyStatus) {
-        this.emailVerifyStatus = emailVerifyStatus;
-        return this;
-    }
-
     public MemberEmail updateEmailVerifyPending() {
         this.emailVerifyStatus = EmailVerifyStatus.PENDING;
         return this;

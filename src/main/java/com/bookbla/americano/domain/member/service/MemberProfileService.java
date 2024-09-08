@@ -101,28 +101,6 @@ public class MemberProfileService {
         memberVerifyRepository.save(studentIdVerify);
     }
 
-    private void saveProfileImageVerify(Member member, String imageUrl) {
-        memberVerifyRepository.deleteMemberPendingVerifies(member.getId(), PROFILE_IMAGE);
-        MemberVerify profileImageVerify = MemberVerify.builder()
-                .memberId(member.getId())
-                .contents(imageUrl)
-                .verifyType(PROFILE_IMAGE)
-                .build();
-        memberVerifyRepository.save(profileImageVerify);
-        eventPublisher.publishEvent(new AdminNotificationEvent(PROFILE_IMAGE.name(), member.getId().toString()));
-    }
-
-    private void saveKakaoRoomVerify(Member member, String kakaoRoomUrl) {
-        memberVerifyRepository.deleteMemberPendingVerifies(member.getId(), OPEN_KAKAO_ROOM_URL);
-        MemberVerify kakaoRoomVerify = MemberVerify.builder()
-                .memberId(member.getId())
-                .contents(kakaoRoomUrl)
-                .verifyType(OPEN_KAKAO_ROOM_URL)
-                .build();
-        memberVerifyRepository.save(kakaoRoomVerify);
-        eventPublisher.publishEvent(new AdminNotificationEvent(OPEN_KAKAO_ROOM_URL.name(), member.getId().toString()));
-    }
-
     @Transactional(readOnly = true)
     public MemberProfileResponse readMemberProfile(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
@@ -136,10 +114,6 @@ public class MemberProfileService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
 
-//        if (!memberProfile.getOpenKakaoRoomUrl().equals(request.getOpenKakaoRoomUrl())) {
-//            saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
-//            memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
-//        }
         validateDuplicateName(request.getName());
 
         update(member, memberProfile, request);
@@ -152,8 +126,7 @@ public class MemberProfileService {
         member.getMemberProfile().updateName(request.getName())
                 .updateBirthDate(request.getBirthDate())
                 .updateGender(request.getGender())
-                .updateSchoolEmail(request.getSchoolEmail())
-                .updatePhoneNumber(request.getPhoneNumber());
+                .updateSchoolEmail(request.getSchoolEmail());
         memberRepository.save(member);
     }
 
@@ -162,19 +135,6 @@ public class MemberProfileService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
         return MemberProfileStatusResponse.from(memberProfile);
-    }
-
-    public void updateMemberProfileKakaoRoom(
-            Long memberId, MemberProfileOpenKakaoRoomUrlUpdateRequest request
-    ) {
-        Member member = memberRepository.getByIdOrThrow(memberId);
-
-        saveKakaoRoomVerify(member, request.getOpenKakaoRoomUrl());
-
-        MemberProfile memberProfile = member.getMemberProfile();
-        memberProfile.updateOpenKakaoRoomUrl(request.getOpenKakaoRoomUrl());
-//        memberProfile.updateOpenKakaoRoomStatus(OpenKakaoRoomStatus.PENDING);
-        memberRepository.save(member);
     }
 
     @Transactional(readOnly = true)

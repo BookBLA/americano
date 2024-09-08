@@ -4,9 +4,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import com.bookbla.americano.domain.member.enums.Gender;
-import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
-import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
-import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,8 +22,6 @@ public class MemberProfileDto {
     private Gender gender;
     private String schoolName;
     private String schoolEmail;
-    private String phoneNumber;
-//    private String openKakaoRoomUrl;
 
     public MemberProfile toMemberProfile() {
         return MemberProfile.builder()
@@ -34,15 +29,6 @@ public class MemberProfileDto {
                 .birthDate(birthDate)
                 .gender(gender)
                 .schoolEmail(schoolEmail)
-                .phoneNumber(phoneNumber)
-//                .openKakaoRoomUrl(openKakaoRoomUrl)
-//                .openKakaoRoomStatus(OpenKakaoRoomStatus.DONE)
                 .build();
-    }
-
-    public String toMemberVerifyDescription() {
-        return "name: " + getName() +
-                ", birthDate: " + getBirthDate().format(DateTimeFormatter.BASIC_ISO_DATE) +
-                ", gender: " + gender.name();
     }
 }

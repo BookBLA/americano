@@ -1,7 +1,5 @@
 package com.bookbla.americano.domain.member.service.dto;
 
-import com.bookbla.americano.domain.member.enums.OpenKakaoRoomStatus;
-import com.bookbla.americano.domain.member.enums.ProfileImageStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,7 +13,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MemberProfileStatusDto {
 
-    private ProfileImageStatus profileImageStatus;
-    private OpenKakaoRoomStatus openKakaoRoomStatus;
     private StudentIdImageStatus studentIdImageStatus;
 }

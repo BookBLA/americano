@@ -29,12 +29,6 @@ public class MemberProfileCreateRequest {
     @NotNull(message = "학교 이메일이 입력되지 않았습니다.")
     private String schoolEmail;
 
-    @NotNull(message = "전화번호가 입력되지 않았습니다.")
-    private String phoneNumber;
-
-//    @NotNull(message = "카톡방 링크가 입력되지 않았습니다.")
-//    private String openKakaoRoomUrl;
-
     public LocalDate getBirthDate() {
         return LocalDate.parse(birthDate);
     }
@@ -50,8 +44,6 @@ public class MemberProfileCreateRequest {
             .gender(getGender())
             .schoolName(schoolName)
             .schoolEmail(schoolEmail)
-            .phoneNumber(phoneNumber)
-//            .openKakaoRoomUrl(openKakaoRoomUrl)
             .build();
     }
 

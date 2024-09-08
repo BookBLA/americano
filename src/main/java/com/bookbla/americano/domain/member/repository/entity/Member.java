@@ -49,8 +49,6 @@ public class Member extends BaseEntity {
 
     private String oauthEmail;
 
-    private String oauthProfileImageUrl;
-
     @Builder.Default
     private String invitationCode = "등록되지 않음";
 
@@ -88,15 +86,19 @@ public class Member extends BaseEntity {
     @Getter(AccessLevel.NONE)
     private MemberStyle memberStyle;
 
+    @Builder.Default
     @OneToMany(mappedBy = "blockerMember")
     private Set<MemberBlock> blockerMembers = new HashSet<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "blockedMember")
     private Set<MemberBlock> blockedMembers = new HashSet<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "reporterMember")
     private Set<MemberReport> reporterMembers = new HashSet<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "reportedMember")
     private Set<MemberReport> reportedMembers = new HashSet<>();
 
@@ -132,9 +134,7 @@ public class Member extends BaseEntity {
                 .updateName(memberProfile.getName())
                 .updateBirthDate(memberProfile.getBirthDate())
                 .updateGender(memberProfile.getGender())
-                .updateSchoolEmail(memberProfile.getSchoolEmail())
-                .updatePhoneNumber(memberProfile.getPhoneNumber());
-//                .updateOpenKakaoRoomUrl(memberProfile.getOpenKakaoRoomUrl());
+                .updateSchoolEmail(memberProfile.getSchoolEmail());
         return this;
     }
 

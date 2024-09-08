@@ -16,9 +16,7 @@ public class MemberProfileResponse {
     private String birthDate;
     private String schoolName;
     private String schoolEmail;
-    private String phoneNumber;
     private String gender;
-//    private String openKakaoRoomUrl;
 
     public static MemberProfileResponse from(Member member, MemberProfile memberProfile) {
         return MemberProfileResponse.builder()
@@ -27,9 +25,7 @@ public class MemberProfileResponse {
                 .birthDate(memberProfile.getBirthDate().toString())
                 .schoolName(member.getSchool().getName())
                 .schoolEmail(memberProfile.getSchoolEmail())
-                .phoneNumber(memberProfile.getPhoneNumber())
                 .gender(memberProfile.getGender().name())
-//                .openKakaoRoomUrl(memberProfile.getOpenKakaoRoomUrl())
                 .build();
     }
 }
