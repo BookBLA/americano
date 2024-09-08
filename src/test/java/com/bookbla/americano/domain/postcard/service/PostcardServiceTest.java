@@ -18,11 +18,7 @@ import com.bookbla.americano.domain.postcard.service.dto.request.SendPostcardReq
 import com.bookbla.americano.domain.postcard.service.dto.response.SendPostcardResponse;
 import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
 import com.bookbla.americano.domain.quiz.repository.QuizReplyRepository;
-import com.bookbla.americano.domain.quiz.repository.entity.QuizQuestion;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +58,13 @@ class PostcardServiceTest {
     @Autowired
     private QuizReplyRepository quizReplyRepository;
 
+    private PostcardType postcardType;
+
+    @BeforeEach
+    void setUp() {
+        postcardType = postcardTypeRepository.save(PostcardType.builder().build());
+    }
+
     @Test
     void 엽서를_보낼_수_있다() {
         //given
@@ -71,7 +74,6 @@ class PostcardServiceTest {
                 .member(sendMember)
                 .bookmarkCount(100).build();
         bookmarkRepository.save(memberBookmark);
-        PostcardType postcardType = postcardTypeRepository.save(PostcardType.builder().build());
 
         SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), reciveMember.getId(), "memberReply");
 
@@ -91,7 +93,6 @@ class PostcardServiceTest {
                 .member(sendMember)
                 .bookmarkCount(10).build();
         bookmarkRepository.save(memberBookmark);
-        PostcardType postcardType = postcardTypeRepository.save(PostcardType.builder().build());
 
         SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), reciveMember.getId(), "memberReply");
 
