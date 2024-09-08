@@ -1,4 +1,4 @@
-package com.bookbla.americano.base.interceptor;
+package com.bookbla.americano.domain.admin.controller;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.admin.excpetion.AdminExceptionType;
