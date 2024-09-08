@@ -55,13 +55,21 @@ public class Invitation extends BaseEntity {
         this.invitationStatus = COMPLETED;
     }
 
-    public boolean isFestivalTemporaryInvitation() {
-        return FESTIVAL_TEMPORARY_INVITING_MEMBER_ID == invitingMemberId;
-    }
-
     public Invitation updateInvitationType(InvitationType invitationType) {
         this.invitationType = invitationType;
         return this;
+    }
+
+    public boolean isFestivalTemporaryInvitation() {
+        return this.invitationType == InvitationType.FESTIVAL;
+    }
+
+    public boolean isWomanInvitation() {
+        return this.invitationType == InvitationType.WOMAN;
+    }
+
+    public boolean isManInvitation() {
+        return this.invitationType == InvitationType.MAN;
     }
 }
 

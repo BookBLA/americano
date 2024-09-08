@@ -1,9 +1,8 @@
 package com.bookbla.americano.domain.school.event;
 
 import com.bookbla.americano.domain.admin.event.AdminNotificationEventListener;
+import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
-import com.bookbla.americano.domain.member.repository.MemberRepository;
-import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.member.service.dto.event.AdminNotificationEvent;
 import com.bookbla.americano.domain.notification.event.PushAlarmEventHandler;
@@ -15,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import static com.bookbla.americano.domain.member.enums.Gender.*;
+
 @RequiredArgsConstructor
 @Component
 public class InvitationEventListener {
@@ -22,7 +23,6 @@ public class InvitationEventListener {
     private final PushAlarmEventHandler pushAlarmEventHandler;
     private final AdminNotificationEventListener adminNotificationEventListener;
     private final MemberBookmarkRepository memberBookmarkRepository;
-    private final MemberRepository memberRepository;
     private final InvitationRepository invitationRepository;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -35,49 +35,49 @@ public class InvitationEventListener {
 
     private void processInvitation(Invitation invitation, MemberBookmark invitedMemberBookmark) {
         if (invitation.isFestivalTemporaryInvitation()) {
-            invitedMemberBookmark.addBookmark(105);
-            adminNotificationEventListener.sendMessage(new AdminNotificationEvent("[축제 코드 입력 +1]", "memberId " + invitation.getInvitedMemberId()));
-            invitation.bookmark();
+            handleFestivalTemporaryInvitation(invitation, invitedMemberBookmark);
             return;
         }
 
-        Member invitedMember = memberRepository.getByIdOrThrow(invitation.getInvitedMemberId());
-
-        if (invitedMember.isWoman()) {
-            handleWomanInvitation(invitation, invitedMemberBookmark);
-            return;
-        }
-        if (invitedMember.isMan()){
-            handleManInvitation(invitation, invitedMemberBookmark);
-            return;
-        }
-
-        invitation.complete();
+        memberBookmarkRepository.findMemberBookmarkByMemberId(invitation.getInvitingMemberId())
+                .ifPresentOrElse(
+                        invitingMemberBookmark -> handleInvitationsByGender(invitation, invitedMemberBookmark, invitingMemberBookmark),
+                        invitation::complete);
     }
 
-    private void handleWomanInvitation(Invitation invitation, MemberBookmark invitedMemberBookmark) {
-        memberBookmarkRepository.findMemberBookmarkByMemberId(invitation.getInvitingMemberId())
-                .ifPresent(invitingMemberBookmark -> addWomanBookmark(invitedMemberBookmark, invitingMemberBookmark));
+    private void handleFestivalTemporaryInvitation(Invitation invitation, MemberBookmark invitedMemberBookmark) {
+        invitedMemberBookmark.addBookmark(105);
+        adminNotificationEventListener.sendMessage(new AdminNotificationEvent("[축제 코드 입력 +1]", "memberId " + invitation.getInvitedMemberId()));
         invitation.bookmark();
     }
 
-    private void addWomanBookmark(MemberBookmark invitedmemberBookmark, MemberBookmark invitingMemberBookmark) {
-        invitedmemberBookmark.addWomanInvitationBookmark();
-        invitingMemberBookmark.addWomanInvitationBookmark();
-
-        pushAlarmEventHandler.sendInvitationSuccessMessage(invitingMemberBookmark.getMember());
-    }
-
-    private void handleManInvitation(Invitation invitation, MemberBookmark invitedMemberBookmark) {
-        memberBookmarkRepository.findMemberBookmarkByMemberId(invitation.getInvitingMemberId())
-                .ifPresent(invitingMemberBookmark -> addManBookmark(invitedMemberBookmark, invitingMemberBookmark));
+    private void handleInvitationsByGender(
+            Invitation invitation,
+            MemberBookmark invitedMemberBookmark,
+            MemberBookmark invitingMemberBookmark
+    ) {
+        if (invitation.isWomanInvitation()) {
+            addGenderBookmark(invitedMemberBookmark, invitingMemberBookmark, FEMALE);
+        }
+        if (invitation.isManInvitation()) {
+            addGenderBookmark(invitedMemberBookmark, invitingMemberBookmark, MALE);
+        }
         invitation.bookmark();
     }
 
-    private void addManBookmark(MemberBookmark invitedmemberBookmark, MemberBookmark invitingMemberBookmark) {
-        invitedmemberBookmark.addManInvitationBookmark();
-        invitingMemberBookmark.addManInvitationBookmark();
-
+    private void addGenderBookmark(
+            MemberBookmark invitedMemberBookmark,
+            MemberBookmark invitingMemberBookmark,
+            Gender gender
+    ) {
+        if (gender == FEMALE) {
+            invitedMemberBookmark.addWomanInvitationBookmark();
+            invitingMemberBookmark.addWomanInvitationBookmark();
+        }
+        if (gender == MALE) {
+            invitedMemberBookmark.addManInvitationBookmark();
+            invitingMemberBookmark.addManInvitationBookmark();
+        }
         pushAlarmEventHandler.sendInvitationSuccessMessage(invitingMemberBookmark.getMember());
     }
 }
