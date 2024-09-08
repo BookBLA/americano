@@ -37,27 +37,46 @@ public class InvitationEventListener {
         if (invitation.isFestivalTemporaryInvitation()) {
             invitedMemberBookmark.addBookmark(105);
             adminNotificationEventListener.sendMessage(new AdminNotificationEvent("[축제 코드 입력 +1]", "memberId " + invitation.getInvitedMemberId()));
+            invitation.bookmark();
             return;
         }
 
         Member invitedMember = memberRepository.getByIdOrThrow(invitation.getInvitedMemberId());
+
         if (invitedMember.isWoman()) {
             handleWomanInvitation(invitation, invitedMemberBookmark);
-        } else {
-            invitation.complete();
+            return;
         }
+        if (invitedMember.isMan()){
+            handleManInvitation(invitation, invitedMemberBookmark);
+            return;
+        }
+
+        invitation.complete();
     }
 
     private void handleWomanInvitation(Invitation invitation, MemberBookmark invitedMemberBookmark) {
         memberBookmarkRepository.findMemberBookmarkByMemberId(invitation.getInvitingMemberId())
-                .ifPresent(invitingMemberBookmark -> addBookmark(invitedMemberBookmark, invitingMemberBookmark));
+                .ifPresent(invitingMemberBookmark -> addWomanBookmark(invitedMemberBookmark, invitingMemberBookmark));
         invitation.bookmark();
     }
 
+    private void addWomanBookmark(MemberBookmark invitedmemberBookmark, MemberBookmark invitingMemberBookmark) {
+        invitedmemberBookmark.addWomanInvitationBookmark();
+        invitingMemberBookmark.addWomanInvitationBookmark();
 
-    private void addBookmark(MemberBookmark invitedmemberBookmark, MemberBookmark invitingMemberBookmark) {
-        invitedmemberBookmark.addInvitationBookmark();
-        invitingMemberBookmark.addInvitationBookmark();
+        pushAlarmEventHandler.sendInvitationSuccessMessage(invitingMemberBookmark.getMember());
+    }
+
+    private void handleManInvitation(Invitation invitation, MemberBookmark invitedMemberBookmark) {
+        memberBookmarkRepository.findMemberBookmarkByMemberId(invitation.getInvitingMemberId())
+                .ifPresent(invitingMemberBookmark -> addManBookmark(invitedMemberBookmark, invitingMemberBookmark));
+        invitation.bookmark();
+    }
+
+    private void addManBookmark(MemberBookmark invitedmemberBookmark, MemberBookmark invitingMemberBookmark) {
+        invitedmemberBookmark.addManInvitationBookmark();
+        invitingMemberBookmark.addManInvitationBookmark();
 
         pushAlarmEventHandler.sendInvitationSuccessMessage(invitingMemberBookmark.getMember());
     }

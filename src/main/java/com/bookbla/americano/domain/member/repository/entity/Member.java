@@ -219,6 +219,10 @@ public class Member extends BaseEntity {
         return memberProfile.getGender() == Gender.FEMALE;
     }
 
+    public boolean isMan() {
+        return !isWoman();
+    }
+
     public boolean canChangeToComplete(MemberStatus afterStatus) {
         return memberStatus == MemberStatus.BOOK && afterStatus == MemberStatus.COMPLETED;
     }
