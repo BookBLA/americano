@@ -29,7 +29,7 @@ public class PushAlarmEventHandler {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
-    public void sendMessage(Member member) {
+    public void sendInvitationSuccessMessage(Member member) {
         alarmService.sendPushAlarm(member, PushAlarmForm.INVITATION_SUCCESS);
     }
 }

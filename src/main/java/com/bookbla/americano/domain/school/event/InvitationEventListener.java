@@ -59,6 +59,6 @@ public class InvitationEventListener {
         invitedmemberBookmark.addInvitationBookmark();
         invitingMemberBookmark.addInvitationBookmark();
 
-        pushAlarmEventHandler.sendMessage(invitingMemberBookmark.getMember());
+        pushAlarmEventHandler.sendInvitationSuccessMessage(invitingMemberBookmark.getMember());
     }
 }
