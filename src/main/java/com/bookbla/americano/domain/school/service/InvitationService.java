@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.bookbla.americano.domain.school.repository.entity.InvitationType.*;
+
 
 /*
  * 8. 15 도현님 요청
@@ -45,7 +47,7 @@ public class InvitationService {
                 .orElseThrow(() -> new BaseException(MemberExceptionType.INVITATION_CODE_NOT_FOUND));
 
         Invitation invitation = invitationRepository.findByInvitedMemberId(invitedMemberId)
-                .orElseGet(() -> createWithInvitingMemberGender(invitedMemberId, invitingMember));
+                .orElseGet(() -> createInvitationWithInvitingMemberGender(invitedMemberId, invitingMember));
 
         return InvitationResponse.from(invitation);
     }
@@ -54,17 +56,14 @@ public class InvitationService {
         return FESTIVAL_TEMPORARY_INVITATION_CODE.equals(invitationCode);
     }
 
-    private Invitation createWithInvitingMemberGender(Long invitedMemberId, Member invitingMember) {
+    private Invitation createInvitationWithInvitingMemberGender(Long invitedMemberId, Member invitingMember) {
+        InvitationType invitationType = invitingMember.isWoman() ? WOMAN : MAN;
+
         Invitation invitation = Invitation.builder()
                 .invitedMemberId(invitedMemberId)
                 .invitingMemberId(invitingMember.getId())
+                .invitationType(invitationType)
                 .build();
-
-        if (invitingMember.isWoman()) {
-            invitation.updateInvitationType(InvitationType.WOMAN);
-        } else {
-            invitation.updateInvitationType(InvitationType.MAN);
-        }
 
         return invitationRepository.save(invitation);
     }
