@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/quizzes")
@@ -27,7 +29,7 @@ public class QuizController {
 
     @PostMapping("/verify")
     public ResponseEntity<QuizQuestionVerifyResponse> verifyQuizQuestion(
-            @RequestBody QuizQuestionVerifyRequest quizQuestionVerifyRequest
+            @RequestBody @Valid QuizQuestionVerifyRequest quizQuestionVerifyRequest
     ) {
         return ResponseEntity.ok(quizQuestionService.verifyQuizQuestion(quizQuestionVerifyRequest));
     }
