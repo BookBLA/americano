@@ -54,8 +54,4 @@ public class MyLibraryReadResponse {
                 bookResponses
         );
     }
-
-    public static MyLibraryReadResponse ofPendingProfileImage(Member member, List<MemberBook> memberBooks, String pendingProfileImageUrl) {
-        return of(member, memberBooks);
-    }
 }
