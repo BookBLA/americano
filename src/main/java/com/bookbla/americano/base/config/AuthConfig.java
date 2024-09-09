@@ -2,8 +2,8 @@ package com.bookbla.americano.base.config;
 
 import java.util.List;
 
-import com.bookbla.americano.base.interceptor.AdminInterceptor;
-import com.bookbla.americano.base.interceptor.AuthInterceptor;
+import com.bookbla.americano.domain.admin.controller.AdminInterceptor;
+import com.bookbla.americano.base.jwt.AuthInterceptor;
 import com.bookbla.americano.base.resolver.AuthArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

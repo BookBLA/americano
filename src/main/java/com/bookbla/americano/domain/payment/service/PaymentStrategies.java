@@ -23,11 +23,7 @@ public class PaymentStrategies {
                 ));
     }
 
-    public PaymentStrategy get(PaymentType paymentType) {
-        return paymentStrategyMap.get(paymentType);
-    }
-
-    public PaymentStrategy get(String value) {
+    public PaymentStrategy find(String value) {
         PaymentType paymentType = PaymentType.from(value);
         return paymentStrategyMap.get(paymentType);
     }
