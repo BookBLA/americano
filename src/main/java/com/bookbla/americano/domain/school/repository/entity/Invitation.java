@@ -36,6 +36,17 @@ public class Invitation extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private InvitationStatus invitationStatus = PENDING;
 
+    @Enumerated(EnumType.STRING)
+    private InvitationType invitationType;
+
+    public static Invitation fromTempFestival(Long invitedMemberId) {
+        return Invitation.builder()
+                .invitedMemberId(invitedMemberId)
+                .invitingMemberId(FESTIVAL_TEMPORARY_INVITING_MEMBER_ID)
+                .invitationType(InvitationType.FESTIVAL)
+                .build();
+    }
+
     public void bookmark() {
         this.invitationStatus = BOOKMARK;
     }
@@ -44,8 +55,21 @@ public class Invitation extends BaseEntity {
         this.invitationStatus = COMPLETED;
     }
 
+    public Invitation updateInvitationType(InvitationType invitationType) {
+        this.invitationType = invitationType;
+        return this;
+    }
+
     public boolean isFestivalTemporaryInvitation() {
-        return FESTIVAL_TEMPORARY_INVITING_MEMBER_ID == invitingMemberId;
+        return this.invitationType == InvitationType.FESTIVAL;
+    }
+
+    public boolean isWomanInvitation() {
+        return this.invitationType == InvitationType.WOMAN;
+    }
+
+    public boolean isManInvitation() {
+        return this.invitationType == InvitationType.MAN;
     }
 }
 
