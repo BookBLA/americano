@@ -50,8 +50,12 @@ public class MemberBookmark extends BaseEntity {
         }
     }
 
-    public void addInvitationBookmark() {
+    public void addWomanInvitationBookmark() {
         bookmarkCount += 70;
+    }
+
+    public void addManInvitationBookmark() {
+        bookmarkCount += 35;
     }
 
     public void addBookmark(int count) {

@@ -1,10 +1,6 @@
 package com.bookbla.americano.domain.postcard.service;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
@@ -31,12 +27,13 @@ import com.bookbla.americano.domain.postcard.service.dto.request.SendPostcardReq
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardFromResponse;
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardTypeResponse;
 import com.bookbla.americano.domain.postcard.service.dto.response.SendPostcardResponse;
-import com.bookbla.americano.domain.quiz.enums.CorrectStatus;
-import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
-import com.bookbla.americano.domain.quiz.repository.entity.QuizQuestion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -44,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostcardService {
 
     private final PostcardRepository postcardRepository;
-    private final QuizQuestionRepository quizQuestionRepository;
     private final MemberRepository memberRepository;
     private final PostcardTypeRepository postcardTypeRepository;
     private final MemberBookmarkRepository memberBookmarkRepository;
@@ -54,13 +50,6 @@ public class PostcardService {
     private final PushAlarmEventHandler postcardPushAlarmEventListener;
 
     public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
-        QuizQuestion quizQuestion = quizQuestionRepository.getByIdOrThrow(request.getQuizAnswer().getQuizId());
-        CorrectStatus isCorrect = quizQuestion.solve(request.getQuizAnswer().getQuizAnswer());
-
-        if (isCorrect == CorrectStatus.WRONG) {
-            return SendPostcardResponse.builder().isSendSuccess(false).build();
-        }
-
         MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
                         memberId)
                 .orElseThrow(
@@ -97,14 +86,12 @@ public class PostcardService {
         return SendPostcardResponse.builder().isSendSuccess(true).build();
     }
 
-    @Transactional(readOnly = true)
     public PostcardTypeResponse getPostcardTypeList() {
         List<PostcardType> postcardTypeList = postcardTypeRepository.findAll();
         return PostcardTypeResponse.of(postcardTypeList);
     }
 
     // 보낸 엽서
-    @Transactional(readOnly = true)
     public List<MemberPostcardFromResponse> getPostcardsFromMember(Long memberId) {
         List<PostcardFromResponse> postcardFromResponseList = postcardRepository.getPostcardsFromMember(
                 memberId);
@@ -128,7 +115,6 @@ public class PostcardService {
         return memberPostcardFromResponseList;
     }
 
-    @Transactional(readOnly = true)
     public void readMemberPostcard(Long memberId, Long postcardId) {
         Postcard postcard = postcardRepository.findById(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
@@ -149,7 +135,6 @@ public class PostcardService {
         updatePostcardStatus(memberId, postcardId, PostcardStatus.READ);
     }
 
-    @Transactional(readOnly = true)
     public PostcardStatus getPostcardStatus(Long postcardId) {
         Postcard postcard = postcardRepository.findById(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
@@ -192,7 +177,6 @@ public class PostcardService {
         return PostcardSendValidateResponse.from(isRefused);
     }
 
-    @Transactional(readOnly = true)
     public ContactInfoResponse getContactInfo(Long memberId, Long postcardId) {
         Postcard postcard = postcardRepository.findById(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));

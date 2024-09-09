@@ -9,17 +9,18 @@ import com.bookbla.americano.domain.school.controller.dto.request.InvitationCode
 import com.bookbla.americano.domain.school.controller.dto.response.InvitationResponse;
 import com.bookbla.americano.domain.school.repository.InvitationRepository;
 import com.bookbla.americano.domain.school.repository.entity.Invitation;
+import com.bookbla.americano.domain.school.repository.entity.InvitationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.bookbla.americano.domain.school.repository.entity.Invitation.FESTIVAL_TEMPORARY_INVITING_MEMBER_ID;
+import static com.bookbla.americano.domain.school.repository.entity.InvitationType.*;
 
 
 /*
-* 8. 15 도현님 요청
-* 축제용 임시 초대코드 발급
-* */
+ * 8. 15 도현님 요청
+ * 축제용 임시 초대코드 발급
+ * */
 @RequiredArgsConstructor
 @Transactional
 @Service
@@ -38,31 +39,33 @@ public class InvitationService {
 
     public InvitationResponse entryInvitationCode(Long invitedMemberId, InvitationCodeEntryRequest request) {
         if (isFestivalTemporaryInvitationCode(request.getInvitationCode())) {
-            invitationRepository.save(Invitation.builder()
-                    .invitedMemberId(invitedMemberId)
-                    .invitingMemberId(FESTIVAL_TEMPORARY_INVITING_MEMBER_ID)
-                    .build());
-            return InvitationResponse.createFestivalTemporaryInvitationCode();
+            Invitation invitation = invitationRepository.save(Invitation.fromTempFestival(invitedMemberId));
+            return InvitationResponse.from(invitation);
         }
 
         Member invitingMember = memberRepository.findByInvitationCode(request.getInvitationCode())
                 .orElseThrow(() -> new BaseException(MemberExceptionType.INVITATION_CODE_NOT_FOUND));
+        Member invitedMember = memberRepository.getByIdOrThrow(invitedMemberId);
 
-        invitationRepository.findByInvitedMemberId(invitedMemberId)
-                .orElseGet(() -> invite(invitedMemberId, invitingMember));
+        Invitation invitation = invitationRepository.findByInvitedMemberId(invitedMemberId)
+                .orElseGet(() -> createInvitationWithInvitedMemberGender(invitedMember, invitingMember));
 
-        return InvitationResponse.from(invitingMember);
+        return InvitationResponse.from(invitation);
     }
 
     private boolean isFestivalTemporaryInvitationCode(String invitationCode) {
         return FESTIVAL_TEMPORARY_INVITATION_CODE.equals(invitationCode);
     }
 
-    private Invitation invite(Long invitedMemberId, Member invitingMember) {
+    private Invitation createInvitationWithInvitedMemberGender(Member invitedMember, Member invitingMember) {
+        InvitationType invitationType = invitedMember.isWoman() ? WOMAN : MAN;
+
         Invitation invitation = Invitation.builder()
-                .invitedMemberId(invitedMemberId)
+                .invitedMemberId(invitedMember.getId())
                 .invitingMemberId(invitingMember.getId())
+                .invitationType(invitationType)
                 .build();
+
         return invitationRepository.save(invitation);
     }
 }
