@@ -27,7 +27,7 @@ public class QuizController {
 
     @PostMapping("/verify")
     public ResponseEntity<QuizQuestionVerifyResponse> verifyQuizQuestion(
-            @RequestBody QuizQuestionVerifyRequest quizQuestionVerifyRequest
+            @RequestBody @Valid QuizQuestionVerifyRequest quizQuestionVerifyRequest
     ) {
         return ResponseEntity.ok(quizQuestionService.verifyQuizQuestion(quizQuestionVerifyRequest));
     }
