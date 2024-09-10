@@ -31,6 +31,7 @@ public enum MemberExceptionType implements ExceptionType {
     INVITATION_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "member_018", "유효하지 않은 초대코드입니다"),
     HEIGHT_NOT_FOUND(HttpStatus.NOT_FOUND, "member_019", "유효하지 않은 키 범위입니다."),
     PROFILE_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "member_020", "유효하지 프로필 사진 id입니다."),
+    ONBOARDING_NOT_VALID(HttpStatus.BAD_REQUEST, "member_021", "유효하지 않은 온보딩 상태입니다."),
     ;
 
     private final HttpStatus httpStatus;
