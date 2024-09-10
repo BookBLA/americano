@@ -1,38 +1,27 @@
 package com.bookbla.americano.domain.member.controller;
 
-import java.util.List;
-
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberInformationUpdateRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberOnboardingStatusRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStatusUpdateRequest;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberBookmarkAdmobResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberDeleteResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberInformationReadResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberStatusResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.*;
 import com.bookbla.americano.domain.member.service.MemberBookmarkService;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
 import com.bookbla.americano.domain.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/members")
@@ -62,6 +51,17 @@ public class MemberController {
     ) {
         MemberStatusResponse memberStatusResponse = memberService.updateStatus(loginUser.getMemberId(), memberStatusUpdateRequest.getMemberStatus());
         return ResponseEntity.ok(memberStatusResponse);
+    }
+
+    @Operation(summary = "사용자 온보딩 모달 상태 업데이트 API",
+            description = "사용자의 온보딩 상태를 업데이트<br>"
+                   + "memberOnboardingStatus : [HOME, LIBRARY]")
+    @PostMapping("/onboarding")
+    public ResponseEntity<MemberOnboardingStatusResponse> updateOnboardingStatus(
+            @Parameter(hidden = true) @User LoginUser loginUser,
+            @RequestBody @Valid MemberOnboardingStatusRequest memberOnboardingStatusRequest
+    ) {
+        return ResponseEntity.ok(memberService.updateMemberOnboarding(loginUser.getMemberId(), memberOnboardingStatusRequest.getOnboarding()));
     }
 
     @Operation(summary = "사용자 계정 탈퇴 API",
