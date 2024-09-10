@@ -1,21 +1,29 @@
 package com.bookbla.americano.scheduler;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.time.LocalDateTime;
-
+import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.log.discord.BookblaLogDiscord;
+import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberEmailRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
+import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.notification.service.MailService;
+import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
+import com.bookbla.americano.domain.postcard.repository.PostcardRepository;
+import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.bookbla.americano.scheduler.Crons.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static com.bookbla.americano.scheduler.Crons.EVERY_0_AM;
+import static com.bookbla.americano.scheduler.Crons.EVERY_4_AM;
 
 @RequiredArgsConstructor
 @Transactional
@@ -30,6 +38,7 @@ class ScheduleWorker {
     private final MailService mailService;
     private final BookblaLogDiscord bookblaLogDiscord;
     private final MemberBookmarkRepository memberBookmarkRepository;
+    private final PostcardRepository postcardRepository;
 
     @Scheduled(cron = EVERY_4_AM, zone = "Asia/Seoul")
     public void deleteMemberEmailSchedule() {
@@ -99,5 +108,33 @@ class ScheduleWorker {
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
         return sw.toString();
+    }
+
+    @Scheduled(cron = EVERY_0_AM, zone = "Asia/Seoul")
+    public void refuseExpiredPostcardSchedule() {
+        try {
+            List<Postcard> refusedPostcards = postcardRepository.refuseExpiredPostcard();
+            // TODO 환불 로직 확인
+            for (Postcard i : refusedPostcards) {
+                postcardRepository.updatePostcardStatus(PostcardStatus.REFUSED, i.getId());
+                MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
+                                i.getSendMember().getId())
+                        .orElseThrow(
+                                () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
+                memberBookmark.addBookmark(35);
+            }
+        } catch (Exception e) {
+            String txName = ScheduleWorker.class.getName() + "(removeExpiredPostcardSchedule)";
+            String message = "만료 된 엽서 삭제 작업이 실패하였습니다. 확인 부탁드립니다." + CLRF
+                    + e.getMessage() + CLRF
+                    + stackTraceToString(e);
+
+            mailService.sendTransactionFailureEmail(txName, message);
+            bookblaLogDiscord.sendMessage(message);
+
+            log.debug("Exception in {}", ScheduleWorker.class.getName());
+            log.error(e.toString());
+            log.error(stackTraceToString(e));
+        }
     }
 }
