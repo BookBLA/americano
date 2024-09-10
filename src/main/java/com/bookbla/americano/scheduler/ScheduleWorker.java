@@ -114,7 +114,6 @@ class ScheduleWorker {
     public void refuseExpiredPostcardSchedule() {
         try {
             List<Postcard> refusedPostcards = postcardRepository.refuseExpiredPostcard();
-            // TODO 환불 로직 확인
             for (Postcard i : refusedPostcards) {
                 postcardRepository.updatePostcardStatus(PostcardStatus.REFUSED, i.getId());
                 MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
