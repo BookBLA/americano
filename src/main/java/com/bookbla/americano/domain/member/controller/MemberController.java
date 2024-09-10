@@ -55,7 +55,7 @@ public class MemberController {
 
     @Operation(summary = "사용자 온보딩 모달 상태 업데이트 API",
             description = "사용자의 온보딩 상태를 업데이트<br>"
-                   + "memberOnboardingStatus : [HOME, STUDY]")
+                   + "memberOnboardingStatus : [HOME, LIBRARY]")
     @PostMapping("/onboarding")
     public ResponseEntity<MemberOnboardingStatusResponse> updateOnboardingStatus(
             @Parameter(hidden = true) @User LoginUser loginUser,
