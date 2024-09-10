@@ -30,6 +30,9 @@ public class MemberService {
     private final MemberStatusLogRepository memberStatusLogRepository;
     private final MemberBookmarkRepository memberBookmarkRepository;
 
+    private final static String HOME_ONBOARDING = "HOME";
+    private final static String LIBRARY_ONBOARDING = "LIBRARY";
+
     @Transactional(readOnly = true)
     public MemberResponse readMember(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
@@ -87,10 +90,10 @@ public class MemberService {
     public MemberOnboardingStatusResponse updateMemberOnboarding(Long memberId, String memberOnboarding) {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
-        if (memberOnboarding.equals("HOME")) {
+        if (memberOnboarding.equals(HOME_ONBOARDING)) {
             member.updateMemberHomeOnboarding();
             return MemberOnboardingStatusResponse.from(member.getMemberHomeOnboarding());
-        } else if (memberOnboarding.equals("LIBRARY")) {
+        } else if (memberOnboarding.equals(LIBRARY_ONBOARDING)) {
             member.updateMemberLibraryOnboarding();
             return MemberOnboardingStatusResponse.from(member.getMemberLibraryOnboarding());
         } else {
