@@ -29,11 +29,7 @@ public class LibraryService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
 
-        return memberVerifyRepository.findMemberPendingProfileImage(member.getId())
-                .stream()
-                .findFirst()
-                .map(image -> MyLibraryReadResponse.ofPendingProfileImage(member, memberBooks, image))
-                .orElseGet(() -> MyLibraryReadResponse.of(member, memberBooks));
+        return MyLibraryReadResponse.of(member, memberBooks);
     }
 
     public OtherLibraryReadResponse getTargetLibraryProfile(Long memberId, Long targetMemberId) {
