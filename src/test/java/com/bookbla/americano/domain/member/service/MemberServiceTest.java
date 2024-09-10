@@ -6,6 +6,8 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberOnboard
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -25,19 +27,15 @@ class MemberServiceTest {
     @Autowired
     private MemberService sut;
 
-    @Test
-    void 온모딩_상태를_변경할_수_있다() {
+    @ParameterizedTest
+    @ValueSource(strings = {"HOME", "LIBRARY"})
+    void 온보딩_상태를_변경할_수_있다(String value) {
         // given
-        Member home = memberRepository.save(Member.builder().build());
-        Member library = memberRepository.save(Member.builder().build());
-
+        Member member = memberRepository.save(Member.builder().build());
         // when
-        MemberOnboardingStatusResponse homeResponse = sut.updateMemberOnboarding(home.getId(), "HOME");
-        MemberOnboardingStatusResponse libraryResponse = sut.updateMemberOnboarding(library.getId(), "LIBRARY");
-
+        MemberOnboardingStatusResponse response = sut.updateMemberOnboarding(member.getId(), value);
         // then
-        assertThat(homeResponse.getOnboarding()).isTrue();
-        assertThat(libraryResponse.getOnboarding()).isTrue();
+        assertThat(response.getOnboarding()).isTrue();
     }
 
     @Test
