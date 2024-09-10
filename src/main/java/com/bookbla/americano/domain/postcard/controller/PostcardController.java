@@ -6,7 +6,6 @@ import com.bookbla.americano.domain.postcard.controller.dto.request.PostcardSend
 import com.bookbla.americano.domain.postcard.controller.dto.request.PostcardStatusUpdateRequest;
 import com.bookbla.americano.domain.postcard.controller.dto.response.ContactInfoResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardFromResponse;
-import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardToResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardStatusResponse;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
@@ -40,13 +39,6 @@ public class PostcardController {
     public ResponseEntity<List<MemberPostcardFromResponse>> readPostcardsFromMember(
             @Parameter(hidden = true) @User LoginUser loginUser) {
         return ResponseEntity.ok(postcardService.getPostcardsFromMember(loginUser.getMemberId()));
-    }
-
-    @Operation(summary = "받은 엽서 조회", description = "사용자가 받은 엽서 조회")
-    @GetMapping("/to")
-    public ResponseEntity<List<MemberPostcardToResponse>> readPostcardsToMember(
-            @Parameter(hidden = true) @User LoginUser loginUser) {
-        return ResponseEntity.ok(postcardService.getPostcardsToMember(loginUser.getMemberId()));
     }
 
     @Operation(summary = "엽서 읽기", description = "받은 엽서 조회를 위한 엽서 사용 및 엽서 상태 (READ)로 변경")

@@ -48,12 +48,4 @@ public enum MemberStatus {
                 .orElseThrow(() -> new BaseException(MemberExceptionType.MEMBER_STATUS_NOT_VALID));
     }
 
-    public boolean isApproved() {
-        return this != PROFILE && this != APPROVAL;
-    }
-
-    public boolean isMatchingDisabled() {
-        return this == MemberStatus.MATCHING_DISABLED;
-    }
-
 }

@@ -1,10 +1,8 @@
-package com.bookbla.americano.base.interceptor;
+package com.bookbla.americano.base.jwt;
 
 
 import com.bookbla.americano.base.exception.AuthExceptionType;
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.base.jwt.BearerTokenExtractor;
-import com.bookbla.americano.base.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;

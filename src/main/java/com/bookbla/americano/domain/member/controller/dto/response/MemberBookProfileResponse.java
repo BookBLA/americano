@@ -40,7 +40,6 @@ public class MemberBookProfileResponse {
     public MemberBookProfileResponse(BookProfileResponse bookProfileResponse) {
         this.memberId = bookProfileResponse.getMemberId();
         this.bookId = bookProfileResponse.getBookId();
-//        this.memberName = transformMemberName(bookProfileResponse.getMemberName());
         this.memberName = bookProfileResponse.getMemberName();
         this.memberAge = getAge(bookProfileResponse.getMemberBirthDate());
         this.memberGender = bookProfileResponse.getMemberGender();
@@ -52,13 +51,5 @@ public class MemberBookProfileResponse {
 
     private int getAge(LocalDate birthDay) {
         return Period.between(birthDay, LocalDate.now()).getYears();
-    }
-
-    private String transformMemberName(String name) {
-        if (name == null || name.isBlank())
-            return "";
-        char lastName = name.charAt(0);
-        return lastName +
-                "O".repeat(name.length() - 1);
     }
 }

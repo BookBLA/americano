@@ -1,14 +1,11 @@
 package com.bookbla.americano.domain.auth.infra.kakao;
 
-import com.bookbla.americano.base.config.KakaoConfig;
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.domain.auth.exception.KakaoExceptionType;
 import com.bookbla.americano.domain.auth.infra.kakao.dto.KakaoOAuth2MemberResponse;
 import com.bookbla.americano.domain.auth.service.OAuth2Provider;
 import com.bookbla.americano.domain.auth.infra.kakao.dto.KakaoMemberResponse;
 import com.bookbla.americano.domain.auth.infra.kakao.dto.KakaoTokenResponse;
-import com.bookbla.americano.domain.auth.service.dto.OAuth2MemberResponse;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;

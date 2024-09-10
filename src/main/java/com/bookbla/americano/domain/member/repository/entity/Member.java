@@ -34,8 +34,6 @@ public class Member extends BaseEntity {
 
     private String oauthEmail;
 
-    private String oauthProfileImageUrl;
-
     @Builder.Default
     private String invitationCode = "등록되지 않음";
 
@@ -141,9 +139,7 @@ public class Member extends BaseEntity {
                 .updateName(memberProfile.getName())
                 .updateBirthDate(memberProfile.getBirthDate())
                 .updateGender(memberProfile.getGender())
-                .updateSchoolEmail(memberProfile.getSchoolEmail())
-                .updatePhoneNumber(memberProfile.getPhoneNumber());
-//                .updateOpenKakaoRoomUrl(memberProfile.getOpenKakaoRoomUrl());
+                .updateSchoolEmail(memberProfile.getSchoolEmail());
         return this;
     }
 

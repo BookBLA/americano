@@ -3,7 +3,6 @@ package com.bookbla.americano.domain.member.controller;
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileCreateRequest;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileOpenKakaoRoomUrlUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileStudentIdImageUrlUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
@@ -16,7 +15,6 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -77,15 +75,6 @@ public class MemberProfileController {
             loginUser.getMemberId());
 
         return ResponseEntity.ok(memberProfileStatusResponse);
-    }
-
-    @PatchMapping("/members/me/profile/open-kakao-room")
-    public ResponseEntity<Void> updateMemberOpenKakaoRoom(
-        @Parameter(hidden = true) @User LoginUser loginUser,
-        @RequestBody @Valid MemberProfileOpenKakaoRoomUrlUpdateRequest request
-    ) {
-        memberProfileService.updateMemberProfileKakaoRoom(loginUser.getMemberId(), request);
-        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "사용자 학생증 이미지 저장 API")

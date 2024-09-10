@@ -17,7 +17,6 @@ import com.bookbla.americano.domain.postcard.repository.entity.PostcardType;
 import com.bookbla.americano.domain.postcard.service.dto.request.SendPostcardRequest;
 import com.bookbla.americano.domain.postcard.service.dto.response.SendPostcardResponse;
 import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
-import com.bookbla.americano.domain.quiz.repository.QuizReplyRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -54,9 +53,6 @@ class PostcardServiceTest {
 
     @Autowired
     private PostcardTypeRepository postcardTypeRepository;
-
-    @Autowired
-    private QuizReplyRepository quizReplyRepository;
 
     private PostcardType postcardType;
 
@@ -172,7 +168,6 @@ class PostcardServiceTest {
 
     @AfterEach
     void tearDown() {
-        quizReplyRepository.deleteAllInBatch();
         quizQuestionRepository.deleteAllInBatch();
         bookmarkRepository.deleteAllInBatch();
         postcardRepository.deleteAllInBatch();

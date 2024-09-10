@@ -31,24 +31,11 @@ public class MemberProfileUpdateRequest {
     @NotNull(message = "학교 이메일이 입력되지 않았습니다.")
     private String schoolEmail;
 
-    @NotNull(message = "전화번호가 입력되지 않았습니다.")
-    private String phoneNumber;
-
-//    @NotNull(message = "카톡방 링크가 입력되지 않았습니다.")
-//    private String openKakaoRoomUrl;
-
     public LocalDate getBirthDate() {
         return LocalDate.parse(birthDate);
     }
 
     public Gender getGender() {
         return Gender.from(gender);
-    }
-
-    public String toMemberVerifyDescription() {
-        return "name: " + getName() +
-                ", schoolName: " + getSchoolName() +
-                ", birthDate: " + getBirthDate().format(DateTimeFormatter.BASIC_ISO_DATE) +
-                ", gender: " + gender;
     }
 }

@@ -1,4 +1,4 @@
-package com.bookbla.americano.base.config;
+package com.bookbla.americano.domain.auth.infra.kakao;
 
 import lombok.Getter;
 import lombok.Setter;

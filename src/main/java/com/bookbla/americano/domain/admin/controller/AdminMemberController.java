@@ -1,8 +1,6 @@
 package com.bookbla.americano.domain.admin.controller;
 
 import com.bookbla.americano.domain.admin.controller.docs.AdminMemberControllerDocs;
-import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberKakaoRoomResponses;
-import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileImageResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberProfileStatusResponse;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberReadResponses;
 import com.bookbla.americano.domain.admin.controller.dto.response.AdminMemberStudentIdResponses;
