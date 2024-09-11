@@ -1,26 +1,20 @@
 package com.bookbla.americano.domain.member.repository.custom.impl;
 
 
-import java.util.List;
-
 import com.bookbla.americano.domain.book.repository.entity.QBook;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.response.BookProfileResponse;
-import com.bookbla.americano.domain.member.enums.Gender;
-import com.bookbla.americano.domain.member.enums.Mbti;
-import com.bookbla.americano.domain.member.enums.MemberStatus;
-import com.bookbla.americano.domain.member.enums.SmokeType;
+import com.bookbla.americano.domain.member.enums.*;
 import com.bookbla.americano.domain.member.repository.custom.MemberRepositoryCustom;
-import com.bookbla.americano.domain.member.repository.entity.QMember;
-import com.bookbla.americano.domain.member.repository.entity.QMemberBlock;
-import com.bookbla.americano.domain.member.repository.entity.QMemberBook;
-import com.bookbla.americano.domain.member.repository.entity.QMemberProfile;
-import com.bookbla.americano.domain.member.repository.entity.QMemberStyle;
+import com.bookbla.americano.domain.member.repository.entity.*;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Set;
 
 import static com.bookbla.americano.domain.school.repository.entity.QSchool.school;
 
@@ -29,6 +23,8 @@ import static com.bookbla.americano.domain.school.repository.entity.QSchool.scho
 public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+
+    private static final int MAX_RANDOM_MATCHING_COUNT = 10;
 
     @Override
     public List<BookProfileResponse> getAllMembers(Long memberId, MemberBookProfileRequestDto requestDto) {
@@ -78,6 +74,19 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                         .and(member.id.notIn(blockedByIds))
                 )
                 .orderBy(member.createdAt.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<Member> getRandomMembers(Gender gender, Set<Long> ignoredMemberIds) {
+        QMember member = QMember.member;
+
+        return queryFactory
+                .selectFrom(member)
+                .where(member.memberProfile.gender.ne(gender),
+                        member.memberProfile.studentIdImageStatus.eq(StudentIdImageStatus.DONE),
+                        member.id.notIn(ignoredMemberIds))
+                .limit(MAX_RANDOM_MATCHING_COUNT)
                 .fetch();
     }
 

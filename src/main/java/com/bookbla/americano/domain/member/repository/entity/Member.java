@@ -15,18 +15,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -101,6 +91,10 @@ public class Member extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "reportedMember")
     private Set<MemberReport> reportedMembers = new HashSet<>();
+
+    @Builder.Default
+    @ElementCollection(fetch = FetchType.LAZY)
+    private Set<Long> memberMatchIgnores = new HashSet<>();
 
     @Builder.Default
     private Integer reportedCount = 0; // 신고당한 횟수
