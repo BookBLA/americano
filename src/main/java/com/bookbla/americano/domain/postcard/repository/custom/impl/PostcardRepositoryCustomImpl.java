@@ -16,8 +16,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.bookbla.americano.domain.school.repository.entity.QSchool.school;
-
 @Repository
 @RequiredArgsConstructor
 public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
@@ -35,13 +33,12 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                         , postcard.receiveMember.memberProfile.birthDate.as("memberBirthDate")
                         , postcard.receiveMember.memberProfile.gender.as("memberGender")
                         , member.school.name.as("memberSchoolName")
-                        , postcard.receiveMember.memberStyle.profileImageType.imageUrl.as("memberProfileImageUrl")
+                        , member.memberStyle.profileImageType.imageUrl.as("memberProfileImageUrl")
                         , postcard.id.as("postcardId")
                         , postcard.postcardStatus.as("postcardStatus"))
                 )
-                .from(postcard)
-                .innerJoin(member).on(postcard.receiveMember.eq(member))
-                .innerJoin(school).on(member.school.eq(school))
+                .from(member)
+                .innerJoin(postcard).on(member.eq(postcard.receiveMember))
                 .where(postcard.sendMember.id.eq(memberId))
                 .orderBy(postcard.createdAt.desc())
                 .fetch();
@@ -72,7 +69,7 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                         .and(postcard.postcardStatus.eq(PostcardStatus.PENDING)
                                 .or(postcard.postcardStatus.eq(PostcardStatus.READ))
                                 .or(postcard.postcardStatus.eq(PostcardStatus.ACCEPT))))
-                .orderBy(postcard.sendMember.id.asc())
+                .orderBy(postcard.createdAt.desc())
                 .fetch();
     }
 

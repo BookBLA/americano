@@ -34,7 +34,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -124,12 +123,8 @@ public class PostcardService {
         List<PostcardToResponse> postcardToResponseList = postcardRepository.getPostcardsToMember(
                 memberId);
 
-        List<MemberPostcardToResponse> memberPostcardToResponseList = postcardToResponseList.stream()
+        return postcardToResponseList.stream()
                 .map(MemberPostcardToResponse::new)
-                .collect(Collectors.toList());
-
-        return memberPostcardToResponseList.stream()
-                .sorted(Comparator.comparing(MemberPostcardToResponse::getReceivedTime).reversed())
                 .collect(Collectors.toList());
     }
 
