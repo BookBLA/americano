@@ -64,6 +64,8 @@ public class Member extends BaseEntity {
 
     private LocalDateTime statusModifiedAt;
 
+    private LocalDateTime lastLoginAt;
+
     @Embedded
     @Getter(AccessLevel.NONE)
     private MemberProfile memberProfile;
@@ -117,6 +119,11 @@ public class Member extends BaseEntity {
 
     public Member updateDeleteAt(LocalDateTime deleteAt) {
         this.deleteAt = deleteAt;
+        return this;
+    }
+
+    public Member updateLastLoginAt() {
+        this.lastLoginAt = LocalDateTime.now();
         return this;
     }
 
