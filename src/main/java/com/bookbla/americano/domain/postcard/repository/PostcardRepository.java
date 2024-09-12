@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.postcard.repository;
 import java.util.List;
 import java.util.Optional;
 
+import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.custom.PostcardRepositoryCustom;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
@@ -23,4 +24,6 @@ public interface PostcardRepository extends JpaRepository<Postcard, Long>, Postc
     void updatePostcardStatus(@Param("status") PostcardStatus status, @Param("postcardId") Long postcardId);
 
     List<Postcard> findBySendMemberIdAndReceiveMemberId(@Param("sendMemberId") Long sendMemberId, @Param("receiveMemberId") Long receiveMemberId);
+
+    List<Postcard> findBySendMember(Member sendMember);
 }
