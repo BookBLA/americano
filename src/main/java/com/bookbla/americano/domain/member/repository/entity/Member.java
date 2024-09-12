@@ -10,19 +10,14 @@ import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.bookbla.americano.domain.member.exception.PolicyExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
 import com.bookbla.americano.domain.school.repository.entity.School;
+import lombok.*;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import javax.persistence.*;
-
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -59,6 +54,16 @@ public class Member extends BaseEntity {
     @Builder.Default
     @Enumerated(EnumType.STRING)
     private MemberStatus memberStatus = MemberStatus.PROFILE;
+
+    @Builder.Default
+    @Column(length = 1)
+    @Convert(converter = BooleanToYNConverter.class)
+    private Boolean memberHomeOnboarding = Boolean.FALSE;
+
+    @Builder.Default
+    @Column(length = 1)
+    @Convert(converter = BooleanToYNConverter.class)
+    private Boolean memberLibraryOnboarding = Boolean.FALSE;
 
     private LocalDateTime deleteAt;
 
@@ -114,6 +119,16 @@ public class Member extends BaseEntity {
     public Member updateMemberStatus(MemberStatus memberStatus, LocalDateTime statusModifiedAt) {
         this.memberStatus = memberStatus;
         this.statusModifiedAt = statusModifiedAt;
+        return this;
+    }
+
+    public Member updateMemberHomeOnboarding() {
+        this.memberHomeOnboarding = Boolean.TRUE;
+        return this;
+    }
+
+    public Member updateMemberLibraryOnboarding() {
+        this.memberLibraryOnboarding = Boolean.TRUE;
         return this;
     }
 
