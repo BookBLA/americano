@@ -80,19 +80,6 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
     }
 
     @Override
-    public List<Member> getRandomMembers(Gender gender, Set<Long> ignoredMemberIds) {
-        QMember member = QMember.member;
-
-        return queryFactory
-                .selectFrom(member)
-                .where(member.memberProfile.gender.ne(gender),
-                        member.memberProfile.studentIdImageStatus.eq(StudentIdImageStatus.DONE),
-                        member.id.notIn(ignoredMemberIds))
-                .limit(MAX_RANDOM_MATCHING_COUNT)
-                .fetch();
-    }
-
-    @Override
     public List<Member> getRecommendationMembers(Member member, MemberBook memberBook) {
         QMember qMember = QMember.member;
         QMemberStyle qMemberStyle = qMember.memberStyle;
@@ -110,18 +97,21 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
         return queryFactory
                 .selectFrom(qMember)
                 .where(
+                        /* 0. 자기 자신은 추천될 수 없다 */
+                        qMember.id.ne(member.getId()),
+
                         /* 1. 이성만 추천 */
                         qMember.memberProfile.gender.ne(gender),
 
                         /* 2. 마지막 로그인으로부터 14일 지나지 않은 사용자만 추천 */
                         qMember.lastLoginAt.after(fourteenDaysAgo),
 
-                        /* 2. 최초 가입 후 이틀이 지났다면 학생증이 인증된 상태만 추천 */
+                        /* 3. 최초 가입 후 이틀이 지났다면 학생증이 인증된 상태만 추천 */
                         ((qMember.createdAt.before(twoDaysAgo).or(qMember.createdAt.eq(twoDaysAgo))
                                 .and(qMemberVerify.verifyType.eq(MemberVerifyType.STUDENT_ID))
                                 .and(qMemberVerify.verifyStatus.eq(MemberVerifyStatus.SUCCESS)))),
 
-                        /* 3. 이틀이 지나지 않았다면 그 외 상태도 가능 */
+                        /* 4. 이틀이 지나지 않았다면 그 외 상태도 가능 */
                         ((qMember.createdAt.after(twoDaysAgo).or(qMember.createdAt.eq(twoDaysAgo))
                                 .and(qMemberVerify.verifyType.eq(MemberVerifyType.STUDENT_ID)
                                 .and(
@@ -130,8 +120,18 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                                         .or(qMemberVerify.verifyStatus.eq(MemberVerifyStatus.FAIL)))
                                 )))),
 
-                        /* 4. 이전에 사용자가 무시하기를 누르지 않은 사용자만 추천 */
+                        /* 5. 이전에 사용자가 무시하기를 누르지 않은 사용자만 추천 */
                         qMember.id.notIn(excludeMemberIds))
+                        /* 5-1. 다른 책의 경우는 나와도 됨 */
+                        /* 5-2. 독서 퀴즈를 틀렸을 경우 다른 책은 나와도 됨 */
+
+                        /* 6. 이미 매칭된 경우 뜨지 않아야 함 -> 다른 책 전부 안나와야 함*/
+                        /* -> 매칭된 경우 excludeMemberIds에 추가하기 */
+
+                        /* 7. 이미 매칭되었던(채팅방이 있었던 경우) 100일 뒤에 다시 나와야 함 */
+                        /* 8. 엽서를 보내고 대기중인 상태일 떄는 그 사람이 제외되어야 함 */
+                            /* 8-1. 엽서를 상대방이 거절한 경우 내 홈에서 2주 후에 다시 나와야 함 */
+
                 .orderBy(
                         new CaseBuilder()
 

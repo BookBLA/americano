@@ -47,8 +47,7 @@ public class MemberController {
     @GetMapping("/intro")
     public ResponseEntity<List<MemberIntroResponse>> readMemberIntro(
             @Parameter(hidden = true) @User LoginUser loginUser) {
-//        return ResponseEntity.ok(memberMatchingService.getRandomMatchingList(loginUser.getMemberId()));
-        return null;
+        return ResponseEntity.ok(memberMatchingService.getRecommendationList(loginUser.getMemberId()));
     }
 
     @Operation(summary = "멤버 상태 업데이트 API")
