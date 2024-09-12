@@ -9,10 +9,12 @@ import com.bookbla.americano.domain.member.repository.custom.MemberRepositoryCus
 import com.bookbla.americano.domain.member.repository.entity.*;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -86,6 +88,86 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .where(member.memberProfile.gender.ne(gender),
                         member.memberProfile.studentIdImageStatus.eq(StudentIdImageStatus.DONE),
                         member.id.notIn(ignoredMemberIds))
+                .limit(MAX_RANDOM_MATCHING_COUNT)
+                .fetch();
+    }
+
+    @Override
+    public List<Member> getRecommendationMembers(Member member, MemberBook memberBook) {
+        QMember qMember = QMember.member;
+        QMemberStyle qMemberStyle = qMember.memberStyle;
+        QBook qBook = QMemberBook.memberBook.book;
+        QMemberVerify qMemberVerify = QMemberVerify.memberVerify;
+
+        Gender gender = member.getMemberProfile().getGender();
+        String schoolName = member.getSchool().getName();
+        Set<Long> excludeMemberIds = member.getMemberMatchIgnores();
+        SmokeType smokeType = member.getMemberStyle().getSmokeType();
+
+        LocalDateTime twoDaysAgo = LocalDateTime.now().minusDays(2);
+        LocalDateTime fourteenDaysAgo = LocalDateTime.now().minusDays(14);
+
+        return queryFactory
+                .selectFrom(qMember)
+                .where(
+                        /* 1. 이성만 추천 */
+                        qMember.memberProfile.gender.ne(gender),
+
+                        /* 2. 마지막 로그인으로부터 14일 지나지 않은 사용자만 추천 */
+                        qMember.lastLoginAt.after(fourteenDaysAgo),
+
+                        /* 2. 최초 가입 후 이틀이 지났다면 학생증이 인증된 상태만 추천 */
+                        ((qMember.createdAt.before(twoDaysAgo).or(qMember.createdAt.eq(twoDaysAgo))
+                                .and(qMemberVerify.verifyType.eq(MemberVerifyType.STUDENT_ID))
+                                .and(qMemberVerify.verifyStatus.eq(MemberVerifyStatus.SUCCESS)))),
+
+                        /* 3. 이틀이 지나지 않았다면 그 외 상태도 가능 */
+                        ((qMember.createdAt.after(twoDaysAgo).or(qMember.createdAt.eq(twoDaysAgo))
+                                .and(qMemberVerify.verifyType.eq(MemberVerifyType.STUDENT_ID)
+                                .and(
+                                        qMemberVerify.verifyStatus.eq(MemberVerifyStatus.SUCCESS)
+                                        .or(qMemberVerify.verifyStatus.eq(MemberVerifyStatus.PENDING)
+                                        .or(qMemberVerify.verifyStatus.eq(MemberVerifyStatus.FAIL)))
+                                )))),
+
+                        /* 4. 이전에 사용자가 무시하기를 누르지 않은 사용자만 추천 */
+                        qMember.id.notIn(excludeMemberIds))
+                .orderBy(
+                        new CaseBuilder()
+
+                        /* 1. 같은 학교, 같은 책 */
+                        .when(qMember.school.name.eq(schoolName)
+                                .and(qBook.isbn.eq(memberBook.getBook().getIsbn())))
+                        .then(1)
+
+                        /* 2. 다른 학교, 같은 책 */
+                        .when(qMember.school.name.ne(schoolName)
+                                .and(qBook.isbn.eq(memberBook.getBook().getIsbn())))
+                        .then(2)
+
+                        /* 3. 같은 학교, 같은 작가 (대표 저자) */
+                        .when(qMember.school.name.eq(schoolName)
+                                .and(qBook.authors.get(0).eq(memberBook.getBook().getAuthors().get(0))))
+                        .then(3)
+
+                        /* 4. 다른 학교, 같은 작가 (대표 저자) */
+                        .when(qMember.school.name.ne(schoolName)
+                                .and(qBook.authors.get(0).eq(memberBook.getBook().getAuthors().get(0))))
+                        .then(4)
+
+                        /* 5. 같은 학교, 흡연 여부 동일 */
+                        .when(qMember.school.name.eq(schoolName)
+                                .and(qMemberStyle.smokeType.eq(smokeType)))
+                        .then(5)
+
+                        /* 6. 다른 학교, 흡연 여부 동일 */
+                        .when(qMember.school.name.ne(schoolName)
+                                .and(qMemberStyle.smokeType.eq(smokeType)))
+                        .then(6)
+
+                        .otherwise(7)
+                        .asc()
+                )
                 .limit(MAX_RANDOM_MATCHING_COUNT)
                 .fetch();
     }
