@@ -159,6 +159,8 @@ public class PostcardService {
             Member sendMember = postcard.getSendMember();
             Member receiveMember = postcard.getReceiveMember();
             postcardPushAlarmEventListener.acceptPostcard(new PostcardAlarmEvent(sendMember, receiveMember));
+        } else if (postcardStatus.isRefused()){ // 상태가 거절로 변경되면 상태변경시간 업데이트
+            postcard.updatePostcardStatusRefusedAt();
         }
     }
 

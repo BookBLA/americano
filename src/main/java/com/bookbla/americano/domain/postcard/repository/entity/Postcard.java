@@ -25,6 +25,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Builder
@@ -55,6 +57,8 @@ public class Postcard extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PostcardStatus postcardStatus;
 
+    private LocalDateTime postcardStatusRefusedAt;
+
     public void validateSendPostcard() {
         if (postcardStatus == READ) {
             throw new BaseException(PostcardExceptionType.PENDING_POSTCARD_EXISTS);
@@ -68,6 +72,10 @@ public class Postcard extends BaseEntity {
         if (postcardStatus == ALL_WRONG) {
             throw new BaseException(PostcardExceptionType.ALL_WRONG_POSTCARD_EXISTS);
         }
+    }
+
+    public void updatePostcardStatusRefusedAt() { // 일단 PostcardStatus.REFUSED 인 경우입니다.
+        this.postcardStatusRefusedAt = LocalDateTime.now();
     }
 
     public boolean isPending() {
