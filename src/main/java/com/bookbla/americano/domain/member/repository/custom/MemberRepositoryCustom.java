@@ -4,6 +4,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProf
 import com.bookbla.americano.domain.member.controller.dto.response.BookProfileResponse;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
+import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
 
 import java.util.List;
 
@@ -11,5 +12,5 @@ public interface MemberRepositoryCustom {
 
     List<BookProfileResponse> getAllMembers(Long memberId, MemberBookProfileRequestDto requestDto);
 
-    List<Member> getRecommendationMembers(Member member, MemberBook memberBook);
+    List<Member> getRecommendationMembers(Member member, MemberBook memberBook, List<Postcard> postcards);
 }

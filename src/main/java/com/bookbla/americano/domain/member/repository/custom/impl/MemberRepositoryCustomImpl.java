@@ -7,6 +7,9 @@ import com.bookbla.americano.domain.member.controller.dto.response.BookProfileRe
 import com.bookbla.americano.domain.member.enums.*;
 import com.bookbla.americano.domain.member.repository.custom.MemberRepositoryCustom;
 import com.bookbla.americano.domain.member.repository.entity.*;
+import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
+import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
+import com.bookbla.americano.domain.postcard.repository.entity.QPostcard;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.bookbla.americano.domain.school.repository.entity.QSchool.school;
 
@@ -80,11 +84,13 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
     }
 
     @Override
-    public List<Member> getRecommendationMembers(Member member, MemberBook memberBook) {
+    public List<Member> getRecommendationMembers(Member member, MemberBook memberBook, List<Postcard> postcards) {
         QMember qMember = QMember.member;
         QMemberStyle qMemberStyle = qMember.memberStyle;
         QBook qBook = QMemberBook.memberBook.book;
         QMemberVerify qMemberVerify = QMemberVerify.memberVerify;
+        QPostcard qPostcard = QPostcard.postcard;
+
 
         Gender gender = member.getMemberProfile().getGender();
         String schoolName = member.getSchool().getName();
@@ -93,6 +99,46 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
 
         LocalDateTime twoDaysAgo = LocalDateTime.now().minusDays(2);
         LocalDateTime fourteenDaysAgo = LocalDateTime.now().minusDays(14);
+
+        /* 6 조건 */
+        List<Long> receiveByIdsWithAccept = queryFactory
+                .select(qPostcard.receiveMember.id)
+                .from(qPostcard)
+                .where(
+                        qPostcard.sendMember.id.eq(member.getId()),
+                        qPostcard.postcardStatus.eq(PostcardStatus.ACCEPT)
+                )
+                .fetch();
+        /* 8 조건 */
+        List<Long> receiveByIdsWithPending = queryFactory
+                .select(qPostcard.receiveMember.id)
+                .from(qPostcard)
+                .where(
+                        qPostcard.sendMember.id.eq(member.getId()),
+                        qPostcard.postcardStatus.eq(PostcardStatus.PENDING)
+                )
+                .fetch();
+
+        /* 8-1 조건 */
+        // 거절한 날짜 + 14일 < 오늘 -> receiveMemberId 리턴
+        List<Long> recommendMemberId = postcards.stream()
+                .map(postcard -> {
+                    LocalDateTime fourteenDaysLaterRefuse = postcard.getPostcardStatusRefusedAt().plusDays(14);
+                    // fourteenDaysLaterRefuse가 now보다 이전인 경우 true를 반환
+                    return fourteenDaysLaterRefuse.isBefore(LocalDateTime.now()) ? postcard.getReceiveMember().getId() : null;
+                })
+                .filter(id -> id != null)
+                .collect(Collectors.toList());
+
+        List<Long> receiveByIdsWithRefused = queryFactory
+                .select(qPostcard.receiveMember.id)
+                .from(qPostcard)
+                .where(
+                        qPostcard.sendMember.id.eq(member.getId()),
+                        qPostcard.postcardStatus.eq(PostcardStatus.REFUSED),
+                        qPostcard.receiveMember.id.in(recommendMemberId)
+                )
+                .fetch();
 
         return queryFactory
                 .selectFrom(qMember)
@@ -114,59 +160,62 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                         /* 4. 이틀이 지나지 않았다면 그 외 상태도 가능 */
                         ((qMember.createdAt.after(twoDaysAgo).or(qMember.createdAt.eq(twoDaysAgo))
                                 .and(qMemberVerify.verifyType.eq(MemberVerifyType.STUDENT_ID)
-                                .and(
-                                        qMemberVerify.verifyStatus.eq(MemberVerifyStatus.SUCCESS)
-                                        .or(qMemberVerify.verifyStatus.eq(MemberVerifyStatus.PENDING)
-                                        .or(qMemberVerify.verifyStatus.eq(MemberVerifyStatus.FAIL)))
-                                )))),
+                                        .and(
+                                                qMemberVerify.verifyStatus.eq(MemberVerifyStatus.SUCCESS)
+                                                        .or(qMemberVerify.verifyStatus.eq(MemberVerifyStatus.PENDING)
+                                                                .or(qMemberVerify.verifyStatus.eq(MemberVerifyStatus.FAIL)))
+                                        )))),
 
                         /* 5. 이전에 사용자가 무시하기를 누르지 않은 사용자만 추천 */
-                        qMember.id.notIn(excludeMemberIds))
+                        qMember.id.notIn(excludeMemberIds),
                         /* 5-1. 다른 책의 경우는 나와도 됨 */
                         /* 5-2. 독서 퀴즈를 틀렸을 경우 다른 책은 나와도 됨 */
 
                         /* 6. 이미 매칭된 경우 뜨지 않아야 함 -> 다른 책 전부 안나와야 함*/
+                        qMember.id.notIn(receiveByIdsWithAccept),
                         /* -> 매칭된 경우 excludeMemberIds에 추가하기 */
 
                         /* 7. 이미 매칭되었던(채팅방이 있었던 경우) 100일 뒤에 다시 나와야 함 */
                         /* 8. 엽서를 보내고 대기중인 상태일 떄는 그 사람이 제외되어야 함 */
-                            /* 8-1. 엽서를 상대방이 거절한 경우 내 홈에서 2주 후에 다시 나와야 함 */
-
+                        qMember.id.notIn(receiveByIdsWithPending),
+                        /* 8-1. 엽서를 상대방이 거절한 경우 내 홈에서 2주 후에 다시 나와야 함 */
+                        qMember.id.in(receiveByIdsWithRefused)
+                )
                 .orderBy(
                         new CaseBuilder()
 
-                        /* 1. 같은 학교, 같은 책 */
-                        .when(qMember.school.name.eq(schoolName)
-                                .and(qBook.isbn.eq(memberBook.getBook().getIsbn())))
-                        .then(1)
+                                /* 1. 같은 학교, 같은 책 */
+                                .when(qMember.school.name.eq(schoolName)
+                                        .and(qBook.isbn.eq(memberBook.getBook().getIsbn())))
+                                .then(1)
 
-                        /* 2. 다른 학교, 같은 책 */
-                        .when(qMember.school.name.ne(schoolName)
-                                .and(qBook.isbn.eq(memberBook.getBook().getIsbn())))
-                        .then(2)
+                                /* 2. 다른 학교, 같은 책 */
+                                .when(qMember.school.name.ne(schoolName)
+                                        .and(qBook.isbn.eq(memberBook.getBook().getIsbn())))
+                                .then(2)
 
-                        /* 3. 같은 학교, 같은 작가 (대표 저자) */
-                        .when(qMember.school.name.eq(schoolName)
-                                .and(qBook.authors.get(0).eq(memberBook.getBook().getAuthors().get(0))))
-                        .then(3)
+                                /* 3. 같은 학교, 같은 작가 (대표 저자) */
+                                .when(qMember.school.name.eq(schoolName)
+                                        .and(qBook.authors.get(0).eq(memberBook.getBook().getAuthors().get(0))))
+                                .then(3)
 
-                        /* 4. 다른 학교, 같은 작가 (대표 저자) */
-                        .when(qMember.school.name.ne(schoolName)
-                                .and(qBook.authors.get(0).eq(memberBook.getBook().getAuthors().get(0))))
-                        .then(4)
+                                /* 4. 다른 학교, 같은 작가 (대표 저자) */
+                                .when(qMember.school.name.ne(schoolName)
+                                        .and(qBook.authors.get(0).eq(memberBook.getBook().getAuthors().get(0))))
+                                .then(4)
 
-                        /* 5. 같은 학교, 흡연 여부 동일 */
-                        .when(qMember.school.name.eq(schoolName)
-                                .and(qMemberStyle.smokeType.eq(smokeType)))
-                        .then(5)
+                                /* 5. 같은 학교, 흡연 여부 동일 */
+                                .when(qMember.school.name.eq(schoolName)
+                                        .and(qMemberStyle.smokeType.eq(smokeType)))
+                                .then(5)
 
-                        /* 6. 다른 학교, 흡연 여부 동일 */
-                        .when(qMember.school.name.ne(schoolName)
-                                .and(qMemberStyle.smokeType.eq(smokeType)))
-                        .then(6)
+                                /* 6. 다른 학교, 흡연 여부 동일 */
+                                .when(qMember.school.name.ne(schoolName)
+                                        .and(qMemberStyle.smokeType.eq(smokeType)))
+                                .then(6)
 
-                        .otherwise(7)
-                        .asc()
+                                .otherwise(7)
+                                .asc()
                 )
                 .limit(MAX_RANDOM_MATCHING_COUNT)
                 .fetch();
