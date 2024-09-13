@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.service;
 
 import com.bookbla.americano.domain.member.controller.dto.response.MemberIntroResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberRecommendationResponse;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -27,7 +28,9 @@ public class MemberMatchingService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
         List<Postcard> postcards = postcardRepository.findBySendMember(member);
-        List<Member> recommendationMembers = memberRepository.getRecommendationMembers(member, memberBooks.get(0), postcards);
+
+        MemberRecommendationResponse memberRecommendationResponse = MemberRecommendationResponse.from(member, memberBooks);
+        List<Member> recommendationMembers = memberRepository.getRecommendationMembers(memberRecommendationResponse, postcards);
 
         List<MemberIntroResponse> memberIntroResponses = new ArrayList<>();
         for (Member recommendationMember : recommendationMembers) {
