@@ -1,10 +1,5 @@
 package com.bookbla.americano.domain.postcard.repository.entity;
 
-import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.ACCEPT;
-import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.ALL_WRONG;
-import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.PENDING;
-import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.READ;
-
 import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -26,6 +21,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+
+import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.*;
 
 @Entity
 @Getter
@@ -84,5 +81,13 @@ public class Postcard extends BaseEntity {
 
     public boolean isRefused() {
         return postcardStatus.isRefused();
+    }
+
+    public boolean isRefusedOverDays(int days) {
+        return this.postcardStatus == REFUSED && postcardStatusRefusedAt.plusDays(days).isBefore(LocalDateTime.now());
+    }
+
+    public Long getReceiveMemberId() {
+        return receiveMember.getId();
     }
 }
