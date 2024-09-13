@@ -1,8 +1,7 @@
 package com.bookbla.americano.domain.postcard.repository.custom.impl;
 
-import java.util.List;
-
 import com.bookbla.americano.domain.member.repository.entity.QMember;
+import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.custom.PostcardRepositoryCustom;
 import com.bookbla.americano.domain.postcard.repository.entity.QPostcard;
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardFromResponse;
@@ -10,6 +9,8 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 import static com.bookbla.americano.domain.school.repository.entity.QSchool.school;
 
@@ -39,6 +40,19 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                 .innerJoin(school).on(member.school.eq(school))
                 .where(postcard.sendMember.id.eq(memberId))
                 .orderBy(postcard.createdAt.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<Long> findReceiveByIdsWithPostcardStatus(Long sendMemberId, PostcardStatus postcardStatus) {
+        QPostcard postcard = QPostcard.postcard;
+        return queryFactory
+                .select(postcard.receiveMember.id.as("memberId"))
+                .from(postcard)
+                .where(
+                        postcard.sendMember.id.eq(sendMemberId),
+                        postcard.postcardStatus.eq(postcardStatus)
+                )
                 .fetch();
     }
 }

@@ -200,4 +200,8 @@ public class PostcardService {
 
         throw new BaseException(PostcardExceptionType.ACCESS_DENIED_TO_POSTCARD);
     }
+
+    public List<Long> getReceiveByIds(Long sendMemberId, PostcardStatus postcardStatus) {
+        return postcardRepository.findReceiveByIdsWithPostcardStatus(sendMemberId, postcardStatus);
+    }
 }
