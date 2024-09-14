@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.member.controller.dto.response;
+package com.bookbla.americano.domain.member.service.dto;
 
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.SmokeType;
@@ -13,42 +13,40 @@ import java.util.stream.Collectors;
 
 @Builder
 @Getter
-public class MemberRecommendationResponse {
+public class MemberRecommendationDto {
     private Long memberId;
     private Gender memberGender;
     private String memberSchoolName;
     private SmokeType memberSmokeType;
     private Set<Long> excludeMemberIds;
 
-    private final List<RecommendationBookResponse> recommendationBookResponses;
+    private final List<RecommendationBookDto> recommendationBookDtoList;
 
     @Getter
     @Builder
-    public static class RecommendationBookResponse {
+    public static class RecommendationBookDto {
         private final String bookTitle;
         private final List<String> bookAuthors;
-        private final String bookIsbn;
 
     }
 
-    public static MemberRecommendationResponse from(Member member, List<MemberBook> memberBooks) {
+    public static MemberRecommendationDto from(Member member, List<MemberBook> memberBooks) {
 
-        List<RecommendationBookResponse> bookResponses = memberBooks.stream()
-                .map(memberBook -> RecommendationBookResponse.builder()
+        List<RecommendationBookDto> bookResponses = memberBooks.stream()
+                .map(memberBook -> RecommendationBookDto.builder()
                         .bookTitle(memberBook.getBook().getTitle())
                         .bookAuthors(memberBook.getBook().getAuthors())
-                        .bookIsbn(memberBook.getBook().getIsbn())
                         .build())
                 .collect(Collectors.toList());
 
 
-        return MemberRecommendationResponse.builder()
+        return MemberRecommendationDto.builder()
                 .memberId(member.getId())
                 .memberGender(member.getMemberProfile().getGender())
                 .memberSchoolName(member.getSchool().getName())
                 .memberSmokeType(member.getMemberStyle().getSmokeType())
                 .excludeMemberIds(member.getMemberMatchIgnores())
-                .recommendationBookResponses(bookResponses)
+                .recommendationBookDtoList(bookResponses)
                 .build();
     }
 
