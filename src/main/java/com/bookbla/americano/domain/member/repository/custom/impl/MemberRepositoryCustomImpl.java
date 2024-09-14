@@ -8,13 +8,12 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberRecomme
 import com.bookbla.americano.domain.member.enums.*;
 import com.bookbla.americano.domain.member.repository.custom.MemberRepositoryCustom;
 import com.bookbla.americano.domain.member.repository.entity.*;
+import com.bookbla.americano.domain.member.service.MemberPostcardService;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
 import com.bookbla.americano.domain.postcard.repository.entity.QPostcard;
-import com.bookbla.americano.domain.postcard.service.PostcardService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -24,19 +23,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.bookbla.americano.domain.member.repository.entity.QMember.member;
 import static com.bookbla.americano.domain.member.repository.entity.QMemberBook.memberBook;
 import static com.bookbla.americano.domain.member.repository.entity.QMemberStyle.memberStyle;
 import static com.bookbla.americano.domain.member.repository.entity.QMemberVerify.memberVerify;
 import static com.bookbla.americano.domain.postcard.repository.entity.QPostcard.postcard;
 import static com.bookbla.americano.domain.school.repository.entity.QSchool.school;
-import static com.bookbla.americano.domain.member.repository.entity.QMember.member;
 
 @Repository
 @RequiredArgsConstructor
 public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
-    private final PostcardService postcardService;
+    private final MemberPostcardService memberPostcardService;
 
     private static final int MAX_RANDOM_MATCHING_COUNT = 10;
 
@@ -109,26 +108,11 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
         LocalDateTime fourteenDaysAgo = LocalDateTime.now().minusDays(14);
 
         /* 6 조건 */
-        List<Long> receiveByIdsWithAccept = postcardService.getReceiveByIds(memberId, PostcardStatus.ACCEPT);
+        List<Long> receiveByIdsWithAccept = memberPostcardService.getReceiveByIds(memberId, PostcardStatus.ACCEPT);
         /* 8 조건 */
-        List<Long> receiveByIdsWithPending = postcardService.getReceiveByIds(memberId, PostcardStatus.PENDING);
-
+        List<Long> receiveByIdsWithPending = memberPostcardService.getReceiveByIds(memberId, PostcardStatus.PENDING);
         /* 8-1 조건 */
-        // 거절한 날짜 + 14일 < 오늘 -> receiveMemberId 리턴
-        List<Long> recommendMemberId = postcards.stream()
-                .filter(postcard -> postcard.isRefusedOverDays(14))
-                .map(Postcard::getReceiveMemberId)
-                .collect(Collectors.toList());
-
-        List<Long> receiveByIdsWithRefused = queryFactory
-                .select(qPostcard.receiveMember.id)
-                .from(qPostcard)
-                .where(
-                        qPostcard.sendMember.id.eq(memberId),
-                        qPostcard.postcardStatus.eq(PostcardStatus.REFUSED),
-                        qPostcard.receiveMember.id.in(recommendMemberId)
-                )
-                .fetch();
+        List<Long> receiveByIdsWithRefused = memberPostcardService.getReceiveByIdsRefused(memberId, postcards);
 
         return queryFactory
                 .selectFrom(qMember)
