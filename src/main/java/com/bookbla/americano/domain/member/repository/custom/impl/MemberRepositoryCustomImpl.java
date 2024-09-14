@@ -4,16 +4,17 @@ package com.bookbla.americano.domain.member.repository.custom.impl;
 import com.bookbla.americano.domain.book.repository.entity.QBook;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.response.BookProfileResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberRecommendationResponse;
 import com.bookbla.americano.domain.member.enums.*;
 import com.bookbla.americano.domain.member.repository.custom.MemberRepositoryCustom;
 import com.bookbla.americano.domain.member.repository.entity.*;
 import com.bookbla.americano.domain.member.service.MemberPostcardService;
+import com.bookbla.americano.domain.member.service.dto.MemberRecommendationDto;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
 import com.bookbla.americano.domain.postcard.repository.entity.QPostcard;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -91,7 +92,8 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
     }
 
     @Override
-    public List<Member> getRecommendationMembers(MemberRecommendationResponse memberRecommendationResponse, List<Postcard> postcards) {
+    // 매칭 추천할 사람 뽑기
+    public List<Member> getRecommendationMembers(MemberRecommendationDto memberRecommendationResponse, List<Postcard> postcards) {
         QMember qMember = member;
         QMemberStyle qMemberStyle = memberStyle;
         QBook qBook = memberBook.book;
@@ -103,6 +105,15 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
         Set<Long> excludeMemberIds = memberRecommendationResponse.getExcludeMemberIds();
         String schoolName = memberRecommendationResponse.getMemberSchoolName();
         SmokeType smokeType = memberRecommendationResponse.getMemberSmokeType();
+        List<String> bookTitles = memberRecommendationResponse.getRecommendationBookDtoList().stream()
+                .map(MemberRecommendationDto.RecommendationBookDto::getBookTitle)
+                .collect(Collectors.toList());
+        List<String> firstAuthorsList = memberRecommendationResponse.getRecommendationBookDtoList().stream()
+                .map(bookDto -> {
+                    List<String> authors = bookDto.getBookAuthors();
+                    return authors.isEmpty() ? null : authors.get(0);
+                })
+                .collect(Collectors.toList());
 
         LocalDateTime twoDaysAgo = LocalDateTime.now().minusDays(2);
         LocalDateTime fourteenDaysAgo = LocalDateTime.now().minusDays(14);
@@ -113,6 +124,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
         List<Long> receiveByIdsWithPending = memberPostcardService.getReceiveByIds(memberId, PostcardStatus.PENDING);
         /* 8-1 조건 */
         List<Long> receiveByIdsWithRefused = memberPostcardService.getReceiveByIdsRefused(memberId, postcards);
+
 
         return queryFactory
                 .selectFrom(qMember)
@@ -136,8 +148,8 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                                 .and(qMemberVerify.verifyType.eq(MemberVerifyType.STUDENT_ID)
                                         .and(
                                                 qMemberVerify.verifyStatus.eq(MemberVerifyStatus.SUCCESS)
-                                                        .or(qMemberVerify.verifyStatus.eq(MemberVerifyStatus.PENDING)
-                                                                .or(qMemberVerify.verifyStatus.eq(MemberVerifyStatus.FAIL)))
+                                                .or(qMemberVerify.verifyStatus.eq(MemberVerifyStatus.PENDING)
+                                                .or(qMemberVerify.verifyStatus.eq(MemberVerifyStatus.FAIL)))
                                         )))),
 
                         /* 5. 이전에 사용자가 무시하기를 누르지 않은 사용자만 추천 */
@@ -157,42 +169,42 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                         /* 8-1. 엽서를 상대방이 거절한 경우 내 홈에서 2주 후에 다시 나와야 함 */
                         qMember.id.in(receiveByIdsWithRefused)
                 )
-//                .orderBy(
-//                        new CaseBuilder()
-//
-//                                /* 1. 같은 학교, 같은 책 */
-//                                .when(qMember.school.name.eq(schoolName)
-//                                        .and(qBook.isbn.eq(memberBook.getBook().getIsbn())))
-//                                .then(1)
-//
-//                                /* 2. 다른 학교, 같은 책 */
-//                                .when(qMember.school.name.ne(schoolName)
-//                                        .and(qBook.isbn.eq(memberBook.getBook().getIsbn())))
-//                                .then(2)
-//
-//                                /* 3. 같은 학교, 같은 작가 (대표 저자) */
-//                                .when(qMember.school.name.eq(schoolName)
-//                                        .and(qBook.authors.get(0).eq(memberBook.getBook().getAuthors().get(0))))
-//                                .then(3)
-//
-//                                /* 4. 다른 학교, 같은 작가 (대표 저자) */
-//                                .when(qMember.school.name.ne(schoolName)
-//                                        .and(qBook.authors.get(0).eq(memberBook.getBook().getAuthors().get(0))))
-//                                .then(4)
-//
-//                                /* 5. 같은 학교, 흡연 여부 동일 */
-//                                .when(qMember.school.name.eq(schoolName)
-//                                        .and(qMemberStyle.smokeType.eq(smokeType)))
-//                                .then(5)
-//
-//                                /* 6. 다른 학교, 흡연 여부 동일 */
-//                                .when(qMember.school.name.ne(schoolName)
-//                                        .and(qMemberStyle.smokeType.eq(smokeType)))
-//                                .then(6)
-//
-//                                .otherwise(7)
-//                                .asc()
-//                )
+                .orderBy(
+                        new CaseBuilder()
+
+                                /* 1. 같은 학교, 같은 책 */
+                                .when(qMember.school.name.eq(schoolName)
+                                        .and(qBook.title.in(bookTitles)))
+                                .then(1)
+
+                                /* 2. 다른 학교, 같은 책 */
+                                .when(qMember.school.name.ne(schoolName)
+                                        .and(qBook.title.in(bookTitles)))
+                                .then(2)
+
+                                /* 3. 같은 학교, 같은 작가 (대표 저자) */
+                                .when(qMember.school.name.eq(schoolName)
+                                        .and(qBook.authors.get(0).in(firstAuthorsList)))
+                                .then(3)
+
+                                /* 4. 다른 학교, 같은 작가 (대표 저자) */
+                                .when(qMember.school.name.ne(schoolName)
+                                        .and(qBook.authors.get(0).in(firstAuthorsList)))
+                                .then(4)
+
+                                /* 5. 같은 학교, 흡연 여부 동일 */
+                                .when(qMember.school.name.eq(schoolName)
+                                        .and(qMemberStyle.smokeType.eq(smokeType)))
+                                .then(5)
+
+                                /* 6. 다른 학교, 흡연 여부 동일 */
+                                .when(qMember.school.name.ne(schoolName)
+                                        .and(qMemberStyle.smokeType.eq(smokeType)))
+                                .then(6)
+
+                                .otherwise(7)
+                                .asc()
+                )
                 .limit(MAX_RANDOM_MATCHING_COUNT)
                 .fetch();
     }
