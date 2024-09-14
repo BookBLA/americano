@@ -8,6 +8,7 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberReportC
 import com.bookbla.americano.domain.member.controller.dto.response.MemberReportDeleteResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberReportReadResponse;
 import com.bookbla.americano.domain.member.service.MemberReportService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class MemberReportController {
 
     private final MemberReportService memberReportService;
 
+    @Operation(summary = "상대방 신고하기")
     @PostMapping
     public ResponseEntity<MemberReportCreateResponse> addMemberReport(
         @Parameter(hidden = true) @User LoginUser loginUser,
@@ -37,6 +39,7 @@ public class MemberReportController {
         return ResponseEntity.ok(memberReportCreateResponse);
     }
 
+    @Operation(summary = "신고 조회")
     @GetMapping
     public ResponseEntity<MemberReportReadResponse> readMemberReport(
         @Parameter(hidden = true) @User LoginUser loginUser) {
