@@ -1,5 +1,7 @@
 package com.bookbla.americano.domain.member.service;
 
+import com.bookbla.americano.domain.member.enums.MemberStatus;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.bookbla.americano.base.exception.BaseException;
@@ -51,6 +53,7 @@ public class MemberBookService {
         MemberBook savedMemberBook = memberBookRepository.save(request.toMemberBook(book, member));
         QuizQuestion savedQuizQuestion = quizQuestionRepository.save(request.toQuizQuestion(savedMemberBook));
 
+        member.updateMemberStatus(MemberStatus.APPROVAL, LocalDateTime.now());
         return MemberBookCreateResponse.from(savedMemberBook, savedQuizQuestion);
     }
 
