@@ -23,7 +23,7 @@ public class MemberPushAlarmService {
     @Transactional(readOnly = true)
     public MemberPushAlarmReadResponse readPushAlarm(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
-        List<MemberPushAlarm> memberPushAlarms = memberPushAlarmRepository.findByMember(member);
+        List<MemberPushAlarm> memberPushAlarms = memberPushAlarmRepository.findByMemberOrderByCreatedAtDesc(member);
         return MemberPushAlarmReadResponse.from(member, memberPushAlarms);
     }
 
