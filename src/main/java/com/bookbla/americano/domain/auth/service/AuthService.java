@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.auth.service;
 
 import com.bookbla.americano.base.jwt.JwtProvider;
+import com.bookbla.americano.domain.auth.controller.dto.request.KakaoLoginRequest;
 import com.bookbla.americano.domain.auth.controller.dto.request.LoginRequest;
 import com.bookbla.americano.domain.auth.controller.dto.response.LoginResponse;
 import com.bookbla.americano.domain.auth.service.dto.OAuth2MemberResponse;
@@ -26,6 +27,19 @@ public class AuthService {
         OAuth2MemberResponse oAuth2MemberResponse = oAuth2Provider.getMemberResponse(loginRequest.getAuthCode());
 
         Member member = memberRepository.findByMemberTypeAndOauthEmail(memberType, oAuth2MemberResponse.getEmail())
+                .orElseGet(() -> signUp(oAuth2MemberResponse));
+
+        String accessToken = jwtProvider.createToken(member.getId().toString());
+        return LoginResponse.of(accessToken, member);
+    }
+
+    public LoginResponse loginUsingKakao(KakaoLoginRequest kakaoLoginRequest) {
+        OAuth2Provider oAuth2Provider = oAuth2Providers.getProvider(MemberType.KAKAO);
+        OAuth2MemberResponse oAuth2MemberResponse = oAuth2Provider.getMemberResponse(
+                kakaoLoginRequest.getAccessToken());
+
+        Member member = memberRepository.findByMemberTypeAndOauthEmail(MemberType.KAKAO,
+                        oAuth2MemberResponse.getEmail())
                 .orElseGet(() -> signUp(oAuth2MemberResponse));
 
         String accessToken = jwtProvider.createToken(member.getId().toString());
