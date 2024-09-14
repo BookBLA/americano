@@ -83,11 +83,11 @@ public class Postcard extends BaseEntity {
         return postcardStatus.isRefused();
     }
 
-    public boolean isRefusedOverDays(int days) {
-        return this.postcardStatus == REFUSED && postcardStatusRefusedAt.plusDays(days).isBefore(LocalDateTime.now());
-    }
-
-    public Long getReceiveMemberId() {
-        return receiveMember.getId();
-    }
+//    public boolean isRefusedOverDays(int days) {
+//        return this.postcardStatus == REFUSED && postcardStatusRefusedAt.plusDays(days).isBefore(LocalDateTime.now());
+//    }
+//
+//    public Long getReceiveMemberId() {
+//        return receiveMember.getId();
+//    }
 }
