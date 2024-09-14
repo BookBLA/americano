@@ -153,10 +153,15 @@ public class MemberProfileService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
 
-        if (member.getMemberStatus().equals(MemberStatus.APPROVAL) &&
-            !memberProfile.getStudentIdImageUrl().equals(request.getStudentIdImageUrl())) {
-            saveStudentIdVerify(member, request.getStudentIdImageUrl());
-            memberProfile.updateStudentIdImageStatus(StudentIdImageStatus.PENDING);
+        if (!memberProfile.getStudentIdImageUrl().equals(request.getStudentIdImageUrl())) {
+            if (member.getMemberStatus().equals(MemberStatus.REJECTED)) {
+                member.updateMemberStatus(MemberStatus.APPROVAL, LocalDateTime.now());
+            }
+
+            if (member.getMemberStatus().equals(MemberStatus.APPROVAL)) {
+                saveStudentIdVerify(member, request.getStudentIdImageUrl());
+                memberProfile.updateStudentIdImageStatus(StudentIdImageStatus.PENDING);
+            }
         }
     }
 
