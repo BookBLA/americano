@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.auth.controller;
 
+import com.bookbla.americano.domain.auth.controller.dto.request.KakaoLoginRequest;
 import com.bookbla.americano.domain.auth.controller.dto.request.LoginRequest;
 import com.bookbla.americano.domain.auth.controller.dto.response.LoginResponse;
 import com.bookbla.americano.domain.auth.service.AuthService;
@@ -25,6 +26,14 @@ public class AuthController {
             @PathVariable String oAuthType
     ) {
         LoginResponse loginResponse = authService.login(loginRequest, oAuthType);
+        return ResponseEntity.ok(loginResponse);
+    }
+
+    @PostMapping("/login/kakao-v2")
+    public ResponseEntity<LoginResponse> loginUsingKakao(
+            @RequestBody @Valid KakaoLoginRequest kakaoLoginRequest
+    ) {
+        LoginResponse loginResponse = authService.loginUsingKakao(kakaoLoginRequest);
         return ResponseEntity.ok(loginResponse);
     }
 }
