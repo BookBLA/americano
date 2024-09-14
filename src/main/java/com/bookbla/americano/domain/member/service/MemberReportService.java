@@ -59,12 +59,13 @@ public class MemberReportService {
         MemberReport memberReport = MemberReport.builder()
                 .reporterMember(reporterMember)
                 .reportedMember(reportedMember)
+                .nicknameReport(memberReportCreateRequest.getReportStatuses().getNicknameReport())
                 .bookQuizReport(memberReportCreateRequest.getReportStatuses().getBookQuizReport())
                 .reviewReport(memberReportCreateRequest.getReportStatuses().getReviewReport())
-                .askReport(memberReportCreateRequest.getReportStatuses().getAskReport())
-                .profileImageReport(memberReportCreateRequest.getReportStatuses().getProfileImageReport())
-                .replyReport(memberReportCreateRequest.getReportStatuses().getReplyReport())
-                .etcContents(memberReportCreateRequest.getEtcContents())
+                .conversationReport(memberReportCreateRequest.getReportStatuses().getConversationReport())
+                .proposalReport(memberReportCreateRequest.getReportStatuses().getProposalReport())
+                .etcReport(memberReportCreateRequest.getReportStatuses().getEtcReport())
+                .reportContents(memberReportCreateRequest.getReportContents())
                 .build();
 
 

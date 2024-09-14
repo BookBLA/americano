@@ -19,16 +19,16 @@ public class MemberReportCreateRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class reportStatuses {
+        private Boolean nicknameReport; // 닉네임
         private Boolean bookQuizReport; // 독서 퀴즈
-        private Boolean reviewReport; // 한 줄 감상문
-        private Boolean askReport; // 개인 질문
-        private Boolean replyReport; // 개인 질문 답변
-        private Boolean profileImageReport; // 프로필 사진
+        private Boolean reviewReport;   // 한 줄 감상문
+        private Boolean conversationReport; // 불쾌함을 주는 대화
+        private Boolean proposalReport;     // 부적절한 만남 추구
+        private Boolean etcReport;      // 기타
     }
 
     @NotNull(message = "신고 항목이 입력되지 않았습니다.")
     private reportStatuses reportStatuses;
 
-    @NotNull(message = "기타 항목이 입력되지 않았습니다. (없을 시에 빈 칸으로 입력)")
-    private String etcContents;
+    private String reportContents;
 }

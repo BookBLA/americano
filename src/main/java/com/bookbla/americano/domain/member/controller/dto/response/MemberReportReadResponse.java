@@ -20,18 +20,18 @@ public class MemberReportReadResponse {
         private final Long memberReportId;
         private final Long reportedMemberId;
         private ReportStatuses reportStatuses;
-        private String etcContents;
+        private String reportContents;
     }
 
     @Getter
     @Builder
     public static class ReportStatuses {
+        private Boolean nicknameReport; // 닉네임
         private Boolean bookQuizReport; // 독서 퀴즈
-        private Boolean reviewReport; // 한 줄 감상문
-        private Boolean askReport; // 개인 질문
-        private Boolean replyReport; // 개인 질문 답변
-        private Boolean profileImageReport; // 프로필 사진
-        private Boolean etcReport; // 기타) 직접 작성
+        private Boolean reviewReport;   // 한 줄 감상문
+        private Boolean conversationReport; // 불쾌함을 주는 대화
+        private Boolean proposalReport;     // 부적절한 만남 추구
+        private Boolean etcReport;      // 기타
     }
 
     public static MemberReportReadResponse from(List<MemberReport> memberReports) {
@@ -40,13 +40,14 @@ public class MemberReportReadResponse {
                 .memberReportId(memberReport.getId())
                 .reportedMemberId(memberReport.getReportedMember().getId())
                 .reportStatuses(ReportStatuses.builder()
-                    .bookQuizReport(memberReport.getBookQuizReport())
-                    .reviewReport(memberReport.getReviewReport())
-                    .askReport(memberReport.getAskReport())
-                    .replyReport(memberReport.getReplyReport())
-                    .profileImageReport(memberReport.getProfileImageReport())
+                        .nicknameReport(memberReport.getNicknameReport())
+                        .bookQuizReport(memberReport.getBookQuizReport())
+                        .reviewReport(memberReport.getReviewReport())
+                        .conversationReport(memberReport.getConversationReport())
+                        .proposalReport(memberReport.getProposalReport())
+                        .etcReport(memberReport.getEtcReport())
                     .build())
-                .etcContents(memberReport.getEtcContents())
+                .reportContents(memberReport.getReportContents())
                 .build())
             .collect(Collectors.toList());
 
