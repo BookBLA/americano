@@ -36,37 +36,37 @@ public class MemberReport {
 
     @Column(length = 1)
     @Convert(converter = BooleanToYNConverter.class)
-    private Boolean nicknameReport; // 닉네임
+    private Boolean isNicknameReported; // 닉네임
 
     @Column(length = 1)
     @Convert(converter = BooleanToYNConverter.class)
-    private Boolean bookQuizReport; // 독서 퀴즈
+    private Boolean isBookQuizReported; // 독서 퀴즈
 
     @Column(length = 1)
     @Convert(converter = BooleanToYNConverter.class)
-    private Boolean reviewReport; // 한 줄 감상문
+    private Boolean isReviewReported; // 한 줄 감상문
 
     @Column(length = 1)
     @Convert(converter = BooleanToYNConverter.class)
-    private Boolean conversationReport; // 불쾌함을 주는 대화
+    private Boolean isConversationReported; // 불쾌함을 주는 대화
 
     @Column(length = 1)
     @Convert(converter = BooleanToYNConverter.class)
-    private Boolean proposalReport; // 부적절한 만남 추구
+    private Boolean isProposalReported; // 부적절한 만남 추구
 
     @Column(length = 1)
     @Convert(converter = BooleanToYNConverter.class)
-    private Boolean etcReport;     // 기타
+    private Boolean isOtherReported;     // 기타
 
     private String reportContents; // 신고 사유
 
     public boolean hasAllReportsFalse() {
-        return Boolean.FALSE.equals(nicknameReport) &&
-            Boolean.FALSE.equals(bookQuizReport) &&
-            Boolean.FALSE.equals(reviewReport) &&
-            Boolean.FALSE.equals(conversationReport) &&
-            Boolean.FALSE.equals(proposalReport) &&
-            Boolean.FALSE.equals(etcReport);
+        return Boolean.FALSE.equals(isNicknameReported) &&
+            Boolean.FALSE.equals(isBookQuizReported) &&
+            Boolean.FALSE.equals(isReviewReported) &&
+            Boolean.FALSE.equals(isConversationReported) &&
+            Boolean.FALSE.equals(isProposalReported) &&
+            Boolean.FALSE.equals(reportContents);
     }
 
 }

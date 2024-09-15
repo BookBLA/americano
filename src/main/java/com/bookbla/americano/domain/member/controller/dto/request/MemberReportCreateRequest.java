@@ -19,12 +19,12 @@ public class MemberReportCreateRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class reportStatuses {
-        private Boolean nicknameReport; // 닉네임
-        private Boolean bookQuizReport; // 독서 퀴즈
-        private Boolean reviewReport;   // 한 줄 감상문
-        private Boolean conversationReport; // 불쾌함을 주는 대화
-        private Boolean proposalReport;     // 부적절한 만남 추구
-        private Boolean etcReport;      // 기타
+        private Boolean isNicknameReported; // 닉네임
+        private Boolean isBookQuizReported; // 독서 퀴즈
+        private Boolean isReviewReported;   // 한 줄 감상문
+        private Boolean isConversationReported; // 불쾌함을 주는 대화
+        private Boolean isProposalReported;     // 부적절한 만남 추구
+        private Boolean isOtherReported;    // 기타
     }
 
     @NotNull(message = "신고 항목이 입력되지 않았습니다.")
