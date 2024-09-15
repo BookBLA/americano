@@ -7,6 +7,7 @@ import com.bookbla.americano.domain.chat.repository.entity.QMemberChatRoom;
 import com.bookbla.americano.domain.member.repository.entity.QMember;
 import com.bookbla.americano.domain.member.repository.entity.QProfileImageType;
 import com.bookbla.americano.domain.postcard.repository.entity.QPostcard;
+import com.bookbla.americano.domain.school.repository.entity.QSchool;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class ChatRoomRepositoryCustomImpl implements ChatRoomRepositoryCustom {
         QChatRoom qChatRoom = QChatRoom.chatRoom;
         QPostcard qPostcard = QPostcard.postcard;
         QProfileImageType qProfileImageType = QProfileImageType.profileImageType;
-
+        QSchool qSchool = QSchool.school;
         return queryFactory.select(Projections.fields(ChatRoomResponse.class,
                 qChatRoom.id.as("id"),
                 qMemberChatRoomOther.unreadCount.as("unreadCount"),
@@ -42,6 +43,10 @@ public class ChatRoomRepositoryCustomImpl implements ChatRoomRepositoryCustom {
                 Projections.fields(ChatRoomResponse.MemberResponse.class,
                         qMemberOther.id.as("memberId"),
                         qMemberOther.memberProfile.name.as("name"),
+                        qSchool.name.as("schoolName"),
+                        qMemberOther.memberStyle.height.as("height"),
+                        qMemberOther.memberStyle.smokeType.as("smokeType"),
+                        qMemberOther.memberStyle.mbti.as("mbti"),
                         qProfileImageType.imageUrl.as("profileImageUrl"),
                         qProfileImageType.gender.as("profileGender")).as("otherMember")))
                 .from(qMemberReq)
@@ -51,6 +56,7 @@ public class ChatRoomRepositoryCustomImpl implements ChatRoomRepositoryCustom {
                 .innerJoin(qMemberChatRoomOther).on(qMemberChatRoomOther.chatRoom.eq(qChatRoom))
                 .innerJoin(qMemberOther).on(qMemberChatRoomOther.member.eq(qMemberOther))
                 .leftJoin(qProfileImageType).on(qMemberOther.memberStyle.profileImageType.eq(qProfileImageType))
+                .innerJoin(qSchool).on(qMemberOther.school.eq(qSchool))
                 .where(qMemberReq.id.eq(memberId))
                 .where(qMemberOther.id.ne(memberId))
                 .fetch();

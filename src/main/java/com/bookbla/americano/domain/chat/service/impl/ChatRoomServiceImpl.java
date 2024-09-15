@@ -11,9 +11,11 @@ import com.bookbla.americano.domain.chat.service.ChatRoomService;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -22,7 +24,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final MemberChatRoomRepository memberChatRoomRepository;
-
 
     @Transactional
     public ChatRoom createChatRoom(List<Member> members, Postcard postcard) {
@@ -45,15 +46,21 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         return newChatRoom;
     }
 
+    @Override
+    public void updateChatRoomLastMessage(Long chatRoomId, String lastChat, LocalDateTime lastChatTime) {
+        chatRoomRepository.updateLastChatAndLastChatTimeById(lastChat, lastChatTime, chatRoomId);
+    }
     public void deleteChatRoom(Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow();
         chatRoomRepository.delete(chatRoom);
     }
 
+    @Override
     public List<ChatRoomResponse> getChatRoomList(Long memberId) {
         return chatRoomRepository.findByMemberId(memberId);
     }
 
+    @Override
     public void updateIsAlert(Long roomId, Boolean isAlert) {
         if (isAlert == null) {
             throw new BaseException(BaseExceptionType.ARGUMENT_NOT_VALID);
@@ -63,6 +70,14 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         );
 
         chatRoomRepository.updateIsAlert(roomId, isAlert);
+    }
+
+    @Override
+    public void updateChatRoomUnreadCount(Long memberId, Long chatRoomId, int unreadCount) {
+        MemberChatRoom memberChatRoom = memberChatRoomRepository.findByMember_IdAndChatRoom_Id(memberId, chatRoomId)
+                .orElseThrow(() -> new BaseException(BaseExceptionType.ARGUMENT_NOT_VALID));
+        memberChatRoom.setUnreadCount(unreadCount);
+        memberChatRoomRepository.save(memberChatRoom);
     }
 
     @Override

@@ -29,4 +29,8 @@ public class MemberChatRoom extends BaseEntity {
     @JoinColumn(name="member_id")
     private Member member;
 
+
+    public void setUnreadCount(int unreadCount) {
+        this.unreadCount = unreadCount;
+    }
 }
