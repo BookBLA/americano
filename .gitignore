@@ -41,3 +41,6 @@ out/
 
 ### MAC ###
 .DS_Store
+
+### Firestore Admin Key ###
+/src/main/resources/bookbla-develop-test-firebase-adminsdk-vyrg5-dbb29e54f5.json
