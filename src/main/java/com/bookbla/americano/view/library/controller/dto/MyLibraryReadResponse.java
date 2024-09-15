@@ -1,13 +1,12 @@
 package com.bookbla.americano.view.library.controller.dto;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -26,15 +25,6 @@ public class MyLibraryReadResponse {
     private final int height;
     private final List<BookResponse> bookResponses;
 
-    @Getter
-    @RequiredArgsConstructor
-    public static class BookResponse {
-
-        private final Long memberBookId;
-        private final String bookImageUrl;
-
-    }
-
     public static MyLibraryReadResponse of(Member member, List<MemberBook> memberBooks) {
         List<BookResponse> bookResponses = memberBooks.stream()
                 .map(it -> new BookResponse(it.getId(), it.getBook().getImageUrl()))
@@ -49,9 +39,18 @@ public class MyLibraryReadResponse {
                 member.getSchool().getName(),
                 memberStyle.getProfileImageType().getImageUrl(),
                 memberStyle.getMbti().name(),
-                memberStyle.getSmokeType().name(),
+                memberStyle.getSmokeType().getValue(),
                 memberStyle.getHeight(),
                 bookResponses
         );
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    public static class BookResponse {
+
+        private final Long memberBookId;
+        private final String bookImageUrl;
+
     }
 }
