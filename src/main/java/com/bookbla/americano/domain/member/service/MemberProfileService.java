@@ -149,19 +149,17 @@ public class MemberProfileService {
     }
 
     @Transactional
-    public void updateMemberProfileStudentId(Long memberId, MemberProfileStudentIdImageUrlUpdateRequest request) {
+    public void updateMemberProfileStudentId(Long memberId,
+        MemberProfileStudentIdImageUrlUpdateRequest request) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
 
-        if (!memberProfile.getStudentIdImageUrl().equals(request.getStudentIdImageUrl())) {
-            if (member.getMemberStatus().equals(MemberStatus.REJECTED)) {
-                member.updateMemberStatus(MemberStatus.APPROVAL, LocalDateTime.now());
-            }
-
-            if (member.getMemberStatus().equals(MemberStatus.APPROVAL)) {
-                saveStudentIdVerify(member, request.getStudentIdImageUrl());
-                memberProfile.updateStudentIdImageStatus(StudentIdImageStatus.PENDING);
-            }
+        if (memberProfile.getStudentIdImageUrl() == null || !memberProfile.getStudentIdImageUrl()
+            .equals(request.getStudentIdImageUrl())) {
+            saveStudentIdVerify(member, request.getStudentIdImageUrl());
+            member.updateMemberStatus(MemberStatus.APPROVAL, LocalDateTime.now());
+            memberProfile.updateStudentIdImageStatus(StudentIdImageStatus.PENDING);
+            memberRepository.save(member);
         }
     }
 
