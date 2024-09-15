@@ -1,6 +1,9 @@
 package com.bookbla.americano.domain.postcard.service;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.chat.repository.ChatRepository;
+import com.bookbla.americano.domain.chat.repository.ChatRoomRepository;
+import com.bookbla.americano.domain.chat.repository.MemberChatRoomRepository;
 import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
@@ -53,6 +56,13 @@ class PostcardServiceTest {
 
     @Autowired
     private PostcardTypeRepository postcardTypeRepository;
+
+    @Autowired
+    private ChatRoomRepository chatRoomRepository;
+
+    @Autowired
+    private MemberChatRoomRepository memberChatRoomRepository;
+
 
     private PostcardType postcardType;
 
@@ -168,6 +178,8 @@ class PostcardServiceTest {
 
     @AfterEach
     void tearDown() {
+        memberChatRoomRepository.deleteAllInBatch();
+        chatRoomRepository.deleteAllInBatch();
         quizQuestionRepository.deleteAllInBatch();
         bookmarkRepository.deleteAllInBatch();
         postcardRepository.deleteAllInBatch();

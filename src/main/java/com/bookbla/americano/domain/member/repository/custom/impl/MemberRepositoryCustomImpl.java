@@ -4,6 +4,8 @@ package com.bookbla.americano.domain.member.repository.custom.impl;
 import java.util.List;
 
 import com.bookbla.americano.domain.book.repository.entity.QBook;
+import com.bookbla.americano.domain.chat.repository.entity.QChatRoom;
+import com.bookbla.americano.domain.chat.repository.entity.QMemberChatRoom;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.response.BookProfileResponse;
 import com.bookbla.americano.domain.member.enums.Gender;
@@ -11,11 +13,7 @@ import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.SmokeType;
 import com.bookbla.americano.domain.member.repository.custom.MemberRepositoryCustom;
-import com.bookbla.americano.domain.member.repository.entity.QMember;
-import com.bookbla.americano.domain.member.repository.entity.QMemberBlock;
-import com.bookbla.americano.domain.member.repository.entity.QMemberBook;
-import com.bookbla.americano.domain.member.repository.entity.QMemberProfile;
-import com.bookbla.americano.domain.member.repository.entity.QMemberStyle;
+import com.bookbla.americano.domain.member.repository.entity.*;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -80,6 +78,17 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .orderBy(member.createdAt.desc())
                 .fetch();
     }
+
+//    @Override
+//    public List<Member> fetchChatRoomMembers(Long chatRoomId) {
+//        QMember qMember = QMember.member;
+//        QMemberChatRoom qMemberChatRoom = QMemberChatRoom.memberChatRoom;
+//        QChatRoom qChatRoom = QChatRoom.chatRoom;
+//
+//        queryFactory.select(qMember)
+//                .from(qChatRoom)
+//                .innerJoin()
+//    }
 
     private BooleanBuilder eqGender(QMemberProfile memberProfile, Gender gender) {
         if (gender == null) {

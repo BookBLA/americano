@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.notification.service;
 
+import com.bookbla.americano.domain.chat.repository.entity.Chat;
 import com.bookbla.americano.domain.notification.enums.PushAlarmForm;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,6 +91,28 @@ public class AlarmService {
                 .build();
 
         memberPushAlarmRepository.save(memberPushAlarm);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void sendPushAlarmForChat(Member receiver, Chat chat) {
+        if (isPushAlarmAble(receiver)) {
+            return;
+        }
+
+        // Select Member Query 발생 예상(Lazy FetchType)
+        String senderName = chat.getSender().getMemberProfile().getName();
+        String chatContent = chat.getContent();
+
+        sendToExpo(receiver.getPushToken(), senderName, chatContent);
+
+        MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
+                .member(receiver)
+                .title(senderName)
+                .body(chatContent)
+                .build();
+        memberPushAlarmRepository.save(memberPushAlarm);
+
+
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

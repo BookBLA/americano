@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.member.service;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberInformationUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberOnboardingStatusResponse;
+import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import org.junit.jupiter.api.*;
@@ -23,6 +24,9 @@ class MemberServiceTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private MemberBookmarkRepository memberBookmarkRepository;
 
     @Autowired
     private MemberService sut;
@@ -82,6 +86,7 @@ class MemberServiceTest {
 
     @AfterEach
     void tearDown() {
+        memberBookmarkRepository.deleteAllInBatch();
         memberRepository.deleteAllInBatch();
     }
 }

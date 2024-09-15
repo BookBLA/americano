@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.postcard.service;
 
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.chat.service.ChatRoomService;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
@@ -48,6 +49,7 @@ public class PostcardService {
     private final MemberBlockRepository memberBlockRepository;
     private final MemberBookService memberBookService;
     private final PushAlarmEventHandler postcardPushAlarmEventListener;
+    private final ChatRoomService chatRoomService;
 
     public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
         MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
@@ -80,6 +82,9 @@ public class PostcardService {
                 .imageUrl(postCardType.getImageUrl())
                 .build();
         postcardRepository.save(postcard);
+
+        // 채팅방 생성
+        chatRoomService.createChatRoom(List.of(member, targetMember), postcard);
 
         postcardPushAlarmEventListener.sendPostcard(new PostcardAlarmEvent(member, targetMember));
 
