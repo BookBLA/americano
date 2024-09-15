@@ -12,8 +12,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum SmokeType {
 
-    SMOKE("흡연", "🚬흡연자에요"),
-    NON_SMOKE("비흡연", "🚭비흡연자에요"),
+    SMOKE("흡연", "🚬흡연자"),
+    NON_SMOKE("비흡연", "🚭비흡연자"),
     SOMETIMES("가끔", "🚬가끔 펴요"),
     ;
 
