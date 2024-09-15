@@ -39,7 +39,8 @@ public class MemberProfile {
     private String studentIdImageUrl;
 
     @Enumerated(EnumType.STRING)
-    private StudentIdImageStatus studentIdImageStatus;
+    @Builder.Default
+    private StudentIdImageStatus studentIdImageStatus = StudentIdImageStatus.UNREGISTER;
 
     public MemberProfile updateName(String name) {
         BadWordFiltering badWordFiltering = new BadWordFiltering();
