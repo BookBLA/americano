@@ -2,11 +2,12 @@ package com.bookbla.americano.domain.chat.repository.entity;
 
 
 import com.bookbla.americano.base.entity.BaseEntity;
+import com.bookbla.americano.domain.member.repository.entity.BooleanToYNConverter;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
 import lombok.*;
-import org.joda.time.DateTime;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -25,13 +26,14 @@ public class ChatRoom extends BaseEntity {
     private Postcard postcard;
 
     @Column
-    private Boolean isAlert;
+    @Builder.Default
+    @Convert(converter = BooleanToYNConverter.class)
+    private Boolean isAlert = Boolean.TRUE;
 
     @Column
     private String lastChat;
 
-    @Column
-    private DateTime lastChatTime;
+    private LocalDateTime lastChatTime;
 
 
 }

@@ -4,7 +4,8 @@ import com.bookbla.americano.domain.chat.repository.entity.Chat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import org.joda.time.DateTime;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -17,7 +18,7 @@ public class ChatDto {
 
     private String content;
 
-    private DateTime sendTime;
+    private LocalDateTime sendTime;
 
     public static ChatDto of(Chat chat) {
         return ChatDto.builder()

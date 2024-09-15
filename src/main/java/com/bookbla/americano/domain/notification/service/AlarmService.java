@@ -116,6 +116,35 @@ public class AlarmService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void sendPushAlarmForChat(Chat chat) {
+        // Push 본문
+        String senderName = chat.getSender().getMemberProfile().getName();
+        String chatContent = chat.getContent();
+
+        // ChatRoom 에 연결되어 있는 Member(receivers, sender)를 미리 load 하여 Select Query 중복 방지
+        // 다수에게 채팅(단톡방) 알람 보내는 것 고려, 현재는 1:1 채팅밖에 없음
+        List<Member> members = memberRepository.findByChatroomId(chat.getChatRoom().getId());
+        List<Member> alarmAbleMember = new ArrayList<>();
+
+        for (Member member : members) {
+            if (isPushAlarmAble(member)) {
+                alarmAbleMember.add(member);
+            }
+        }
+        sendListToExpo(alarmAbleMember.stream().map(Member::getPushToken).collect(Collectors.toList()), senderName, chatContent);
+
+        for (Member member : alarmAbleMember) {
+            MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
+                    .member(member)
+                    .title(senderName)
+                    .body(chatContent)
+                    .build();
+            memberPushAlarmRepository.save(memberPushAlarm);
+
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendPushAlarm(Member member, PushAlarmForm pushAlarmForm){
 
         if (isPushAlarmAble(member)) {

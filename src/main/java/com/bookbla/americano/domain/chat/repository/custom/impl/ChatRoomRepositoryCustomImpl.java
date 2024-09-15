@@ -2,12 +2,9 @@ package com.bookbla.americano.domain.chat.repository.custom.impl;
 
 import com.bookbla.americano.domain.chat.controller.dto.ChatRoomResponse;
 import com.bookbla.americano.domain.chat.repository.custom.ChatRoomRepositoryCustom;
-import com.bookbla.americano.domain.chat.repository.entity.ChatRoom;
 import com.bookbla.americano.domain.chat.repository.entity.QChatRoom;
 import com.bookbla.americano.domain.chat.repository.entity.QMemberChatRoom;
 import com.bookbla.americano.domain.member.repository.entity.QMember;
-import com.bookbla.americano.domain.member.repository.entity.QMemberProfile;
-import com.bookbla.americano.domain.member.repository.entity.QMemberStyle;
 import com.bookbla.americano.domain.member.repository.entity.QProfileImageType;
 import com.bookbla.americano.domain.postcard.repository.entity.QPostcard;
 import com.querydsl.core.types.Projections;
