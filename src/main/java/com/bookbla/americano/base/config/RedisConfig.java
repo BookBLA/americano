@@ -24,9 +24,32 @@ public class RedisConfig {
     }
 
     @Bean // RedisConnection을 통해 넘어온 byte값을 객체 직렬화
-    public RedisTemplate<?, ?> redisTemplate() {
+    public RedisTemplate<byte[], byte[]> redisTemplate() {
         RedisTemplate<byte[], byte[]> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         return redisTemplate;
     }
+
+//    /*
+//       Chat Config
+//     */
+//    @Bean
+//    public ChannelTopic channelTopic() {
+//        return new ChannelTopic("chatroom");
+//    }
+//
+//    // redis : chatroom topic 에 publish 된 메시지 처리를 위한 리스너 설정
+//    @Bean
+//    public RedisMessageListenerContainer redisMessageListener(MessageListenerAdapter listenerAdapter, ChannelTopic topic) {
+//        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+//        container.setConnectionFactory(redisConnectionFactory());
+//        container.addMessageListener(listenerAdapter, topic);
+//        return container;
+//    }
+//
+//    // 메시지 처리 Subscriber
+//    @Bean
+//    public MessageListenerAdapter listenerAdapter(RedisSubscriber subscriber) {
+//        return new MessageListenerAdapter(subscriber, "sendMessage");
+//    }
 }

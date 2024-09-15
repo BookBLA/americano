@@ -124,7 +124,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile-dev
+          file: ./Dockerfile-dev-dev
           platforms: linux/amd64
           push: true
           tags: |

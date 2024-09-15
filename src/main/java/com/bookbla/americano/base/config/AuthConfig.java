@@ -32,6 +32,7 @@ public class AuthConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/admin/**")
                 .excludePathPatterns("/error/**")
                 .excludePathPatterns("/expoes/**")
+                .excludePathPatterns("/chat/ws/**")
                 .excludePathPatterns("/alarms/sends/**")
                 .excludePathPatterns("/settings/**")
                 .excludePathPatterns("/schools")

@@ -23,8 +23,7 @@ public class TestController implements TestControllerDocs {
 
     @PostMapping("/sign-up/admin")
     public ResponseEntity<TestSignUpResponse> testSignUpAdmin(
-            @RequestBody TestSignUpRequest testSignUpRequest
-    ) {
+            @RequestBody TestSignUpRequest testSignUpRequest) {
         Member member = testService.signUpAdmin(testSignUpRequest.getEmail());
         String token = jwtProvider.createToken(member.getId().toString());
         return ResponseEntity.ok(TestSignUpResponse.of(member.getId(), token));

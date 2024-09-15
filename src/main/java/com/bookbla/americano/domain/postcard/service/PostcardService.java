@@ -2,6 +2,9 @@ package com.bookbla.americano.domain.postcard.service;
 
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.chat.repository.MemberChatRoomRepository;
+import com.bookbla.americano.domain.chat.repository.entity.MemberChatRoom;
+import com.bookbla.americano.domain.chat.service.ChatRoomService;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
@@ -48,6 +51,8 @@ public class PostcardService {
     private final MemberBlockRepository memberBlockRepository;
     private final MemberBookService memberBookService;
     private final PushAlarmEventHandler postcardPushAlarmEventListener;
+    private final ChatRoomService chatRoomService;
+    private final MemberChatRoomRepository memberChatRoomRepository;
 
     public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
         MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
@@ -80,6 +85,9 @@ public class PostcardService {
                 .imageUrl(postCardType.getImageUrl())
                 .build();
         postcardRepository.save(postcard);
+
+        // 채팅방 생성
+        chatRoomService.createChatRoom(List.of(member, targetMember), postcard);
 
         postcardPushAlarmEventListener.sendPostcard(new PostcardAlarmEvent(member, targetMember));
 
@@ -159,6 +167,14 @@ public class PostcardService {
             Member sendMember = postcard.getSendMember();
             Member receiveMember = postcard.getReceiveMember();
             postcardPushAlarmEventListener.acceptPostcard(new PostcardAlarmEvent(sendMember, receiveMember));
+        }
+        // 상태가 거절로 변경되면 엽서를 받은 멤버는 채팅방을 나가게 함
+        else {
+            // 해당 엽서로 생성된 채팅방을 모두 나가게 함
+            // 실제로는 1개만 삭제
+            List<MemberChatRoom> memberChatRooms = memberChatRoomRepository.findByMemberIdAndPostcardId(
+                    postcard.getReceiveMember().getId(), postcard.getId());
+            memberChatRoomRepository.deleteAll(memberChatRooms);
         }
     }
 
