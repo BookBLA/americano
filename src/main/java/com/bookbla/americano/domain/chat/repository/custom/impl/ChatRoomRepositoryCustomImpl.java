@@ -20,59 +20,39 @@ public class ChatRoomRepositoryCustomImpl implements ChatRoomRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
-//    @Override
-//    public List<ChatRoom> findByMemberId(Long memberId) {
-//        QMember qMember = QMember.member;
-//        QMemberChatRoom qMemberChatRoom = QMemberChatRoom.memberChatRoom;
-//        QChatRoom qChatRoom = QChatRoom.chatRoom;
-//        QPostcard qPostcard = QPostcard.postcard;
-//        QProfileImageType qProfileImageType = QProfileImageType.profileImageType;
-//        QMemberChatRoom qOtherMemberChatRoom = new QMemberChatRoom("memberChatRoom");
-//        QMember qOtherMember = QMemberChatRoom.memberChatRoom.member;
-//
-//        return queryFactory.select(qChatRoom)
-//                .from(qPostcard)
-//                .innerJoin(qMemberChatRoom).on(qMemberChatRoom.member.eq(qMember))
-//                .innerJoin(qChatRoom).on(qMemberChatRoom.chatRoom.eq(qChatRoom))
-//                .innerJoin(qPostcard).on(qChatRoom.postcard.eq(qPostcard)).fetchJoin()
-//                .innerJoin(qOtherMemberChatRoom).on(qOtherMemberChatRoom.chatRoom.eq(qChatRoom))
-//                .innerJoin(qOtherMember).on(qOtherMemberChatRoom.member.eq(qOtherMember)).fetchJoin()
-//                .innerJoin(qProfileImageType).on(qOtherMember.memberStyle.profileImageType.eq(qProfileImageType))
-//                .where(qOtherMember.id.ne(memberId))
-//                .where(qMember.id.eq(memberId))
-//                .orderBy(qChatRoom.lastChatTime.desc())
-//                .fetch();
-//    }
-
+    @Override
     public List<ChatRoomResponse> findByMemberId(Long memberId) {
-        QMember qMember = QMember.member;
+        QMember qMemberReq = new QMember("memberReq");
+        QMember qMemberOther = new QMember("otherMember");
+        QMemberChatRoom qMemberChatRoomReq = new QMemberChatRoom("memberChatRoomReq");
+        QMemberChatRoom qMemberChatRoomOther = new QMemberChatRoom("memberChatRoomOther");
+        QChatRoom qChatRoom = QChatRoom.chatRoom;
         QPostcard qPostcard = QPostcard.postcard;
         QProfileImageType qProfileImageType = QProfileImageType.profileImageType;
-        QMemberChatRoom qMemberChatRoom = QMemberChatRoom.memberChatRoom;
-        QChatRoom qChatRoom = QChatRoom.chatRoom;
 
         return queryFactory.select(Projections.fields(ChatRoomResponse.class,
                 qChatRoom.id.as("id"),
+                qMemberChatRoomOther.unreadCount.as("unreadCount"),
                 Projections.fields(ChatRoomResponse.PostCardResponse.class,
-                        qPostcard.id.as("id"),
+                        qPostcard.id.as("postcardId"),
                         qPostcard.postcardType.as("type"),
                         qPostcard.imageUrl.as("imageUrl"),
                         qPostcard.message.as("message"),
                         qPostcard.postcardStatus.as("status")).as("postcard"),
                 Projections.fields(ChatRoomResponse.MemberResponse.class,
-                        qMember.id.as("id"),
-                        qMember.memberProfile.name.as("name"),
+                        qMemberOther.id.as("memberId"),
+                        qMemberOther.memberProfile.name.as("name"),
                         qProfileImageType.imageUrl.as("profileImageUrl"),
                         qProfileImageType.gender.as("profileGender")).as("otherMember")))
-                .from(qPostcard)
-                .innerJoin(qChatRoom).on(qChatRoom.postcard.eq(qPostcard)).fetchJoin()
-                .innerJoin(qMemberChatRoom).on(qMemberChatRoom.chatRoom.eq(qChatRoom)).fetchJoin()
-                .innerJoin(qMember).on(qMemberChatRoom.member.eq(qMember)).fetchJoin()
-                .innerJoin(qProfileImageType).on(qMember.memberStyle.profileImageType.eq(qProfileImageType)).fetchJoin()
-                .where(qPostcard.receiveMember.id.eq(memberId)
-                        .or(qPostcard.sendMember.id.eq(memberId)))
-                .where(qMember.id.ne(memberId))
-                .orderBy(qChatRoom.lastChatTime.desc())
+                .from(qMemberReq)
+                .innerJoin(qMemberChatRoomReq).on(qMemberChatRoomReq.member.eq(qMemberReq))
+                .innerJoin(qChatRoom).on(qMemberChatRoomReq.chatRoom.eq(qChatRoom))
+                .innerJoin(qPostcard).on(qChatRoom.postcard.eq(qPostcard))
+                .innerJoin(qMemberChatRoomOther).on(qMemberChatRoomOther.chatRoom.eq(qChatRoom))
+                .innerJoin(qMemberOther).on(qMemberChatRoomOther.member.eq(qMemberOther))
+                .leftJoin(qProfileImageType).on(qMemberOther.memberStyle.profileImageType.eq(qProfileImageType))
+                .where(qMemberReq.id.eq(memberId))
+                .where(qMemberOther.id.ne(memberId))
                 .fetch();
     }
 }
