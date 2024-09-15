@@ -2,8 +2,10 @@ package com.bookbla.americano.domain.chat.service.impl;
 
 import com.bookbla.americano.domain.chat.controller.dto.ChatDto;
 import com.bookbla.americano.domain.chat.repository.ChatRepository;
+import com.bookbla.americano.domain.chat.repository.MemberChatRoomRepository;
 import com.bookbla.americano.domain.chat.repository.entity.Chat;
 import com.bookbla.americano.domain.chat.repository.entity.ChatRoom;
+import com.bookbla.americano.domain.chat.repository.entity.MemberChatRoom;
 import com.bookbla.americano.domain.chat.service.ChatService;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +22,10 @@ public class ChatServiceImpl implements ChatService {
     private final ChatRepository chatRepository;
     private final EntityManager em;
 
+    private final MemberChatRoomRepository memberChatRoomRepository;
+
     public Page<ChatDto> getChatList(Long roomId, Pageable pageable) {
         Page<Chat> chats = chatRepository.findByChatRoom_Id(roomId, pageable);
-
         return chats.map(ChatDto::of);
     }
 
