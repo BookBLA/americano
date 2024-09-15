@@ -18,19 +18,21 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @RequestMapping("/chat")
 @RequiredArgsConstructor
 public class ChatController {
     private final ChatService chatService;
     private final AlarmService alarmService;
 
-    @MessageMapping("/{memberId}/{targetId}")
-    @SendTo("/{targetId}")
-    public Chat sendMessage( ChatDto chat) {
+    @MessageMapping("/ws/{memberId}/{targetId}")
+    @SendTo("/ws/{targetId}")
+    public ChatDto sendMessage(ChatDto chat) {
         Chat result = chatService.save(chat);
-        return null;
+        alarmService.sendPushAlarmForChat(result);
+        return chat;
     }
 
 
@@ -39,7 +41,7 @@ public class ChatController {
     public ResponseEntity<Page<ChatDto>> getChatList(
             @Parameter(hidden = true) @User LoginUser loginUser,
             @RequestParam Long roomId,
-            @RequestParam Pageable pageable) {
+            Pageable pageable) {
        Page<ChatDto> result = chatService.getChatList(roomId, pageable);
        return ResponseEntity.ok(result);
     }

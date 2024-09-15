@@ -9,5 +9,5 @@ import java.util.List;
 public interface MemberRepositoryCustom {
     List<BookProfileResponse> getAllMembers(Long memberId, MemberBookProfileRequestDto requestDto);
 
-//    List<Member> fetchChatRoomMembers(Long chatRoomId);
+    List<Member> findByChatroomId(Long chatRoomId);
 }

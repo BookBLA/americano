@@ -79,16 +79,19 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .fetch();
     }
 
-//    @Override
-//    public List<Member> fetchChatRoomMembers(Long chatRoomId) {
-//        QMember qMember = QMember.member;
-//        QMemberChatRoom qMemberChatRoom = QMemberChatRoom.memberChatRoom;
-//        QChatRoom qChatRoom = QChatRoom.chatRoom;
-//
-//        queryFactory.select(qMember)
-//                .from(qChatRoom)
-//                .innerJoin()
-//    }
+    @Override
+    public List<Member> findByChatroomId(Long chatRoomId) {
+        QMember qMember = QMember.member;
+        QMemberChatRoom qMemberChatRoom = QMemberChatRoom.memberChatRoom;
+        QChatRoom qChatRoom = QChatRoom.chatRoom;
+
+        return queryFactory.select(qMember)
+                .from(qChatRoom)
+                .innerJoin(qMemberChatRoom).on(qMemberChatRoom.chatRoom.eq(qChatRoom))
+                .innerJoin(qMember).on(qMemberChatRoom.member.eq(qMember)).fetchJoin()
+                .where(qChatRoom.id.eq(chatRoomId))
+                .fetch();
+    }
 
     private BooleanBuilder eqGender(QMemberProfile memberProfile, Gender gender) {
         if (gender == null) {

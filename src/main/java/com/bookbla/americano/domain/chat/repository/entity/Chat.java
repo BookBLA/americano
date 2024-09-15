@@ -3,9 +3,9 @@ package com.bookbla.americano.domain.chat.repository.entity;
 import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import lombok.*;
-import org.joda.time.DateTime;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -23,7 +23,7 @@ public class Chat extends BaseEntity {
 
     private String content;
 
-    private DateTime sendTime;
+    private LocalDateTime sendTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private ChatRoom chatRoom;

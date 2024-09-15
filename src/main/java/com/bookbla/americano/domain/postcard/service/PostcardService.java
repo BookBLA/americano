@@ -2,6 +2,8 @@ package com.bookbla.americano.domain.postcard.service;
 
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.chat.repository.MemberChatRoomRepository;
+import com.bookbla.americano.domain.chat.repository.entity.MemberChatRoom;
 import com.bookbla.americano.domain.chat.service.ChatRoomService;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
@@ -53,6 +55,7 @@ public class PostcardService {
     private final MemberBookService memberBookService;
     private final PushAlarmEventHandler postcardPushAlarmEventListener;
     private final ChatRoomService chatRoomService;
+    private final MemberChatRoomRepository memberChatRoomRepository;
 
     public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
         MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
@@ -183,6 +186,11 @@ public class PostcardService {
                     .orElseThrow(
                             () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
             memberBookmark.addBookmark(35);
+            // 해당 엽서로 생성된 채팅방을 모두 나가게 함
+            // 실제로는 1개만 삭제
+            List<MemberChatRoom> memberChatRooms = memberChatRoomRepository.findByMemberIdAndPostcardId(
+                    postcard.getReceiveMember().getId(), postcard.getId());
+            memberChatRoomRepository.deleteAll(memberChatRooms);
         }
     }
 

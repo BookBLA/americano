@@ -24,6 +24,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final MemberChatRoomRepository memberChatRoomRepository;
 
 
+    @Transactional
     public ChatRoom createChatRoom(List<Member> members, Postcard postcard) {
         // create new Chat Room
         ChatRoom newChatRoom = ChatRoom.builder()
@@ -57,7 +58,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         if (isAlert == null) {
             throw new BaseException(BaseExceptionType.ARGUMENT_NOT_VALID);
         }
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(
+        chatRoomRepository.findById(roomId).orElseThrow(
                 () -> new BaseException(BaseExceptionType.ARGUMENT_NOT_VALID)
         );
 
