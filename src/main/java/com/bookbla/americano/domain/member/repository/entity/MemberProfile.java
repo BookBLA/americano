@@ -1,13 +1,12 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
-import java.time.LocalDate;
-import java.util.Objects;
-
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.vane.badwordfiltering.BadWordFiltering;
+import java.time.LocalDate;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
@@ -40,12 +39,13 @@ public class MemberProfile {
     private String studentIdImageUrl;
 
     @Enumerated(EnumType.STRING)
-    private StudentIdImageStatus studentIdImageStatus;
+    @Builder.Default
+    private StudentIdImageStatus studentIdImageStatus = StudentIdImageStatus.UNREGISTER;
 
     public MemberProfile updateName(String name) {
         BadWordFiltering badWordFiltering = new BadWordFiltering();
 
-        if (badWordFiltering.blankCheck(name)) {
+        if (badWordFiltering.blankCheck(name) || name.contains("북블라")) {
             throw new BaseException(MemberProfileExceptionType.CONTAIN_BAD_WORDS);
         }
 

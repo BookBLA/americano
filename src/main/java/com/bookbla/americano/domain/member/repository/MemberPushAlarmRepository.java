@@ -9,6 +9,8 @@ public interface MemberPushAlarmRepository extends JpaRepository<MemberPushAlarm
 
     List<MemberPushAlarm> findByMember(Member member);
 
+    List<MemberPushAlarm> findByMemberOrderByCreatedAtDesc(Member member);
+
     void deleteAllByMember(Member member);
 
 }

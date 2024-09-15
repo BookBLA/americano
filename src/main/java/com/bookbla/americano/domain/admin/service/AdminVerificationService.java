@@ -37,8 +37,8 @@ public class AdminVerificationService {
     }
 
     private void updateVerification(
-            StatusUpdateDto dto, StudentIdImageStatus status,
-            MemberVerify memberVerify, Member member, MemberProfile memberProfile
+        StatusUpdateDto dto, StudentIdImageStatus status,
+        MemberVerify memberVerify, Member member, MemberProfile memberProfile
     ) {
         if (status.isDone()) {
             updateMemberProfileByStudentIdImageUrl(memberVerify, memberProfile);
@@ -49,15 +49,17 @@ public class AdminVerificationService {
             return;
         }
         memberVerify.fail(dto.getReason());
+        member.updateMemberStatus(MemberStatus.REJECTED, LocalDateTime.now());
         alarmService.sendPushAlarm(member, PushAlarmForm.ADMIN_STUDENT_ID_IMAGE_REJECT);
     }
 
-    private void updateMemberProfileByStudentIdImageUrl(MemberVerify memberVerify, MemberProfile memberProfile) {
+    private void updateMemberProfileByStudentIdImageUrl(MemberVerify memberVerify,
+        MemberProfile memberProfile) {
         memberProfile.updateStudentIdImageUrl(memberVerify.getContents());
     }
 
     private void checkInitialMemberApprove(Member member) {
-        if (member.getMemberStatus() == MemberStatus.APPROVAL) {
+        if (member.getMemberStatus().equals(MemberStatus.APPROVAL)) {
             member.updateMemberStatus(MemberStatus.COMPLETED, LocalDateTime.now());
             alarmService.sendPushAlarm(member, PushAlarmForm.ADMIN_VERIFICATION_ACCEPT);
         }

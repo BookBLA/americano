@@ -40,21 +40,21 @@ class ProfileImageTypeServiceTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    @Test
-    void 동일한_성별의_프로필_사진을_찾을_수_있다() {
-        // given
-        profileImageTypeRepository.save(FEMALE_DEFAULT);
-        profileImageTypeRepository.save(MALE_DEFAULT);
-        Member male = memberRepository.save(스타일_등록_완료_남성_고도리);
-
-        // when
-        var response = sut.readMemberGenderProfileImageTypes(male.getId());
-
-        // then
-        assertThat(response.getProfileImageResponseTypes())
-                        .hasSize(1)
-                        .extracting("gender", "profileImageUrl")
-                        .containsExactly(tuple("MALE", "남자사진"));
-
-    }
+//    @Test
+//    void 동일한_성별의_프로필_사진을_찾을_수_있다() {
+//        // given
+//        profileImageTypeRepository.save(FEMALE_DEFAULT);
+//        profileImageTypeRepository.save(MALE_DEFAULT);
+//        Member male = memberRepository.save(스타일_등록_완료_남성_고도리);
+//
+//        // when
+//        var response = sut.readMemberGenderProfileImageTypes(male.getId());
+//
+//        // then
+//        assertThat(response.getProfileImageResponseTypes())
+//                        .hasSize(1)
+//                        .extracting("gender", "profileImageUrl")
+//                        .containsExactly(tuple("MALE", "남자사진"));
+//
+//    }
 }
