@@ -3,6 +3,12 @@ package com.bookbla.americano.domain.member.repository.entity;
 import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.exception.MemberBookmarkExceptionType;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,11 +16,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -44,8 +45,19 @@ public class MemberBookmark extends BaseEntity {
         bookmarkCount = bookmarkCount - 35;
     }
 
+    public void readPostcard() {
+        validateReadPostcard();
+        bookmarkCount = bookmarkCount - 5;
+    }
+
     public void validateSendPostcard() {
         if (bookmarkCount < 35) {
+            throw new BaseException(MemberBookmarkExceptionType.INVALID_BOOKMARK_COUNTS);
+        }
+    }
+
+    public void validateReadPostcard() {
+        if (bookmarkCount < 5) {
             throw new BaseException(MemberBookmarkExceptionType.INVALID_BOOKMARK_COUNTS);
         }
     }

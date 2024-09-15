@@ -17,6 +17,7 @@ import com.bookbla.americano.domain.notification.event.PostcardAlarmEvent;
 import com.bookbla.americano.domain.notification.event.PushAlarmEventHandler;
 import com.bookbla.americano.domain.postcard.controller.dto.response.ContactInfoResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardFromResponse;
+import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardToResponse;
 import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
@@ -26,6 +27,7 @@ import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
 import com.bookbla.americano.domain.postcard.repository.entity.PostcardType;
 import com.bookbla.americano.domain.postcard.service.dto.request.SendPostcardRequest;
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardFromResponse;
+import com.bookbla.americano.domain.postcard.service.dto.response.PostcardToResponse;
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardTypeResponse;
 import com.bookbla.americano.domain.postcard.service.dto.response.SendPostcardResponse;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -120,6 +123,16 @@ public class PostcardService {
         return memberPostcardFromResponseList;
     }
 
+    // 받은 엽서
+    public List<MemberPostcardToResponse> getPostcardsToMember(Long memberId) {
+        List<PostcardToResponse> postcardToResponseList = postcardRepository.getPostcardsToMember(
+                memberId);
+
+        return postcardToResponseList.stream()
+                .map(MemberPostcardToResponse::new)
+                .collect(Collectors.toList());
+    }
+
     public void readMemberPostcard(Long memberId, Long postcardId) {
         Postcard postcard = postcardRepository.findById(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
@@ -136,7 +149,7 @@ public class PostcardService {
                         memberId)
                 .orElseThrow(
                         () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
-        memberBookmark.sendPostcard();
+        memberBookmark.readPostcard();
         updatePostcardStatus(memberId, postcardId, PostcardStatus.READ);
     }
 
@@ -164,6 +177,12 @@ public class PostcardService {
             Member sendMember = postcard.getSendMember();
             Member receiveMember = postcard.getReceiveMember();
             postcardPushAlarmEventListener.acceptPostcard(new PostcardAlarmEvent(sendMember, receiveMember));
+        } else if (postcardStatus.isRefused()) { // 거절 시 환불
+            MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
+                            postcard.getSendMember().getId())
+                    .orElseThrow(
+                            () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
+            memberBookmark.addBookmark(35);
         }
     }
 
