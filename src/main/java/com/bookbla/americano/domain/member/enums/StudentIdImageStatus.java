@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 public enum StudentIdImageStatus {
 
+    UNREGISTER,
     PENDING,
     DENIAL,
     DONE,
