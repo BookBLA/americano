@@ -56,7 +56,7 @@ class AppleTokenProvider {
         return Map.of(
                 KEY_ID, config.getKeyId(),
                 ALGORITHM, ES256.getValue(),
-                TOKEN_TYPE_KEY, MediaType.JWT.toString()
+                TOKEN_TYPE_KEY, "JWT"
         );
     }
 
