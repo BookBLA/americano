@@ -2,12 +2,10 @@ package com.bookbla.americano.domain.auth.infra.kakao;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.auth.exception.KakaoExceptionType;
+import com.bookbla.americano.domain.auth.infra.kakao.dto.KakaoMemberResponse;
 import com.bookbla.americano.domain.auth.infra.kakao.dto.KakaoOAuth2MemberResponse;
 import com.bookbla.americano.domain.auth.service.OAuth2Provider;
-import com.bookbla.americano.domain.auth.infra.kakao.dto.KakaoMemberResponse;
-import com.bookbla.americano.domain.auth.infra.kakao.dto.KakaoTokenResponse;
 import com.bookbla.americano.domain.member.enums.MemberType;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -16,7 +14,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -30,38 +27,10 @@ public class KakaoOAuth2Provider implements OAuth2Provider {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
-    public KakaoOAuth2MemberResponse getMemberResponse(String authCode) {
-        String accessToken = getAccessToken(authCode);
+    public KakaoOAuth2MemberResponse getMemberResponse(String accessToken) {
         ResponseEntity<KakaoMemberResponse> kakaoMemberResponse = getMemberResource(accessToken);
         return new KakaoOAuth2MemberResponse(kakaoMemberResponse.getBody().getEmail(),
-            kakaoMemberResponse.getBody().getProfileImageUrl());
-    }
-
-    private String getAccessToken(String authCode) {
-        HttpHeaders header = createRequestHeader();
-        MultiValueMap<String, String> body = createRequestBody(authCode);
-
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, header);
-        ResponseEntity<KakaoTokenResponse> kakaoTokenResponse = getKakaoTokenResponse(request);
-
-        return Objects.requireNonNull(kakaoTokenResponse.getBody()).getAccessToken();
-    }
-
-    private ResponseEntity<KakaoTokenResponse> getKakaoTokenResponse(
-            HttpEntity<MultiValueMap<String, String>> request) {
-        String tokenUri = kakaoConfig.getTokenUri();
-
-        try {
-            return restTemplate.exchange(
-                    tokenUri,
-                    HttpMethod.POST,
-                    request,
-                    KakaoTokenResponse.class
-            );
-        } catch (HttpClientErrorException e) {
-            log.error(e.getMessage());
-            throw new BaseException(KakaoExceptionType.TOKEN_ERROR);
-        }
+                kakaoMemberResponse.getBody().getProfileImageUrl());
     }
 
     private ResponseEntity<KakaoMemberResponse> getMemberResource(String accessToken) {
@@ -87,16 +56,6 @@ public class KakaoOAuth2Provider implements OAuth2Provider {
         HttpHeaders header = new HttpHeaders();
         header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         return header;
-    }
-
-    private MultiValueMap<String, String> createRequestBody(String authCode) {
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("code", authCode);
-        body.add("client_id", kakaoConfig.getClientId());
-        body.add("client_secret", kakaoConfig.getClientSecret());
-        body.add("redirect_uri", kakaoConfig.getRedirectUri());
-        body.add("grant_type", kakaoConfig.getGrantType());
-        return body;
     }
 
     @Override
