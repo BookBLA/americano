@@ -18,6 +18,9 @@ public class MemberChatRoom extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
+    private int unreadCount;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
@@ -26,4 +29,8 @@ public class MemberChatRoom extends BaseEntity {
     @JoinColumn(name="member_id")
     private Member member;
 
+
+    public void setUnreadCount(int unreadCount) {
+        this.unreadCount = unreadCount;
+    }
 }

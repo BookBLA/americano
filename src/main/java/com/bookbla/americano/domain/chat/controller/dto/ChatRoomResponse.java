@@ -1,19 +1,19 @@
 package com.bookbla.americano.domain.chat.controller.dto;
 
-import com.bookbla.americano.domain.chat.repository.entity.ChatRoom;
 import com.bookbla.americano.domain.member.enums.Gender;
+import com.bookbla.americano.domain.member.enums.Mbti;
+import com.bookbla.americano.domain.member.enums.SmokeType;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
 import com.bookbla.americano.domain.postcard.repository.entity.PostcardType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class ChatRoomResponse {
 
     MemberResponse otherMember;
@@ -22,36 +22,36 @@ public class ChatRoomResponse {
 
     Long id;
 
+    int unreadCount;
+
     @Getter
-    @Builder
     @Setter
+    @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
+    @ToString
     public static class PostCardResponse {
-        private Long id;
+        private Long postcardId;
         private PostcardType type;
         private String imageUrl;
         private String message;
         private PostcardStatus status;
-
-        public static PostCardResponse of(Postcard postcard) {
-            return PostCardResponse.builder()
-                    .id(postcard.getId())
-                    .type(postcard.getPostcardType())
-                    .imageUrl(postcard.getImageUrl())
-                    .message(postcard.getMessage())
-                    .status(postcard.getPostcardStatus())
-                    .build();
-        }
     }
 
     @Getter
-    @Builder
     @Setter
+    @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
+    @ToString
     public static class MemberResponse {
-        private Long id;
+        private Long memberId;
         private String name;
         private String profileImageUrl;
         private Gender profileGender;
+        private Mbti mbti;
+        private SmokeType smokeType;
+        private Integer height;
+        private String schoolName;
     }
 }
