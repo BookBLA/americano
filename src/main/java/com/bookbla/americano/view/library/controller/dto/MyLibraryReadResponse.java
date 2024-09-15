@@ -39,7 +39,7 @@ public class MyLibraryReadResponse {
                 member.getSchool().getName(),
                 memberStyle.getProfileImageType().getImageUrl(),
                 memberStyle.getMbti().name(),
-                memberStyle.getSmokeType().getValue(),
+                memberStyle.getSmokeType().getDetailValue(),
                 memberStyle.getHeight(),
                 bookResponses
         );
