@@ -24,7 +24,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final MemberChatRoomRepository memberChatRoomRepository;
 
 
-    @Transactional
     public ChatRoom createChatRoom(List<Member> members, Postcard postcard) {
         // create new Chat Room
         ChatRoom newChatRoom = ChatRoom.builder()
