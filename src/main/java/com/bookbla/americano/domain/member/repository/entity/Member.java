@@ -178,6 +178,10 @@ public class Member extends BaseEntity {
         return this;
     }
 
+    public void updateMemberMatchIgnores(Member member) {
+        this.memberMatchIgnores.add(member.getId());
+    }
+
     public boolean hasProfile() {
         return memberProfile != null;
     }

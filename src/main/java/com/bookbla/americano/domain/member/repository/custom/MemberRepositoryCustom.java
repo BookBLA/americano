@@ -13,6 +13,4 @@ public interface MemberRepositoryCustom {
     List<BookProfileResponse> getAllMembers(Long memberId, MemberBookProfileRequestDto requestDto);
 
     List<Map<Long, Long>> getRecommendationMemberIdsAndBookIds(MemberRecommendationDto memberRecommendationDto, List<Postcard> postcards);
-
-//    List<Member> getRecommendationMembers(MemberRecommendationDto memberRecommendationDto, List<Postcard> postcards);
 }

@@ -1,6 +1,8 @@
 package com.bookbla.americano.domain.member.service;
 
+import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberIntroResponse;
+import com.bookbla.americano.domain.member.exception.MemberMatchingExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberMatchRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
@@ -49,7 +51,6 @@ public class MemberMatchingService {
             Long recMemberId = entry.getKey();
             Long recBookId = entry.getValue();
 
-
             if (recMemberId != null && recBookId != null) {
 
                 Member recMember = memberRepository.getByIdOrThrow(recMemberId);
@@ -67,6 +68,8 @@ public class MemberMatchingService {
 
                 MemberIntroResponse memberIntroResponse = MemberIntroResponse.from(recMember, recMemberBook);
                 memberIntroResponses.add(memberIntroResponse);
+            } else {
+                throw new BaseException(MemberMatchingExceptionType.MATCHING_DOESNT_EXIST);
             }
         }
 
@@ -76,17 +79,9 @@ public class MemberMatchingService {
     private List<MemberIntroResponse> getDailyMemberIntroResponses(List<MemberIntroResponse> memberIntroResponses) {
         if (memberIntroResponses.size() > MAX_RECOMMEND) {
             return memberIntroResponses.subList(0, MAX_RECOMMEND);
+        } else if (memberIntroResponses.isEmpty()){
+            throw new BaseException(MemberMatchingExceptionType.MATCHING_DOESNT_EXIST);
         }
         return memberIntroResponses;
     }
-
-        // 이전 작업
-//        MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member, memberBooks);
-//        List<Member> recommendationMembers = memberRepository.getRecommendationMembers(memberRecommendationDto, postcards);
-//        List<MemberIntroResponse> memberIntroResponses = new ArrayList<>();
-//        for (Member recommendationMember : recommendationMembers) {
-//            MemberBook recommendationMemberBook = memberBookRepository.findByMemberOrderByCreatedAt(recommendationMember).get(0);
-//            memberIntroResponses.add(MemberIntroResponse.from(recommendationMember, recommendationMemberBook));
-//        }
-//        return getDailyMemberIntroResponses(memberIntroResponses);
 }

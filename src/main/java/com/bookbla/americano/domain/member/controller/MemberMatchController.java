@@ -24,17 +24,8 @@ public class MemberMatchController {
 
     @Operation(summary = "홈 화면 - 매칭 회원 조회")
     @GetMapping
-    public ResponseEntity<MemberIntroResponse> getRecommendation(
-            @RequestParam @Parameter(hidden = true) @User LoginUser loginUser,
-            @RequestParam int index) {
-
-        List<MemberIntroResponse> recommendations = memberMatchingService.getRecommendationList(loginUser.getMemberId());
-
-        if (index >= 0 && index <= recommendations.size()) {
-            MemberIntroResponse memberIntroResponse = recommendations.get(index);
-            return ResponseEntity.ok(memberIntroResponse);
-        } else {
-            throw new IllegalArgumentException("x");
-        }
+    public ResponseEntity<List<MemberIntroResponse>> getRecommendation(
+            @RequestParam @Parameter(hidden = true) @User LoginUser loginUser) {
+        return ResponseEntity.ok(memberMatchingService.getRecommendationList(loginUser.getMemberId()));
     }
 }
