@@ -7,11 +7,12 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.Objects;
 
 @Getter
 @Embeddable
@@ -49,5 +50,12 @@ public class MemberStyle {
     public MemberStyle updateProfileImageType(ProfileImageType profileImageType) {
         this.profileImageType = profileImageType;
         return this;
+    }
+
+    public String getSmokeTypeName() {
+        if (Objects.isNull(smokeType)) {
+            return "등록되지 않음";
+        }
+        return getSmokeType().name();
     }
 }
