@@ -8,6 +8,7 @@ import com.bookbla.americano.domain.member.controller.dto.request.MemberOnboardi
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStatusUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.*;
 import com.bookbla.americano.domain.member.service.MemberBookmarkService;
+import com.bookbla.americano.domain.member.service.MemberMatchingService;
 import com.bookbla.americano.domain.member.service.MemberProfileService;
 import com.bookbla.americano.domain.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,6 +32,7 @@ public class MemberController {
     private final MemberService memberService;
     private final MemberBookmarkService memberBookmarkService;
     private final MemberProfileService memberProfileService;
+    private final MemberMatchingService memberMatchingService;
 
     @Operation(summary = "사용자 정보 조회 API",
             description = "사용자의 oauth 정보, 타입, 상태 등을 조회<br>"
@@ -41,6 +43,12 @@ public class MemberController {
             @Parameter(hidden = true) @User LoginUser loginUser) {
         MemberResponse memberResponse = memberService.readMember(loginUser.getMemberId());
         return ResponseEntity.ok(memberResponse);
+    }
+
+    @GetMapping("/intro")
+    public ResponseEntity<List<MemberIntroResponse>> readMemberIntro(
+            @Parameter(hidden = true) @User LoginUser loginUser) {
+        return ResponseEntity.ok(memberMatchingService.getRecommendationList(loginUser.getMemberId()));
     }
 
     @Operation(summary = "멤버 상태 업데이트 API")

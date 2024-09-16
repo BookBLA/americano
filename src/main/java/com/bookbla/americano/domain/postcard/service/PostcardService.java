@@ -176,11 +176,20 @@ public class PostcardService {
         postcardRepository.updatePostcardStatus(postcardStatus, postcardId);
 
         // 상태가 수락으로 변경되면 엽서를 보낸 멤버에게 푸시 알림
+        Member sendMember = postcard.getSendMember();
+        Member receiveMember = postcard.getReceiveMember();
+
         if (postcardStatus.isAccept()) {
-            Member sendMember = postcard.getSendMember();
-            Member receiveMember = postcard.getReceiveMember();
+            sendMember.updateMemberMatchIgnores(receiveMember);
+            receiveMember.updateMemberMatchIgnores(sendMember);
+
             postcardPushAlarmEventListener.acceptPostcard(new PostcardAlarmEvent(sendMember, receiveMember));
+        } else if (postcardStatus.isPending()) {
+            sendMember.updateMemberMatchIgnores(receiveMember);
+            receiveMember.updateMemberMatchIgnores(sendMember);
         } else if (postcardStatus.isRefused()) { // 거절 시 환불
+            postcard.updatePostcardStatusRefusedAt();
+          
             MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
                             postcard.getSendMember().getId())
                     .orElseThrow(
