@@ -122,7 +122,8 @@ public class AlarmService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendPushAlarmForChat(List<Member> members, Chat chat) {
         // Push 본문
-        String senderName = chat.getSender().getMemberProfile().getName();
+        Member sender = memberRepository.findById(chat.getSender().getId()).orElseThrow();
+        String senderName = sender.getMemberProfile().getName();
         String chatContent = chat.getContent();
 
         List<Member> alarmAbleMember = new ArrayList<>();

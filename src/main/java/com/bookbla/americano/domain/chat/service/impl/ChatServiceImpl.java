@@ -9,6 +9,7 @@ import com.bookbla.americano.domain.chat.repository.MemberChatRoomRepository;
 import com.bookbla.americano.domain.chat.repository.entity.Chat;
 import com.bookbla.americano.domain.chat.repository.entity.ChatRoom;
 
+import com.bookbla.americano.domain.chat.repository.entity.MemberChatRoom;
 import com.bookbla.americano.domain.chat.service.ChatRoomService;
 import com.bookbla.americano.domain.chat.service.ChatService;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
@@ -42,6 +43,7 @@ public class ChatServiceImpl implements ChatService {
     private final MemberRepository memberRepository;
 
     private final SimpUserRegistry userRegistry;
+
 
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -98,6 +100,11 @@ public class ChatServiceImpl implements ChatService {
             chatBuilder.isRead(true);
         } else {
             chatBuilder.isRead(false);
+            // 상대방이 채팅방에 접속해있지 않으면 unreadCount += 1
+            MemberChatRoom memberchatRoom = memberChatRoomRepository.findByMember_IdAndChatRoom_Id(otherMembers.get(0).getId(), chatDto.getChatRoomId())
+                    .orElseThrow();
+            memberchatRoom.setUnreadCount(memberchatRoom.getUnreadCount()+1);
+            memberChatRoomRepository.save(memberchatRoom);
         }
 
         // 채팅 저장
@@ -139,7 +146,7 @@ public class ChatServiceImpl implements ChatService {
                 .stream().filter(member -> !member.getId().equals(memberId))
                 .collect(Collectors.toList());
         for (Member member : otherMembers) {
-            messagingTemplate.convertAndSend("/topic/chat/room/" +roomId +"/"+ member.getId());
+            messagingTemplate.convertAndSend("/topic/chat/room/" +roomId +"/"+ member.getId(), connection);
         }
 
     }
