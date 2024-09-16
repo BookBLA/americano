@@ -181,8 +181,9 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                         /* 8. 엽서를 보내고 대기중인 상태일 떄는 그 사람이 제외되어야 함 */
                         qMember.id.notIn(receiveByIdsWithPending),
 
-                        /* 8-1. 엽서를 상대방이 거절한 경우 내 홈에서 2주 후에 다시 나와야 함 */
-                        qMember.id.in(receiveByIdsWithRefused)
+                        /* 8-1. 엽서를 상대방이 거절한 경우 내 홈에서 2주 후에 다시 나와야 함
+                        *       = 2주가 안지났으면 홈에서 안나와야 함(거절 후 2주가 안된 id가 notIn())*/
+                        qMember.id.notIn(receiveByIdsWithRefused)
                 )
                 .orderBy(
                         new CaseBuilder()
