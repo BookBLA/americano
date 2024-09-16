@@ -147,8 +147,8 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                         /* 1. 이성만 추천 */
                         qMember.memberProfile.gender.ne(Gender.valueOf(gender)),
 
-                        /* 2. 마지막 로그인으로부터 14일 지나지 않은 사용자만 추천 */
-                        qMember.lastLoginAt.after(fourteenDaysAgo),
+                        /* 2. 마지막 사용으로부터 14일 지나지 않은 사용자만 추천 */
+                        qMember.lastUsedAt.after(fourteenDaysAgo),
 
                         /* 3. 최초 가입 후 이틀이 지났다면 학생증이 인증된 상태만 추천 */
                         ((qMember.createdAt.before(twoDaysAgo).or(qMember.createdAt.eq(twoDaysAgo))
@@ -186,7 +186,6 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 )
                 .orderBy(
                         new CaseBuilder()
-
                                 /* 1. 같은 학교, 같은 책 */
                                 .when(qMember.school.id.eq(schoolId)
                                         .and(qBook.title.in(bookTitles)))

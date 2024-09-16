@@ -1,7 +1,5 @@
 package com.bookbla.americano.domain.member.service.dto;
 
-import com.bookbla.americano.domain.member.enums.Gender;
-import com.bookbla.americano.domain.member.enums.SmokeType;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import lombok.Builder;
@@ -38,7 +36,6 @@ public class MemberRecommendationDto {
                         .build())
                 .collect(Collectors.toList());
 
-
         return MemberRecommendationDto.builder()
                 .memberId(member.getId())
                 .memberGender(member.getMemberProfile().getGenderName())
@@ -48,5 +45,4 @@ public class MemberRecommendationDto {
                 .recommendationBookDtoList(bookResponses)
                 .build();
     }
-
 }
