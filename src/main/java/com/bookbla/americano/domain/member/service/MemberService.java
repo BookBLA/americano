@@ -86,19 +86,25 @@ public class MemberService {
         return MemberStatusResponse.from(member, school);
     }
 
+    @Transactional(readOnly = true)
+    public MemberOnboardingStatusResponse getMemberOnboarding(Long memberId) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+
+        return MemberOnboardingStatusResponse.from(member.getMemberHomeOnboarding(), member.getMemberLibraryOnboarding());
+    }
+
     @Transactional
     public MemberOnboardingStatusResponse updateMemberOnboarding(Long memberId, String memberOnboarding) {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
         if (memberOnboarding.equals(HOME_ONBOARDING)) {
             member.updateMemberHomeOnboarding();
-            return MemberOnboardingStatusResponse.from(member.getMemberHomeOnboarding());
         } else if (memberOnboarding.equals(LIBRARY_ONBOARDING)) {
             member.updateMemberLibraryOnboarding();
-            return MemberOnboardingStatusResponse.from(member.getMemberLibraryOnboarding());
         } else {
             throw new BaseException(MemberExceptionType.ONBOARDING_NOT_VALID);
         }
+        return MemberOnboardingStatusResponse.from(member.getMemberHomeOnboarding(), member.getMemberLibraryOnboarding());
     }
 
     @Transactional
