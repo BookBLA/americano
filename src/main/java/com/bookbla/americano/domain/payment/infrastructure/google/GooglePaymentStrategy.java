@@ -22,7 +22,7 @@ public class GooglePaymentStrategy {
 
         return Payment.builder()
             .money(paymentTable.getPrice())
-            .bookmarks(paymentTable.getCount())
+            .bookmark(paymentTable.getCount())
             .paymentType(PaymentType.GOOGLE)
             .receipt(response.getOrderId())
             .build();

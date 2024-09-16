@@ -12,6 +12,6 @@ public class PaymentPurchaseResponse {
     private final int price;
 
     public static PaymentPurchaseResponse from(Payment payment) {
-        return new PaymentPurchaseResponse(payment.getBookmarks(), payment.getMoney().intValue());
+        return new PaymentPurchaseResponse(payment.getBookmark(), payment.getMoney().intValue());
     }
 }

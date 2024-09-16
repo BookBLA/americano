@@ -2,9 +2,6 @@ package com.bookbla.americano.domain.payment.infrastructure.apple;
 
 import com.bookbla.americano.domain.payment.enums.PaymentTable;
 import com.bookbla.americano.domain.payment.enums.PaymentType;
-import com.bookbla.americano.domain.payment.infrastructure.apple.api.ApplePaymentApiClient;
-import com.bookbla.americano.domain.payment.infrastructure.apple.api.dto.ApplePaymentTransactionInfoResponse;
-import com.bookbla.americano.domain.payment.infrastructure.apple.tokens.DecodedTokenHeader;
 import com.bookbla.americano.domain.payment.infrastructure.apple.tokens.DecodedTokenPayload;
 import com.bookbla.americano.domain.payment.repository.Payment;
 import com.bookbla.americano.domain.payment.service.PaymentStrategy;
@@ -15,25 +12,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class ApplePaymentStrategy implements PaymentStrategy {
 
-    private final ApplePaymentApiClient apiClient;
     private final AppleTokenProvider appleTokenProvider;
-    private final AppleCertificationProvider appleCertificationProvider;
+    private final AppleLibraryProvider appleLibraryProvider;
 
     @Override
     public Payment getPaymentInformation(String transactionId) {
-        String tokenValue = "Bearer " + appleTokenProvider.createRequestToken();
-        ApplePaymentTransactionInfoResponse response = apiClient.getTransactionInformation(tokenValue, transactionId);
-        String responseToken = response.getSignedTransactionInfo();
+        String signedTransactionInfo = appleLibraryProvider.getSignedTransactionInfo(transactionId);
 
-        DecodedTokenHeader header = appleTokenProvider.decodeHeader(responseToken);
-        appleCertificationProvider.validateCertificate(header.getX5c());
+        appleLibraryProvider.validateTransaction(signedTransactionInfo);
 
-        DecodedTokenPayload payload = appleTokenProvider.decodePayload(responseToken);
+        DecodedTokenPayload payload = appleTokenProvider.decodePayload(signedTransactionInfo);
         PaymentTable paymentTable = PaymentTable.from(payload.getInAppPurchaseProductId());
 
         return Payment.builder()
                 .money(paymentTable.getPrice())
-                .bookmarks(paymentTable.getCount())
+                .bookmark(paymentTable.getCount())
                 .paymentType(PaymentType.APPLE)
                 .receipt(transactionId)
                 .build();

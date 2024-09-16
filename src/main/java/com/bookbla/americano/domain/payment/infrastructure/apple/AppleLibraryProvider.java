@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.payment.infrastructure;
+package com.bookbla.americano.domain.payment.infrastructure.apple;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 @Slf4j
-public class AppleStoreLibraryProvider {
+public class AppleLibraryProvider {
 
     private final ApplePaymentsConfig applePaymentsConfig;
 
