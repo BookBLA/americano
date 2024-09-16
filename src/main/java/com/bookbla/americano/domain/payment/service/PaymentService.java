@@ -55,6 +55,7 @@ public class PaymentService {
         return PaymentPurchaseResponse.from(payment);
     }
 
+    // https://developer.apple.com/documentation/storekit/in-app_purchase/original_api_for_in-app_purchase/handling_refund_notifications
     public void receiveAppleNotification(String signedPayload) {
         PaymentStrategy applePaymentStrategy = paymentStrategies.findApple();
         PaymentNotification paymentNotification = applePaymentStrategy.getNotificationInformation(signedPayload);
@@ -64,6 +65,8 @@ public class PaymentService {
             paymentRepository.findByReceipt(receipt)
                     .ifPresent(this::processRefund);
         }
+
+        paymentNotificationRepository.save(paymentNotification);
     }
 
     private void processRefund(Payment payment) {
