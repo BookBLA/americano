@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 @Slf4j
-public class AppleLibraryProvider {
+class AppleLibraryProvider {
 
     private final ApplePaymentsConfig applePaymentsConfig;
 
