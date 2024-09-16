@@ -1,18 +1,21 @@
 package com.bookbla.americano.domain.member.repository.custom.impl;
 
-
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.book.repository.entity.QBook;
+import com.bookbla.americano.domain.chat.repository.entity.QChatRoom;
+import com.bookbla.americano.domain.chat.repository.entity.QMemberChatRoom;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.response.BookProfileResponse;
 import com.bookbla.americano.domain.member.enums.*;
 import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
 import com.bookbla.americano.domain.member.repository.custom.MemberRepositoryCustom;
 import com.bookbla.americano.domain.member.repository.entity.*;
+
 import com.bookbla.americano.domain.member.service.MemberPostcardService;
 import com.bookbla.americano.domain.member.service.dto.MemberRecommendationDto;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
+
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
@@ -226,6 +229,19 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                     return map;
                 })
                 .collect(Collectors.toList());
+    }
+
+    public List<Member> findByChatroomId(Long chatRoomId) {
+        QMember qMember = QMember.member;
+        QMemberChatRoom qMemberChatRoom = QMemberChatRoom.memberChatRoom;
+        QChatRoom qChatRoom = QChatRoom.chatRoom;
+
+        return queryFactory.select(qMember)
+                .from(qChatRoom)
+                .innerJoin(qMemberChatRoom).on(qMemberChatRoom.chatRoom.eq(qChatRoom))
+                .innerJoin(qMember).on(qMemberChatRoom.member.eq(qMember)).fetchJoin()
+                .where(qChatRoom.id.eq(chatRoomId))
+                .fetch();
     }
 
     private BooleanBuilder eqGender(QMemberProfile memberProfile, Gender gender) {

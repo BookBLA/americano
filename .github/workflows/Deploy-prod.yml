@@ -54,18 +54,18 @@ jobs:
           distribution: 'zulu'
           cache: 'gradle'
 
-        # Firebase secret JSON 생성
+      # Google play console JSON 생성
       - name: Create Json File
         id: create-json
         uses: jsdaniell/create-json@1.1.2
         with:
-          name: "bookbla-2024-firebase.json"
-          json: ${{ secrets.FIREBASE_SECRET }}
+          name: "bookbla-google-play-console.json"
+          json: ${{ secrets.BOOKBLA_GOOGLE_PLAY_CONSOLE }}
 
       # JSON 파일 이동
       - name: Move Json File
         run: |
-          mv bookbla-2024-firebase.json ./src/main/resources/
+          mv bookbla-google-play-console.json ./src/main/resources/
 
       # Gradle Package Caching
       - name: Caching Gradle packages
@@ -85,13 +85,13 @@ jobs:
       # push 할 경우 CD job 에 jar file 업로드
       - name: (Push & Main) Archive production artifacts
         if: github.event_name == 'push'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build
           path: build/libs/*.jar
 
   Continuous-Deploy:
-    # master 브랜치에 push 하는 경우에만 배포 JOB 실행
+    # push 하는 경우에만 배포 JOB 실행
     if: github.event_name == 'push'
     needs: Continuous-Integration
     runs-on: ubuntu-latest
@@ -103,9 +103,10 @@ jobs:
 
       # 이전 Job에서 업로드한 Jar file 다운로드
       - name : Download a built Jar File
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: build
+          path: build/libs
 
       # Docker Buildx Setting
       - name: Set up Docker Buildx

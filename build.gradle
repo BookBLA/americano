@@ -94,6 +94,13 @@ dependencies {
     // firebase 
     implementation 'com.google.firebase:firebase-admin:9.0.0'
 
+    // google api
+    implementation 'com.google.apis:google-api-services-androidpublisher:v3-rev20240109-2.0.0'
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.20.0'
+    implementation 'com.google.http-client:google-http-client-gson:1.43.3'
+
+    // apple appstore
+    implementation 'com.apple.itunes.storekit:app-store-server-library:3.1.0'
 }
 
 dependencyManagement {

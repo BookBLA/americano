@@ -46,9 +46,9 @@ public interface PaymentControllerDocs {
             ),
     })
     @PostMapping
-    ResponseEntity<PaymentPurchaseResponse> orderBookmark(
+    ResponseEntity<PaymentPurchaseResponse> orderBookmarkForApple(
             @Parameter(hidden = true) @User LoginUser loginUser,
-            @Valid @RequestBody PaymentInAppPurchaseRequest request,
-            @PathVariable @Parameter(name = "payType", description = "인앱결제 유형입니다", example = "apple, google") String payType
+            @Valid @RequestBody PaymentInAppPurchaseRequest request
+//            @PathVariable @Parameter(name = "payType", description = "인앱결제 유형입니다", example = "apple, google") String payType
     );
 }

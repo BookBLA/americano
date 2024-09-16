@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.admin.service;
 
-import com.bookbla.americano.base.utils.ConvertUtil;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.notification.enums.PushAlarmForm;
 import com.bookbla.americano.domain.notification.service.AlarmService;
@@ -10,7 +10,7 @@ import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
-import java.util.Map;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,26 +32,36 @@ public class AdminVerificationService {
 
         updateVerification(dto, status, memberVerify, member, memberProfile);
         memberProfile.updateStudentIdImageStatus(status);
+
+        checkInitialMemberApprove(member);
     }
 
     private void updateVerification(
-            StatusUpdateDto dto, StudentIdImageStatus status,
-            MemberVerify memberVerify, Member member, MemberProfile memberProfile
+        StatusUpdateDto dto, StudentIdImageStatus status,
+        MemberVerify memberVerify, Member member, MemberProfile memberProfile
     ) {
         if (status.isDone()) {
             updateMemberProfileByStudentIdImageUrl(memberVerify, memberProfile);
             memberVerify.success(dto.getReason());
-            alarmService.sendPushAlarm(member, PushAlarmForm.ADMIN_STUDENT_ID_IMAGE_ACCEPT);
             return;
         }
         if (status.isPending()) {
             return;
         }
         memberVerify.fail(dto.getReason());
+        member.updateMemberStatus(MemberStatus.REJECTED, LocalDateTime.now());
         alarmService.sendPushAlarm(member, PushAlarmForm.ADMIN_STUDENT_ID_IMAGE_REJECT);
     }
 
-    private void updateMemberProfileByStudentIdImageUrl(MemberVerify memberVerify, MemberProfile memberProfile) {
+    private void updateMemberProfileByStudentIdImageUrl(MemberVerify memberVerify,
+        MemberProfile memberProfile) {
         memberProfile.updateStudentIdImageUrl(memberVerify.getContents());
+    }
+
+    private void checkInitialMemberApprove(Member member) {
+        if (member.getMemberStatus().equals(MemberStatus.APPROVAL)) {
+            member.updateMemberStatus(MemberStatus.COMPLETED, LocalDateTime.now());
+            alarmService.sendPushAlarm(member, PushAlarmForm.ADMIN_VERIFICATION_ACCEPT);
+        }
     }
 }

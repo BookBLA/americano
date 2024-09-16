@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.postcard.service.dto.response;
 
 
+import com.bookbla.americano.domain.chat.repository.entity.ChatRoom;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,5 @@ import lombok.RequiredArgsConstructor;
 @Builder
 @RequiredArgsConstructor
 public class SendPostcardResponse {
-
     private final Boolean isSendSuccess;
 }

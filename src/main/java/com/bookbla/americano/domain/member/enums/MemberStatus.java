@@ -15,9 +15,10 @@ import lombok.RequiredArgsConstructor;
 public enum MemberStatus {
 
     PROFILE("p", "회원 정보 입력이 필요"),
-    APPROVAL("a", "회원 승인이 필요"),
     STYLE("s", "스타일 입력이 필요"),
     BOOK("bo", "서재 입력이 필요"),
+    APPROVAL("a", "관리자 승인이 필요"),
+    REJECTED("r", "관리자 승인 거절"),
     COMPLETED("c", "회원 가입 모두 완료"),
     DELETED("d", "회원 탈퇴 상태"),
     BLOCKED("bl", "차단된 회원"),
