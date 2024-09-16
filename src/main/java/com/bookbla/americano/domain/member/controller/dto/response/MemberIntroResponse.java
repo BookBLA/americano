@@ -19,7 +19,7 @@ public class MemberIntroResponse {
     private String memberProfileImageUrl;
     private String memberName;
     private int memberAge;
-    private Gender memberGender;
+    private String memberGender;
     private String memberSchoolName;
 
     private String bookCoverImageUrl;
@@ -33,7 +33,7 @@ public class MemberIntroResponse {
                 .memberProfileImageUrl(member.getMemberStyle().getProfileImageType().getImageUrl())
                 .memberName(member.getMemberProfile().getName())
                 .memberAge(member.getMemberProfile().calculateAge(LocalDate.now()))
-                .memberGender(member.getMemberProfile().getGender())
+                .memberGender(member.getMemberProfile().getGenderName())
                 .memberSchoolName(member.getSchool().getName())
                 .bookCoverImageUrl(memberBook.getBook().getImageUrl())
                 .bookTitle(memberBook.getBook().getTitle())
