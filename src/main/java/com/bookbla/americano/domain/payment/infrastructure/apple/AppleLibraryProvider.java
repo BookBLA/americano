@@ -45,12 +45,7 @@ public class AppleLibraryProvider {
         Environment environment = Environment.fromValue(applePaymentsConfig.getEnviornment());
         long appId = applePaymentsConfig.getAppId();
 
-        Set<InputStream> rootCAS = Set.of(
-                AmericanoApplication.class.getResourceAsStream("/AppleRootCA-G2.cer"),
-                AmericanoApplication.class.getResourceAsStream("/AppleRootCA-G3.cer"),
-                AmericanoApplication.class.getResourceAsStream("/AppleComputerRootCertificate.cer"),
-                AmericanoApplication.class.getResourceAsStream("/AppleIncRootCertificate.cer")
-        );
+        Set<InputStream> rootCAS = readCAS();
 
         SignedDataVerifier signedDataVerifier = new SignedDataVerifier(rootCAS, bundleId, appId, environment, true);
         try {
@@ -59,5 +54,14 @@ public class AppleLibraryProvider {
             log.error(e.getMessage());
             throw new BaseException(ApplePaymentExceptionType.INVALID_APPLE_KEY, e);
         }
+    }
+
+    private Set<InputStream> readCAS() {
+        return Set.of(
+                AmericanoApplication.class.getResourceAsStream("/AppleRootCA-G2.cer"),
+                AmericanoApplication.class.getResourceAsStream("/AppleRootCA-G3.cer"),
+                AmericanoApplication.class.getResourceAsStream("/AppleComputerRootCertificate.cer"),
+                AmericanoApplication.class.getResourceAsStream("/AppleIncRootCertificate.cer")
+        );
     }
 }

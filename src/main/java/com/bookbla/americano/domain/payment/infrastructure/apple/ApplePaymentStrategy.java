@@ -22,7 +22,7 @@ public class ApplePaymentStrategy implements PaymentStrategy {
         appleLibraryProvider.validateTransaction(signedTransactionInfo);
 
         DecodedTokenPayload payload = appleTokenProvider.decodePayload(signedTransactionInfo);
-        PaymentTable paymentTable = PaymentTable.from(payload.getInAppPurchaseProductId());
+        PaymentTable paymentTable = PaymentTable.from(payload.getProductId());
 
         return Payment.builder()
                 .money(paymentTable.getPrice())
