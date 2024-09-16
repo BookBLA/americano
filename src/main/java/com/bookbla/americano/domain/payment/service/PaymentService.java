@@ -7,6 +7,7 @@ import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.payment.controller.dto.request.ApplePaymentInAppPurchaseRequest;
 import com.bookbla.americano.domain.payment.controller.dto.request.GooglePaymentInAppPurchaseRequest;
 import com.bookbla.americano.domain.payment.controller.dto.response.PaymentPurchaseResponse;
+import com.bookbla.americano.domain.payment.exception.PaymentExceptionType;
 import com.bookbla.americano.domain.payment.infrastructure.google.GooglePaymentStrategy;
 import com.bookbla.americano.domain.payment.repository.Payment;
 import com.bookbla.americano.domain.payment.repository.PaymentNotification;
@@ -56,22 +57,24 @@ public class PaymentService {
     }
 
     // https://developer.apple.com/documentation/storekit/in-app_purchase/original_api_for_in-app_purchase/handling_refund_notifications
-    public void receiveAppleNotification(String signedPayload) {
+    public boolean receiveAppleNotification(String signedPayload) {
         PaymentStrategy applePaymentStrategy = paymentStrategies.findApple();
         PaymentNotification paymentNotification = applePaymentStrategy.getNotificationInformation(signedPayload);
+        paymentNotificationRepository.save(paymentNotification);
 
         if (paymentNotification.isRefund()) {
             String receipt = paymentNotification.getReceipt();
-            paymentRepository.findByReceipt(receipt)
-                    .ifPresent(this::processRefund);
+            Payment payment = paymentRepository.findByReceipt(receipt)
+                    .orElseThrow(() -> new BaseException(PaymentExceptionType.PAYMENT_TYPE_NOT_FOUND));
+
+            MemberBookmark memberBookmark = findMemberBookmarkByMemberId(payment.getMemberId());
+            if (payment.canRefund(memberBookmark)) {
+                return false;
+            }
+
+            memberBookmark.addBookmark(payment.getBookmark());
         }
-
-        paymentNotificationRepository.save(paymentNotification);
-    }
-
-    private void processRefund(Payment payment) {
-        MemberBookmark memberBookmark = findMemberBookmarkByMemberId(payment.getMemberId());
-        memberBookmark.addBookmark(payment.getBookmark());
+        return true;
     }
 
     private MemberBookmark findMemberBookmarkByMemberId(Long payment) {

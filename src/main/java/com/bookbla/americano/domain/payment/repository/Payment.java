@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.payment.repository;
 import java.math.BigDecimal;
 
 import com.bookbla.americano.base.entity.BaseEntity;
+import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.payment.enums.PaymentType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -42,5 +43,9 @@ public class Payment extends BaseEntity {
 
     public void updateMemberId(Long memberId) {
         this.memberId = memberId;
+    }
+
+    public boolean canRefund(MemberBookmark memberBookmark) {
+        return memberBookmark.getBookmarkCount() >= bookmark;
     }
 }
