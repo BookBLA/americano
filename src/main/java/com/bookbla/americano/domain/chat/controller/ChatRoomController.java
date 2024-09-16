@@ -29,7 +29,7 @@ public class ChatRoomController {
     public ResponseEntity<?> setIsAlert(@Parameter(hidden=true) @User LoginUser loginUser,
                                         @RequestParam Boolean isAlert,
                                         @RequestParam Long roomId) {
-        chatRoomService.updateIsAlert(roomId, isAlert);
+        chatRoomService.updateIsAlert(roomId, loginUser.getMemberId(), isAlert);
         return ResponseEntity.ok(null);
     }
 

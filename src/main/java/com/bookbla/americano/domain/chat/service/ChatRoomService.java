@@ -18,9 +18,10 @@ public interface ChatRoomService {  // 단위 테스트를 위한 interface
 
     List<ChatRoomResponse> getChatRoomList(Long memberId);
 
-    void updateIsAlert(Long roomId, Boolean isAlert);
+    void updateIsAlert(Long roomId, Long memberId, Boolean isAlert);
 
     void updateChatRoomUnreadCount(Long memberId, Long chatRoomId, int unreadCount);
+
 
     void deleteMemberChatRoom(Long memberId, Long roomId);
 }

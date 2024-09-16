@@ -13,8 +13,8 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long>, ChatR
 
     @Transactional
     @Modifying
-    @Query("update ChatRoom c set c.isAlert = ?2 where c.id = ?1")
-    void updateIsAlert(Long id, Boolean isAlert);
+    @Query("update ChatRoom c set c.lastChat = ?1, c.lastChatTime = ?2 where c.id = ?3")
+    int updateLastChatAndLastChatTimeById(String lastChat, LocalDateTime lastChatTime, Long id);
 
     @Transactional
     @Modifying

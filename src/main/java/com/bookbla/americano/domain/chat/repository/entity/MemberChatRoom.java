@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.chat.repository.entity;
 
 
 import com.bookbla.americano.base.entity.BaseEntity;
+import com.bookbla.americano.domain.member.repository.entity.BooleanToYNConverter;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import lombok.*;
 
@@ -28,7 +29,11 @@ public class MemberChatRoom extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="member_id")
     private Member member;
-
+    
+    @Column
+    @Builder.Default
+    @Convert(converter = BooleanToYNConverter.class)
+    private Boolean isAlert = Boolean.TRUE;
 
     public void setUnreadCount(int unreadCount) {
         this.unreadCount = unreadCount;
