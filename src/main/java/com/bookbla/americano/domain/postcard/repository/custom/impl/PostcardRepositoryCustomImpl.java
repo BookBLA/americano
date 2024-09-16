@@ -1,7 +1,9 @@
 package com.bookbla.americano.domain.postcard.repository.custom.impl;
 
+import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.repository.entity.QMember;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
+import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
 import com.bookbla.americano.domain.postcard.repository.custom.PostcardRepositoryCustom;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
 import com.bookbla.americano.domain.postcard.repository.entity.QPostcard;
@@ -16,11 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.bookbla.americano.domain.school.repository.entity.QSchool.school;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -95,9 +93,18 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
         QPostcard postcard = QPostcard.postcard;
         List<Long> recommendMemberId = postcards.stream()
                 .map(pc -> {
-                    LocalDateTime fourteenDaysLaterRefuse = pc.getPostcardStatusRefusedAt().plusDays(14);
-                    // fourteenDaysLaterRefuse가 now보다 이전인 경우 true를 반환
-                    return fourteenDaysLaterRefuse.isBefore(LocalDateTime.now()) ? pc.getReceiveMember().getId() : null;
+                    pc.validatePostcardStatusRefusedAt(); //PostcardStatusRefusedAt에 값이 잘 저장되었는지 확인
+
+                    LocalDateTime fourteenDaysLaterRefusedAt = pc.getPostcardStatusRefusedAt().plusDays(14);
+                    if (fourteenDaysLaterRefusedAt.isBefore(LocalDateTime.now())) {
+                        if (pc.getReceiveMember() == null) {
+                            throw new BaseException(PostcardExceptionType.POSTCARD_RECEIVE_MEMBER_NOT_FOUND);
+                        }
+                        return pc.getReceiveMember().getId();
+                    } else {
+                        throw new BaseException(PostcardExceptionType.POSTCARD_STATUS_REFUSED_AT_PERIOD_EXCEEDED);
+                        //14일이 안지난 id를 가져가기때문에, return null 해도 filter()부분에서 처리될듯?
+                    }
                 })
                 .filter(id -> id != null)
                 .collect(Collectors.toList());

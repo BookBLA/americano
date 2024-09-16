@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 @Getter
 public class MemberRecommendationDto {
     private Long memberId;
-    private Gender memberGender;
-    private String memberSchoolName;
-    private SmokeType memberSmokeType;
+    private String memberGender;
+    private Long memberSchoolId;
+    private String memberSmokeType;
     private Set<Long> excludeMemberIds;
 
     private final List<RecommendationBookDto> recommendationBookDtoList;
@@ -41,9 +41,9 @@ public class MemberRecommendationDto {
 
         return MemberRecommendationDto.builder()
                 .memberId(member.getId())
-                .memberGender(member.getMemberProfile().getGender())
-                .memberSchoolName(member.getSchool().getName())
-                .memberSmokeType(member.getMemberStyle().getSmokeType())
+                .memberGender(member.getMemberProfile().getGenderName())
+                .memberSchoolId(member.getSchool().getId())
+                .memberSmokeType(member.getMemberStyle().getSmokeTypeName())
                 .excludeMemberIds(member.getMemberMatchIgnores())
                 .recommendationBookDtoList(bookResponses)
                 .build();
