@@ -34,7 +34,7 @@ public class PaymentService {
         MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(memberId)
                 .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
 
-        int updateCount = payment.getBookmarks();
+        int updateCount = payment.getBookmark();
         memberBookmark.addBookmark(updateCount);
 
         return PaymentPurchaseResponse.from(payment);
@@ -49,7 +49,7 @@ public class PaymentService {
         MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(memberId)
             .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
 
-        int updateCount = payment.getBookmarks();
+        int updateCount = payment.getBookmark();
         memberBookmark.addBookmark(updateCount);
 
         return PaymentPurchaseResponse.from(payment);

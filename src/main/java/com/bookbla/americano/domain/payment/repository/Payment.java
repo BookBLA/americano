@@ -31,7 +31,7 @@ public class Payment extends BaseEntity {
 
     private BigDecimal money;
 
-    private int bookmarks;
+    private int bookmark;
 
     private String receipt;
 

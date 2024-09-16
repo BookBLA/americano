@@ -12,8 +12,12 @@ import org.springframework.context.annotation.Configuration;
 public class ApplePaymentsConfig {
 
     private String serverDomain;
+    private String keyPath;
+    private String enviornment;
     private String keyId;
     private String bundleId;
+    private String keyFile;
+    private long appId;
     private String privateKey;
     private String issuerId;
 
