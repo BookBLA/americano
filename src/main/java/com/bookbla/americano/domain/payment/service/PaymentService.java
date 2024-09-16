@@ -54,4 +54,8 @@ public class PaymentService {
 
         return PaymentPurchaseResponse.from(payment);
     }
+
+    public void receiveAppleNotification(String signedPayload) {
+
+    }
 }
