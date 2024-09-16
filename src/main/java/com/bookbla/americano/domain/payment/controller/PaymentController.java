@@ -4,13 +4,12 @@ import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.payment.controller.docs.PaymentControllerDocs;
 import com.bookbla.americano.domain.payment.controller.dto.request.GooglePaymentInAppPurchaseRequest;
-import com.bookbla.americano.domain.payment.controller.dto.request.PaymentInAppPurchaseRequest;
+import com.bookbla.americano.domain.payment.controller.dto.request.ApplePaymentInAppPurchaseRequest;
 import com.bookbla.americano.domain.payment.controller.dto.response.PaymentPurchaseResponse;
 import com.bookbla.americano.domain.payment.service.PaymentService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +25,7 @@ public class PaymentController implements PaymentControllerDocs {
     @PostMapping("/in-app/apple")
     public ResponseEntity<PaymentPurchaseResponse> orderBookmarkForApple(
         @User LoginUser loginUser,
-        @Valid @RequestBody PaymentInAppPurchaseRequest request
+        @Valid @RequestBody ApplePaymentInAppPurchaseRequest request
     ) {
         PaymentPurchaseResponse paymentPurchaseResponse = paymentService.orderBookmarkForApple(
             request, loginUser.getMemberId());

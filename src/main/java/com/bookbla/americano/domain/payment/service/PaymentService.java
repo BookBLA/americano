@@ -5,7 +5,7 @@ import com.bookbla.americano.domain.member.exception.MemberBookmarkExceptionType
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.payment.controller.dto.request.GooglePaymentInAppPurchaseRequest;
-import com.bookbla.americano.domain.payment.controller.dto.request.PaymentInAppPurchaseRequest;
+import com.bookbla.americano.domain.payment.controller.dto.request.ApplePaymentInAppPurchaseRequest;
 import com.bookbla.americano.domain.payment.controller.dto.response.PaymentPurchaseResponse;
 import com.bookbla.americano.domain.payment.infrastructure.google.GooglePaymentStrategy;
 import com.bookbla.americano.domain.payment.repository.Payment;
@@ -24,7 +24,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final MemberBookmarkRepository memberBookmarkRepository;
 
-    public PaymentPurchaseResponse orderBookmarkForApple(PaymentInAppPurchaseRequest request, Long memberId) {
+    public PaymentPurchaseResponse orderBookmarkForApple(ApplePaymentInAppPurchaseRequest request, Long memberId) {
         PaymentStrategy paymentStrategy = paymentStrategies.find("apple");
 
         Payment payment = paymentStrategy.getPaymentInformation(request.getTransactionId());
