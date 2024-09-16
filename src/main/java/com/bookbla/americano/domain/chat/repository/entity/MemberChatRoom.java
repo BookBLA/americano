@@ -38,4 +38,8 @@ public class MemberChatRoom extends BaseEntity {
     public void setUnreadCount(int unreadCount) {
         this.unreadCount = unreadCount;
     }
+
+    public void setIsAlert(Boolean isAlert) {
+        this.isAlert = isAlert;
+    }
 }

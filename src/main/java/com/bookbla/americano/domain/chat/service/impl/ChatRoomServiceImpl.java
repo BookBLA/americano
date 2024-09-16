@@ -71,7 +71,11 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         chatRoomRepository.findById(roomId).orElseThrow(
                 () -> new BaseException(BaseExceptionType.ARGUMENT_NOT_VALID)
         );
-        memberChatRoomRepository.updateIsAlertByChatRoomIdAndMemberId(roomId, memberId, isAlert);
+
+        MemberChatRoom memberChatRoom = memberChatRoomRepository.findByMember_IdAndChatRoom_Id(memberId, roomId)
+                .orElseThrow();
+        memberChatRoom.setIsAlert(isAlert);
+        memberChatRoomRepository.save(memberChatRoom);
     }
 
     @Override
