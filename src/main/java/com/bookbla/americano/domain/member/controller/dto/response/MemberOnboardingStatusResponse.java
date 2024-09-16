@@ -9,11 +9,13 @@ import lombok.Getter;
 @AllArgsConstructor
 public class MemberOnboardingStatusResponse {
 
-    private Boolean onboarding;
+    private Boolean homeOnboardingStatus;
+    private Boolean libraryOnboardingStatus;
 
-    public static MemberOnboardingStatusResponse from(Boolean onboarding) {
+    public static MemberOnboardingStatusResponse from(Boolean home, Boolean library) {
         return MemberOnboardingStatusResponse.builder()
-                .onboarding(onboarding)
+                .homeOnboardingStatus(home)
+                .libraryOnboardingStatus(library)
                 .build();
     }
 }
