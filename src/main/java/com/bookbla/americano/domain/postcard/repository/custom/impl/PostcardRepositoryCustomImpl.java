@@ -59,7 +59,7 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                 .where(
                         postcard.sendMember.id.eq(sendMemberId),
                         postcard.postcardStatus.eq(postcardStatus)
-                );
+                ).fetch();
     }
 
     public List<PostcardToResponse> getPostcardsToMember(Long memberId) {
@@ -109,7 +109,7 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                         postcard.sendMember.id.eq(sendMemberId),
                         postcard.postcardStatus.eq(PostcardStatus.REFUSED),
                         postcard.receiveMember.id.in(recommendMemberId)
-                );
+                ).fetch();
     }
 
     public List<Postcard> refuseExpiredPostcard() {
