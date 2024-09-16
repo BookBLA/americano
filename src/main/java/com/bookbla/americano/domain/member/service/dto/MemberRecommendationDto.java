@@ -27,7 +27,6 @@ public class MemberRecommendationDto {
     public static class RecommendationBookDto {
         private final String bookTitle;
         private final List<String> bookAuthors;
-
     }
 
     public static MemberRecommendationDto from(Member member, List<MemberBook> memberBooks) {

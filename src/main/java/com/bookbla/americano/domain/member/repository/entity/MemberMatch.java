@@ -11,6 +11,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberMatch {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,9 +30,9 @@ public class MemberMatch {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "passed_member_id")
-    private Member passedMember; // 거절된 회원
+    private Member passedMember; // 무시된 회원(새로운 사람 만나기)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "passed_book_id")
-    private Book passedBook;  // 거절된 회원의 책
+    private Book passedBook;  // 무시된 회원의 책
 }
