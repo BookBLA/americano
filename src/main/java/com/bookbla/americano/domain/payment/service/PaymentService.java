@@ -4,8 +4,8 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.exception.MemberBookmarkExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
-import com.bookbla.americano.domain.payment.controller.dto.request.GooglePaymentInAppPurchaseRequest;
 import com.bookbla.americano.domain.payment.controller.dto.request.ApplePaymentInAppPurchaseRequest;
+import com.bookbla.americano.domain.payment.controller.dto.request.GooglePaymentInAppPurchaseRequest;
 import com.bookbla.americano.domain.payment.controller.dto.response.PaymentPurchaseResponse;
 import com.bookbla.americano.domain.payment.infrastructure.google.GooglePaymentStrategy;
 import com.bookbla.americano.domain.payment.repository.Payment;
@@ -25,9 +25,9 @@ public class PaymentService {
     private final MemberBookmarkRepository memberBookmarkRepository;
 
     public PaymentPurchaseResponse orderBookmarkForApple(ApplePaymentInAppPurchaseRequest request, Long memberId) {
-        PaymentStrategy paymentStrategy = paymentStrategies.find("apple");
+        PaymentStrategy applePaymentStrategy = paymentStrategies.findApple();
 
-        Payment payment = paymentStrategy.getPaymentInformation(request.getTransactionId());
+        Payment payment = applePaymentStrategy.getPaymentInformation(request.getTransactionId());
         payment.updateMemberId(memberId);
         paymentRepository.save(payment);
 
@@ -47,7 +47,7 @@ public class PaymentService {
         paymentRepository.save(payment);
 
         MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(memberId)
-            .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
+                .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
 
         int updateCount = payment.getBookmark();
         memberBookmark.addBookmark(updateCount);
@@ -56,6 +56,7 @@ public class PaymentService {
     }
 
     public void receiveAppleNotification(String signedPayload) {
-
+        PaymentStrategy applePaymentStrategy = paymentStrategies.findApple();
+        applePaymentStrategy.getNotificationInformation(signedPayload);
     }
 }

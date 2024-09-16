@@ -27,4 +27,8 @@ public class PaymentStrategies {
         PaymentType paymentType = PaymentType.from(value);
         return paymentStrategyMap.get(paymentType);
     }
+
+    public PaymentStrategy findApple() {
+        return paymentStrategyMap.get(PaymentType.APPLE);
+    }
 }

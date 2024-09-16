@@ -1,5 +1,7 @@
 package com.bookbla.americano.domain.payment.infrastructure.apple;
 
+import com.apple.itunes.storekit.model.NotificationTypeV2;
+import com.apple.itunes.storekit.model.ResponseBodyV2DecodedPayload;
 import com.bookbla.americano.domain.payment.enums.PaymentTable;
 import com.bookbla.americano.domain.payment.enums.PaymentType;
 import com.bookbla.americano.domain.payment.infrastructure.apple.tokens.DecodedTokenPayload;
@@ -30,6 +32,11 @@ public class ApplePaymentStrategy implements PaymentStrategy {
                 .paymentType(PaymentType.APPLE)
                 .receipt(transactionId)
                 .build();
+    }
+
+    @Override
+    public void getNotificationInformation(String id) {
+        ResponseBodyV2DecodedPayload notificationPayload = appleLibraryProvider.getNotificationPayload(id);
     }
 
     @Override

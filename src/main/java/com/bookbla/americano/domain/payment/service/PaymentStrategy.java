@@ -9,4 +9,6 @@ public interface PaymentStrategy {
 
     Payment getPaymentInformation(String id);
 
+    void getNotificationInformation(String id);
+
 }
