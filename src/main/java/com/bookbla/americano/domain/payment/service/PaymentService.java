@@ -76,7 +76,7 @@ public class PaymentService {
         MemberBookmark memberBookmark = findMemberBookmarkByMemberId(payment.getMemberId());
 
         if (payment.canRefund(memberBookmark)) {
-            memberBookmark.addBookmark(payment.getBookmark());
+            memberBookmark.refundBookmark(payment.getBookmark());
             return true;
         }
 
