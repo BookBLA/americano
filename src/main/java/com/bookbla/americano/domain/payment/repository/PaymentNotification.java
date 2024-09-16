@@ -1,12 +1,7 @@
 package com.bookbla.americano.domain.payment.repository;
 
-import java.math.BigDecimal;
-
 import com.bookbla.americano.base.entity.BaseEntity;
-import com.bookbla.americano.domain.payment.enums.PaymentType;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,29 +13,22 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
 @Getter
+@Builder
 @Entity
-public class Payment extends BaseEntity {
+public class PaymentNotification extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long memberId;
-
-    private BigDecimal money;
-
-    private int bookmark;
-
-    private String receipt;
+    private String type;
 
     private String json;
 
-    @Enumerated(EnumType.STRING)
-    private PaymentType paymentType;
+    private String receipt;
 
-    public void updateMemberId(Long memberId) {
-        this.memberId = memberId;
-    }
+    private String productId;
+
+
 }

@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.payment.service;
 
 import com.bookbla.americano.domain.payment.enums.PaymentType;
 import com.bookbla.americano.domain.payment.repository.Payment;
+import com.bookbla.americano.domain.payment.repository.PaymentNotification;
 
 public interface PaymentStrategy {
 
@@ -9,6 +10,6 @@ public interface PaymentStrategy {
 
     Payment getPaymentInformation(String id);
 
-    void getNotificationInformation(String id);
+    PaymentNotification getNotificationInformation(String id);
 
 }
