@@ -51,19 +51,6 @@ jobs:
           distribution: 'zulu'
           cache: 'gradle'
 
-      # Firebase secret JSON 생성
-      - name: Create Json File
-        id: create-json
-        uses: jsdaniell/create-json@1.1.2
-        with:
-          name: "bookbla-2024-firebase.json"
-          json: ${{ secrets.FIREBASE_SECRET }}
-
-      # JSON 파일 이동
-      - name: Move Json File
-        run: |
-          mv bookbla-2024-firebase.json ./src/main/resources/
-
       # Google play console JSON 생성
       - name: Create Json File
         id: create-json
