@@ -12,9 +12,4 @@ import java.util.Optional;
 public interface MemberChatRoomRepository extends JpaRepository<MemberChatRoom, Long>, MemberChatRoomRepositoryCustom {
     Optional<MemberChatRoom> findByMember_IdAndChatRoom_Id(Long memberId, Long chatRoomId);
 
-
-<<<<<<< HEAD
-=======
-
->>>>>>> chat
 }
