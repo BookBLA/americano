@@ -8,13 +8,14 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final StompHandler stompHandler;
+    private final WebSocketHandShakeHandler webSocketHandShakeHandler;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -24,13 +25,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        //  /chat/ws/connect로 연결하는 endpoint를 생성한다.
-        registry.addEndpoint("/chat/ws/connect").setAllowedOrigins("*");
-    }
 
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        WebSocketMessageBrokerConfigurer.super.configureClientInboundChannel(registration);
-        registration.interceptors(stompHandler);
+        registry.addEndpoint("/chat/ws/connect").setAllowedOrigins("*")
+                .setHandshakeHandler(webSocketHandShakeHandler);
     }
 }

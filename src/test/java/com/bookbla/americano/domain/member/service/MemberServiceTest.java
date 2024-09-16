@@ -31,15 +31,15 @@ class MemberServiceTest {
     @Autowired
     private MemberService sut;
 
-    @ParameterizedTest
-    @ValueSource(strings = {"HOME", "LIBRARY"})
-    void 온보딩_상태를_변경할_수_있다(String value) {
+    @Test
+    void 온보딩_상태를_변경할_수_있다() {
         // given
         Member member = memberRepository.save(Member.builder().build());
         // when
-        MemberOnboardingStatusResponse response = sut.updateMemberOnboarding(member.getId(), value);
+        MemberOnboardingStatusResponse response = sut.updateMemberOnboarding(member.getId(), "HOME");
         // then
-        assertThat(response.getOnboarding()).isTrue();
+        assertThat(response.getHomeOnboardingStatus()).isTrue();
+        assertThat(response.getLibraryOnboardingStatus()).isFalse();
     }
 
     @Test

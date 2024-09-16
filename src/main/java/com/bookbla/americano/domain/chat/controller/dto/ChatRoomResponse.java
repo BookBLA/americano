@@ -8,6 +8,9 @@ import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
 import com.bookbla.americano.domain.postcard.repository.entity.PostcardType;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
+
 @Getter
 @Setter
 @Builder
@@ -23,6 +26,12 @@ public class ChatRoomResponse {
     Long id;
 
     int unreadCount;
+
+    String lastChat;
+
+    LocalDateTime lastChatTime;
+
+    Boolean isAlert;
 
     @Getter
     @Setter

@@ -61,6 +61,14 @@ public class MemberController {
         return ResponseEntity.ok(memberStatusResponse);
     }
 
+    @Operation(summary = "사용자 온모딩 모달 상태 조회 API")
+    @GetMapping("/onboarding")
+    public ResponseEntity<MemberOnboardingStatusResponse> getOnboardingStatus(
+            @Parameter(hidden = true) @User LoginUser loginUser
+    ) {
+        return ResponseEntity.ok(memberService.getMemberOnboarding(loginUser.getMemberId()));
+    }
+
     @Operation(summary = "사용자 온보딩 모달 상태 업데이트 API",
             description = "사용자의 온보딩 상태를 업데이트<br>"
                    + "memberOnboardingStatus : [HOME, LIBRARY]")

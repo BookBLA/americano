@@ -30,7 +30,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         // create new Chat Room
         ChatRoom newChatRoom = ChatRoom.builder()
                 .postcard(postcard)
-                .isAlert(true)
+                .lastChat(postcard.getMessage())
+                .lastChatTime(postcard.getCreatedAt())
                 .build();
         chatRoomRepository.save(newChatRoom);
 
@@ -39,6 +40,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
             memberChatRoomRepository.save(
                     MemberChatRoom.builder()
                             .chatRoom(newChatRoom)
+                            .unreadCount(1)
+                            .isAlert(true)
                             .member(member)
                             .build()
             );
@@ -61,7 +64,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     }
 
     @Override
-    public void updateIsAlert(Long roomId, Boolean isAlert) {
+    public void updateIsAlert(Long roomId, Long memberId, Boolean isAlert) {
         if (isAlert == null) {
             throw new BaseException(BaseExceptionType.ARGUMENT_NOT_VALID);
         }
@@ -69,7 +72,10 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 () -> new BaseException(BaseExceptionType.ARGUMENT_NOT_VALID)
         );
 
-        chatRoomRepository.updateIsAlert(roomId, isAlert);
+        MemberChatRoom memberChatRoom = memberChatRoomRepository.findByMember_IdAndChatRoom_Id(memberId, roomId)
+                .orElseThrow();
+        memberChatRoom.setIsAlert(isAlert);
+        memberChatRoomRepository.save(memberChatRoom);
     }
 
     @Override
