@@ -28,6 +28,8 @@ public class AuthService {
         Member member = memberRepository.findByMemberTypeAndOauthEmail(memberType, oAuth2MemberResponse.getEmail())
                 .orElseGet(() -> signUp(oAuth2MemberResponse));
 
+        member.updateLastLoginAt();
+
         String accessToken = jwtProvider.createToken(member.getId().toString());
         return LoginResponse.of(accessToken, member);
     }

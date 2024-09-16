@@ -12,6 +12,12 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.bookbla.americano.domain.school.repository.entity.QSchool.school;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,6 +51,17 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
     }
 
     @Override
+    public List<Long> findReceiveByIdsWithPostcardStatus(Long sendMemberId, PostcardStatus postcardStatus) {
+        QPostcard postcard = QPostcard.postcard;
+        return queryFactory
+                .select(postcard.receiveMember.id)
+                .from(postcard)
+                .where(
+                        postcard.sendMember.id.eq(sendMemberId),
+                        postcard.postcardStatus.eq(postcardStatus)
+                ).fetch();
+    }
+
     public List<PostcardToResponse> getPostcardsToMember(Long memberId) {
         QMember member = QMember.member;
         QPostcard postcard = QPostcard.postcard;
@@ -74,6 +91,27 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
     }
 
     @Override
+    public List<Long> findReceiveByIdsRefused(Long sendMemberId, List<Postcard> postcards) {
+        QPostcard postcard = QPostcard.postcard;
+        List<Long> recommendMemberId = postcards.stream()
+                .map(pc -> {
+                    LocalDateTime fourteenDaysLaterRefuse = pc.getPostcardStatusRefusedAt().plusDays(14);
+                    // fourteenDaysLaterRefuse가 now보다 이전인 경우 true를 반환
+                    return fourteenDaysLaterRefuse.isBefore(LocalDateTime.now()) ? pc.getReceiveMember().getId() : null;
+                })
+                .filter(id -> id != null)
+                .collect(Collectors.toList());
+
+        return queryFactory
+                .select(postcard.receiveMember.id)
+                .from(postcard)
+                .where(
+                        postcard.sendMember.id.eq(sendMemberId),
+                        postcard.postcardStatus.eq(PostcardStatus.REFUSED),
+                        postcard.receiveMember.id.in(recommendMemberId)
+                ).fetch();
+    }
+
     public List<Postcard> refuseExpiredPostcard() {
         QPostcard postcard = QPostcard.postcard;
 

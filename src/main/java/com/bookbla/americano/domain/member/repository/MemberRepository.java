@@ -52,5 +52,4 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
                     "and not m.member_status = 'PROFILE' " +
                     "and m.gender = 'FEMALE'")
     long countValidMembers(@Param("schoolId") Long schoolId);
-
 }

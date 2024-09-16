@@ -10,14 +10,18 @@ import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @SuppressWarnings("NonAsciiCharacters")
-@Import({QuerydslConfig.class, JpaConfig.class})
-@DataJpaTest
+//@Import({QuerydslConfig.class, JpaConfig.class})
+//@DataJpaTest
+@SpringBootTest
+@Transactional
 class MemberBookmarkRepositoryTest {
 
     @Autowired

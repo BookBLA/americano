@@ -69,6 +69,8 @@ public class Member extends BaseEntity {
 
     private LocalDateTime statusModifiedAt;
 
+    private LocalDateTime lastLoginAt;
+
     @Embedded
     @Getter(AccessLevel.NONE)
     private MemberProfile memberProfile;
@@ -96,6 +98,10 @@ public class Member extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "reportedMember")
     private Set<MemberReport> reportedMembers = new HashSet<>();
+
+    @Builder.Default
+    @ElementCollection(fetch = FetchType.LAZY)
+    private Set<Long> memberMatchIgnores = new HashSet<>();
 
     @Builder.Default
     private Integer reportedCount = 0; // 신고당한 횟수
@@ -128,6 +134,11 @@ public class Member extends BaseEntity {
 
     public Member updateDeleteAt(LocalDateTime deleteAt) {
         this.deleteAt = deleteAt;
+        return this;
+    }
+
+    public Member updateLastLoginAt() {
+        this.lastLoginAt = LocalDateTime.now();
         return this;
     }
 
@@ -165,6 +176,10 @@ public class Member extends BaseEntity {
         }
         this.reportedCount -= 1;
         return this;
+    }
+
+    public void updateMemberMatchIgnores(Member member) {
+        this.memberMatchIgnores.add(member.getId());
     }
 
     public boolean hasProfile() {
