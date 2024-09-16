@@ -26,11 +26,6 @@ public class ChatRoom extends BaseEntity {
     private Postcard postcard;
 
     @Column
-    @Builder.Default
-    @Convert(converter = BooleanToYNConverter.class)
-    private Boolean isAlert = Boolean.TRUE;
-
-    @Column
     private String lastChat;
 
     private LocalDateTime lastChatTime;
