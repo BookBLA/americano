@@ -10,12 +10,10 @@ import com.bookbla.americano.domain.member.enums.*;
 import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
 import com.bookbla.americano.domain.member.repository.custom.MemberRepositoryCustom;
 import com.bookbla.americano.domain.member.repository.entity.*;
-
 import com.bookbla.americano.domain.member.service.MemberPostcardService;
 import com.bookbla.americano.domain.member.service.dto.MemberRecommendationDto;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
-
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
@@ -139,6 +137,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
         return queryFactory
                 .select(qMember.id, qBook.id)
                 .from(qMember)
+                .join(qMemberBook.member, qMember)
                 .join(qMemberBook.book, qBook)
                 .leftJoin(qMemberMatch)
                 .where(
@@ -182,7 +181,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                         qMember.id.notIn(receiveByIdsWithPending),
 
                         /* 8-1. 엽서를 상대방이 거절한 경우 내 홈에서 2주 후에 다시 나와야 함
-                        *       = 2주가 안지났으면 홈에서 안나와야 함(거절 후 2주가 안된 id가 notIn())*/
+                         *       = 2주가 안지났으면 홈에서 안나와야 함(거절 후 2주가 안된 id가 notIn())*/
                         qMember.id.notIn(receiveByIdsWithRefused)
                 )
                 .orderBy(
