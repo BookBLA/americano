@@ -63,19 +63,31 @@ public class PaymentService {
         paymentNotificationRepository.save(paymentNotification);
 
         if (paymentNotification.isRefund()) {
-            String receipt = paymentNotification.getReceipt();
-            Payment payment = paymentRepository.findByReceipt(receipt)
-                    .orElseThrow(() -> new BaseException(PaymentExceptionType.PAYMENT_TYPE_NOT_FOUND));
-
-            MemberBookmark memberBookmark = findMemberBookmarkByMemberId(payment.getMemberId());
-            if (payment.canRefund(memberBookmark)) {
-                return false;
-            }
-
-            memberBookmark.addBookmark(payment.getBookmark());
+            return handleRefund(paymentNotification);
         }
+
         return true;
     }
+
+    private boolean handleRefund(PaymentNotification paymentNotification) {
+        String receipt = paymentNotification.getReceipt();
+        Payment payment = findPaymentByReceipt(receipt);
+
+        MemberBookmark memberBookmark = findMemberBookmarkByMemberId(payment.getMemberId());
+
+        if (payment.canRefund(memberBookmark)) {
+            memberBookmark.addBookmark(payment.getBookmark());
+            return true;
+        }
+
+        return false;
+    }
+
+    private Payment findPaymentByReceipt(String receipt) {
+        return paymentRepository.findByReceipt(receipt)
+                .orElseThrow(() -> new BaseException(PaymentExceptionType.PAYMENT_TYPE_NOT_FOUND));
+    }
+
 
     private MemberBookmark findMemberBookmarkByMemberId(Long payment) {
         return memberBookmarkRepository.findMemberBookmarkByMemberId(payment)
