@@ -30,5 +30,8 @@ public class PaymentNotification extends BaseEntity {
 
     private String productId;
 
+    public boolean isRefund() {
+        return type.equalsIgnoreCase("REFUND");
+    }
 
 }

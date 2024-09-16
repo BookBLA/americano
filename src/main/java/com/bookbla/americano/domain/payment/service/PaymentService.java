@@ -10,6 +10,7 @@ import com.bookbla.americano.domain.payment.controller.dto.response.PaymentPurch
 import com.bookbla.americano.domain.payment.infrastructure.google.GooglePaymentStrategy;
 import com.bookbla.americano.domain.payment.repository.Payment;
 import com.bookbla.americano.domain.payment.repository.PaymentNotification;
+import com.bookbla.americano.domain.payment.repository.PaymentNotificationRepository;
 import com.bookbla.americano.domain.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PaymentService {
 
+    private final PaymentNotificationRepository paymentNotificationRepository;
     private final PaymentStrategies paymentStrategies;
     private final GooglePaymentStrategy googlePaymentStrategy;
     private final PaymentRepository paymentRepository;
@@ -32,8 +34,7 @@ public class PaymentService {
         payment.updateMemberId(memberId);
         paymentRepository.save(payment);
 
-        MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(memberId)
-                .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
+        MemberBookmark memberBookmark = findMemberBookmarkByMemberId(memberId);
 
         int updateCount = payment.getBookmark();
         memberBookmark.addBookmark(updateCount);
@@ -42,13 +43,11 @@ public class PaymentService {
     }
 
     public PaymentPurchaseResponse orderBookmarkForGoogle(GooglePaymentInAppPurchaseRequest request, Long memberId) {
-
         Payment payment = googlePaymentStrategy.getPaymentInformation(request);
         payment.updateMemberId(memberId);
         paymentRepository.save(payment);
 
-        MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(memberId)
-                .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
+        MemberBookmark memberBookmark = findMemberBookmarkByMemberId(memberId);
 
         int updateCount = payment.getBookmark();
         memberBookmark.addBookmark(updateCount);
@@ -58,7 +57,22 @@ public class PaymentService {
 
     public void receiveAppleNotification(String signedPayload) {
         PaymentStrategy applePaymentStrategy = paymentStrategies.findApple();
-        PaymentNotification notificationInformation = applePaymentStrategy.getNotificationInformation(signedPayload);
+        PaymentNotification paymentNotification = applePaymentStrategy.getNotificationInformation(signedPayload);
 
+        if (paymentNotification.isRefund()) {
+            String receipt = paymentNotification.getReceipt();
+            paymentRepository.findByReceipt(receipt)
+                    .ifPresent(this::processRefund);
+        }
+    }
+
+    private void processRefund(Payment payment) {
+        MemberBookmark memberBookmark = findMemberBookmarkByMemberId(payment.getMemberId());
+        memberBookmark.addBookmark(payment.getBookmark());
+    }
+
+    private MemberBookmark findMemberBookmarkByMemberId(Long payment) {
+        return memberBookmarkRepository.findMemberBookmarkByMemberId(payment)
+                .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
     }
 }
