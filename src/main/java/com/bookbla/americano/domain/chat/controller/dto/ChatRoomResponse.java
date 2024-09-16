@@ -7,11 +7,9 @@ import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
 import com.bookbla.americano.domain.postcard.repository.entity.PostcardType;
 import lombok.*;
-<<<<<<< HEAD
-=======
 
 import java.time.LocalDateTime;
->>>>>>> chat
+
 
 @Getter
 @Setter
@@ -29,15 +27,12 @@ public class ChatRoomResponse {
 
     int unreadCount;
 
-<<<<<<< HEAD
-=======
     String lastChat;
 
     LocalDateTime lastChatTime;
 
     Boolean isAlert;
 
->>>>>>> chat
     @Getter
     @Setter
     @Builder
