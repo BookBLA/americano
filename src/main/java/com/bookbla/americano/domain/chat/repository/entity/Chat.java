@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.chat.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseEntity;
+import com.bookbla.americano.domain.member.repository.entity.BooleanToYNConverter;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import lombok.*;
 
@@ -27,4 +28,9 @@ public class Chat extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private ChatRoom chatRoom;
+
+    @Column
+    @Convert(converter = BooleanToYNConverter.class)
+    private Boolean isRead;
+
 }

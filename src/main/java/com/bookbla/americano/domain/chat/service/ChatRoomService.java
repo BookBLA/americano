@@ -5,6 +5,7 @@ import com.bookbla.americano.domain.chat.repository.entity.ChatRoom;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ChatRoomService {  // 단위 테스트를 위한 interface
@@ -13,9 +14,13 @@ public interface ChatRoomService {  // 단위 테스트를 위한 interface
     // ex) ChatRoom createChatRoom(List<Member> members, Book book);
     ChatRoom createChatRoom(List<Member> members, Postcard postcard);
 
+    void updateChatRoomLastMessage(Long chatRoomId, String lastChat, LocalDateTime lastChatTime);
+
     List<ChatRoomResponse> getChatRoomList(Long memberId);
 
-    void updateIsAlert(Long roomId, Boolean isAlert);
+    void updateIsAlert(Long roomId, Long memberId, Boolean isAlert);
+
+    void updateChatRoomUnreadCount(Long memberId, Long chatRoomId, int unreadCount);
 
     void deleteMemberChatRoom(Long memberId, Long roomId);
 }

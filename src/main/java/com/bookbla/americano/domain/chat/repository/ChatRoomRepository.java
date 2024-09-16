@@ -7,12 +7,14 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long>, ChatRoomRepositoryCustom {
 
     @Transactional
     @Modifying
-    @Query("update ChatRoom c set c.isAlert = ?2 where c.id = ?1")
-    void updateIsAlert(Long id, Boolean isAlert);
+    @Query("update ChatRoom c set c.lastChat = ?1, c.lastChatTime = ?2 where c.id = ?3")
+    int updateLastChatAndLastChatTimeById(String lastChat, LocalDateTime lastChatTime, Long id);
 
 
 }

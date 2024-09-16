@@ -30,4 +30,15 @@ public class MemberChatRoomRepositoryCustomImpl implements MemberChatRoomReposit
                         .and(qMemberChatRoom.member.id.eq(memberId)))
                 .fetch();
     }
+
+    @Override
+    public void updateIsAlertByChatRoomIdAndMemberId(Long chatRoomId, Long memberId, Boolean isAlert) {
+        QMemberChatRoom qMemberChatRoom = QMemberChatRoom.memberChatRoom;
+
+        queryFactory.update(qMemberChatRoom)
+                .set(qMemberChatRoom.isAlert, isAlert)
+                .where(qMemberChatRoom.member.id.eq(memberId))
+                .where(qMemberChatRoom.chatRoom.id.eq(chatRoomId))
+                .execute();
+    }
 }
