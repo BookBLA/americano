@@ -104,9 +104,10 @@ public class MemberController {
     @Operation(summary = "애드몹 시청", description = "애드몹 시청 종료 후 해당 API 호출")
     @PostMapping("/me/admob")
     public ResponseEntity<MemberBookmarkAdmobResponse> watchAdmob(
-            @Parameter(hidden = true) @User LoginUser loginUser
+            @Parameter(hidden = true) @User LoginUser loginUser,
+            @RequestBody @Valid MemberAdmobRequest request
     ) {
-        var memberBookmarkAdmobResponse = memberBookmarkService.updateBookmarkByAdmob(loginUser.getMemberId());
+        var memberBookmarkAdmobResponse = memberBookmarkService.updateBookmarkByAdmob(loginUser.getMemberId(), request);
         return ResponseEntity.ok(memberBookmarkAdmobResponse);
     }
 

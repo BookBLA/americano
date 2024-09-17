@@ -1,7 +1,9 @@
 package com.bookbla.americano.domain.member.service;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberAdmobRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookmarkAdmobResponse;
+import com.bookbla.americano.domain.member.enums.AdmobType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberBookmarkService {
+
     private final MemberBookmarkRepository memberBookmarkRepository;
 
     public int getMemberBookmarkCount(Long memberId) {
@@ -23,13 +26,14 @@ public class MemberBookmarkService {
     }
 
     @Transactional
-    public MemberBookmarkAdmobResponse updateBookmarkByAdmob(Long memberId) {
+    public MemberBookmarkAdmobResponse updateBookmarkByAdmob(Long memberId, MemberAdmobRequest request) {
         MemberBookmark bookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(memberId)
                 .orElseThrow(() -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
 
-        bookmark.watchAdmob();
+        AdmobType admobType = request.getAdmobType();
+        bookmark.watchAdmob(admobType);
 
-        return MemberBookmarkAdmobResponse.from(bookmark);
+        return MemberBookmarkAdmobResponse.of(admobType, bookmark);
     }
 
     public MemberBookmarkAdmobResponse getMemberAdmob(Long memberId) {

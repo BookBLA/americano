@@ -13,7 +13,7 @@ public interface MemberBookmarkRepository extends JpaRepository<MemberBookmark, 
     Optional<MemberBookmark> findMemberBookmarkByMemberId(@Param("memberId") Long memberId);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query(value = "UPDATE member_bookmark SET admob_count = :updateCount", nativeQuery = true)
+    @Query(value = "UPDATE member_bookmark SET free_bookmark_admob_count = :updateCount", nativeQuery = true)
     void resetAdmobCount(@Param("updateCount") int updateCount);
 
 }

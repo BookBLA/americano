@@ -1,7 +1,5 @@
 package com.bookbla.americano.domain.member.repository;
 
-import com.bookbla.americano.base.config.JpaConfig;
-import com.bookbla.americano.base.config.QuerydslConfig;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import org.junit.jupiter.api.AfterEach;
@@ -9,9 +7,7 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,13 +38,13 @@ class MemberBookmarkRepositoryTest {
         sut.resetAdmobCount(5);
 
         // then
-        assertThat(sut.findAll().stream().allMatch(it -> it.getAdmobCount() == 5)).isTrue();
+        assertThat(sut.findAll().stream().allMatch(it -> it.getFreeBookmarkAdmobCount() == 5)).isTrue();
     }
 
     private void setUp() {
         for (int i = 0; i < 100; i++) {
             sut.save(MemberBookmark.builder()
-                    .admobCount(i)
+                    .freeBookmarkAdmobCount(i)
                     .member(memberRepository.save(Member.builder().build()))
                     .build());
         }
