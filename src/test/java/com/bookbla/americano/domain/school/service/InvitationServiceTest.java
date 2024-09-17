@@ -1,10 +1,8 @@
 package com.bookbla.americano.domain.school.service;
 
-import java.util.Optional;
-
-import com.bookbla.americano.domain.member.controller.dto.response.MemberInvitationRewardResponse;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.admin.event.AdminNotificationEventListener;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberInvitationRewardResponse;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -19,13 +17,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.bookbla.americano.domain.school.repository.entity.InvitationStatus.PENDING;
 import static com.bookbla.americano.domain.school.repository.entity.InvitationStatus.BOOKMARK;
-import static com.bookbla.americano.domain.school.repository.entity.InvitationStatus.COMPLETED;
 import static com.bookbla.americano.domain.school.repository.entity.InvitationType.*;
 import static com.bookbla.americano.fixture.Fixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -229,11 +224,14 @@ class InvitationServiceTest {
     @Test
     void 초대되었다면_초대보상을_받을_수_있다() {
         // given
-        Member newbie = memberRepository.save(프로필_등록_완료_여성_김밤비);
+        Member man1 = memberRepository.save(스타일_등록_완료_남성_고도리);
+        Member man2 = memberRepository.save(프로필_등록_완료_남성_리준희);
+        MemberBookmark man1MemberBookmark = memberBookmarkRepository.save(MemberBookmark.builder().member(man1).build());
+        MemberBookmark man2MemberBookmark = memberBookmarkRepository.save(MemberBookmark.builder().member(man2).build());
 
         // when
-        sut.entryInvitationCode(newbie.getId(), new InvitationCodeEntryRequest("고도리초대코드"));
-        MemberInvitationRewardResponse response = sut.getInvitationRewardStatus(newbie.getId());
+        sut.entryInvitationCode(man2.getId(), new InvitationCodeEntryRequest("고도리초대코드"));
+        MemberInvitationRewardResponse response = sut.getInvitationRewardStatus(man2.getId());
 
         // then
         assertThat(response.getInviting()).isFalse();
@@ -243,12 +241,14 @@ class InvitationServiceTest {
     @Test
     void 초대했다면_초대보상을_받을_수_있다() {
         // given
-        Member member = memberRepository.save(스타일_등록_완료_남성_고도리);
-        Member newbie = memberRepository.save(프로필_등록_완료_여성_김밤비);
+        Member man1 = memberRepository.save(스타일_등록_완료_남성_고도리);
+        Member man2 = memberRepository.save(프로필_등록_완료_남성_리준희);
+        MemberBookmark man1MemberBookmark = memberBookmarkRepository.save(MemberBookmark.builder().member(man1).build());
+        MemberBookmark man2MemberBookmark = memberBookmarkRepository.save(MemberBookmark.builder().member(man2).build());
 
         // when
-        sut.entryInvitationCode(newbie.getId(), new InvitationCodeEntryRequest("고도리초대코드"));
-        MemberInvitationRewardResponse response = sut.getInvitationRewardStatus(member.getId());
+        sut.entryInvitationCode(man2.getId(), new InvitationCodeEntryRequest("고도리초대코드"));
+        MemberInvitationRewardResponse response = sut.getInvitationRewardStatus(man1.getId());
 
         // then
         assertThat(response.getInviting()).isTrue();
