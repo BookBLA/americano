@@ -13,6 +13,7 @@ import com.bookbla.americano.domain.member.service.dto.event.AdminNotificationEv
 import com.bookbla.americano.domain.notification.event.PushAlarmEventHandler;
 import com.bookbla.americano.domain.school.controller.dto.request.InvitationCodeEntryRequest;
 import com.bookbla.americano.domain.school.controller.dto.response.InvitationResponse;
+import com.bookbla.americano.domain.school.exception.InvitationExceptionType;
 import com.bookbla.americano.domain.school.repository.InvitationRepository;
 import com.bookbla.americano.domain.school.repository.entity.Invitation;
 import com.bookbla.americano.domain.school.repository.entity.InvitationType;
@@ -52,17 +53,20 @@ public class InvitationService {
     public InvitationResponse entryInvitationCode(Long invitedMemberId, InvitationCodeEntryRequest request) {
         if (FESTIVAL_TEMPORARY_INVITATION_CODE.equals(request.getInvitationCode())) {
             Invitation invitation = createFestivalInvitation(invitedMemberId);
+            invitation.complete();
             return InvitationResponse.from(invitation);
         }
+
+        validateInvitation(invitedMemberId, request.getInvitationCode());
 
         Member invitingMember = memberRepository.findByInvitationCode(request.getInvitationCode())
                 .orElseThrow(() -> new BaseException(MemberExceptionType.INVITATION_CODE_NOT_FOUND));
         Member invitedMember = memberRepository.getByIdOrThrow(invitedMemberId);
 
         Invitation invitation = invitationRepository.findByInvitedMemberId(invitedMemberId)
-                .orElseGet(() -> createInvitation(invitedMember.isWoman(), invitedMemberId, invitingMember.getId()));
+                .orElseGet(() -> createInvitation(invitedMember.isWoman(), invitingMember.getId(), invitedMemberId));
 
-        processInvitation(invitation, invitedMemberId, invitingMember.getId());
+        processInvitationReward(invitation, invitedMemberId, invitingMember.getId());
 
         return InvitationResponse.from(invitation);
     }
@@ -73,8 +77,19 @@ public class InvitationService {
         invitedMemberBookmark.addBookmark(105);
 
         adminNotificationEventListener.sendMessage(new AdminNotificationEvent("축제 코드 입력 +1", "memberId " + invitedMemberId));
-        
+
         return invitationRepository.save(Invitation.fromTempFestival(invitedMemberId));
+    }
+
+    private void validateInvitation(Long invitedMemberId, String invitationCode) {
+        if (invitationRepository.existsByInvitedMemberId(invitedMemberId)) {
+            throw new BaseException(InvitationExceptionType.INVITATION_EXISTS);
+        }
+
+        Member member = memberRepository.getByIdOrThrow(invitedMemberId);
+        if (member.getInvitationCode().equals(invitationCode)) {
+            throw new BaseException(InvitationExceptionType.INVALID_INVITATION_CODE_MYSELF);
+        }
     }
 
     private Invitation createInvitation(
@@ -85,24 +100,39 @@ public class InvitationService {
         InvitationType invitationType = isWoman ? WOMAN : MAN;
 
         Invitation invitation = Invitation.builder()
-                .invitedMemberId(invitingMemberId)
-                .invitingMemberId(invitedMemberId)
+                .invitingMemberId(invitingMemberId)
+                .invitedMemberId(invitedMemberId)
                 .invitationType(invitationType)
                 .build();
 
         return invitationRepository.save(invitation);
     }
 
-    private void processInvitation(
+    private void processInvitationReward(
             Invitation invitation,
             Long invitedMemberId,
             Long invitingMemberId
     ) {
+        if (invitation.isComplete()) {
+            return;
+        }
+
         MemberBookmark invitedMemberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(invitedMemberId)
                 .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
         MemberBookmark invitingMemberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(invitingMemberId)
                 .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
 
+        rewardBookmark(invitation, invitedMemberBookmark, invitingMemberBookmark);
+
+        pushAlarmEventHandler.sendInvitationSuccessMessage(invitingMemberBookmark.getMember());
+        invitation.complete();
+    }
+
+    private void rewardBookmark(
+            Invitation invitation,
+            MemberBookmark invitedMemberBookmark,
+            MemberBookmark invitingMemberBookmark
+    ) {
         if (invitation.isWomanInvitation()) {
             invitedMemberBookmark.addWomanInvitationBookmark();
             invitingMemberBookmark.addWomanInvitationBookmark();
@@ -112,7 +142,5 @@ public class InvitationService {
             invitedMemberBookmark.addManInvitationBookmark();
             invitingMemberBookmark.addManInvitationBookmark();
         }
-
-        pushAlarmEventHandler.sendInvitationSuccessMessage(invitingMemberBookmark.getMember());
     }
 }
