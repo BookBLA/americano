@@ -20,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.bookbla.americano.domain.school.repository.entity.InvitationStatus.BOOKMARK;
 import static com.bookbla.americano.domain.school.repository.entity.InvitationStatus.COMPLETED;
 import static com.bookbla.americano.domain.school.repository.entity.InvitationType.FESTIVAL;
 import static com.bookbla.americano.domain.school.repository.entity.InvitationType.MAN;
@@ -71,7 +72,7 @@ class InvitationServiceTest {
                     () -> assertThat(invitation).isNotNull(),
                     () -> assertThat(invitation.getInvitedMemberId()).isEqualTo(member.getId()),
                     () -> assertThat(invitation.getInvitingMemberId()).isEqualTo(festivalInvitingMemberId),
-                    () -> assertThat(invitation.getInvitationStatus()).isEqualTo(COMPLETED),
+                    () -> assertThat(invitation.getInvitationStatus()).isEqualTo(BOOKMARK),
                     () -> assertThat(invitation.getInvitationType()).isEqualTo(FESTIVAL)
             );
         }
@@ -108,7 +109,7 @@ class InvitationServiceTest {
                     () -> assertThat(invitation).isNotNull(),
                     () -> assertThat(invitation.getInvitedMemberId()).isEqualTo(man2.getId()),
                     () -> assertThat(invitation.getInvitingMemberId()).isEqualTo(man1.getId()),
-                    () -> assertThat(invitation.getInvitationStatus()).isEqualTo(COMPLETED),
+                    () -> assertThat(invitation.getInvitationStatus()).isEqualTo(BOOKMARK),
                     () -> assertThat(invitation.getInvitationType()).isEqualTo(MAN)
             );
         }
@@ -151,7 +152,7 @@ class InvitationServiceTest {
             assertAll(
                     () -> assertThat(invitation.getInvitedMemberId()).isEqualTo(woman.getId()),
                     () -> assertThat(invitation.getInvitingMemberId()).isEqualTo(man.getId()),
-                    () -> assertThat(invitation.getInvitationStatus()).isEqualTo(COMPLETED),
+                    () -> assertThat(invitation.getInvitationStatus()).isEqualTo(BOOKMARK),
                     () -> assertThat(invitation.getInvitationType()).isEqualTo(WOMAN)
             );
         }

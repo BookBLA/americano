@@ -53,7 +53,7 @@ public class InvitationService {
     public InvitationResponse entryInvitationCode(Long invitedMemberId, InvitationCodeEntryRequest request) {
         if (FESTIVAL_TEMPORARY_INVITATION_CODE.equals(request.getInvitationCode())) {
             Invitation invitation = createFestivalInvitation(invitedMemberId);
-            invitation.complete();
+            invitation.bookmark();
             return InvitationResponse.from(invitation);
         }
 
@@ -125,7 +125,7 @@ public class InvitationService {
         rewardBookmark(invitation, invitedMemberBookmark, invitingMemberBookmark);
 
         pushAlarmEventHandler.sendInvitationSuccessMessage(invitingMemberBookmark.getMember());
-        invitation.complete();
+        invitation.bookmark();
     }
 
     private void rewardBookmark(
