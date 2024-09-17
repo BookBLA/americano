@@ -17,7 +17,9 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.notification.service.AlarmService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpSubscription;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
@@ -48,7 +50,10 @@ public class ChatServiceImpl implements ChatService {
     private final SimpMessagingTemplate messagingTemplate;
 
     public Page<ChatDto> getChatList(Long roomId, Pageable pageable) {
-        Page<Chat> chats = chatRepository.findByChatRoom_Id(roomId, pageable);
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                Sort.by("sendTime").descending());
+        Page<Chat> chats = chatRepository.findByChatRoom_Id(roomId, pageRequest);
+
         return chats.map(ChatDto::of);
     }
 
@@ -78,6 +83,7 @@ public class ChatServiceImpl implements ChatService {
         // 채팅방에 참여하고 있는 Member 불러오기
         // MemberChatRoom FetchJoin
         List<Member> members = memberRepository.findByChatroomId(chatDto.getChatRoomId());
+
         // 채팅방에 참여하고 있는 Member 중 sender 를 제외한 Member(상대방) 불러오기
         List<Member> otherMembers = members.stream().filter(member -> !member.getId().equals(chatDto.getSenderId()))
                 .collect(Collectors.toList());
