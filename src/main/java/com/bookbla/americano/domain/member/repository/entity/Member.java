@@ -105,11 +105,11 @@ public class Member extends BaseEntity {
 
     @Column
     @Builder.Default
-    private int newPersonAdmobCount = 2;
+    private Integer newPersonAdmobCount = 2;
 
     @Column
     @Builder.Default
-    private int freeBookmarkAdmobCount = 2;
+    private Integer freeBookmarkAdmobCount = 2;
 
     public Member updatePushToken(String pushToken) {
         this.pushToken = pushToken;
