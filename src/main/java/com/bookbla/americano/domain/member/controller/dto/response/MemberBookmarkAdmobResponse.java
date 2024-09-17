@@ -1,6 +1,5 @@
 package com.bookbla.americano.domain.member.controller.dto.response;
 
-import com.bookbla.americano.domain.member.enums.AdmobType;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,17 +12,15 @@ import lombok.NoArgsConstructor;
 @Getter
 public class MemberBookmarkAdmobResponse {
 
-    private String admobType;
     private int bookmarkCount;
-    private int freeBookmarkCount;
+    private int freeBookmarkAdmobCount;
     private int newPersonAdmobCount;
 
-    public static MemberBookmarkAdmobResponse of(AdmobType admobType, MemberBookmark memberBookmark) {
+    public static MemberBookmarkAdmobResponse from(MemberBookmark memberBookmark) {
         return MemberBookmarkAdmobResponse.builder()
-                .admobType(admobType.name())
                 .bookmarkCount(memberBookmark.getBookmarkCount())
-                .freeBookmarkCount(memberBookmark.getFreeBookmarkAdmobCount())
-                .newPersonAdmobCount(memberBookmark.getFreeBookmarkAdmobCount())
+                .freeBookmarkAdmobCount(memberBookmark.getFreeBookmarkAdmobCount())
+                .newPersonAdmobCount(memberBookmark.getNewPersonAdmobCount())
                 .build();
     }
 }

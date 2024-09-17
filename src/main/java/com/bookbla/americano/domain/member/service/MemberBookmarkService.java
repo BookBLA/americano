@@ -33,14 +33,13 @@ public class MemberBookmarkService {
         AdmobType admobType = request.getAdmobType();
         bookmark.watchAdmob(admobType);
 
-        return MemberBookmarkAdmobResponse.of(admobType, bookmark);
+        return MemberBookmarkAdmobResponse.from(bookmark);
     }
 
-    public MemberBookmarkAdmobResponse getMemberAdmob(Long memberId, String type) {
-        AdmobType admobType = AdmobType.from(type);
-        MemberBookmark bookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(memberId)
+    public MemberBookmarkAdmobResponse getMemberAdmob(Long memberId) {
+        MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(memberId)
                 .orElseThrow(() -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
 
-        return MemberBookmarkAdmobResponse.of(admobType, bookmark);
+        return MemberBookmarkAdmobResponse.from(memberBookmark);
     }
 }

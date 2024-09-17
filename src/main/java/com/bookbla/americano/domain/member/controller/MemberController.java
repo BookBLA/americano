@@ -102,7 +102,7 @@ public class MemberController {
                 memberBookmarkService.getMemberBookmarkCount(loginUser.getMemberId()));
     }
 
-    @Operation(summary = "애드몹 시청", description = "애드몹 시청 종료 후 해당 API 호출")
+    @Operation(summary = "애드몹 소진", description = "애드몹 개수 소진 위해 해당 API 호출")
     @PostMapping("/me/admob")
     public ResponseEntity<MemberBookmarkAdmobResponse> watchAdmob(
             @Parameter(hidden = true) @User LoginUser loginUser,
@@ -115,10 +115,9 @@ public class MemberController {
     @Operation(summary = "애드몹 개수 조회", description = "잔여 애드몹 개수 조회")
     @GetMapping("/me/admob")
     public ResponseEntity<MemberBookmarkAdmobResponse> getAdmob(
-            @Parameter(hidden = true) @User LoginUser loginUser,
-            @RequestParam(value = "admobType", required = false) String admobType
+            @Parameter(hidden = true) @User LoginUser loginUser
     ) {
-        var memberBookmarkAdmobResponse = memberBookmarkService.getMemberAdmob(loginUser.getMemberId(), admobType);
+        var memberBookmarkAdmobResponse = memberBookmarkService.getMemberAdmob(loginUser.getMemberId());
         return ResponseEntity.ok(memberBookmarkAdmobResponse);
     }
 
