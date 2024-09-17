@@ -9,10 +9,12 @@ import com.google.api.services.androidpublisher.model.ProductPurchase;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class GoogleCertificationProvider {
 
     private final GooglePaymentConfig googlePaymentConfig;
@@ -24,7 +26,7 @@ public class GoogleCertificationProvider {
             // Google Play Developer API Method: purchases.products.get
             // https://developers.google.com/android-publisher/api-ref/rest/v3/purchases.products/get?hl=ko
             AndroidPublisher.Purchases.Products.Get get = publisher.purchases().products()
-                .get(googlePaymentConfig.getPackageName(), productId, purchaseToken);
+                    .get(googlePaymentConfig.getPackageName(), productId, purchaseToken);
 
             ProductPurchase purchase = get.execute();
 
@@ -33,8 +35,10 @@ public class GoogleCertificationProvider {
             return GooglePaymentPurchaseResponse.from(purchase);
 
         } catch (IOException e) {
+            log.error(e.getMessage());
             throw new BaseException(GooglePaymentExceptionType.JSON_IO_ERROR);
         } catch (GeneralSecurityException e) {
+            log.error(e.getMessage());
             throw new BaseException(GooglePaymentExceptionType.SECURITY_ERROR);
         }
     }
