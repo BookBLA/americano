@@ -4,10 +4,7 @@ import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.SmokeType;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
-import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
-import com.bookbla.americano.domain.postcard.repository.entity.PostcardType;
 import lombok.*;
-
 import java.time.LocalDateTime;
 
 
@@ -43,6 +40,7 @@ public class ChatRoomResponse {
         private Long postcardId;
         private String imageUrl;
         private String message;
+        private LocalDateTime createdAt;
         private PostcardStatus status;
         private Long senderId;
     }
