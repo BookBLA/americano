@@ -1,39 +1,32 @@
 package com.bookbla.americano.domain.member.repository.custom.impl;
 
-import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.book.repository.entity.QBook;
 import com.bookbla.americano.domain.chat.repository.entity.QChatRoom;
 import com.bookbla.americano.domain.chat.repository.entity.QMemberChatRoom;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.response.BookProfileResponse;
-import com.bookbla.americano.domain.member.enums.*;
-import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
+import com.bookbla.americano.domain.member.enums.Gender;
+import com.bookbla.americano.domain.member.enums.Mbti;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
+import com.bookbla.americano.domain.member.enums.SmokeType;
 import com.bookbla.americano.domain.member.repository.custom.MemberRepositoryCustom;
 import com.bookbla.americano.domain.member.repository.entity.*;
-import com.bookbla.americano.domain.member.service.MemberPostcardService;
 import com.bookbla.americano.domain.member.service.dto.MemberRecommendationDto;
-import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.bookbla.americano.domain.book.repository.entity.QBook.book;
 import static com.bookbla.americano.domain.member.repository.entity.QMember.member;
 import static com.bookbla.americano.domain.member.repository.entity.QMemberBook.memberBook;
-import static com.bookbla.americano.domain.member.repository.entity.QMemberMatch.memberMatch;
-import static com.bookbla.americano.domain.member.repository.entity.QMemberStyle.memberStyle;
-import static com.bookbla.americano.domain.member.repository.entity.QMemberVerify.memberVerify;
 import static com.bookbla.americano.domain.school.repository.entity.QSchool.school;
 
 @Repository
@@ -41,7 +34,6 @@ import static com.bookbla.americano.domain.school.repository.entity.QSchool.scho
 public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
-    private final MemberPostcardService memberPostcardService;
 
     private static final int MAX_RANDOM_MATCHING_COUNT = 10;
 
@@ -100,39 +92,11 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
     public List<Map<Long, Long>> getRecommendationMemberIdsAndBookIds(MemberRecommendationDto recommendationDto, List<Postcard> postcards) {
         QMember qMember = member;
         QMemberBook qMemberBook = memberBook;
-        QMemberStyle qMemberStyle = memberStyle;
         QBook qBook = book;
-        QMemberVerify qMemberVerify = memberVerify;
-        QMemberMatch qMemberMatch = memberMatch;
 
         // 앱 사용자 정보
         Long memberId = recommendationDto.getMemberId();
         String gender = recommendationDto.getMemberGender();
-        Long schoolId = recommendationDto.getMemberSchoolId();
-        String smokeType = recommendationDto.getMemberSmokeType();
-        Set<Long> excludeMemberIds = recommendationDto.getExcludeMemberIds();
-        List<String> bookTitles = recommendationDto.getRecommendationBookDtoList().stream()
-                .map(MemberRecommendationDto.RecommendationBookDto::getBookTitle)
-                .collect(Collectors.toList());
-        List<String> firstAuthorsList = recommendationDto.getRecommendationBookDtoList().stream()
-                .map(bookDto -> {
-                    List<String> authors = bookDto.getBookAuthors();
-                    if (authors.isEmpty()) {
-                        throw new BaseException(MemberBookExceptionType.NOT_FOUND_BOOK_AUTHORS);
-                    }
-                    return authors.get(0);
-                })
-                .collect(Collectors.toList());
-
-        LocalDateTime twoDaysAgo = LocalDateTime.now().minusDays(2);
-        LocalDateTime fourteenDaysAgo = LocalDateTime.now().minusDays(14);
-
-        /* 6 조건 */
-        List<Long> receiveByIdsWithAccept = memberPostcardService.getReceiveByIds(memberId, PostcardStatus.ACCEPT);
-        /* 8 조건 */
-        List<Long> receiveByIdsWithPending = memberPostcardService.getReceiveByIds(memberId, PostcardStatus.PENDING);
-        /* 8-1 조건 */
-        List<Long> receiveByIdsWithRefused = memberPostcardService.getReceiveByIdsRefused(memberId, postcards);
 
         return queryFactory
                 .select(qMember.id, qBook.id)
