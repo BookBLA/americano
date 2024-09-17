@@ -77,8 +77,9 @@ public class Postcard extends BaseEntity {
         }
     }
 
-    public void updatePostcardStatusRefusedAt() { // 일단 PostcardStatus.REFUSED 인 경우입니다.
+    public Postcard updatePostcardStatusRefusedAt() { // 일단 PostcardStatus.REFUSED 인 경우입니다.
         this.postcardStatusRefusedAt = LocalDateTime.now();
+        return this;
     }
 
     public boolean isPending() {

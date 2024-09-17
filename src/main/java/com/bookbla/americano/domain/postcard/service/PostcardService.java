@@ -189,7 +189,7 @@ public class PostcardService {
             receiveMember.updateMemberMatchIgnores(sendMember);
         } else if (postcardStatus.isRefused()) { // 거절 시 환불
             postcard.updatePostcardStatusRefusedAt();
-          
+
             MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
                             postcard.getSendMember().getId())
                     .orElseThrow(
