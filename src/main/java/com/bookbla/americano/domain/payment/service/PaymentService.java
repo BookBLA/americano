@@ -57,19 +57,18 @@ public class PaymentService {
     }
 
     // https://developer.apple.com/documentation/storekit/in-app_purchase/original_api_for_in-app_purchase/handling_refund_notifications
-    public boolean receiveAppleNotification(String signedPayload) {
+    @Transactional(noRollbackFor = {BaseException.class, Exception.class})
+    public void receiveAppleNotification(String signedPayload) {
         PaymentStrategy applePaymentStrategy = paymentStrategies.findApple();
         PaymentNotification paymentNotification = applePaymentStrategy.getNotificationInformation(signedPayload);
         paymentNotificationRepository.save(paymentNotification);
 
         if (paymentNotification.isRefund()) {
-            return handleRefund(paymentNotification);
+            handleRefund(paymentNotification);
         }
-
-        return true;
     }
 
-    private boolean handleRefund(PaymentNotification paymentNotification) {
+    private void handleRefund(PaymentNotification paymentNotification) {
         String receipt = paymentNotification.getReceipt();
         Payment payment = findPaymentByReceipt(receipt);
 
@@ -77,10 +76,7 @@ public class PaymentService {
 
         if (payment.canRefund(memberBookmark)) {
             memberBookmark.refundBookmark(payment.getBookmark());
-            return true;
         }
-
-        return false;
     }
 
     private Payment findPaymentByReceipt(String receipt) {
