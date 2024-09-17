@@ -79,9 +79,7 @@ public class MemberProfileService {
     public MemberNameVerifyResponse verifyMemberName(String name) {
 
         validateDuplicateName(name);
-        BadWordFiltering badWordFiltering = new BadWordFiltering();
-
-        if (badWordFiltering.blankCheck(name) || name.contains("북블라")) {
+        if (!MemberProfile.verifyNickname(name)) {
             throw new BaseException(MemberProfileExceptionType.CONTAIN_BAD_WORDS);
         }
 
