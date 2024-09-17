@@ -42,6 +42,7 @@ public class ChatRoomRepositoryCustomImpl implements ChatRoomRepositoryCustom {
                         qPostcard.postcardType.as("type"),
                         qPostcard.imageUrl.as("imageUrl"),
                         qPostcard.message.as("message"),
+                        qPostcard.sendMember.id.as("senderId"),
                         qPostcard.postcardStatus.as("status")).as("postcard"),
                 Projections.fields(ChatRoomResponse.MemberResponse.class,
                         qMemberOther.id.as("memberId"),
