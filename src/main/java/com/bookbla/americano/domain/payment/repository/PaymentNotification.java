@@ -24,9 +24,9 @@ public class PaymentNotification extends BaseEntity {
 
     private String type;
 
-    private String json;
+    private String information; // 서버로부터 받는 json 정보
 
-    private String receipt;
+    private String receipt; // 거래 후 받은 영수증 정보
 
     private String productId;
 

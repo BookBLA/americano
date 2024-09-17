@@ -34,9 +34,9 @@ public class Payment extends BaseEntity {
 
     private int bookmark;
 
-    private String receipt;
+    private String receipt; // 거래 후 받는 영수증 정보
 
-    private String json;
+    private String information; // 서버로부터 받는 json 정보
 
     @Enumerated(EnumType.STRING)
     private PaymentType paymentType;

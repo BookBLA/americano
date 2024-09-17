@@ -31,7 +31,7 @@ public class ApplePaymentStrategy implements PaymentStrategy {
                 .bookmark(paymentTable.getCount())
                 .paymentType(PaymentType.APPLE)
                 .receipt(transactionId)
-                .json(signedTransactionInfo)
+                .information(signedTransactionInfo)
                 .build();
     }
 
@@ -46,7 +46,7 @@ public class ApplePaymentStrategy implements PaymentStrategy {
         DecodedTokenPayload payload = appleTokenProvider.decodePayload(signedTransactionInfo);
 
         return PaymentNotification.builder()
-                .json(signedTransactionInfo)
+                .information(signedTransactionInfo)
                 .type(notificationType)
                 .receipt(payload.getTransactionId())
                 .productId(payload.getProductId())
