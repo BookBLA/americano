@@ -41,10 +41,10 @@ public class ChatRoomResponse {
     @ToString
     public static class PostCardResponse {
         private Long postcardId;
-        private PostcardType type;
         private String imageUrl;
         private String message;
         private PostcardStatus status;
+        private Long senderId;
     }
 
     @Getter
