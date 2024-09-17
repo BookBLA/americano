@@ -1,20 +1,28 @@
 package com.bookbla.americano.domain.school.service;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.admin.event.AdminNotificationEventListener;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberInvitationResponse;
+import com.bookbla.americano.domain.member.exception.MemberBookmarkExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
+import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
+import com.bookbla.americano.domain.member.service.dto.event.AdminNotificationEvent;
+import com.bookbla.americano.domain.notification.event.PushAlarmEventHandler;
 import com.bookbla.americano.domain.school.controller.dto.request.InvitationCodeEntryRequest;
 import com.bookbla.americano.domain.school.controller.dto.response.InvitationResponse;
 import com.bookbla.americano.domain.school.repository.InvitationRepository;
 import com.bookbla.americano.domain.school.repository.entity.Invitation;
 import com.bookbla.americano.domain.school.repository.entity.InvitationType;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.bookbla.americano.domain.school.repository.entity.InvitationType.*;
+import static com.bookbla.americano.domain.school.repository.entity.InvitationType.MAN;
+import static com.bookbla.americano.domain.school.repository.entity.InvitationType.WOMAN;
 
 
 /*
@@ -30,6 +38,10 @@ public class InvitationService {
 
     private final MemberRepository memberRepository;
     private final InvitationRepository invitationRepository;
+    private final MemberBookmarkRepository memberBookmarkRepository;
+
+    private final PushAlarmEventHandler pushAlarmEventHandler;
+    private final AdminNotificationEventListener adminNotificationEventListener;
 
     @Transactional(readOnly = true)
     public MemberInvitationResponse getInvitationCode(Long memberId) {
@@ -38,8 +50,8 @@ public class InvitationService {
     }
 
     public InvitationResponse entryInvitationCode(Long invitedMemberId, InvitationCodeEntryRequest request) {
-        if (isFestivalTemporaryInvitationCode(request.getInvitationCode())) {
-            Invitation invitation = invitationRepository.save(Invitation.fromTempFestival(invitedMemberId));
+        if (FESTIVAL_TEMPORARY_INVITATION_CODE.equals(request.getInvitationCode())) {
+            Invitation invitation = createFestivalInvitation(invitedMemberId);
             return InvitationResponse.from(invitation);
         }
 
@@ -48,24 +60,59 @@ public class InvitationService {
         Member invitedMember = memberRepository.getByIdOrThrow(invitedMemberId);
 
         Invitation invitation = invitationRepository.findByInvitedMemberId(invitedMemberId)
-                .orElseGet(() -> createInvitationWithInvitedMemberGender(invitedMember, invitingMember));
+                .orElseGet(() -> createInvitation(invitedMember.isWoman(), invitedMemberId, invitingMember.getId()));
+
+        processInvitation(invitation, invitedMemberId, invitingMember.getId());
 
         return InvitationResponse.from(invitation);
     }
 
-    private boolean isFestivalTemporaryInvitationCode(String invitationCode) {
-        return FESTIVAL_TEMPORARY_INVITATION_CODE.equals(invitationCode);
+    private @NotNull Invitation createFestivalInvitation(Long invitedMemberId) {
+        MemberBookmark invitedMemberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(invitedMemberId)
+                .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
+        invitedMemberBookmark.addBookmark(105);
+
+        adminNotificationEventListener.sendMessage(new AdminNotificationEvent("축제 코드 입력 +1", "memberId " + invitedMemberId));
+        
+        return invitationRepository.save(Invitation.fromTempFestival(invitedMemberId));
     }
 
-    private Invitation createInvitationWithInvitedMemberGender(Member invitedMember, Member invitingMember) {
-        InvitationType invitationType = invitedMember.isWoman() ? WOMAN : MAN;
+    private Invitation createInvitation(
+            boolean isWoman,
+            Long invitingMemberId,
+            Long invitedMemberId
+    ) {
+        InvitationType invitationType = isWoman ? WOMAN : MAN;
 
         Invitation invitation = Invitation.builder()
-                .invitedMemberId(invitedMember.getId())
-                .invitingMemberId(invitingMember.getId())
+                .invitedMemberId(invitingMemberId)
+                .invitingMemberId(invitedMemberId)
                 .invitationType(invitationType)
                 .build();
 
         return invitationRepository.save(invitation);
+    }
+
+    private void processInvitation(
+            Invitation invitation,
+            Long invitedMemberId,
+            Long invitingMemberId
+    ) {
+        MemberBookmark invitedMemberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(invitedMemberId)
+                .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
+        MemberBookmark invitingMemberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(invitingMemberId)
+                .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
+
+        if (invitation.isWomanInvitation()) {
+            invitedMemberBookmark.addWomanInvitationBookmark();
+            invitingMemberBookmark.addWomanInvitationBookmark();
+        }
+
+        if (invitation.isManInvitation()) {
+            invitedMemberBookmark.addManInvitationBookmark();
+            invitingMemberBookmark.addManInvitationBookmark();
+        }
+
+        pushAlarmEventHandler.sendInvitationSuccessMessage(invitingMemberBookmark.getMember());
     }
 }
