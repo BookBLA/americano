@@ -74,6 +74,13 @@ public class MemberBookmark extends BaseEntity {
         this.bookmarkCount += count;
     }
 
+    public void refundBookmark(int count) {
+        if (this.bookmarkCount < count) {
+            throw new BaseException(MemberBookmarkExceptionType.INVALID_BOOKMARK_COUNTS);
+        }
+        this.bookmarkCount -= count;
+    }
+
     public void updateBookmarksByInitialBook(int memberBooks) {
         if (memberBooks >= 4) {
             this.bookmarkCount += 60;
