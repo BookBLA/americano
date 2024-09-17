@@ -37,7 +37,7 @@ public class ApplePaymentStrategy implements PaymentStrategy {
 
     @Override
     public PaymentNotification getNotificationInformation(String id) {
-        ResponseBodyV2DecodedPayload notificationPayload = appleLibraryProvider.getNotificationPayload(id);
+        ResponseBodyV2DecodedPayload notificationPayload = appleLibraryProvider.getNotificationDecodedPayload(id);
         String notificationType = notificationPayload.getNotificationType().getValue();
         String signedTransactionInfo = notificationPayload.getData().getSignedTransactionInfo();
 

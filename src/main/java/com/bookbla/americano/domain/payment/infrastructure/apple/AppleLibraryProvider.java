@@ -52,16 +52,7 @@ class AppleLibraryProvider {
         }
     }
 
-    private Set<InputStream> readCAS() {
-        return Set.of(
-                AmericanoApplication.class.getResourceAsStream("/AppleRootCA-G2.cer"),
-                AmericanoApplication.class.getResourceAsStream("/AppleRootCA-G3.cer"),
-                AmericanoApplication.class.getResourceAsStream("/AppleComputerRootCertificate.cer"),
-                AmericanoApplication.class.getResourceAsStream("/AppleIncRootCertificate.cer")
-        );
-    }
-
-    public ResponseBodyV2DecodedPayload getNotificationPayload(String signedPayload) {
+    public ResponseBodyV2DecodedPayload getNotificationDecodedPayload(String signedPayload) {
         SignedDataVerifier signedDataVerifier = createSignedDataVerifier();
         try {
             return signedDataVerifier.verifyAndDecodeNotification(signedPayload);
@@ -76,8 +67,17 @@ class AppleLibraryProvider {
         Environment environment = Environment.fromValue(applePaymentsConfig.getEnviornment());
         long appId = applePaymentsConfig.getAppId();
 
-        Set<InputStream> rootCAS = readCAS();
+        Set<InputStream> rootCAS = readCAs();
 
         return new SignedDataVerifier(rootCAS, bundleId, appId, environment, true);
+    }
+
+    private @NotNull Set<InputStream> readCAs() {
+        return Set.of(
+                AmericanoApplication.class.getResourceAsStream("/AppleRootCA-G2.cer"),
+                AmericanoApplication.class.getResourceAsStream("/AppleRootCA-G3.cer"),
+                AmericanoApplication.class.getResourceAsStream("/AppleComputerRootCertificate.cer"),
+                AmericanoApplication.class.getResourceAsStream("/AppleIncRootCertificate.cer")
+        );
     }
 }
