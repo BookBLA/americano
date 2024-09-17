@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.payment.service;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.exception.MemberBookmarkExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
+import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.payment.controller.dto.request.ApplePaymentInAppPurchaseRequest;
 import com.bookbla.americano.domain.payment.controller.dto.request.GooglePaymentInAppPurchaseRequest;
@@ -27,6 +28,7 @@ public class PaymentService {
     private final GooglePaymentStrategy googlePaymentStrategy;
     private final PaymentRepository paymentRepository;
     private final MemberBookmarkRepository memberBookmarkRepository;
+    private final MemberRepository memberRepository;
 
     public PaymentPurchaseResponse orderBookmarkForApple(ApplePaymentInAppPurchaseRequest request, Long memberId) {
         PaymentStrategy applePaymentStrategy = paymentStrategies.findApple();
@@ -69,8 +71,10 @@ public class PaymentService {
     }
 
     private void handleRefund(PaymentNotification paymentNotification) {
-        String receipt = paymentNotification.getReceipt();
-        Payment payment = findPaymentByReceipt(receipt);
+        Payment payment = findPaymentByReceipt(paymentNotification.getReceipt());
+        if (!memberRepository.existsById(payment.getMemberId())) {
+            return;
+        }
 
         MemberBookmark memberBookmark = findMemberBookmarkByMemberId(payment.getMemberId());
 
