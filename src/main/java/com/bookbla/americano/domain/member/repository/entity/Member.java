@@ -56,22 +56,16 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MemberStatus memberStatus = MemberStatus.PROFILE;
 
-    @Builder.Default
-    @Column(length = 1)
-    @Convert(converter = BooleanToYNConverter.class)
-    private Boolean memberHomeOnboarding = Boolean.FALSE;
-
-    @Builder.Default
-    @Column(length = 1)
-    @Convert(converter = BooleanToYNConverter.class)
-    private Boolean memberLibraryOnboarding = Boolean.FALSE;
-
     private LocalDateTime deleteAt;
 
     private LocalDateTime statusModifiedAt;
 
     @LastModifiedDate
     private LocalDateTime lastUsedAt;
+
+    @Embedded
+    @Getter(AccessLevel.NONE)
+    private MemberModal memberModal;
 
     @Embedded
     @Getter(AccessLevel.NONE)
@@ -121,16 +115,6 @@ public class Member extends BaseEntity {
     public Member updateMemberStatus(MemberStatus memberStatus, LocalDateTime statusModifiedAt) {
         this.memberStatus = memberStatus;
         this.statusModifiedAt = statusModifiedAt;
-        return this;
-    }
-
-    public Member updateMemberHomeOnboarding() {
-        this.memberHomeOnboarding = Boolean.TRUE;
-        return this;
-    }
-
-    public Member updateMemberLibraryOnboarding() {
-        this.memberLibraryOnboarding = Boolean.TRUE;
         return this;
     }
 
@@ -186,6 +170,13 @@ public class Member extends BaseEntity {
 
     public boolean hasProfile() {
         return memberProfile != null;
+    }
+
+    public MemberModal getMemberModal() {
+        if (memberModal == null) {
+            memberModal = MemberModal.builder().build();
+        }
+        return memberModal;
     }
 
     public MemberProfile getMemberProfile() {
