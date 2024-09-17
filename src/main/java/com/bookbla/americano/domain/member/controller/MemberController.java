@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberAdmobRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberInformationUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberOnboardingStatusRequest;
@@ -114,9 +115,10 @@ public class MemberController {
     @Operation(summary = "애드몹 개수 조회", description = "잔여 애드몹 개수 조회")
     @GetMapping("/me/admob")
     public ResponseEntity<MemberBookmarkAdmobResponse> getAdmob(
-            @Parameter(hidden = true) @User LoginUser loginUser
+            @Parameter(hidden = true) @User LoginUser loginUser,
+            @RequestParam(value = "admobType", required = false) String admobType
     ) {
-        var memberBookmarkAdmobResponse = memberBookmarkService.getMemberAdmob(loginUser.getMemberId());
+        var memberBookmarkAdmobResponse = memberBookmarkService.getMemberAdmob(loginUser.getMemberId(), admobType);
         return ResponseEntity.ok(memberBookmarkAdmobResponse);
     }
 

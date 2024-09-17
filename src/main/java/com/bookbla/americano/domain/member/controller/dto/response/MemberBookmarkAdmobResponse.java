@@ -16,12 +16,14 @@ public class MemberBookmarkAdmobResponse {
     private String admobType;
     private int bookmarkCount;
     private int freeBookmarkCount;
+    private int newPersonAdmobCount;
 
     public static MemberBookmarkAdmobResponse of(AdmobType admobType, MemberBookmark memberBookmark) {
         return MemberBookmarkAdmobResponse.builder()
                 .admobType(admobType.name())
                 .bookmarkCount(memberBookmark.getBookmarkCount())
                 .freeBookmarkCount(memberBookmark.getFreeBookmarkAdmobCount())
+                .newPersonAdmobCount(memberBookmark.getFreeBookmarkAdmobCount())
                 .build();
     }
 }

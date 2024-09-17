@@ -36,10 +36,11 @@ public class MemberBookmarkService {
         return MemberBookmarkAdmobResponse.of(admobType, bookmark);
     }
 
-    public MemberBookmarkAdmobResponse getMemberAdmob(Long memberId) {
+    public MemberBookmarkAdmobResponse getMemberAdmob(Long memberId, String type) {
+        AdmobType admobType = AdmobType.from(type);
         MemberBookmark bookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(memberId)
                 .orElseThrow(() -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
 
-        return MemberBookmarkAdmobResponse.from(bookmark);
+        return MemberBookmarkAdmobResponse.of(admobType, bookmark);
     }
 }
