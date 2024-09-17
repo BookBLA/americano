@@ -239,7 +239,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
         return queryFactory.select(qMember)
                 .from(qChatRoom)
                 .innerJoin(qMemberChatRoom).on(qMemberChatRoom.chatRoom.eq(qChatRoom))
-                .innerJoin(qMember).on(qMemberChatRoom.member.eq(qMember)).fetchJoin()
+                .innerJoin(qMember).on(qMemberChatRoom.member.eq(qMember))
                 .where(qChatRoom.id.eq(chatRoomId))
                 .fetch();
     }
