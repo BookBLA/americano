@@ -6,6 +6,4 @@ import java.util.List;
 
 public interface MemberChatRoomRepositoryCustom {
     List<MemberChatRoom> findByMemberIdAndPostcardId(Long memberId, Long postcardId);
-
-    void updateIsAlertByChatRoomIdAndMemberId(Long chatRoomId, Long memberId, Boolean isAlert);
 }
