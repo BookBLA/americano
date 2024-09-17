@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberNameVerifyRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileStudentIdImageUrlUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
@@ -101,8 +102,8 @@ public class MemberProfileController {
     @Operation(summary = "사용자 닉네임 검증 API")
     @PostMapping("/verify/name")
     public ResponseEntity<MemberNameVerifyResponse> verifyMemberName(
-        @RequestBody String name
-    ) {
-        return ResponseEntity.ok(memberProfileService.verifyMemberName(name));
+            @RequestBody @Valid MemberNameVerifyRequest request
+            ) {
+        return ResponseEntity.ok(memberProfileService.verifyMemberName(request.getName()));
     }
 }
