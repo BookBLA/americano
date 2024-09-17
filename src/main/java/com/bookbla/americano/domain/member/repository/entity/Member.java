@@ -11,6 +11,7 @@ import com.bookbla.americano.domain.member.exception.PolicyExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
 import com.bookbla.americano.domain.school.repository.entity.School;
 import lombok.*;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -69,7 +70,8 @@ public class Member extends BaseEntity {
 
     private LocalDateTime statusModifiedAt;
 
-    private LocalDateTime lastLoginAt;
+    @LastModifiedDate
+    private LocalDateTime lastUsedAt;
 
     @Embedded
     @Getter(AccessLevel.NONE)
@@ -137,8 +139,8 @@ public class Member extends BaseEntity {
         return this;
     }
 
-    public Member updateLastLoginAt() {
-        this.lastLoginAt = LocalDateTime.now();
+    public Member updateLastUsedAt() {
+        this.lastUsedAt = LocalDateTime.now();
         return this;
     }
 

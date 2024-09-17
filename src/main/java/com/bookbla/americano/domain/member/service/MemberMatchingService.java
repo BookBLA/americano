@@ -32,11 +32,12 @@ public class MemberMatchingService {
     private final PostcardRepository postcardRepository;
     private final MemberMatchRepository memberMatchRepository;
 
-
     public List<MemberIntroResponse> getRecommendationList(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
         List<Postcard> postcards = postcardRepository.findBySendMember(member);
+
+        member.updateLastUsedAt();
 
         //member, memberBooks로 dto생성
         MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member, memberBooks);

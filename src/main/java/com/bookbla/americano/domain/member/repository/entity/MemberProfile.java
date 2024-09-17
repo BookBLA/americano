@@ -43,15 +43,19 @@ public class MemberProfile {
     private StudentIdImageStatus studentIdImageStatus = StudentIdImageStatus.UNREGISTER;
 
     public MemberProfile updateName(String name) {
-        BadWordFiltering badWordFiltering = new BadWordFiltering();
-
-        if (badWordFiltering.blankCheck(name) || name.contains("북블라")) {
+        if (!verifyNickname(name)) {
             throw new BaseException(MemberProfileExceptionType.CONTAIN_BAD_WORDS);
         }
 
         this.name = name;
 
         return this;
+    }
+
+    public static Boolean verifyNickname(String name) {
+        BadWordFiltering badWordFiltering = new BadWordFiltering();
+
+        return !badWordFiltering.blankCheck(name) && !name.contains("북블라");
     }
 
     public MemberProfile updateBirthDate(LocalDate birthDate) {

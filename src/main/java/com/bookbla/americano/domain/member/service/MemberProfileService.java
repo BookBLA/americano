@@ -6,11 +6,7 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileStudentIdImageUrlUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
-import com.bookbla.americano.domain.member.controller.dto.response.BookProfileResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberBookProfileResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStatusResponse;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberProfileStudentIdReadResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.*;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.exception.MemberEmailExceptionType;
@@ -32,6 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.vane.badwordfiltering.BadWordFiltering;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -80,8 +77,18 @@ public class MemberProfileService {
         return MemberProfileResponse.from(member, profile);
     }
 
-    private void validateDuplicateName(String nickname) {
-        memberRepository.findByMemberProfileName(nickname)
+    public MemberNameVerifyResponse verifyMemberName(String name) {
+
+        validateDuplicateName(name);
+        if (!MemberProfile.verifyNickname(name)) {
+            throw new BaseException(MemberProfileExceptionType.CONTAIN_BAD_WORDS);
+        }
+
+        return MemberNameVerifyResponse.of(true);
+    }
+
+    private void validateDuplicateName(String name) {
+        memberRepository.findByMemberProfileName(name)
                 .ifPresent(profile -> {
                     throw new BaseException(MemberProfileExceptionType.ALREADY_EXISTS_NICKNAME);
                 });
