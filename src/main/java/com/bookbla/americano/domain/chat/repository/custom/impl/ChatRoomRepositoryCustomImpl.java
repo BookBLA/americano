@@ -62,6 +62,7 @@ public class ChatRoomRepositoryCustomImpl implements ChatRoomRepositoryCustom {
                 .innerJoin(qSchool).on(qMemberOther.school.eq(qSchool))
                 .where(qMemberReq.id.eq(memberId))
                 .where(qMemberOther.id.ne(memberId))
+                .orderBy(qChatRoom.lastChatTime.desc())
                 .fetch();
     }
 }

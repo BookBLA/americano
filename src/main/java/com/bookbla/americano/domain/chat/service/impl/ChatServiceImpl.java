@@ -82,6 +82,11 @@ public class ChatServiceImpl implements ChatService {
         List<Member> otherMembers = members.stream().filter(member -> !member.getId().equals(chatDto.getSenderId()))
                 .collect(Collectors.toList());
 
+        // 채팅방에 상대방이 없으면 아무것도 하지 않음
+        if (otherMembers.isEmpty()) {
+            return;
+        }
+
         // 해당 Member 들이 채팅방에 접속했는지 확인
         Set<SimpSubscription> otherSubscription = userRegistry.findSubscriptions(subscription -> {
             String destination = subscription.getDestination();
