@@ -71,5 +71,9 @@ public class Invitation extends BaseEntity {
     public boolean isManInvitation() {
         return this.invitationType == InvitationType.MAN;
     }
+
+    public boolean isComplete() {
+        return this.invitationStatus == COMPLETED;
+    }
 }
 

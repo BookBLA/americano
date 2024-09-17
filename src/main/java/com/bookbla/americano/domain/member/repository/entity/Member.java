@@ -246,6 +246,6 @@ public class Member extends BaseEntity {
     }
 
     public boolean canChangeToComplete(MemberStatus afterStatus) {
-        return memberStatus == MemberStatus.BOOK && afterStatus == MemberStatus.COMPLETED;
+        return memberStatus == MemberStatus.BOOK && afterStatus == MemberStatus.APPROVAL;
     }
 }
