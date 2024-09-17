@@ -81,27 +81,5 @@ public class MemberBlockService {
         memberBlockRepository.delete(memberBlock);
         return MemberBlockDeleteResponse.from(memberBlockId);
 
-        //*
-        //
-        // get - /members/me/admob
-        //post - /members/me/admob
-        //이 두가지 api 모두 parameter를 던져서 어떤 애드몹인지 확인해야 합니다
-        //
-        //예시
-        //export const getReloadAdmobCount = async (what: string) => {
-        //  const res = await Get('members/me/admob', {admobType: what});
-        //  // @ts-ignore
-        //  return res.result.admobCount;
-        //};
-        //
-        //admobType에 'NEWPERSON', 'FREEBOOKMARK' 값을 전달해서 보내면 어떤 타입인지 확인해서 각 상황에 맞는 작업을 하면 될거같아요.
-        //
-        //'NEWPERSON' - 새로운 사람 찾기
-        //이건 admou_count만 줄여주시면 될 것 같아요. 사람 돌리는건 화면에서 다 되니깐
-        //혹시 뭔가 놓친게 있다면 알려주세요
-        //'FREEBOOKMARK' - 매일 무료 책갈피
-        //post요청시에 책갈피 10개 지급해주셔야 합니다.
-        //
-        // /
     }
 }
