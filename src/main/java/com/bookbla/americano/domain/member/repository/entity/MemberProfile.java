@@ -43,7 +43,7 @@ public class MemberProfile {
     private StudentIdImageStatus studentIdImageStatus = StudentIdImageStatus.UNREGISTER;
 
     public MemberProfile updateName(String name) {
-        if (verifyNickname(name)) {
+        if (!verifyNickname(name)) {
             throw new BaseException(MemberProfileExceptionType.CONTAIN_BAD_WORDS);
         }
 
