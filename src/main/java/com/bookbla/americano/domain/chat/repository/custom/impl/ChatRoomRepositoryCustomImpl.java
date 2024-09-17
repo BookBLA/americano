@@ -33,7 +33,7 @@ public class ChatRoomRepositoryCustomImpl implements ChatRoomRepositoryCustom {
         QSchool qSchool = QSchool.school;
         return queryFactory.select(Projections.fields(ChatRoomResponse.class,
                 qChatRoom.id.as("id"),
-                qMemberChatRoomOther.unreadCount.as("unreadCount"),
+                qMemberChatRoomReq.unreadCount.as("unreadCount"),
                 qChatRoom.lastChat.as("lastChat"),
                 qChatRoom.lastChatTime.as("lastChatTime"),
                 qMemberChatRoomReq.isAlert.as("isAlert"),
