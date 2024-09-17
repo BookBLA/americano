@@ -139,86 +139,12 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .from(qMember)
                 .join(qMemberBook.member, qMember)
                 .join(qMemberBook.book, qBook)
-                .leftJoin(qMemberMatch)
                 .where(
                         /* 0. 자기 자신은 추천될 수 없다 */
                         qMember.id.ne(memberId),
 
                         /* 1. 이성만 추천 */
-                        qMember.memberProfile.gender.ne(Gender.valueOf(gender)),
-
-                        /* 2. 마지막 사용으로부터 14일 지나지 않은 사용자만 추천 */
-                        qMember.lastUsedAt.after(fourteenDaysAgo),
-
-                        /* 3. 최초 가입 후 이틀이 지났다면 학생증이 인증된 상태만 추천 */
-                        ((qMember.createdAt.before(twoDaysAgo).or(qMember.createdAt.eq(twoDaysAgo))
-                                .and(qMemberVerify.verifyType.eq(MemberVerifyType.STUDENT_ID))
-                                .and(qMemberVerify.verifyStatus.eq(MemberVerifyStatus.SUCCESS)))),
-
-                        /* 4. 이틀이 지나지 않았다면 그 외 상태도 가능 */
-                        ((qMember.createdAt.after(twoDaysAgo).or(qMember.createdAt.eq(twoDaysAgo))
-                                .and(qMemberVerify.verifyType.eq(MemberVerifyType.STUDENT_ID)
-                                        .and(qMemberVerify.verifyStatus.eq(MemberVerifyStatus.SUCCESS))
-                                        .or(qMemberVerify.verifyStatus.eq(MemberVerifyStatus.PENDING))
-                                        .or(qMemberVerify.verifyStatus.eq(MemberVerifyStatus.FAIL))
-                                ))),
-
-                        /* 5. 이전에 사용자가 무시하기를 누르지 않은 사용자만 추천 */
-                        /* -> 무시했을시 excludeBookIds에 추가 */
-                        qMember.id.notIn(excludeMemberIds),
-
-                        /* 5-1. 다른 책의 경우는 나와도 됨 */
-                        /* 5-2. 독서 퀴즈를 틀렸을 경우 다른 책은 나와도 됨 */
-                        qMemberMatch.passedMember.id.isNull(),
-
-                        /* 6. 이미 매칭된 경우 뜨지 않아야 함 -> 다른 책 전부 안나와야 함*/
-                        qMember.id.notIn(receiveByIdsWithAccept),
-                        /* -> 매칭된 경우 excludeMemberIds에 추가하기 */
-
-                        /* 7. 이미 매칭되었던(채팅방이 있었던 경우) 100일 뒤에 다시 나와야 함 */
-
-                        /* 8. 엽서를 보내고 대기중인 상태일 떄는 그 사람이 제외되어야 함 */
-                        qMember.id.notIn(receiveByIdsWithPending),
-
-                        /* 8-1. 엽서를 상대방이 거절한 경우 내 홈에서 2주 후에 다시 나와야 함
-                         *       = 2주가 안지났으면 홈에서 안나와야 함(거절 후 2주가 안된 id가 notIn())*/
-                        qMember.id.notIn(receiveByIdsWithRefused)
-                )
-                .orderBy(
-                        new CaseBuilder()
-                                /* 1. 같은 학교, 같은 책 */
-                                .when(qMember.school.id.eq(schoolId)
-                                        .and(qBook.title.in(bookTitles)))
-                                .then(1)
-
-                                /* 2. 다른 학교, 같은 책 */
-                                .when(qMember.school.id.ne(schoolId)
-                                        .and(qBook.title.in(bookTitles)))
-                                .then(2)
-
-                                /* 3. 같은 학교, 같은 작가 (대표 저자) */
-                                .when(qMember.school.id.eq(schoolId)
-                                        .and(qBook.authors.get(0).in(firstAuthorsList)))
-                                .then(3)
-
-                                /* 4. 다른 학교, 같은 작가 (대표 저자) */
-                                .when(qMember.school.id.ne(schoolId)
-                                        .and(qBook.authors.get(0).in(firstAuthorsList)))
-                                .then(4)
-
-                                /* 5. 같은 학교, 흡연 여부 동일 */
-                                .when(qMember.school.id.eq(schoolId)
-                                        .and(qMemberStyle.smokeType.eq(SmokeType.valueOf(smokeType))))
-                                .then(5)
-
-                                /* 6. 다른 학교, 흡연 여부 동일 */
-                                .when(qMember.school.id.ne(schoolId)
-                                        .and(qMemberStyle.smokeType.eq(SmokeType.valueOf(smokeType))))
-                                .then(6)
-
-                                .otherwise(7)
-                                .asc()
-                )
+                        qMember.memberProfile.gender.ne(Gender.valueOf(gender)))
                 .limit(MAX_RANDOM_MATCHING_COUNT)
                 .fetch()
                 .stream()
