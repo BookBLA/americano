@@ -9,4 +9,6 @@ public interface InvitationRepository extends JpaRepository<Invitation, Long> {
 
     Optional<Invitation> findByInvitedMemberId(Long invitedMemberId);
 
+    boolean existsByInvitedMemberId(Long invitedMemberId);
+
 }

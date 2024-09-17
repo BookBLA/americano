@@ -23,11 +23,6 @@ public class GooglePaymentPurchaseResponse {
     private int acknowledgementState;
     private String purchaseToken;
     private String productId;
-    private int quantity;
-    private String obfuscatedExternalAccountId;
-    private String obfuscatedExternalProfileId;
-    private String regionCode;
-//    private int refundableQuantity;
 
     public static GooglePaymentPurchaseResponse from(ProductPurchase purchase) {
         return builder()
@@ -41,10 +36,6 @@ public class GooglePaymentPurchaseResponse {
             .acknowledgementState(purchase.getAcknowledgementState())
             .purchaseToken(purchase.getPurchaseToken())
             .productId(purchase.getProductId())
-            .quantity(purchase.getQuantity())
-            .obfuscatedExternalAccountId(purchase.getObfuscatedExternalAccountId())
-            .obfuscatedExternalProfileId(purchase.getObfuscatedExternalProfileId())
-            .regionCode(purchase.getRegionCode())
             .build();
     }
 }

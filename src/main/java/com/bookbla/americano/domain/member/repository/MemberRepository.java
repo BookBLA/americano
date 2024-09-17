@@ -52,4 +52,8 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
                     "and not m.member_status = 'PROFILE' " +
                     "and m.gender = 'FEMALE'")
     long countValidMembers(@Param("schoolId") Long schoolId);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = "UPDATE member SET free_bookmark_admob_count = :updateCount, new_person_admob_count = :updateCount", nativeQuery = true)
+    void resetAdmobCount(@Param("updateCount") int updateCount);
 }

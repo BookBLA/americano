@@ -80,5 +80,6 @@ public class MemberBlockService {
 
         memberBlockRepository.delete(memberBlock);
         return MemberBlockDeleteResponse.from(memberBlockId);
+
     }
 }
