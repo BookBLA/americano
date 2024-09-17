@@ -36,6 +36,7 @@ public class AuthConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/settings/**")
                 .excludePathPatterns("/schools")
                 .excludePathPatterns("/chat/ws/**")     // 채팅 웹소켓
+                .excludePathPatterns("/payments/in-app/apple/notification") // 애플 앱스토어 알림 받는 엔드포인트
         ;
 
         // 어드민 인터셉터

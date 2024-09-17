@@ -31,7 +31,7 @@ import static com.bookbla.americano.scheduler.Crons.EVERY_4_AM;
 @Slf4j
 class ScheduleWorker {
 
-    private static final String CLRF = "\n\n";
+    private static final String CRLF = "\n\n";
 
     private final MemberRepository memberRepository;
     private final MemberEmailRepository memberEmailRepository;
@@ -49,8 +49,8 @@ class ScheduleWorker {
 
         } catch (Exception e) {
             String txName = ScheduleWorker.class.getName() + "(deleteMemberEmailSchedule)";
-            String message = "임시 메일 테이블 초기화 작업이 실패하였습니다. 확인 부탁드립니다." + CLRF
-                    + e.getMessage() + CLRF
+            String message = "임시 메일 테이블 초기화 작업이 실패하였습니다. 확인 부탁드립니다." + CRLF
+                    + e.getMessage() + CRLF
                     + stackTraceToString(e);
 
             mailService.sendTransactionFailureEmail(txName, message);
@@ -71,8 +71,8 @@ class ScheduleWorker {
             memberRepository.deleteAllByDeletedAtBeforeAndMemberStatus(thirtyDaysAgo);
         } catch (Exception e) {
             String txName = ScheduleWorker.class.getName() + "(deleteMemberSchedule)";
-            String message = "멤버 테이블의 탈퇴한 멤버 삭제 작업이 실패하였습니다. 확인 부탁드립니다. " + CLRF
-                    + e.getMessage() + CLRF
+            String message = "멤버 테이블의 탈퇴한 멤버 삭제 작업이 실패하였습니다. 확인 부탁드립니다. " + CRLF
+                    + e.getMessage() + CRLF
                     + stackTraceToString(e);
 
             mailService.sendTransactionFailureEmail(txName, message);
@@ -90,8 +90,8 @@ class ScheduleWorker {
             memberBookmarkRepository.resetAdmobCount(2);
         } catch (Exception e) {
             String txName = ScheduleWorker.class.getName() + "(resetAdmobCount)";
-            String message = "애드몹 시청 횟수 초기화 기능 실패  " + CLRF
-                    + e.getMessage() + CLRF
+            String message = "애드몹 시청 횟수 초기화 기능 실패  " + CRLF
+                    + e.getMessage() + CRLF
                     + stackTraceToString(e);
 
             mailService.sendTransactionFailureEmail(txName, message);
@@ -124,8 +124,8 @@ class ScheduleWorker {
             }
         } catch (Exception e) {
             String txName = ScheduleWorker.class.getName() + "(removeExpiredPostcardSchedule)";
-            String message = "만료 된 엽서 삭제 작업이 실패하였습니다. 확인 부탁드립니다." + CLRF
-                    + e.getMessage() + CLRF
+            String message = "만료 된 엽서 삭제 작업이 실패하였습니다. 확인 부탁드립니다." + CRLF
+                    + e.getMessage() + CRLF
                     + stackTraceToString(e);
 
             mailService.sendTransactionFailureEmail(txName, message);

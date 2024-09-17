@@ -2,7 +2,7 @@ package com.bookbla.americano.domain.payment.controller.docs;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
-import com.bookbla.americano.domain.payment.controller.dto.request.PaymentInAppPurchaseRequest;
+import com.bookbla.americano.domain.payment.controller.dto.request.ApplePaymentInAppPurchaseRequest;
 import com.bookbla.americano.domain.payment.controller.dto.response.PaymentPurchaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -48,7 +47,7 @@ public interface PaymentControllerDocs {
     @PostMapping
     ResponseEntity<PaymentPurchaseResponse> orderBookmarkForApple(
             @Parameter(hidden = true) @User LoginUser loginUser,
-            @Valid @RequestBody PaymentInAppPurchaseRequest request
+            @Valid @RequestBody ApplePaymentInAppPurchaseRequest request
 //            @PathVariable @Parameter(name = "payType", description = "인앱결제 유형입니다", example = "apple, google") String payType
     );
 }
