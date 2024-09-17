@@ -36,14 +36,6 @@ public class MemberBookmark extends BaseEntity {
     @Builder.Default
     private int bookmarkCount = 0;
 
-    @Column
-    @Builder.Default
-    private int newPersonAdmobCount = 2;
-
-    @Column
-    @Builder.Default
-    private int freeBookmarkAdmobCount = 2;
-
     public void sendPostcard() {
         validateSendPostcard();
         bookmarkCount = bookmarkCount - 35;
@@ -101,22 +93,20 @@ public class MemberBookmark extends BaseEntity {
             return;
         }
         if (admobType == AdmobType.NEW_PERSON) {
-            watchNewPersonAdmob();
+            this.member.watchNewPersonAdmob();
         }
-    }
-
-    private void watchNewPersonAdmob() {
-        if (newPersonAdmobCount <= 0) {
-            throw new BaseException(MemberBookmarkExceptionType.ADMOB_COUNT_NOT_VALID);
-        }
-        this.newPersonAdmobCount--;
     }
 
     private void watchBookmarkAdmob() {
-        if (freeBookmarkAdmobCount <= 0) {
-            throw new BaseException(MemberBookmarkExceptionType.ADMOB_COUNT_NOT_VALID);
-        }
-        this.freeBookmarkAdmobCount--;
+        this.member.watchBookmarkAdmob();
         this.bookmarkCount += 10;
+    }
+
+    public int getFreeBookmarkAdmobCount() {
+        return member.getFreeBookmarkAdmobCount();
+    }
+
+    public int getNewPersonAdmobCount() {
+        return member.getNewPersonAdmobCount();
     }
 }

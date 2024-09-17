@@ -5,6 +5,7 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.MemberType;
+import com.bookbla.americano.domain.member.exception.MemberBookmarkExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.bookbla.americano.domain.member.exception.PolicyExceptionType;
@@ -107,6 +108,14 @@ public class Member extends BaseEntity {
 
     @Builder.Default
     private Integer reportedCount = 0; // 신고당한 횟수
+
+    @Column
+    @Builder.Default
+    private int newPersonAdmobCount = 2;
+
+    @Column
+    @Builder.Default
+    private int freeBookmarkAdmobCount = 2;
 
     public Member updatePushToken(String pushToken) {
         this.pushToken = pushToken;
@@ -247,5 +256,19 @@ public class Member extends BaseEntity {
 
     public boolean canChangeToComplete(MemberStatus afterStatus) {
         return memberStatus == MemberStatus.BOOK && afterStatus == MemberStatus.APPROVAL;
+    }
+
+    public void watchBookmarkAdmob() {
+        if (freeBookmarkAdmobCount <= 0) {
+            throw new BaseException(MemberBookmarkExceptionType.ADMOB_COUNT_NOT_VALID);
+        }
+        this.freeBookmarkAdmobCount--;
+    }
+
+    public void watchNewPersonAdmob() {
+        if (newPersonAdmobCount <= 0) {
+            throw new BaseException(MemberBookmarkExceptionType.ADMOB_COUNT_NOT_VALID);
+        }
+        this.newPersonAdmobCount--;
     }
 }
