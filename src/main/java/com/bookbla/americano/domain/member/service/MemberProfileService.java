@@ -28,6 +28,7 @@ import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import com.bookbla.americano.domain.member.service.dto.MemberProfileDto;
 import com.bookbla.americano.domain.member.service.dto.event.AdminNotificationEvent;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -88,9 +89,11 @@ public class MemberProfileService {
 
     private void saveStudentIdVerify(Member member,
                                      String studentImageUrl) {
+
         memberVerifyRepository.deleteMemberPendingVerifies(member.getId(), STUDENT_ID);
         MemberVerify studentIdVerify = MemberVerify.builder()
                 .memberId(member.getId())
+                .description(toMemberVerifyDescription(member))
                 .contents(studentImageUrl)
                 .verifyType(STUDENT_ID)
                 .build();
@@ -167,5 +170,12 @@ public class MemberProfileService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberProfile memberProfile = member.getMemberProfile();
         return MemberProfileStudentIdReadResponse.from(memberProfile);
+    }
+
+    private String toMemberVerifyDescription(Member member) {
+        return "name: " + member.getMemberProfile().getName() +
+            ", schoolName: " + member.getSchool().getName() +
+            ", birthDate: " + member.getMemberProfile().getBirthDate().format(DateTimeFormatter.BASIC_ISO_DATE) +
+            ", gender: " + member.getMemberProfile().getGenderName();
     }
 }

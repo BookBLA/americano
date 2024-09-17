@@ -10,12 +10,10 @@ import com.bookbla.americano.domain.member.enums.*;
 import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
 import com.bookbla.americano.domain.member.repository.custom.MemberRepositoryCustom;
 import com.bookbla.americano.domain.member.repository.entity.*;
-
 import com.bookbla.americano.domain.member.service.MemberPostcardService;
 import com.bookbla.americano.domain.member.service.dto.MemberRecommendationDto;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
-
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
@@ -109,10 +107,10 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
 
         // 앱 사용자 정보
         Long memberId = recommendationDto.getMemberId();
-        Gender gender = recommendationDto.getMemberGender();
+        String gender = recommendationDto.getMemberGender();
+        Long schoolId = recommendationDto.getMemberSchoolId();
+        String smokeType = recommendationDto.getMemberSmokeType();
         Set<Long> excludeMemberIds = recommendationDto.getExcludeMemberIds();
-        String schoolName = recommendationDto.getMemberSchoolName();
-        SmokeType smokeType = recommendationDto.getMemberSmokeType();
         List<String> bookTitles = recommendationDto.getRecommendationBookDtoList().stream()
                 .map(MemberRecommendationDto.RecommendationBookDto::getBookTitle)
                 .collect(Collectors.toList());
@@ -139,6 +137,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
         return queryFactory
                 .select(qMember.id, qBook.id)
                 .from(qMember)
+                .join(qMemberBook.member, qMember)
                 .join(qMemberBook.book, qBook)
                 .leftJoin(qMemberMatch)
                 .where(
@@ -146,7 +145,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                         qMember.id.ne(memberId),
 
                         /* 1. 이성만 추천 */
-                        qMember.memberProfile.gender.ne(gender),
+                        qMember.memberProfile.gender.ne(Gender.valueOf(gender)),
 
                         /* 2. 마지막 로그인으로부터 14일 지나지 않은 사용자만 추천 */
                         qMember.lastLoginAt.after(fourteenDaysAgo),
@@ -181,40 +180,41 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                         /* 8. 엽서를 보내고 대기중인 상태일 떄는 그 사람이 제외되어야 함 */
                         qMember.id.notIn(receiveByIdsWithPending),
 
-                        /* 8-1. 엽서를 상대방이 거절한 경우 내 홈에서 2주 후에 다시 나와야 함 */
-                        qMember.id.in(receiveByIdsWithRefused)
+                        /* 8-1. 엽서를 상대방이 거절한 경우 내 홈에서 2주 후에 다시 나와야 함
+                         *       = 2주가 안지났으면 홈에서 안나와야 함(거절 후 2주가 안된 id가 notIn())*/
+                        qMember.id.notIn(receiveByIdsWithRefused)
                 )
                 .orderBy(
                         new CaseBuilder()
 
                                 /* 1. 같은 학교, 같은 책 */
-                                .when(qMember.school.name.eq(schoolName)
+                                .when(qMember.school.id.eq(schoolId)
                                         .and(qBook.title.in(bookTitles)))
                                 .then(1)
 
                                 /* 2. 다른 학교, 같은 책 */
-                                .when(qMember.school.name.ne(schoolName)
+                                .when(qMember.school.id.ne(schoolId)
                                         .and(qBook.title.in(bookTitles)))
                                 .then(2)
 
                                 /* 3. 같은 학교, 같은 작가 (대표 저자) */
-                                .when(qMember.school.name.eq(schoolName)
+                                .when(qMember.school.id.eq(schoolId)
                                         .and(qBook.authors.get(0).in(firstAuthorsList)))
                                 .then(3)
 
                                 /* 4. 다른 학교, 같은 작가 (대표 저자) */
-                                .when(qMember.school.name.ne(schoolName)
+                                .when(qMember.school.id.ne(schoolId)
                                         .and(qBook.authors.get(0).in(firstAuthorsList)))
                                 .then(4)
 
                                 /* 5. 같은 학교, 흡연 여부 동일 */
-                                .when(qMember.school.name.eq(schoolName)
-                                        .and(qMemberStyle.smokeType.eq(smokeType)))
+                                .when(qMember.school.id.eq(schoolId)
+                                        .and(qMemberStyle.smokeType.eq(SmokeType.valueOf(smokeType))))
                                 .then(5)
 
                                 /* 6. 다른 학교, 흡연 여부 동일 */
-                                .when(qMember.school.name.ne(schoolName)
-                                        .and(qMemberStyle.smokeType.eq(smokeType)))
+                                .when(qMember.school.id.ne(schoolId)
+                                        .and(qMemberStyle.smokeType.eq(SmokeType.valueOf(smokeType))))
                                 .then(6)
 
                                 .otherwise(7)
@@ -238,8 +238,8 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
 
         return queryFactory.select(qMember)
                 .from(qChatRoom)
-                .innerJoin(qMemberChatRoom).on(qMemberChatRoom.chatRoom.eq(qChatRoom)).fetchJoin()
-                .innerJoin(qMember).on(qMemberChatRoom.member.eq(qMember))
+                .innerJoin(qMemberChatRoom).on(qMemberChatRoom.chatRoom.eq(qChatRoom))
+                .innerJoin(qMember).on(qMemberChatRoom.member.eq(qMember)).fetchJoin()
                 .where(qChatRoom.id.eq(chatRoomId))
                 .fetch();
     }

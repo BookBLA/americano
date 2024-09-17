@@ -27,6 +27,9 @@ public enum PostcardExceptionType implements ExceptionType {
     ALL_WRONG_POSTCARD(HttpStatus.BAD_REQUEST, "postcard-012", "독서 퀴즈를 모두 틀린 엽서입니다."),
 
     POSTCARD_NOT_ACCEPTED(HttpStatus.UNPROCESSABLE_ENTITY, "postcard-013", "수락되지 않은 엽서입니다."),
+    POSTCARD_RECEIVE_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "postcard-014", "엽서를 받은 회원의 id가 존재하지 않습니다."),
+    POSTCARD_STATUS_REFUSED_AT_NOT_SAVED(HttpStatus.BAD_REQUEST, "postcard-015", "엽서 거절 시간이 누락되었습니다."),
+    POSTCARD_STATUS_REFUSED_AT_PERIOD_EXCEEDED(HttpStatus.BAD_REQUEST, "postcard-016", "엽서 거절 후 14일이 지났습니다.")
     ;
 
     private final HttpStatus httpStatus;

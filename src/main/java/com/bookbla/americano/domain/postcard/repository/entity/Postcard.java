@@ -71,6 +71,12 @@ public class Postcard extends BaseEntity {
         }
     }
 
+    public void validatePostcardStatusRefusedAt() {
+        if (postcardStatusRefusedAt == null) {
+            throw new BaseException(PostcardExceptionType.POSTCARD_STATUS_REFUSED_AT_NOT_SAVED);
+        }
+    }
+
     public void updatePostcardStatusRefusedAt() { // 일단 PostcardStatus.REFUSED 인 경우입니다.
         this.postcardStatusRefusedAt = LocalDateTime.now();
     }
@@ -82,12 +88,4 @@ public class Postcard extends BaseEntity {
     public boolean isRefused() {
         return postcardStatus.isRefused();
     }
-
-//    public boolean isRefusedOverDays(int days) {
-//        return this.postcardStatus == REFUSED && postcardStatusRefusedAt.plusDays(days).isBefore(LocalDateTime.now());
-//    }
-//
-//    public Long getReceiveMemberId() {
-//        return receiveMember.getId();
-//    }
 }
