@@ -24,10 +24,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.bookbla.americano.domain.book.repository.entity.QBook.book;
 import static com.bookbla.americano.domain.member.repository.entity.QMember.member;
 import static com.bookbla.americano.domain.member.repository.entity.QMemberBook.memberBook;
 import static com.bookbla.americano.domain.school.repository.entity.QSchool.school;
@@ -93,19 +91,20 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
 
     @Override
     public List<Map<Long, Long>> getRecommendationMemberIdsAndBookIds(MemberRecommendationDto recommendationDto, List<Postcard> postcards) {
-        Set<Long> excludeMemberIds = recommendationDto.getExcludeMemberIds();
+//        Set<Long> excludeMemberIds = recommendationDto.getExcludeMemberIds();
 
         LocalDateTime twoWeeksAgo = LocalDateTime.now().minusDays(14);
 
         return queryFactory
                 .selectDistinct(member.id, memberBook.id)
                 .from(memberBook)
-                .join(member).on(memberBook.member.eq(member))
+                .innerJoin(member)
+                .on(memberBook.member.id.eq(member.id))
                 .where(
                         member.id.ne(recommendationDto.getMemberId()),
                         member.memberProfile.gender.ne(Gender.valueOf(recommendationDto.getMemberGender())),
-                        member.lastUsedAt.coalesce(LocalDate.parse("1900-01-01").atStartOfDay()).after(twoWeeksAgo),
-                        member.id.notIn(excludeMemberIds)
+                        member.lastUsedAt.coalesce(LocalDate.parse("1900-01-01").atStartOfDay()).after(twoWeeksAgo)
+//                        member.id.notIn(excludeMemberIds)
                 ).fetch()
                 .stream()
                 .map(m -> {
