@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.service;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberOnboardingStatusResponse;
+import com.bookbla.americano.domain.member.enums.OnboardingType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -33,15 +34,18 @@ public class MemberModalService {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
         MemberModal modal = member.getMemberModal();
+        updateMemberOnboarding(modal, OnboardingType.fromName(onboarding));
 
-        if (onboarding.equals("HOME")) {
+        return MemberOnboardingStatusResponse.from(modal.getHomeOnboarding(), modal.getLibraryOnboarding());
+    }
+
+    private void updateMemberOnboarding(MemberModal modal, OnboardingType onboarding) {
+        if (onboarding.equals(OnboardingType.HOME)) {
             modal.updateMemberHomeOnboarding();
-        } else if (onboarding.equals("LIBRARY")) {
+        } else if (onboarding.equals(OnboardingType.LIBRARY)) {
             modal.updateMemberLibraryOnboarding();
         } else {
             throw new BaseException(MemberExceptionType.ONBOARDING_NOT_VALID);
         }
-
-        return MemberOnboardingStatusResponse.from(modal.getHomeOnboarding(), modal.getLibraryOnboarding());
     }
 }
