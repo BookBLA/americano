@@ -87,7 +87,7 @@ class ScheduleWorker {
     @Scheduled(cron = EVERY_0_AM, zone = "Asia/Seoul")
     public void resetAdmobCount() {
         try {
-            memberBookmarkRepository.resetAdmobCount(2);
+            memberRepository.resetAdmobCount(2);
         } catch (Exception e) {
             String txName = ScheduleWorker.class.getName() + "(resetAdmobCount)";
             String message = "애드몹 시청 횟수 초기화 기능 실패  " + CRLF

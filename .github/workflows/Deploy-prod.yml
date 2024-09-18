@@ -62,10 +62,12 @@ jobs:
           name: "bookbla-google-play-console.json"
           json: ${{ secrets.BOOKBLA_GOOGLE_PLAY_CONSOLE }}
 
-      # JSON 파일 이동
-      - name: Move Json File
+      # JSON 파일 이동 및 확인
+      - name: Move and Verify Json File
         run: |
           mv bookbla-google-play-console.json ./src/main/resources/
+          ls -l ./src/main/resources/
+          cat ./src/main/resources/bookbla-google-play-console.json
 
       # Gradle Package Caching
       - name: Caching Gradle packages
