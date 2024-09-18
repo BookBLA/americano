@@ -98,7 +98,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
         LocalDateTime twoWeeksAgo = LocalDateTime.now().minusDays(14);
 
         return queryFactory
-                .selectDistinct(member.id, book.id)
+                .selectDistinct(member.id, memberBook.id)
                 .from(member)
                 .join(memberBook).on(member.id.eq(memberBook.member.id))
                 .join(book).on(memberBook.book.id.eq(book.id))

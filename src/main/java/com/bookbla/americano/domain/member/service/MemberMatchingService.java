@@ -50,12 +50,12 @@ public class MemberMatchingService {
         for (Map<Long, Long> item : recommendationItems) {
             Map.Entry<Long, Long> entry = item.entrySet().iterator().next();
             Long recMemberId = entry.getKey();
-            Long recBookId = entry.getValue();
+            Long recMemberBookId = entry.getValue();
 
-            if (recMemberId != null && recBookId != null) {
+            if (recMemberId != null && recMemberBookId != null) {
 
                 Member recMember = memberRepository.getByIdOrThrow(recMemberId);
-                MemberBook recMemberBook = memberBookRepository.getByIdOrThrow(recBookId);
+                MemberBook recMemberBook = memberBookRepository.getByIdOrThrow(recMemberBookId);
 
                 // MemberMatch 객체 생성
                 MemberMatch memberMatch = MemberMatch.builder()
