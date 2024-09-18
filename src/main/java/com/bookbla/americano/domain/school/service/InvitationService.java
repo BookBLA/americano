@@ -177,10 +177,10 @@ public class InvitationService {
         return MemberInvitationRewardResponse.from(invitingReward, invitedReward);
     }
 
-    public MemberInvitationRewardResponse updateInvitationRewardStatus(Long memberId, String invitationStatus) {
+    public MemberInvitationRewardResponse updateInvitationRewardStatus(Long memberId, InvitationStatus invitationStatus) {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
-        member.getMemberModal().updateMemberInvited(InvitationStatus.from(invitationStatus));
+        member.getMemberModal().updateMemberInvited(invitationStatus);
 
         return getInvitationRewardStatus(memberId);
     }

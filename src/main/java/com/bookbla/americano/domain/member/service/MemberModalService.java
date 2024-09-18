@@ -30,11 +30,11 @@ public class MemberModalService {
     }
 
     @Transactional
-    public MemberOnboardingStatusResponse updateMemberOnboarding(Long memberId, String onboarding) {
+    public MemberOnboardingStatusResponse updateMemberOnboarding(Long memberId, OnboardingType onboarding) {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
         MemberModal modal = member.getMemberModal();
-        updateMemberOnboarding(modal, OnboardingType.fromName(onboarding));
+        updateMemberOnboarding(modal, onboarding);
 
         return MemberOnboardingStatusResponse.from(modal.getHomeOnboarding(), modal.getLibraryOnboarding());
     }

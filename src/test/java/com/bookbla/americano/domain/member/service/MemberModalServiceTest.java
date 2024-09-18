@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.service;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberOnboardingStatusResponse;
+import com.bookbla.americano.domain.member.enums.OnboardingType;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ class MemberModalServiceTest {
         // given
         Member member = memberRepository.save(Member.builder().build());
         // when
-        MemberOnboardingStatusResponse response = sut.updateMemberOnboarding(member.getId(), "HOME");
+        MemberOnboardingStatusResponse response = sut.updateMemberOnboarding(member.getId(), OnboardingType.HOME);
         // then
         assertThat(response.getHomeOnboardingStatus()).isTrue();
         assertThat(response.getLibraryOnboardingStatus()).isFalse();
@@ -37,7 +38,7 @@ class MemberModalServiceTest {
         Member member = memberRepository.save(Member.builder().build());
 
         // when & then
-        assertThatThrownBy(() -> sut.updateMemberOnboarding(member.getId(), "INVALID"))
+        assertThatThrownBy(() -> sut.updateMemberOnboarding(member.getId(), OnboardingType.INVALID))
                 .isInstanceOf(BaseException.class)
                 .hasMessageContaining("유효하지 않은 온보딩 상태입니다.");
     }

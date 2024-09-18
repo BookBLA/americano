@@ -10,6 +10,7 @@ public enum OnboardingType {
 
     HOME,
     LIBRARY,
+    INVALID
     ;
 
     @JsonCreator
