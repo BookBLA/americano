@@ -68,7 +68,7 @@ public class ChatServiceImpl implements ChatService {
 
     public Chat save(ChatPubMessage chatPub) {
         Chat chat = Chat.builder()
-                .sendTime(chatPub.getSendTime())
+                .sendTime(LocalDateTime.now())
                 .content(chatPub.getContent())
                 .sender(em.getReference(Member.class, chatPub.getSenderId()))
                 .chatRoom(em.getReference(ChatRoom.class, chatPub.getChatRoomId()))
@@ -149,7 +149,9 @@ public class ChatServiceImpl implements ChatService {
             ChatSubMessage subMessage = ChatSubMessage.from(chatDto);
             subMessage.setStatus(SendChatStatus.FAIL);
             subMessage.setRead(false);
+
             messagingTemplate.convertAndSend("/topic/chat/"+chatDto.getSenderId(), subMessage);
+
             return;
         }
 

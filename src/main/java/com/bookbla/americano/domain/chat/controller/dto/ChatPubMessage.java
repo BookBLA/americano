@@ -14,7 +14,5 @@ public class ChatPubMessage {
     private Long senderId;
     private String content;
     private Long chatRoomId;
-    private LocalDateTime sendTime;
-    // Getters and Setters
 
 }
