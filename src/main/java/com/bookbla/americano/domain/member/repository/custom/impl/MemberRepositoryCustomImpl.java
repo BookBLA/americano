@@ -19,6 +19,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -104,7 +105,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .where(
                         member.id.ne(recommendationDto.getMemberId()),
                         member.memberProfile.gender.ne(Gender.valueOf(recommendationDto.getMemberGender())),
-                        member.lastUsedAt.coalesce(LocalDateTime.parse("1900-01-01")).after(twoWeeksAgo),
+                        member.lastUsedAt.coalesce(LocalDate.parse("1900-01-01").atStartOfDay()).after(twoWeeksAgo),
                         member.id.notIn(excludeMemberIds)
                 ).fetch()
                 .stream()
