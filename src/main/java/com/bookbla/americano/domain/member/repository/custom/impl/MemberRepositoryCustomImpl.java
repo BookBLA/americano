@@ -19,9 +19,11 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.bookbla.americano.domain.book.repository.entity.QBook.book;
@@ -90,31 +92,25 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
 
     @Override
     public List<Map<Long, Long>> getRecommendationMemberIdsAndBookIds(MemberRecommendationDto recommendationDto, List<Postcard> postcards) {
-        QMember qMember = member;
-        QMemberBook qMemberBook = memberBook;
-        QBook qBook = book;
+        Set<Long> excludeMemberIds = recommendationDto.getExcludeMemberIds();
 
-        // 앱 사용자 정보
-        Long memberId = recommendationDto.getMemberId();
-        String gender = recommendationDto.getMemberGender();
+        LocalDateTime twoWeeksAgo = LocalDateTime.now().minusDays(14);
 
         return queryFactory
-                .select(qMember.id, qBook.id)
-                .from(qMember)
-                .join(qMemberBook.member, qMember)
-                .join(qMemberBook.book, qBook)
+                .selectDistinct(member.id, book.id)
+                .from(member)
+                .join(memberBook).on(member.id.eq(memberBook.member.id))
+                .join(book).on(memberBook.book.id.eq(book.id))
                 .where(
-                        /* 0. 자기 자신은 추천될 수 없다 */
-                        qMember.id.ne(memberId),
-
-                        /* 1. 이성만 추천 */
-                        qMember.memberProfile.gender.ne(Gender.valueOf(gender)))
-                .limit(MAX_RANDOM_MATCHING_COUNT)
-                .fetch()
+                        member.id.ne(recommendationDto.getMemberId()),
+                        member.memberProfile.gender.ne(Gender.valueOf(recommendationDto.getMemberGender())),
+                        member.lastUsedAt.coalesce(LocalDateTime.parse("1900-01-01")).after(twoWeeksAgo),
+                        member.id.notIn(excludeMemberIds)
+                ).fetch()
                 .stream()
                 .map(m -> {
                     Map<Long, Long> map = new HashMap<>();
-                    map.put(m.get(qMember.id), m.get(qBook.id));
+                    map.put(m.get(member.id), m.get(book.id));
                     return map;
                 })
                 .collect(Collectors.toList());
