@@ -2,10 +2,12 @@ package com.bookbla.americano.domain.member.service;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberInformationUpdateRequest;
-import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +25,6 @@ class MemberServiceTest {
 
     @Autowired
     private MemberRepository memberRepository;
-
-    @Autowired
-    private MemberBookmarkRepository memberBookmarkRepository;
 
     @Autowired
     private MemberService sut;
@@ -59,11 +58,5 @@ class MemberServiceTest {
             assertThat(고도리.getMemberProfile().getName()).isEqualTo("고도리");
         }
 
-    }
-
-    @AfterEach
-    void tearDown() {
-        memberBookmarkRepository.deleteAllInBatch();
-        memberRepository.deleteAllInBatch();
     }
 }
