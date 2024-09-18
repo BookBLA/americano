@@ -14,6 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 public class ChatSubMessage {
 
+    private Long id;
+
     private Long senderId;
     private String content;
     private Long chatRoomId;
@@ -36,6 +38,7 @@ public class ChatSubMessage {
                 .senderId(chat.getSender().getId())
                 .sendTime(chat.getSendTime())
                 .isRead(chat.getIsRead())
+                .id(chat.getId())
                 .build();
     }
     public static ChatSubMessage from(ChatPubMessage pub) {
@@ -43,7 +46,6 @@ public class ChatSubMessage {
                 .chatRoomId(pub.getChatRoomId())
                 .content(pub.getContent())
                 .senderId(pub.getSenderId())
-                .sendTime(pub.getSendTime())
                 .build();
     }
 }
