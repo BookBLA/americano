@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/members-match")
 @RequiredArgsConstructor
-public class MemberMatchController {
+public class MemberMatchingController {
 
     private final MemberMatchingService memberMatchingService;
 
