@@ -22,6 +22,7 @@ public class MemberIntroResponse {
     private String memberGender;
     private String memberSchoolName;
 
+    private Long memberBookId;
     private String bookCoverImageUrl;
     private String bookTitle;
     private List<String> bookAuthors;
@@ -35,6 +36,8 @@ public class MemberIntroResponse {
                 .memberAge(member.getMemberProfile().calculateAge(LocalDate.now()))
                 .memberGender(member.getMemberProfile().getGenderName())
                 .memberSchoolName(member.getSchool().getName())
+
+                .memberBookId(memberBook.getId())
                 .bookCoverImageUrl(memberBook.getBook().getImageUrl())
                 .bookTitle(memberBook.getBook().getTitle())
                 .bookAuthors(memberBook.getBook().getAuthors())
