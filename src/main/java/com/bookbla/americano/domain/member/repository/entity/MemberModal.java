@@ -30,11 +30,11 @@ public class MemberModal {
     @Builder.Default
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "member_inviting", joinColumns = @JoinColumn(name = "member_id"))
-    private Map<Long, Boolean> inviting = new HashMap<>(); // key: invitedMemberId, value: rewarded
+    private Map<Long, Boolean> invitingRewardStatus = new HashMap<>(); // key: invitedMemberId, value: rewarded
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    private InvitationStatus invited = InvitationStatus.PENDING;
+    private InvitationStatus invitedRewardStatus = InvitationStatus.PENDING;
 
     public void updateMemberHomeOnboarding() {
         this.homeOnboarding = Boolean.TRUE;
@@ -44,8 +44,26 @@ public class MemberModal {
         this.libraryOnboarding = Boolean.TRUE;
     }
 
-    public InvitationStatus updateMemberInvited(InvitationStatus invitationStatus) {
-        this.invited = invitationStatus;
-        return this.invited;
+    public InvitationStatus updateMemberInvitedRewardStatus(InvitationStatus invitationStatus) {
+        this.invitedRewardStatus = invitationStatus;
+        return this.invitedRewardStatus;
+    }
+
+    public Boolean getAndUpdateInvitingRewardStatus() {
+        for (Map.Entry<Long, Boolean> entry : invitingRewardStatus.entrySet()) {
+            if (!entry.getValue()) {
+                entry.setValue(Boolean.TRUE);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Boolean getAndUpdateInvitedRewardStatus() {
+        if (invitedRewardStatus == InvitationStatus.BOOKMARK) {
+            updateMemberInvitedRewardStatus(InvitationStatus.COMPLETED);
+            return true;
+        }
+        return false;
     }
 }

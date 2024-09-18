@@ -1,7 +1,5 @@
 package com.bookbla.americano.domain.school.service;
 
-import java.util.Map;
-
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.admin.event.AdminNotificationEventListener;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberInvitationResponse;
@@ -68,8 +66,8 @@ public class InvitationService {
                 .orElseThrow(() -> new BaseException(MemberExceptionType.INVITATION_CODE_NOT_FOUND));
         Member invitedMember = memberRepository.getByIdOrThrow(invitedMemberId);
 
-        invitedMember.getMemberModal().updateMemberInvited(InvitationStatus.BOOKMARK);
-        invitingMember.getMemberModal().getInviting().put(invitedMemberId, Boolean.FALSE);
+        invitedMember.getMemberModal().updateMemberInvitedRewardStatus(InvitationStatus.BOOKMARK);
+        invitingMember.getMemberModal().getInvitingRewardStatus().put(invitedMemberId, Boolean.FALSE);
 
         Invitation invitation = invitationRepository.findByInvitedMemberId(invitedMemberId)
                 .orElseGet(() -> createInvitation(invitedMember.isWoman(), invitingMember.getId(), invitedMemberId));
@@ -157,22 +155,8 @@ public class InvitationService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberModal modal = member.getMemberModal();
 
-        boolean invitingReward = false;
-        boolean invitedReward = false;
-
-        Map<Long, Boolean> inviting = modal.getInviting();
-        for (Map.Entry<Long, Boolean> entry : inviting.entrySet()) {
-            if (!entry.getValue()) {
-                entry.setValue(Boolean.TRUE);
-                invitingReward = true;
-                break;
-            }
-        }
-
-        if (modal.getInvited() == InvitationStatus.BOOKMARK) {
-            modal.updateMemberInvited(InvitationStatus.COMPLETED);
-            invitedReward = true;
-        }
+        boolean invitingReward = modal.getAndUpdateInvitingRewardStatus();
+        boolean invitedReward = modal.getAndUpdateInvitedRewardStatus();
 
         return MemberInvitationRewardResponse.from(invitingReward, invitedReward);
     }
@@ -180,7 +164,7 @@ public class InvitationService {
     public MemberInvitationRewardResponse updateInvitationRewardStatus(Long memberId, InvitationStatus invitationStatus) {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
-        member.getMemberModal().updateMemberInvited(invitationStatus);
+        member.getMemberModal().updateMemberInvitedRewardStatus(invitationStatus);
 
         return getInvitationRewardStatus(memberId);
     }

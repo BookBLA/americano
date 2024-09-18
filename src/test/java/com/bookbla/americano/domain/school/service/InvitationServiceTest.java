@@ -212,8 +212,8 @@ class InvitationServiceTest {
         MemberInvitationRewardResponse response = sut.getInvitationRewardStatus(member.getId());
 
         // then
-        assertThat(response.getInviting()).isFalse();
-        assertThat(response.getInvited()).isFalse();
+        assertThat(response.getInvitingRewardStatus()).isFalse();
+        assertThat(response.getInvitedRewardStatus()).isFalse();
     }
 
     @Test
@@ -229,8 +229,8 @@ class InvitationServiceTest {
         MemberInvitationRewardResponse response = sut.getInvitationRewardStatus(man2.getId());
 
         // then
-        assertThat(response.getInviting()).isFalse();
-        assertThat(response.getInvited()).isTrue();
+        assertThat(response.getInvitingRewardStatus()).isFalse();
+        assertThat(response.getInvitedRewardStatus()).isTrue();
     }
 
     @Test
@@ -246,8 +246,8 @@ class InvitationServiceTest {
         MemberInvitationRewardResponse response = sut.getInvitationRewardStatus(man1.getId());
 
         // then
-        assertThat(response.getInviting()).isTrue();
-        assertThat(response.getInvited()).isFalse();
+        assertThat(response.getInvitingRewardStatus()).isTrue();
+        assertThat(response.getInvitedRewardStatus()).isFalse();
     }
 }
 
