@@ -45,10 +45,8 @@ public class MemberMatchingService {
         MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member, memberBooks);
 
         //dto와 potcards가지고 추천회원 id와 추천회원의 책 id 추출
-        LocalDateTime twoWeeksAgo = LocalDate.now().minusWeeks(2).atStartOfDay();
-
-        List<Map<Long, Long>> recommendationItems = memberMatchRepository
-                .findDistinctMemberBooks(member.getId(), member.getMemberProfile().getGender(), twoWeeksAgo);
+        List<Map<Long, Long>> recommendationItems = memberRepository
+                .getRecommendationMemberIdsAndBookIds(memberRecommendationDto, postcards);
 
         //추출한 추천회원 id와 추천회원의 책 id를 db에 저장
         List<MemberIntroResponse> memberIntroResponses = new ArrayList<>();
