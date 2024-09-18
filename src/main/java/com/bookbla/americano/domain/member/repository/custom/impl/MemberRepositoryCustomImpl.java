@@ -111,7 +111,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .stream()
                 .map(m -> {
                     Map<Long, Long> map = new HashMap<>();
-                    map.put(m.get(member.id), m.get(book.id));
+                    map.put(m.get(member.id), m.get(memberBook.id));
                     return map;
                 })
                 .collect(Collectors.toList());
