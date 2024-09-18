@@ -12,9 +12,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ChatDto {
 
+    private Long id;
+
     private Long chatRoomId;
 
     private Long senderId;
+
+    private Boolean isRead;
 
     private String content;
 
@@ -23,9 +27,11 @@ public class ChatDto {
     public static ChatDto of(Chat chat) {
         return ChatDto.builder()
                 .chatRoomId(chat.getChatRoom().getId())
+                .isRead(chat.getIsRead())
                 .senderId(chat.getSender().getId())
                 .content(chat.getContent())
                 .sendTime(chat.getSendTime())
+                .id(chat.getId())
                 .build();
     }
 }

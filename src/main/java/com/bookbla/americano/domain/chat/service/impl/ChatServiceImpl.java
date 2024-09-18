@@ -16,6 +16,7 @@ import com.bookbla.americano.domain.chat.service.ChatService;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.notification.service.AlarmService;
+import com.bookbla.americano.domain.notification.service.InAppAlarmService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,6 +46,9 @@ public class ChatServiceImpl implements ChatService {
     private final MemberChatRoomRepository memberChatRoomRepository;
 
     private final AlarmService alarmService;
+
+    private final InAppAlarmService inAppAlarmService;
+
     private final ChatRoomService chatRoomService;
 
     private final MemberRepository memberRepository;
@@ -63,7 +68,7 @@ public class ChatServiceImpl implements ChatService {
 
     public Chat save(ChatPubMessage chatPub) {
         Chat chat = Chat.builder()
-                .sendTime(chatPub.getSendTime())
+                .sendTime(LocalDateTime.now())
                 .content(chatPub.getContent())
                 .sender(em.getReference(Member.class, chatPub.getSenderId()))
                 .chatRoom(em.getReference(ChatRoom.class, chatPub.getChatRoomId()))
@@ -90,7 +95,7 @@ public class ChatServiceImpl implements ChatService {
         Chat result;
         try {
             Chat.ChatBuilder chatBuilder = Chat.builder()
-                    .sendTime(chatDto.getSendTime())
+                    .sendTime(LocalDateTime.now())
                     .content(chatDto.getContent())
                     .sender(em.getReference(Member.class, chatDto.getSenderId()))
                     .chatRoom(em.getReference(ChatRoom.class, chatDto.getChatRoomId()));
@@ -144,7 +149,9 @@ public class ChatServiceImpl implements ChatService {
             ChatSubMessage subMessage = ChatSubMessage.from(chatDto);
             subMessage.setStatus(SendChatStatus.FAIL);
             subMessage.setRead(false);
+
             messagingTemplate.convertAndSend("/topic/chat/"+chatDto.getSenderId(), subMessage);
+
             return;
         }
 
@@ -166,8 +173,16 @@ public class ChatServiceImpl implements ChatService {
             messagingTemplate.convertAndSend(simpSubscription.getDestination(), subMessage);
         });
 
+
         // ChatRoom 에 속한 Member 들에게 알람 전송
-        alarmService.sendPushAlarmForChat(otherMembers, result);
+        for (Member member : otherMembers) {
+            // InAppAlarm 전송 실패 시 PushAlarm 전송
+            try {
+                inAppAlarmService.sendChatInAppAlarm(result, member.getId());
+            } catch (Exception e) {
+                alarmService.sendPushAlarmForChat(otherMembers, result);
+            }
+        }
 
     }
 
