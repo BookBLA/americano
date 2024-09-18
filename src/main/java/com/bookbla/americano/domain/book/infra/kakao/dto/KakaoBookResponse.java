@@ -46,6 +46,7 @@ public class KakaoBookResponse {
     public BookSearchResponses toBookSearchResponsesWith(int page) {
         List<BookSearchResponse> bookSearchResponses = documents.stream()
                 .map(it -> new BookSearchResponse(it.title, it.authors, toIsbn13(it.getIsbn()), it.thumbnail))
+                .distinct()
                 .collect(Collectors.toList());
         return BookSearchResponses.builder()
                 .totalCount(getMeta().pageableCount)

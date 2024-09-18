@@ -2,8 +2,11 @@ package com.bookbla.americano.domain.book.service.dto;
 
 
 import java.util.List;
+import java.util.Objects;
+
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +31,18 @@ public class BookSearchResponses {
         private final String isbn;
         private final String imageUrl;
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof BookSearchResponse)) return false;
+            final BookSearchResponse that = (BookSearchResponse) o;
+            return Objects.equals(isbn, that.isbn);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(isbn);
+        }
     }
 
     public boolean getIsEnd() {

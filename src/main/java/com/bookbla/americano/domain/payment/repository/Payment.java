@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.payment.enums.PaymentType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -36,6 +37,7 @@ public class Payment extends BaseEntity {
 
     private String receipt; // 거래 후 받는 영수증 정보
 
+    @Column(columnDefinition = "TEXT")
     private String information; // 서버로부터 받는 json 정보
 
     @Enumerated(EnumType.STRING)

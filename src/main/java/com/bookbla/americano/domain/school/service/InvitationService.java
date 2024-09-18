@@ -51,13 +51,13 @@ public class InvitationService {
     }
 
     public InvitationResponse entryInvitationCode(Long invitedMemberId, InvitationCodeEntryRequest request) {
+        validateInvitation(invitedMemberId, request.getInvitationCode());
+
         if (FESTIVAL_TEMPORARY_INVITATION_CODE.equals(request.getInvitationCode())) {
             Invitation invitation = createFestivalInvitation(invitedMemberId);
             invitation.bookmark();
             return InvitationResponse.from(invitation);
         }
-
-        validateInvitation(invitedMemberId, request.getInvitationCode());
 
         Member invitingMember = memberRepository.findByInvitationCode(request.getInvitationCode())
                 .orElseThrow(() -> new BaseException(MemberExceptionType.INVITATION_CODE_NOT_FOUND));
@@ -71,16 +71,6 @@ public class InvitationService {
         return InvitationResponse.from(invitation);
     }
 
-    private @NotNull Invitation createFestivalInvitation(Long invitedMemberId) {
-        MemberBookmark invitedMemberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(invitedMemberId)
-                .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
-        invitedMemberBookmark.addBookmark(105);
-
-        adminNotificationEventListener.sendMessage(new AdminNotificationEvent("축제 코드 입력 +1", "memberId " + invitedMemberId));
-
-        return invitationRepository.save(Invitation.fromTempFestival(invitedMemberId));
-    }
-
     private void validateInvitation(Long invitedMemberId, String invitationCode) {
         if (invitationRepository.existsByInvitedMemberId(invitedMemberId)) {
             throw new BaseException(InvitationExceptionType.INVITATION_EXISTS);
@@ -90,6 +80,16 @@ public class InvitationService {
         if (member.getInvitationCode().equals(invitationCode)) {
             throw new BaseException(InvitationExceptionType.INVALID_INVITATION_CODE_MYSELF);
         }
+    }
+
+    private @NotNull Invitation createFestivalInvitation(Long invitedMemberId) {
+        MemberBookmark invitedMemberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(invitedMemberId)
+                .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
+        invitedMemberBookmark.addBookmark(105);
+
+        adminNotificationEventListener.sendMessage(new AdminNotificationEvent("축제 코드 입력 +1", "memberId " + invitedMemberId));
+
+        return invitationRepository.save(Invitation.fromTempFestival(invitedMemberId));
     }
 
     private Invitation createInvitation(
