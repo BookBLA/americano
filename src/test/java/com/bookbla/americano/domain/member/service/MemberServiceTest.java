@@ -8,6 +8,7 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.bookbla.americano.fixture.Fixture.스타일_등록_완료_남성_고도리;
 import static com.bookbla.americano.fixture.Fixture.프로필_등록_완료_남성_리준희;
@@ -17,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @SuppressWarnings("NonAsciiCharacters")
 @SpringBootTest
+@Transactional
 class MemberServiceTest {
 
     @Autowired
