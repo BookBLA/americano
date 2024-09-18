@@ -4,6 +4,7 @@ package com.bookbla.americano.domain.book.service.dto;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -21,10 +22,13 @@ public class BookSearchResponses {
 
     @Getter
     @RequiredArgsConstructor
+    @EqualsAndHashCode
     public static class BookSearchResponse {
 
         private final String title;
         private final List<String> authors;
+
+        @EqualsAndHashCode.Include
         private final String isbn;
         private final String imageUrl;
 
