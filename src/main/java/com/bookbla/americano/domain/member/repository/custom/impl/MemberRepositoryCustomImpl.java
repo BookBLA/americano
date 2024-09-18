@@ -101,7 +101,7 @@ public class MemberRepositoryCustomImpl implements MemberRepositoryCustom {
                 .selectDistinct(member.id, memberBook.id)
                 .from(member)
                 .join(memberBook).on(member.id.eq(memberBook.member.id))
-                .join(book).on(memberBook.book.id.eq(book.id))
+                .join(book).on(memberBook.id.eq(book.id))
                 .where(
                         member.id.ne(recommendationDto.getMemberId()),
                         member.memberProfile.gender.ne(Gender.valueOf(recommendationDto.getMemberGender())),
