@@ -15,4 +15,6 @@ public class MemberStatusUpdateRequest {
     @NotNull(message = "변경 할 상태를 입력하지 않았습니다.")
     private MemberStatus memberStatus;
 
+    private String reason;
+
 }

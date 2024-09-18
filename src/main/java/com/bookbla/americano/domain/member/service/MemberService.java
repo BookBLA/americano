@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.service;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberInformationUpdateRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.MemberStatusUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.*;
 import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+
+import static com.bookbla.americano.domain.member.enums.MemberStatus.MATCHING_DISABLED;
 
 @Service
 @RequiredArgsConstructor
@@ -69,9 +72,10 @@ public class MemberService {
     @Transactional
     public MemberStatusResponse updateStatus(
             Long memberId,
-            MemberStatus afterStatus
+            MemberStatusUpdateRequest request
     ) {
         Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberStatus afterStatus = request.getMemberStatus();
 
         if (member.canChangeToComplete(afterStatus)) {
             int memberBooks = (int) memberBookRepository.countByMember(member);
@@ -80,6 +84,17 @@ public class MemberService {
 
             memberBookmark.updateBookmarksByInitialBook(memberBooks);
         }
+
+        MemberStatusLog.MemberStatusLogBuilder memberStatusLogBuilder = MemberStatusLog.builder()
+                .memberId(memberId)
+                .beforeStatus(member.getMemberStatus())
+                .afterStatus(afterStatus);
+
+        if (afterStatus == MATCHING_DISABLED) {
+            memberStatusLogBuilder.description(request.getReason());
+        }
+
+        memberStatusLogRepository.save(memberStatusLogBuilder.build());
 
         member.updateMemberStatus(afterStatus, LocalDateTime.now());
         School school = member.getSchool();
