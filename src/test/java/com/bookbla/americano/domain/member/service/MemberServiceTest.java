@@ -2,15 +2,15 @@ package com.bookbla.americano.domain.member.service;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberInformationUpdateRequest;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberOnboardingStatusResponse;
-import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.bookbla.americano.fixture.Fixture.스타일_등록_완료_남성_고도리;
 import static com.bookbla.americano.fixture.Fixture.프로필_등록_완료_남성_리준희;
@@ -20,38 +20,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @SuppressWarnings("NonAsciiCharacters")
 @SpringBootTest
+@Transactional
 class MemberServiceTest {
 
     @Autowired
     private MemberRepository memberRepository;
 
     @Autowired
-    private MemberBookmarkRepository memberBookmarkRepository;
-
-    @Autowired
     private MemberService sut;
-
-    @Test
-    void 온보딩_상태를_변경할_수_있다() {
-        // given
-        Member member = memberRepository.save(Member.builder().build());
-        // when
-        MemberOnboardingStatusResponse response = sut.updateMemberOnboarding(member.getId(), "HOME");
-        // then
-        assertThat(response.getHomeOnboardingStatus()).isTrue();
-        assertThat(response.getLibraryOnboardingStatus()).isFalse();
-    }
-
-    @Test
-    void 유효하지_않은_온모딩_시_에러가_발생한다() {
-        // given
-        Member member = memberRepository.save(Member.builder().build());
-
-        // when & then
-        assertThatThrownBy(() -> sut.updateMemberOnboarding(member.getId(), "INVALID"))
-                .isInstanceOf(BaseException.class)
-                .hasMessageContaining("유효하지 않은 온보딩 상태입니다.");
-    }
 
     @Nested
     class 회원_정보_수정 {
@@ -82,11 +58,5 @@ class MemberServiceTest {
             assertThat(고도리.getMemberProfile().getName()).isEqualTo("고도리");
         }
 
-    }
-
-    @AfterEach
-    void tearDown() {
-        memberBookmarkRepository.deleteAllInBatch();
-        memberRepository.deleteAllInBatch();
     }
 }

@@ -48,5 +48,4 @@ public enum MemberStatus {
                 .findFirst()
                 .orElseThrow(() -> new BaseException(MemberExceptionType.MEMBER_STATUS_NOT_VALID));
     }
-
 }
