@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -51,9 +52,22 @@ public class MemberMatchingService {
 
         // 필터링
 
-        // response 생성 후 반환
 
-        return null;
+        // response 생성 후 반환
+        List<MemberIntroResponse> memberIntroResponses = new ArrayList<>();
+        for (Map<Long, Long> matchingMember : matchingMembers) {
+            Long matchedMemberId = matchingMember.keySet().iterator().next();
+            Long matchedMemberBookId = matchingMember.get(matchedMemberId);
+
+            Member matchedMember = memberRepository.getByIdOrThrow(matchedMemberId);
+            MemberBook matchedMemberBook = memberBookRepository.getByIdOrThrow(matchedMemberBookId);
+
+            if (matchedMember != null && matchedMemberBook != null) {
+                memberIntroResponses.add(MemberIntroResponse.from(matchedMember, matchedMemberBook));
+            }
+        }
+
+        return getDailyMemberIntroResponses(memberIntroResponses);
     }
 
     private List<MemberIntroResponse> getDailyMemberIntroResponses(List<MemberIntroResponse> memberIntroResponses) {
