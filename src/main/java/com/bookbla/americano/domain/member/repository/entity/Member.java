@@ -97,10 +97,6 @@ public class Member extends BaseEntity {
     private Set<MemberReport> reportedMembers = new HashSet<>();
 
     @Builder.Default
-    @ElementCollection(fetch = FetchType.LAZY)
-    private Set<Long> memberMatchIgnores = new HashSet<>();
-
-    @Builder.Default
     private Integer reportedCount = 0; // 신고당한 횟수
 
     @Column
@@ -171,10 +167,6 @@ public class Member extends BaseEntity {
         }
         this.reportedCount -= 1;
         return this;
-    }
-
-    public void updateMemberMatchIgnores(Member member) {
-        this.memberMatchIgnores.add(member.getId());
     }
 
     public boolean hasProfile() {
