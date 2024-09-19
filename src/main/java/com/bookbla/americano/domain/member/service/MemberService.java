@@ -12,6 +12,7 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberStatusR
 import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.SmokeType;
+import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberBookmarkExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
@@ -87,12 +88,13 @@ public class MemberService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberStatus afterStatus = request.getMemberStatus();
 
-        if (member.canChangeToComplete(afterStatus)) {
-            int memberBooks = (int) memberBookRepository.countByMember(member);
+        if (member.canChangeToApproval(afterStatus)) {
+            int memberBookCount = (int) memberBookRepository.countByMember(member);
+            validateMemberBookExists(memberBookCount);
             MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(member.getId())
                     .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
 
-            memberBookmark.updateBookmarksByInitialBook(memberBooks);
+            memberBookmark.updateBookmarksByInitialBook(memberBookCount);
         }
 
         MemberStatusLog.MemberStatusLogBuilder memberStatusLogBuilder = MemberStatusLog.builder()
@@ -120,6 +122,12 @@ public class MemberService {
         member.updateMemberStatus(afterStatus, LocalDateTime.now());
         School school = member.getSchool();
         return MemberStatusResponse.from(member, school);
+    }
+
+    private void validateMemberBookExists(int memberBookCount) {
+        if (memberBookCount < 1) {
+            throw new BaseException(MemberBookExceptionType.MEMBER_BOOK_EMPTY);
+        }
     }
 
     @Transactional
