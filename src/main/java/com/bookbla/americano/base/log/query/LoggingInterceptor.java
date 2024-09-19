@@ -13,7 +13,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Slf4j
 public class LoggingInterceptor implements HandlerInterceptor {
 
-    private static final String QUERY_COUNT_WARN_LOG = "쿼리가 {}번 이상 실행됐어욥ㅠ";
+    private static final String QUERY_COUNT_WARN_LOG = "쿼리가 {}번 이상 실행됐습니다욥";
     private static final String QUERY_COUNT_LOG = "METHOD: {}, URL: {}, STATUS_CODE: {}, QUERY_COUNT: {}";
     private static final int WARN_QUERY_COUNT = 5;
 
