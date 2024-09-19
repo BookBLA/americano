@@ -6,6 +6,7 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.enums.MemberVerifyStatus;
 import com.bookbla.americano.domain.member.enums.MemberVerifyType;
 import com.bookbla.americano.domain.member.exception.MemberVerifyExceptionType;
+import com.bookbla.americano.domain.member.repository.custom.MemberVerifyRepositoryCustom;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import feign.Param;
 import org.springframework.data.domain.Page;
@@ -14,7 +15,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-public interface MemberVerifyRepository extends JpaRepository<MemberVerify, Long> {
+public interface MemberVerifyRepository extends JpaRepository<MemberVerify, Long>, MemberVerifyRepositoryCustom {
 
     default MemberVerify getByIdOrThrow(Long memberVerifyId) {
         return findById(memberVerifyId)
