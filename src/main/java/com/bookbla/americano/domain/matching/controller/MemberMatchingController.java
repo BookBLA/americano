@@ -1,9 +1,9 @@
-package com.bookbla.americano.domain.member.controller;
+package com.bookbla.americano.domain.matching.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberIntroResponse;
-import com.bookbla.americano.domain.member.service.MemberMatchingService;
+import com.bookbla.americano.domain.matching.service.MemberMatchingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
