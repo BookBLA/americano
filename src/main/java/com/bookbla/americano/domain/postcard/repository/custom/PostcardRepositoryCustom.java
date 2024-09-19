@@ -7,16 +7,15 @@ import com.bookbla.americano.domain.postcard.service.dto.response.PostcardFromRe
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardToResponse;
 
 import java.util.List;
+import java.util.Set;
 
 public interface PostcardRepositoryCustom {
 
     List<PostcardFromResponse> getPostcardsFromMember(Long memberId);
 
-    List<Long> findReceiveByIdsWithPostcardStatus(Long sendMemberId, PostcardStatus postcardStatus);
-
-    List<Long> findReceiveByIdsRefused(Long sendMemberId, List<Postcard> postcards);
-
     List<PostcardToResponse> getPostcardsToMember(Long memberId);
 
     List<Postcard> refuseExpiredPostcard();
+
+    List<Long> getReceiveIdsRefusedAt(Set<Long> filteringMemberId);
 }
