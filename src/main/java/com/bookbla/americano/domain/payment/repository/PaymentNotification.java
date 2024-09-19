@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.payment.repository;
 
 import com.bookbla.americano.base.entity.BaseEntity;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -24,6 +25,7 @@ public class PaymentNotification extends BaseEntity {
 
     private String type;
 
+    @Column(columnDefinition = "TEXT")
     private String information; // 서버로부터 받는 json 정보
 
     private String receipt; // 거래 후 받은 영수증 정보

@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,19 +45,20 @@ public class MemberMatchingService {
         MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member, memberBooks);
 
         //dto와 potcards가지고 추천회원 id와 추천회원의 책 id 추출
-        List<Map<Long, Long>> recommendationItems = memberRepository.getRecommendationMemberIdsAndBookIds(memberRecommendationDto, postcards);
+        List<Map<Long, Long>> recommendationItems = memberRepository
+                .getRecommendationMemberIdsAndBookIds(memberRecommendationDto, postcards);
 
         //추출한 추천회원 id와 추천회원의 책 id를 db에 저장
         List<MemberIntroResponse> memberIntroResponses = new ArrayList<>();
         for (Map<Long, Long> item : recommendationItems) {
             Map.Entry<Long, Long> entry = item.entrySet().iterator().next();
             Long recMemberId = entry.getKey();
-            Long recBookId = entry.getValue();
+            Long recMemberBookId = entry.getValue();
 
-            if (recMemberId != null && recBookId != null) {
+            if (recMemberId != null && recMemberBookId != null) {
 
                 Member recMember = memberRepository.getByIdOrThrow(recMemberId);
-                MemberBook recMemberBook = memberBookRepository.getByIdOrThrow(recBookId);
+                MemberBook recMemberBook = memberBookRepository.getByIdOrThrow(recMemberBookId);
 
                 // MemberMatch 객체 생성
                 MemberMatch memberMatch = MemberMatch.builder()

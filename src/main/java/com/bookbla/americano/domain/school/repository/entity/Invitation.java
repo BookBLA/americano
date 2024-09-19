@@ -34,7 +34,7 @@ public class Invitation extends BaseEntity {
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    private InvitationStatus invitationStatus = NONE;
+    private InvitationStatus invitationStatus = BOOKMARK;
 
     @Enumerated(EnumType.STRING)
     private InvitationType invitationType;
