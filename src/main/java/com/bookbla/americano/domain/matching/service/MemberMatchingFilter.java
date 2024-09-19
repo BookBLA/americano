@@ -12,7 +12,7 @@ public class MemberMatchingFilter {
 
     private final MemberVerifyRepository memberVerifyRepository;
 
-    public List<Map<Long, Long>> filter(List<Map<Long, Long>> matchingMembers) {
+    public List<Map<Long, Long>> MemberVerifyFiltering(List<Map<Long, Long>> matchingMembers) {
 
         /** 학생증 상태 필터링 **/
 
