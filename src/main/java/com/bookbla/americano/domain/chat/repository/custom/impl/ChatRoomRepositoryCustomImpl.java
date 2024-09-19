@@ -6,6 +6,7 @@ import com.bookbla.americano.domain.chat.repository.entity.QChatRoom;
 import com.bookbla.americano.domain.chat.repository.entity.QMemberChatRoom;
 import com.bookbla.americano.domain.member.repository.entity.QMember;
 import com.bookbla.americano.domain.member.repository.entity.QProfileImageType;
+import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.entity.QPostcard;
 import com.bookbla.americano.domain.school.repository.entity.QSchool;
 import com.querydsl.core.types.Projections;
@@ -63,6 +64,7 @@ public class ChatRoomRepositoryCustomImpl implements ChatRoomRepositoryCustom {
                 .leftJoin(qProfileImageType).on(qMemberOther.memberStyle.profileImageType.eq(qProfileImageType))
                 .innerJoin(qSchool).on(qMemberOther.school.eq(qSchool))
                 .where(qMemberReq.id.eq(memberId))
+                .where(qPostcard.postcardStatus.eq(PostcardStatus.ACCEPT))
                 .where(qMemberOther.id.ne(memberId))
                 .orderBy(qChatRoom.lastChatTime.desc())
                 .fetch();
