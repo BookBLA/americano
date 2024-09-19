@@ -106,15 +106,7 @@ public class MemberService {
         }
 
         if (afterStatus == COMPLETED) {
-            final MemberStatus finalAfterStatus = afterStatus;
-            afterStatus = memberVerifyRepository
-                    .findFirstByVerifyTypeAndMemberIdOrderByCreatedAtDesc(STUDENT_ID, memberId)
-                    .map(verification -> {
-                        if (verification.isFail()) return REJECTED;
-                        if (verification.isPending()) return APPROVAL;
-                        return finalAfterStatus; // 기본값 유지
-                    })
-                    .orElse(afterStatus); // 결과가 없을 경우 기본값 유지
+            afterStatus = findSuitableMemberStatus(memberId, afterStatus);
         }
 
         memberStatusLogRepository.save(memberStatusLogBuilder.afterStatus(afterStatus).build());
@@ -122,6 +114,17 @@ public class MemberService {
         member.updateMemberStatus(afterStatus, LocalDateTime.now());
         School school = member.getSchool();
         return MemberStatusResponse.from(member, school);
+    }
+
+    private MemberStatus findSuitableMemberStatus(Long memberId, MemberStatus afterStatus) {
+        return memberVerifyRepository
+                .findFirstByVerifyTypeAndMemberIdOrderByCreatedAtDesc(STUDENT_ID, memberId)
+                .map(verification -> {
+                    if (verification.isFail()) return REJECTED;
+                    if (verification.isPending()) return APPROVAL;
+                    return afterStatus; // 기본값 유지
+                })
+                .orElse(afterStatus); // 결과가 없을 경우 기본값 유지
     }
 
     private void validateMemberBookExists(int memberBookCount) {
