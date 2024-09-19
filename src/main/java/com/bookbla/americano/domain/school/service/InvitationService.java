@@ -3,11 +3,14 @@ package com.bookbla.americano.domain.school.service;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.admin.event.AdminNotificationEventListener;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberInvitationResponse;
+
+import com.bookbla.americano.domain.member.controller.dto.response.MemberInvitationRewardResponse;
 import com.bookbla.americano.domain.member.exception.MemberBookmarkExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberModal;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.member.service.dto.event.AdminNotificationEvent;
 import com.bookbla.americano.domain.notification.event.PushAlarmEventHandler;
@@ -16,14 +19,14 @@ import com.bookbla.americano.domain.school.controller.dto.response.InvitationRes
 import com.bookbla.americano.domain.school.exception.InvitationExceptionType;
 import com.bookbla.americano.domain.school.repository.InvitationRepository;
 import com.bookbla.americano.domain.school.repository.entity.Invitation;
+import com.bookbla.americano.domain.school.repository.entity.InvitationStatus;
 import com.bookbla.americano.domain.school.repository.entity.InvitationType;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.bookbla.americano.domain.school.repository.entity.InvitationType.MAN;
-import static com.bookbla.americano.domain.school.repository.entity.InvitationType.WOMAN;
+import static com.bookbla.americano.domain.school.repository.entity.InvitationType.*;
 
 
 /*
@@ -62,6 +65,9 @@ public class InvitationService {
         Member invitingMember = memberRepository.findByInvitationCode(request.getInvitationCode())
                 .orElseThrow(() -> new BaseException(MemberExceptionType.INVITATION_CODE_NOT_FOUND));
         Member invitedMember = memberRepository.getByIdOrThrow(invitedMemberId);
+
+        invitedMember.getMemberModal().updateMemberInvitedRewardStatus(InvitationStatus.BOOKMARK);
+        invitingMember.getMemberModal().getInvitingRewardStatus().put(invitedMemberId, Boolean.FALSE);
 
         Invitation invitation = invitationRepository.findByInvitedMemberId(invitedMemberId)
                 .orElseGet(() -> createInvitation(invitedMember.isWoman(), invitingMember.getId(), invitedMemberId));
@@ -107,8 +113,8 @@ public class InvitationService {
 
         return invitationRepository.save(invitation);
     }
-
-    private void processInvitationReward(
+    
+        private void processInvitationReward(
             Invitation invitation,
             Long invitedMemberId,
             Long invitingMemberId
@@ -142,5 +148,24 @@ public class InvitationService {
             invitedMemberBookmark.addManInvitationBookmark();
             invitingMemberBookmark.addManInvitationBookmark();
         }
+        }
+
+
+    public MemberInvitationRewardResponse getInvitationRewardStatus(Long memberId) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        MemberModal modal = member.getMemberModal();
+
+        boolean invitingReward = modal.getAndUpdateInvitingRewardStatus();
+        boolean invitedReward = modal.getAndUpdateInvitedRewardStatus();
+
+        return MemberInvitationRewardResponse.from(invitingReward, invitedReward);
+    }
+
+    public MemberInvitationRewardResponse updateInvitationRewardStatus(Long memberId, InvitationStatus invitationStatus) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+
+        member.getMemberModal().updateMemberInvitedRewardStatus(invitationStatus);
+
+        return getInvitationRewardStatus(memberId);
     }
 }
