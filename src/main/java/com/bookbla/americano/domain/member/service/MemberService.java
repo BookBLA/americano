@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.member.service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberInformationUpdateRequest;
@@ -117,14 +118,14 @@ public class MemberService {
     }
 
     private MemberStatus findSuitableMemberStatus(Long memberId, MemberStatus afterStatus) {
-        return memberVerifyRepository
-                .findFirstByVerifyTypeAndMemberIdOrderByCreatedAtDesc(STUDENT_ID, memberId)
+        return memberVerifyRepository.findFirstByVerifyTypeAndMemberIdOrderByCreatedAtDesc(STUDENT_ID, memberId)
+                .stream()
+                .findFirst()
                 .map(verification -> {
                     if (verification.isFail()) return REJECTED;
                     if (verification.isPending()) return APPROVAL;
                     return afterStatus; // 기본값 유지
-                })
-                .orElse(afterStatus); // 결과가 없을 경우 기본값 유지
+                }).orElse(afterStatus);
     }
 
     private void validateMemberBookExists(int memberBookCount) {
