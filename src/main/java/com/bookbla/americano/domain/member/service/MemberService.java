@@ -33,9 +33,6 @@ public class MemberService {
     private final MemberStatusLogRepository memberStatusLogRepository;
     private final MemberBookmarkRepository memberBookmarkRepository;
 
-    private final static String HOME_ONBOARDING = "HOME";
-    private final static String LIBRARY_ONBOARDING = "LIBRARY";
-
     @Transactional(readOnly = true)
     public MemberResponse readMember(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
