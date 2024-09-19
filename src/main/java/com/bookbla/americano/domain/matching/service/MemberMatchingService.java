@@ -52,8 +52,11 @@ public class MemberMatchingService {
         List<Map<Long, Long>> matchingMembers = memberMatchingRepository
                 .getMatchingMemberList(memberRecommendationDto);
 
-        // 필터링
-        matchingMembers = memberMatchingFilter.MemberVerifyFiltering(matchingMembers);
+        // 학생증 인증 필터링
+        matchingMembers = memberMatchingFilter.memberVerifyFiltering(matchingMembers);
+
+        // "거절 + 14일 < 오늘" 필터링
+        matchingMembers = memberMatchingFilter.memberRefusedAtFiltering(matchingMembers);
 
         // response 생성 후 반환
         List<MemberIntroResponse> memberIntroResponses = new ArrayList<>();
