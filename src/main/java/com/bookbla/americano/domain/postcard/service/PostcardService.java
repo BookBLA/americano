@@ -5,6 +5,7 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.chat.repository.MemberChatRoomRepository;
 import com.bookbla.americano.domain.chat.repository.entity.MemberChatRoom;
 import com.bookbla.americano.domain.chat.service.ChatRoomService;
+import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
@@ -56,6 +57,7 @@ public class PostcardService {
     private final PushAlarmEventHandler postcardPushAlarmEventListener;
     private final ChatRoomService chatRoomService;
     private final MemberChatRoomRepository memberChatRoomRepository;
+    private final MemberMatchingRepository memberMatchingRepository;
 
     public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
         MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
@@ -179,14 +181,14 @@ public class PostcardService {
         Member sendMember = postcard.getSendMember();
         Member receiveMember = postcard.getReceiveMember();
 
+
         if (postcardStatus.isAccept()) {
-            sendMember.updateMemberMatchIgnores(receiveMember);
-            receiveMember.updateMemberMatchIgnores(sendMember);
+            updateMemberMatchingExcluded(sendMember, receiveMember);
 
             postcardPushAlarmEventListener.acceptPostcard(new PostcardAlarmEvent(sendMember, receiveMember));
         } else if (postcardStatus.isPending()) {
-            sendMember.updateMemberMatchIgnores(receiveMember);
-            receiveMember.updateMemberMatchIgnores(sendMember);
+            updateMemberMatchingExcluded(sendMember, receiveMember);
+
         } else if (postcardStatus.isRefused()) { // 거절 시 환불
             postcard.updatePostcardStatusRefusedAt();
 
@@ -201,6 +203,18 @@ public class PostcardService {
                     postcard.getReceiveMember().getId(), postcard.getId());
             memberChatRoomRepository.deleteAll(memberChatRooms);
         }
+    }
+
+    private void updateMemberMatchingExcluded(Member sendMember, Member receiveMember) {
+        memberMatchingRepository.findByMemberId(sendMember.getId())
+                .ifPresent(it -> {
+                    it.addExcludedMember(receiveMember.getId());
+                });
+
+        memberMatchingRepository.findByMemberId(receiveMember.getId())
+                .ifPresent(it -> {
+                    it.addExcludedMember(sendMember.getId());
+                });
     }
 
     @Transactional(readOnly = true)
