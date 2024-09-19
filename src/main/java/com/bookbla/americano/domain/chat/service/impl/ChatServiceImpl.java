@@ -115,15 +115,23 @@ public class ChatServiceImpl implements ChatService {
 
             // 해당 Member 들이 채팅방에 접속했는지 확인
             Set<SimpSubscription> otherSubscription = userRegistry.findSubscriptions(subscription -> {
-                String destination = subscription.getDestination();
-                String[] split = destination.split("/");
-                for (Member member : otherMembers) {
-                    if (split[split.length - 2].equals("room") &&
-                            split[split.length - 1].equals(member.getId().toString())) {
-                        return true;
+                try {
+                    String destination = subscription.getDestination();
+                    String[] split = destination.split("/");
+                    String subPath = split[split.length -3];
+                    Long roomId = Long.valueOf(split[split.length - 2]);
+                    Long userId = Long.valueOf(split[split.length - 1]);
+                    for (Member member : otherMembers) {
+                        if (subPath.equals("room") && roomId.equals(chatDto.getChatRoomId())
+                                && userId.equals(member.getId())) {
+                            return true;
+                        }
                     }
+                    return false;
+                } catch (Exception e) {
+                    return false;
                 }
-                return false;
+
             });
 
             // 상대방이 채팅방에 접속해있으면

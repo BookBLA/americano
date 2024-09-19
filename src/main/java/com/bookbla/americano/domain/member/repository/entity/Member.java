@@ -237,7 +237,7 @@ public class Member extends BaseEntity {
         return !isWoman();
     }
 
-    public boolean canChangeToComplete(MemberStatus afterStatus) {
+    public boolean canChangeToApproval(MemberStatus afterStatus) {
         return memberStatus == MemberStatus.BOOK && afterStatus == MemberStatus.APPROVAL;
     }
 

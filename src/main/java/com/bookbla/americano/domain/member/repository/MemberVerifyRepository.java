@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.member.repository;
 
-import java.util.List;
+import java.util.Optional;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.enums.MemberVerifyStatus;
@@ -8,7 +8,6 @@ import com.bookbla.americano.domain.member.enums.MemberVerifyType;
 import com.bookbla.americano.domain.member.exception.MemberVerifyExceptionType;
 import com.bookbla.americano.domain.member.repository.custom.MemberVerifyRepositoryCustom;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
-import feign.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,13 +25,7 @@ public interface MemberVerifyRepository extends JpaRepository<MemberVerify, Long
 
     long countByVerifyTypeAndVerifyStatus(MemberVerifyType verifyType, MemberVerifyStatus verifyStatus);
 
-    @Query("select mv.contents " +
-            "from MemberVerify mv " +
-            "where mv.memberId = :memberId " +
-            "and mv.verifyStatus = com.bookbla.americano.domain.member.enums.MemberVerifyStatus.PENDING " +
-            "and mv.verifyType = com.bookbla.americano.domain.member.enums.MemberVerifyType.PROFILE_IMAGE " +
-            "order by mv.id desc ")
-    List<String> findMemberPendingProfileImage(@Param("memberId") Long memberId);
+    Optional<MemberVerify> findFirstByVerifyTypeAndMemberIdOrderByCreatedAtDesc(MemberVerifyType verifyType, Long memberId);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("delete from MemberVerify mv " +
