@@ -59,4 +59,12 @@ public class MemberVerify extends BaseEntity {
         this.verifyStatus = FAIL;
         this.description = failReason;
     }
+
+    public boolean isFail() {
+        return this.verifyStatus == FAIL;
+    }
+
+    public boolean isPending() {
+        return this.verifyStatus == PENDING;
+    }
 }

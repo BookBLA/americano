@@ -1,9 +1,14 @@
 package com.bookbla.americano.domain.member.service;
 
+import java.time.LocalDateTime;
+
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberInformationUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStatusUpdateRequest;
-import com.bookbla.americano.domain.member.controller.dto.response.*;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberDeleteResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberInformationReadResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberStatusResponse;
 import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.SmokeType;
@@ -14,15 +19,22 @@ import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
-import com.bookbla.americano.domain.member.repository.entity.*;
+import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
+import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
+import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
+import com.bookbla.americano.domain.member.repository.entity.MemberStatusLog;
+import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
 import com.bookbla.americano.domain.school.repository.entity.School;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
+import static com.bookbla.americano.domain.member.enums.MemberStatus.APPROVAL;
+import static com.bookbla.americano.domain.member.enums.MemberStatus.COMPLETED;
 import static com.bookbla.americano.domain.member.enums.MemberStatus.MATCHING_DISABLED;
+import static com.bookbla.americano.domain.member.enums.MemberStatus.REJECTED;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +44,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberStatusLogRepository memberStatusLogRepository;
     private final MemberBookmarkRepository memberBookmarkRepository;
+    private final MemberVerifyRepository memberVerifyRepository;
 
     @Transactional(readOnly = true)
     public MemberResponse readMember(Long memberId) {
@@ -84,14 +97,25 @@ public class MemberService {
 
         MemberStatusLog.MemberStatusLogBuilder memberStatusLogBuilder = MemberStatusLog.builder()
                 .memberId(memberId)
-                .beforeStatus(member.getMemberStatus())
-                .afterStatus(afterStatus);
+                .beforeStatus(member.getMemberStatus());
 
         if (afterStatus == MATCHING_DISABLED) {
             memberStatusLogBuilder.description(request.getReason());
         }
 
-        memberStatusLogRepository.save(memberStatusLogBuilder.build());
+        if (afterStatus == COMPLETED) {
+            final MemberStatus finalAfterStatus = afterStatus;
+            afterStatus = memberVerifyRepository
+                    .findFirstByVerifyTypeAndMemberIdOrderByCreatedAtDesc(STUDENT_ID, memberId)
+                    .map(verification -> {
+                        if (verification.isFail()) return REJECTED;
+                        if (verification.isPending()) return APPROVAL;
+                        return finalAfterStatus; // 기본값 유지
+                    })
+                    .orElse(afterStatus); // 결과가 없을 경우 기본값 유지
+        }
+
+        memberStatusLogRepository.save(memberStatusLogBuilder.afterStatus(afterStatus).build());
 
         member.updateMemberStatus(afterStatus, LocalDateTime.now());
         School school = member.getSchool();
