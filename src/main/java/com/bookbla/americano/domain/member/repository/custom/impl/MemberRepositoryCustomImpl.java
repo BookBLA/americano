@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.bookbla.americano.domain.book.repository.entity.QBook.book;
 import static com.bookbla.americano.domain.member.repository.entity.QMember.member;
 import static com.bookbla.americano.domain.member.repository.entity.QMemberBook.memberBook;
 import static com.bookbla.americano.domain.school.repository.entity.QSchool.school;
