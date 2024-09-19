@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.school.service;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.admin.event.AdminNotificationEventListener;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberInvitationRewardResponse;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.bookbla.americano.domain.school.repository.entity.InvitationStatus.BOOKMARK;
@@ -43,6 +45,9 @@ class InvitationServiceTest {
 
     @Autowired
     private InvitationRepository invitationRepository;
+
+    @MockBean
+    private AdminNotificationEventListener adminNotificationEventListener;
 
     @Nested
     class 초대코드_입력_성공 {
