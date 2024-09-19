@@ -37,7 +37,7 @@ class MemberProfileTest {
                 .build();
 
         //when then
-        assertThatThrownBy(() -> memberProfile.updateName("씨발"))
+        assertThatThrownBy(() -> memberProfile.updateName("좃만이"))
                 .isInstanceOf(BaseException.class)
                 .hasMessageContaining("사용할 수 없는 단어가(비속어, 북블라 등) 포함되어있습니다.");
     }

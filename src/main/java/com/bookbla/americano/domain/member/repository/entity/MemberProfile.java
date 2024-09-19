@@ -1,10 +1,10 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.base.utils.BadWordFilterUtil;
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
-import com.vane.badwordfiltering.BadWordFiltering;
 import java.time.LocalDate;
 import java.util.Objects;
 import javax.persistence.Column;
@@ -53,9 +53,7 @@ public class MemberProfile {
     }
 
     public static Boolean verifyNickname(String name) {
-        BadWordFiltering badWordFiltering = new BadWordFiltering();
-
-        return !badWordFiltering.blankCheck(name) && !name.contains("북블라");
+        return BadWordFilterUtil.verify(name) && !name.contains("북블라");
     }
 
     public MemberProfile updateBirthDate(LocalDate birthDate) {
