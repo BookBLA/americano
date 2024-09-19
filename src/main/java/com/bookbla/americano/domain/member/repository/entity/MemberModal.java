@@ -34,7 +34,7 @@ public class MemberModal {
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    private InvitationStatus invitedRewardStatus = InvitationStatus.PENDING;
+    private InvitationStatus invitedRewardStatus = InvitationStatus.NONE;
 
     public void updateMemberHomeOnboarding() {
         this.homeOnboarding = Boolean.TRUE;

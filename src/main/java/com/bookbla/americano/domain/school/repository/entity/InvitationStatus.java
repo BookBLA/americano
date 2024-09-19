@@ -8,6 +8,7 @@ import java.util.Arrays;
 
 public enum InvitationStatus {
 
+    NONE,
     COMPLETED,
     BOOKMARK,
     ;
