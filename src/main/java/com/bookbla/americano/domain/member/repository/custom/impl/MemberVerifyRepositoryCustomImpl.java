@@ -21,7 +21,7 @@ public class MemberVerifyRepositoryCustomImpl implements MemberVerifyRepositoryC
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Long> findStudentIdByVerify(Set<Long> filteringMemberId) {
+    public List<Long> getMemberIdsByStudentIdVerify(Set<Long> filteringMemberId) {
 
         LocalDateTime twoDaysAgo = LocalDateTime.now().minusDays(2);
 
