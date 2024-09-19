@@ -32,6 +32,7 @@ public class MemberMatchingService {
     private final MemberRepository memberRepository;
     private final MemberBookRepository memberBookRepository;
     private final MemberMatchingRepository memberMatchingRepository;
+    private final MemberMatchingFilter memberMatchingFilter;
 
     public List<MemberIntroResponse> getRecommendationList(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
@@ -52,7 +53,7 @@ public class MemberMatchingService {
                 .getMatchingMemberList(memberRecommendationDto);
 
         // 필터링
-
+        matchingMembers = memberMatchingFilter.MemberVerifyFiltering(matchingMembers);
 
         // response 생성 후 반환
         List<MemberIntroResponse> memberIntroResponses = new ArrayList<>();
