@@ -37,7 +37,7 @@ public class MemberMatchingFilter {
     /**
      * 엽서 거절 조건 필터링
      */
-    public List<Map<Long, Long>> memberRefusedAtFiltering(List<Map<Long, Long>> matchingMembers) {
+    public List<Map<Long, Long>> memberRefusedAtFiltering(Long sendMemberId, List<Map<Long, Long>> matchingMembers) {
         Set<Long> filteringMemberIds = new HashSet<>();
 
         // 중복 제외한 matchingMemberId (한명의 회원당 여러 책을 동록했을 수 있기때문에 중복 member id 값이 있을 수 있음)
@@ -45,7 +45,7 @@ public class MemberMatchingFilter {
             filteringMemberIds.addAll(matchingMemberId.keySet());
         }
 
-        List<Long> filteredMatchMemberIds = postcardRepository.getReceiveIdsRefusedAt(filteringMemberIds);
+        List<Long> filteredMatchMemberIds = postcardRepository.getReceiveIdsRefusedAt(sendMemberId, filteringMemberIds);
 
         return matchingMembers.stream()
                 .filter(map -> map.keySet().stream().anyMatch(filteredMatchMemberIds::contains))

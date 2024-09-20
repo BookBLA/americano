@@ -56,7 +56,7 @@ public class MemberMatchingService {
         matchingMembers = memberMatchingFilter.memberVerifyFiltering(matchingMembers);
 
         // "거절 + 14일 < 오늘" 필터링
-        matchingMembers = memberMatchingFilter.memberRefusedAtFiltering(matchingMembers);
+        matchingMembers = memberMatchingFilter.memberRefusedAtFiltering(member.getId(), matchingMembers);
 
         // response 생성 후 반환
         List<MemberIntroResponse> memberIntroResponses = new ArrayList<>();

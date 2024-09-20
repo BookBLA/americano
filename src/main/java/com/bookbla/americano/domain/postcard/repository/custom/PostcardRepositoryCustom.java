@@ -17,5 +17,5 @@ public interface PostcardRepositoryCustom {
 
     List<Postcard> refuseExpiredPostcard();
 
-    List<Long> getReceiveIdsRefusedAt(Set<Long> filteringMemberId);
+    List<Long> getReceiveIdsRefusedAt(Long sendMemberId, Set<Long> filteringMemberId);
 }

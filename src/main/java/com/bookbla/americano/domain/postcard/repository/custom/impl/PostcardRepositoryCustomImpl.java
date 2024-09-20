@@ -89,7 +89,7 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
     }
 
     @Override
-    public List<Long> getReceiveIdsRefusedAt(Set<Long> filteringMemberId) {
+    public List<Long> getReceiveIdsRefusedAt(Long sendMemberId, Set<Long> filteringMemberId) {
 
         LocalDateTime twoWeeksAgo = LocalDateTime.now().minusWeeks(2);
 
@@ -98,7 +98,9 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                 .from(postcard)
                 .where(
                         postcard.receiveMember.id.in(filteringMemberId),
-                        postcard.postcardStatusRefusedAt.before(twoWeeksAgo)
+                        (postcard.sendMember.id.eq(sendMemberId)
+                                .and(postcard.postcardStatus.eq(PostcardStatus.REFUSED))
+                                .and(postcard.postcardStatusRefusedAt.before(twoWeeksAgo)))
                 ).fetch();
     }
 }
