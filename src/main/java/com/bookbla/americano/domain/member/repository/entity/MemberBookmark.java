@@ -46,8 +46,19 @@ public class MemberBookmark extends BaseEntity {
         bookmarkCount = bookmarkCount - 5;
     }
 
+    public void acceptPostcard() {
+        validateAcceptPostcard();
+        bookmarkCount = bookmarkCount - 30;
+    }
+
     public void validateSendPostcard() {
         if (bookmarkCount < 35) {
+            throw new BaseException(MemberBookmarkExceptionType.INVALID_BOOKMARK_COUNTS);
+        }
+    }
+
+    public void validateAcceptPostcard() {
+        if (bookmarkCount < 30) {
             throw new BaseException(MemberBookmarkExceptionType.INVALID_BOOKMARK_COUNTS);
         }
     }

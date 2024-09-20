@@ -181,21 +181,21 @@ public class PostcardService {
         Member sendMember = postcard.getSendMember();
         Member receiveMember = postcard.getReceiveMember();
 
+        MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
+                        postcard.getSendMember().getId())
+                .orElseThrow(
+                        () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
 
         if (postcardStatus.isAccept()) {
             updateMemberMatchingExcluded(sendMember, receiveMember);
-
+            memberBookmark.acceptPostcard();
             postcardPushAlarmEventListener.acceptPostcard(new PostcardAlarmEvent(sendMember, receiveMember));
+
         } else if (postcardStatus.isPending()) {
             updateMemberMatchingExcluded(sendMember, receiveMember);
 
         } else if (postcardStatus.isRefused()) { // 거절 시 환불
             postcard.updatePostcardStatusRefusedAt();
-
-            MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
-                            postcard.getSendMember().getId())
-                    .orElseThrow(
-                            () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
             memberBookmark.addBookmark(35);
             // 해당 엽서로 생성된 채팅방을 모두 나가게 함
             // 실제로는 1개만 삭제

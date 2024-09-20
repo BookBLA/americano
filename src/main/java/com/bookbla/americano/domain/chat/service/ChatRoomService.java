@@ -16,6 +16,8 @@ public interface ChatRoomService {  // 단위 테스트를 위한 interface
 
     void updateChatRoomLastMessage(Long chatRoomId, String lastChat, LocalDateTime lastChatTime);
 
+    ChatRoomResponse getChatRoomByPostcardId(Long memberId, Long postcardId);
+
     List<ChatRoomResponse> getChatRoomList(Long memberId);
 
     void updateIsAlert(Long roomId, Long memberId, Boolean isAlert);

@@ -51,7 +51,7 @@ public class ChatRoomRepositoryCustomImpl implements ChatRoomRepositoryCustom {
                         qMemberOther.memberProfile.name.as("name"),
                         qSchool.name.as("schoolName"),
                         qMemberOther.memberStyle.height.as("height"),
-                        qMemberOther.memberStyle.smokeType.as("smokeType"),
+                        qMemberOther.memberStyle.smokeType.as("smokeTypeEnum"),
                         qMemberOther.memberStyle.mbti.as("mbti"),
                         qProfileImageType.imageUrl.as("profileImageUrl"),
                         qProfileImageType.gender.as("profileGender")).as("otherMember")))
@@ -68,5 +68,47 @@ public class ChatRoomRepositoryCustomImpl implements ChatRoomRepositoryCustom {
                 .where(qMemberOther.id.ne(memberId))
                 .orderBy(qChatRoom.lastChatTime.desc())
                 .fetch();
+    }
+
+    @Override
+    public ChatRoomResponse findByPostcardId(Long memberId, Long postcardId) {
+        QMember qMemberOther = new QMember("otherMember");
+        QMemberChatRoom qMemberChatRoomReq = new QMemberChatRoom("memberChatRoomReq");
+        QChatRoom qChatRoom = QChatRoom.chatRoom;
+        QPostcard qPostcard = QPostcard.postcard;
+        QProfileImageType qProfileImageType = QProfileImageType.profileImageType;
+        QSchool qSchool = QSchool.school;
+        return queryFactory.select(Projections.fields(ChatRoomResponse.class,
+                qChatRoom.id.as("id"),
+                qMemberChatRoomReq.unreadCount.as("unreadCount"),
+                qChatRoom.lastChat.as("lastChat"),
+                qChatRoom.lastChatTime.as("lastChatTime"),
+                qMemberChatRoomReq.isAlert.as("isAlert"),
+                Projections.fields(ChatRoomResponse.PostCardResponse.class,
+                        qPostcard.id.as("postcardId"),
+                        qPostcard.postcardType.as("type"),
+                        qPostcard.imageUrl.as("imageUrl"),
+                        qPostcard.createdAt.as("createdAt"),
+                        qPostcard.message.as("message"),
+                        qPostcard.sendMember.id.as("senderId"),
+                        qPostcard.postcardStatus.as("status")).as("postcard"),
+                Projections.fields(ChatRoomResponse.MemberResponse.class,
+                        qMemberOther.id.as("memberId"),
+                        qMemberOther.memberProfile.name.as("name"),
+                        qSchool.name.as("schoolName"),
+                        qMemberOther.memberStyle.height.as("height"),
+                        qMemberOther.memberStyle.smokeType.as("smokeTypeEnum"),
+                        qMemberOther.memberStyle.mbti.as("mbti"),
+                        qProfileImageType.imageUrl.as("profileImageUrl"),
+                        qProfileImageType.gender.as("profileGender")).as("otherMember")))
+                .from(qPostcard)
+                .innerJoin(qMemberOther).on(qPostcard.sendMember.eq(qMemberOther))
+                .innerJoin(qChatRoom).on(qChatRoom.postcard.eq(qPostcard))
+                .innerJoin(qMemberChatRoomReq).on(qMemberChatRoomReq.chatRoom.eq(qChatRoom))
+                .leftJoin(qProfileImageType).on(qMemberOther.memberStyle.profileImageType.eq(qProfileImageType))
+                .innerJoin(qSchool).on(qMemberOther.school.eq(qSchool))
+                .where(qMemberChatRoomReq.member.id.eq(memberId))
+                .where(qPostcard.id.eq(postcardId))
+                .fetchOne();
     }
 }
