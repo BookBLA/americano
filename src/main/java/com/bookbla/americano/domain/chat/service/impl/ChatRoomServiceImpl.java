@@ -11,7 +11,6 @@ import com.bookbla.americano.domain.chat.service.ChatRoomService;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +51,11 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     @Override
     public void updateChatRoomLastMessage(Long chatRoomId, String lastChat, LocalDateTime lastChatTime) {
         chatRoomRepository.updateLastChatAndLastChatTimeById(lastChat, lastChatTime, chatRoomId);
+    }
+
+    @Override
+    public ChatRoomResponse getChatRoomByPostcardId(Long memberId, Long postcardId) {
+        return chatRoomRepository.findByPostcardId(memberId, postcardId);
     }
     public void deleteChatRoom(Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow();

@@ -5,11 +5,13 @@ import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.chat.controller.dto.ChatRoomResponse;
 import com.bookbla.americano.domain.chat.service.ChatRoomService;
 import io.swagger.v3.oas.annotations.Parameter;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/chat/room")
@@ -22,7 +24,13 @@ public class ChatRoomController {
     @GetMapping
     public ResponseEntity<List<ChatRoomResponse>> getChatRoomList(@Parameter(hidden=true) @User LoginUser loginUser) {
         List<ChatRoomResponse> result = chatRoomService.getChatRoomList(loginUser.getMemberId());
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(result.stream().peek(res -> res.getOtherMember().setSmokeType(res.getOtherMember().getSmokeTypeEnum().getDetailValue()))
+                .collect(Collectors.toList()));
+    }
+
+    @GetMapping("/postcard")
+    public ResponseEntity<ChatRoomResponse> getChatRoomByPostcardId(@Parameter(hidden=true) @User LoginUser loginUser, @RequestParam Long postcardId) {
+        return ResponseEntity.ok(chatRoomService.getChatRoomByPostcardId(loginUser.getMemberId(), postcardId));
     }
 
     @PostMapping("/alert")

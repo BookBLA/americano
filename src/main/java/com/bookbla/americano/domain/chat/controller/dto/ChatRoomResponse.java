@@ -4,6 +4,7 @@ import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.SmokeType;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import java.time.LocalDateTime;
 
@@ -57,7 +58,12 @@ public class ChatRoomResponse {
         private String profileImageUrl;
         private Gender profileGender;
         private Mbti mbti;
-        private SmokeType smokeType;
+
+        @JsonIgnore
+        private SmokeType smokeTypeEnum;
+
+        private String smokeType;
+
         private Integer height;
         private String schoolName;
     }

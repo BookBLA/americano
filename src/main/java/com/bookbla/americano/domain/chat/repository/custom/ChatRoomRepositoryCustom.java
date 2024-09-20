@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface ChatRoomRepositoryCustom {
     List<ChatRoomResponse> findByMemberId(Long memberId);
+
+    ChatRoomResponse findByPostcardId(Long memberId, Long postcardId);
 }
