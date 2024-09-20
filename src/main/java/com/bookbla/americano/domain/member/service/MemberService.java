@@ -1,7 +1,6 @@
 package com.bookbla.americano.domain.member.service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberInformationUpdateRequest;
@@ -14,7 +13,6 @@ import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.SmokeType;
 import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
-import com.bookbla.americano.domain.member.exception.MemberBookmarkExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
@@ -23,7 +21,6 @@ import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
 import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.MemberStatusLog;
 import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
@@ -45,7 +42,6 @@ public class MemberService {
     private final MemberBookRepository memberBookRepository;
     private final MemberRepository memberRepository;
     private final MemberStatusLogRepository memberStatusLogRepository;
-    private final MemberBookmarkRepository memberBookmarkRepository;
     private final MemberVerifyRepository memberVerifyRepository;
 
     @Transactional(readOnly = true)
@@ -90,12 +86,7 @@ public class MemberService {
         MemberStatus afterStatus = request.getMemberStatus();
 
         if (member.canChangeToApproval(afterStatus)) {
-            int memberBookCount = (int) memberBookRepository.countByMember(member);
-            validateMemberBookExists(memberBookCount);
-            MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(member.getId())
-                    .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
-
-            memberBookmark.updateBookmarksByInitialBook(memberBookCount);
+            validateMemberBookExists(member);
         }
 
         MemberStatusLog.MemberStatusLogBuilder memberStatusLogBuilder = MemberStatusLog.builder()
@@ -117,6 +108,13 @@ public class MemberService {
         return MemberStatusResponse.from(member, school);
     }
 
+    private void validateMemberBookExists(Member member) {
+        long memberBookmarkCount = memberBookRepository.countByMember(member);
+        if (memberBookmarkCount < 1) {
+            throw new BaseException(MemberBookExceptionType.MEMBER_BOOK_EMPTY);
+        }
+    }
+
     private MemberStatus findSuitableMemberStatus(Long memberId, MemberStatus afterStatus) {
         return memberVerifyRepository.findFirstByVerifyTypeAndMemberIdOrderByCreatedAtDesc(STUDENT_ID, memberId)
                 .stream()
@@ -126,12 +124,6 @@ public class MemberService {
                     if (verification.isPending()) return APPROVAL;
                     return afterStatus; // 기본값 유지
                 }).orElse(afterStatus);
-    }
-
-    private void validateMemberBookExists(int memberBookCount) {
-        if (memberBookCount < 1) {
-            throw new BaseException(MemberBookExceptionType.MEMBER_BOOK_EMPTY);
-        }
     }
 
     @Transactional

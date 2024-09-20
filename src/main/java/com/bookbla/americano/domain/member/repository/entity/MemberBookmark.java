@@ -120,4 +120,9 @@ public class MemberBookmark extends BaseEntity {
     public int getNewPersonAdmobCount() {
         return member.getNewPersonAdmobCount();
     }
+
+    public void addInitialAddBookmark() {
+        this.member.useInitialAddBookBookmarkCount();
+        this.bookmarkCount += 15;
+    }
 }
