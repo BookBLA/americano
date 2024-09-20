@@ -107,6 +107,10 @@ public class Member extends BaseEntity {
     @Builder.Default
     private Integer freeBookmarkAdmobCount = 2;
 
+    @Column
+    @Builder.Default
+    private Integer initialRewardBookmarkCount = 4;
+
     public Member updatePushToken(String pushToken) {
         this.pushToken = pushToken;
         return this;
