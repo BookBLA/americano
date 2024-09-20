@@ -258,4 +258,15 @@ public class Member extends BaseEntity {
         }
         this.newPersonAdmobCount--;
     }
+
+    public boolean canGiveInitialBookmarkReward() {
+        return this.initialRewardBookmarkCount > 0;
+    }
+
+    public void useInitialAddBookBookmarkCount() {
+        if (initialRewardBookmarkCount <= 0) {
+            throw new BaseException(MemberBookmarkExceptionType.INVALID_BOOKMARK_REWARD_COUNT);
+        }
+        this.initialRewardBookmarkCount--;
+    }
 }
