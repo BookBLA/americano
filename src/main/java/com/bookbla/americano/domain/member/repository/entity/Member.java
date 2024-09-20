@@ -107,6 +107,10 @@ public class Member extends BaseEntity {
     @Builder.Default
     private Integer freeBookmarkAdmobCount = 2;
 
+    @Column
+    @Builder.Default
+    private Integer initialRewardBookmarkCount = 4;
+
     public Member updatePushToken(String pushToken) {
         this.pushToken = pushToken;
         return this;
@@ -253,5 +257,16 @@ public class Member extends BaseEntity {
             throw new BaseException(MemberBookmarkExceptionType.ADMOB_COUNT_NOT_VALID);
         }
         this.newPersonAdmobCount--;
+    }
+
+    public boolean canGiveInitialBookmarkReward() {
+        return this.initialRewardBookmarkCount > 0;
+    }
+
+    public void useInitialAddBookBookmarkCount() {
+        if (initialRewardBookmarkCount <= 0) {
+            throw new BaseException(MemberBookmarkExceptionType.INVALID_BOOKMARK_REWARD_COUNT);
+        }
+        this.initialRewardBookmarkCount--;
     }
 }
