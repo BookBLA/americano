@@ -10,4 +10,10 @@ import lombok.RequiredArgsConstructor;
 public class QuizQuestionVerifyResponse {
 
     private final Boolean isCorrect;
+
+    public static QuizQuestionVerifyResponse of(Boolean isCorrect) {
+        return QuizQuestionVerifyResponse.builder()
+                .isCorrect(isCorrect)
+                .build();
+    }
 }
