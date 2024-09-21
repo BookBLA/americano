@@ -31,15 +31,6 @@ public class MemberPushAlarmController {
 
     @Operation(summary = "해당 회원의 푸시 알림 조회 API")
     @GetMapping
-    public ResponseEntity<MemberPushAlarmResponse> readPushAlarm(
-        @Parameter(hidden = true) @User LoginUser loginUser) {
-        MemberPushAlarmResponse memberPushAlarmResponse = memberPushAlarmService.readPushAlarm(
-            loginUser.getMemberId());
-        return ResponseEntity.ok(memberPushAlarmResponse);
-    }
-
-    @Operation(summary = "해당 회원의 푸시 알림 조회 API")
-    @GetMapping
     public ResponseEntity<MemberPushAlarmReadResponses> readPushAlarmPageable(
         @Parameter(hidden = true) @User LoginUser loginUser,
         Pageable pageable) {
@@ -48,7 +39,6 @@ public class MemberPushAlarmController {
             loginUser.getMemberId(), pageRequest);
         return ResponseEntity.ok(readResponses);
     }
-
 
     @Operation(summary = "해당 회원의 푸시 알림 1개 삭제 API")
     @DeleteMapping("/{memberPushAlarmId}")
