@@ -53,7 +53,7 @@ public class MemberModalController {
 
     @Operation(summary = "친구 초대 보상 상태 업데이트 API",
             description = "친구 초대 보상 상태를 업데이트<br>"
-                    + "memberOnboardingStatus : [PENDING, BOOKMARK, COMPLETED]")
+                    + "memberOnboardingStatus : [NONE, BOOKMARK, COMPLETED]")
     @PostMapping("/invitation-reward")
     public ResponseEntity<MemberInvitationRewardResponse> updateInvitationRewardStatus(
             @Parameter(hidden = true) @User LoginUser loginUser,

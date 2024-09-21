@@ -155,10 +155,17 @@ public class InvitationService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberModal modal = member.getMemberModal();
 
-        boolean invitingReward = modal.getAndUpdateInvitingRewardStatus();
+        Long invitingMemberId = modal.getAndUpdateInvitingRewardStatus();
+
+        boolean invitingReward = invitingMemberId != -1;
         boolean invitedReward = modal.getAndUpdateInvitedRewardStatus();
 
-        return MemberInvitationRewardResponse.from(invitingReward, invitedReward);
+        if (invitingReward) {
+            Member invitingMember = memberRepository.getByIdOrThrow(invitingMemberId);
+            return MemberInvitationRewardResponse.from(true, invitedReward, invitingMember.getMemberProfile().getGender());
+        }
+
+        return MemberInvitationRewardResponse.from(false, invitedReward);
     }
 
     public MemberInvitationRewardResponse updateInvitationRewardStatus(Long memberId, InvitationStatus invitationStatus) {
