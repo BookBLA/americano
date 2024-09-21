@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.matching.repository.custom.impl;
 import com.bookbla.americano.domain.matching.repository.custom.MemberMatchingRepositoryCustom;
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.matching.service.dto.MemberRecommendationDto;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -36,6 +37,7 @@ public class MemberMatchingRepositoryImpl implements MemberMatchingRepositoryCus
                 .join(member).on(memberBook.member.eq(member))
                 .where(
                         member.id.ne(recommendationDto.getMemberId()),
+                        member.memberStatus.ne(MemberStatus.DELETED),
                         member.memberProfile.gender.ne(Gender.valueOf(recommendationDto.getMemberGender())),
                         member.lastUsedAt.coalesce(LocalDate.parse("1900-01-01").atStartOfDay()).after(twoWeeksAgo),
                         member.id.notIn(excludeMemberIds)

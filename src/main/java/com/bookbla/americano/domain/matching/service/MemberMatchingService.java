@@ -32,6 +32,7 @@ public class MemberMatchingService {
     private final MemberRepository memberRepository;
     private final MemberBookRepository memberBookRepository;
     private final MemberMatchingRepository memberMatchingRepository;
+    private final MemberMatchingFilter memberMatchingFilter;
 
     public List<MemberIntroResponse> getRecommendationList(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
@@ -51,8 +52,11 @@ public class MemberMatchingService {
         List<Map<Long, Long>> matchingMembers = memberMatchingRepository
                 .getMatchingMemberList(memberRecommendationDto);
 
-        // 필터링
+        // 학생증 인증 필터링
+        matchingMembers = memberMatchingFilter.memberVerifyFiltering(matchingMembers);
 
+        // "거절 + 14일 < 오늘" 필터링
+        matchingMembers = memberMatchingFilter.memberRefusedAtFiltering(member.getId(), matchingMembers);
 
         // response 생성 후 반환
         List<MemberIntroResponse> memberIntroResponses = new ArrayList<>();

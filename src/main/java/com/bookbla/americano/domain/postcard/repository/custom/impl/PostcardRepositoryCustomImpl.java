@@ -1,9 +1,7 @@
 package com.bookbla.americano.domain.postcard.repository.custom.impl;
 
-import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.repository.entity.QMember;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
-import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
 import com.bookbla.americano.domain.postcard.repository.custom.PostcardRepositoryCustom;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
 import com.bookbla.americano.domain.postcard.repository.entity.QPostcard;
@@ -14,11 +12,12 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
-import java.time.LocalDate;
+import static com.bookbla.americano.domain.postcard.repository.entity.QPostcard.postcard;
 
 @Repository
 @RequiredArgsConstructor
@@ -46,18 +45,6 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                 .where(postcard.sendMember.id.eq(memberId))
                 .orderBy(postcard.createdAt.desc())
                 .fetch();
-    }
-
-    @Override
-    public List<Long> findReceiveByIdsWithPostcardStatus(Long sendMemberId, PostcardStatus postcardStatus) {
-        QPostcard postcard = QPostcard.postcard;
-        return queryFactory
-                .select(postcard.receiveMember.id)
-                .from(postcard)
-                .where(
-                        postcard.sendMember.id.eq(sendMemberId),
-                        postcard.postcardStatus.eq(postcardStatus)
-                ).fetch();
     }
 
     public List<PostcardToResponse> getPostcardsToMember(Long memberId) {
@@ -88,37 +75,6 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                 .fetch();
     }
 
-    @Override
-    public List<Long> findReceiveByIdsRefused(Long sendMemberId, List<Postcard> postcards) {
-        QPostcard postcard = QPostcard.postcard;
-        List<Long> recommendMemberId = postcards.stream()
-                .map(pc -> {
-                    pc.validatePostcardStatusRefusedAt(); //PostcardStatusRefusedAt에 값이 잘 저장되었는지 확인
-
-                    LocalDateTime fourteenDaysLaterRefusedAt = pc.getPostcardStatusRefusedAt().plusDays(14);
-                    if (fourteenDaysLaterRefusedAt.isBefore(LocalDateTime.now())) {
-                        if (pc.getReceiveMember() == null) {
-                            throw new BaseException(PostcardExceptionType.POSTCARD_RECEIVE_MEMBER_NOT_FOUND);
-                        }
-                        return pc.getReceiveMember().getId();
-                    } else {
-                        throw new BaseException(PostcardExceptionType.POSTCARD_STATUS_REFUSED_AT_PERIOD_EXCEEDED);
-                        //14일이 안지난 id를 가져가기때문에, return null 해도 filter()부분에서 처리될듯?
-                    }
-                })
-                .filter(id -> id != null)
-                .collect(Collectors.toList());
-
-        return queryFactory
-                .select(postcard.receiveMember.id)
-                .from(postcard)
-                .where(
-                        postcard.sendMember.id.eq(sendMemberId),
-                        postcard.postcardStatus.eq(PostcardStatus.REFUSED),
-                        postcard.receiveMember.id.in(recommendMemberId)
-                ).fetch();
-    }
-
     public List<Postcard> refuseExpiredPostcard() {
         QPostcard postcard = QPostcard.postcard;
 
@@ -130,5 +86,21 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                         .and(postcard.postcardStatus.eq(PostcardStatus.PENDING)
                                 .or(postcard.postcardStatus.eq(PostcardStatus.READ))))
                 .fetch();
+    }
+
+    @Override
+    public List<Long> getReceiveIdsRefusedAt(Long sendMemberId, Set<Long> filteringMemberId) {
+
+        LocalDateTime twoWeeksAgo = LocalDateTime.now().minusWeeks(2);
+
+        return queryFactory
+                .select(postcard.receiveMember.id)
+                .from(postcard)
+                .where(
+                        postcard.receiveMember.id.in(filteringMemberId),
+                        (postcard.sendMember.id.eq(sendMemberId)
+                                .and(postcard.postcardStatus.eq(PostcardStatus.REFUSED))
+                                .and(postcard.postcardStatusRefusedAt.before(twoWeeksAgo)))
+                ).fetch();
     }
 }

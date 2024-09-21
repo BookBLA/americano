@@ -24,6 +24,4 @@ public interface PostcardRepository extends JpaRepository<Postcard, Long>, Postc
     void updatePostcardStatus(@Param("status") PostcardStatus status, @Param("postcardId") Long postcardId);
 
     List<Postcard> findBySendMemberIdAndReceiveMemberId(@Param("sendMemberId") Long sendMemberId, @Param("receiveMemberId") Long receiveMemberId);
-
-    List<Postcard> findBySendMember(Member sendMember);
 }

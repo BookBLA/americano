@@ -21,7 +21,7 @@ public class MemberVerifyRepositoryCustomImpl implements MemberVerifyRepositoryC
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Long> findStudentIdByVerify(Set<Long> filteringMemberId) {
+    public List<Long> getMemberIdsByStudentIdVerify(Set<Long> filteringMemberId) {
 
         LocalDateTime twoDaysAgo = LocalDateTime.now().minusDays(2);
 
@@ -30,16 +30,15 @@ public class MemberVerifyRepositoryCustomImpl implements MemberVerifyRepositoryC
                 .from(memberVerify)
                 .join(member).on(memberVerify.memberId.eq(member.id))
                 .where(
-                        (memberVerify.memberId.in(filteringMemberId)),
-                        (member.createdAt.before(twoDaysAgo)).or(member.createdAt.eq(twoDaysAgo))
-                                .and(memberVerify.verifyType.eq(MemberVerifyType.STUDENT_ID))
-                                .and(memberVerify.verifyStatus.eq(MemberVerifyStatus.SUCCESS)),
+                        (memberVerify.memberId.in(filteringMemberId))
+                                .and(
+                                        ((member.createdAt.before(twoDaysAgo))
+                                        .and(memberVerify.verifyType.eq(MemberVerifyType.STUDENT_ID))
+                                        .and(memberVerify.verifyStatus.eq(MemberVerifyStatus.SUCCESS)))
+                                                .or((member.createdAt.after(twoDaysAgo)).or(member.createdAt.eq(twoDaysAgo))
+                                                        .and(memberVerify.verifyType.eq(MemberVerifyType.STUDENT_ID)))
 
-                        (member.createdAt.after(twoDaysAgo)).or(member.createdAt.eq(twoDaysAgo))
-                                .and(memberVerify.verifyType.eq(MemberVerifyType.STUDENT_ID))
-                                .and(memberVerify.verifyStatus.eq(MemberVerifyStatus.SUCCESS))
-                                .or(memberVerify.verifyStatus.eq(MemberVerifyStatus.PENDING))
-                                .or(memberVerify.verifyStatus.eq(MemberVerifyStatus.FAIL))
+                                )
                 )
                 .fetch();
     }
