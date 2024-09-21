@@ -46,14 +46,9 @@ public class PaymentService {
     }
 
     public PaymentPurchaseResponse orderBookmarkForGoogle(GooglePaymentInAppPurchaseRequest request, Long memberId) {
-        Payment payment = googlePaymentStrategy.getPaymentInformation(request);
+        Payment payment = googlePaymentStrategy.getPaymentInformation(request, memberId);
         payment.updateMemberId(memberId);
         paymentRepository.save(payment);
-
-        MemberBookmark memberBookmark = findMemberBookmarkByMemberId(memberId);
-
-        int updateCount = payment.getBookmark();
-        memberBookmark.addBookmark(updateCount);
 
         return PaymentPurchaseResponse.from(payment);
     }
