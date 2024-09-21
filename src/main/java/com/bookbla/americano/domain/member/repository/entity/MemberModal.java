@@ -49,16 +49,6 @@ public class MemberModal {
         return this.invitedRewardStatus;
     }
 
-    public Long getAndUpdateInvitingRewardStatus() {
-        for (Map.Entry<Long, Boolean> entry : invitingRewardStatus.entrySet()) {
-            if (!entry.getValue()) {
-                entry.setValue(Boolean.TRUE);
-                return entry.getKey();
-            }
-        }
-        return -1L;
-    }
-
     public Boolean getAndUpdateInvitedRewardStatus() {
         if (invitedRewardStatus == InvitationStatus.BOOKMARK) {
             updateMemberInvitedRewardStatus(InvitationStatus.COMPLETED);

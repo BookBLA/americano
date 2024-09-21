@@ -26,6 +26,8 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 import static com.bookbla.americano.domain.school.repository.entity.InvitationType.*;
 
 
@@ -155,14 +157,22 @@ public class InvitationService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberModal modal = member.getMemberModal();
 
-        Long invitingMemberId = modal.getAndUpdateInvitingRewardStatus();
+        boolean invitingReward = false;
+        Long invitedMembersId = null;
 
-        boolean invitingReward = invitingMemberId != -1;
+        for (Map.Entry<Long, Boolean> entry : modal.getInvitingRewardStatus().entrySet()) {
+            if (!entry.getValue()) {
+                entry.setValue(Boolean.TRUE);
+                invitedMembersId = entry.getKey();
+                invitingReward = true;
+            }
+        }
+
         boolean invitedReward = modal.getAndUpdateInvitedRewardStatus();
 
         if (invitingReward) {
-            Member invitingMember = memberRepository.getByIdOrThrow(invitingMemberId);
-            return MemberInvitationRewardResponse.from(true, invitedReward, invitingMember.getMemberProfile().getGender());
+            Member invitedMember = memberRepository.getByIdOrThrow(invitedMembersId);
+            return MemberInvitationRewardResponse.from(true, invitedReward, invitedMember.getMemberProfile().getGender());
         }
 
         return MemberInvitationRewardResponse.from(false, invitedReward);
