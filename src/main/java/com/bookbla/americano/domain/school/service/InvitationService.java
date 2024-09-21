@@ -150,8 +150,7 @@ public class InvitationService {
             invitedMemberBookmark.addManInvitationBookmark();
             invitingMemberBookmark.addManInvitationBookmark();
         }
-        }
-
+    }
 
     public MemberInvitationRewardResponse getInvitationRewardStatus(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
