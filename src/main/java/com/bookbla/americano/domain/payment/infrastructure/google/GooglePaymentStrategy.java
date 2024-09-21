@@ -20,8 +20,18 @@ public class GooglePaymentStrategy {
         GooglePaymentPurchaseResponse response = googleCertificationProvider.getPurchaseReceipt(
             request.getProductId(), request.getPurchaseToken());
 
+        log.info("getPaymentInformation -> response.getKind : " + response.getKind());
+        log.info("getPaymentInformation -> response.getPurchaseTimeMillis : " + response.getPurchaseTimeMillis());
+        log.info("getPaymentInformation -> response.getPurchaseState : " + response.getPurchaseState());
+        log.info("getPaymentInformation -> response.getConsumptionState : " + response.getConsumptionState());
+        log.info("getPaymentInformation -> response.getDeveloperPayload : " + response.getDeveloperPayload());
+        log.info("getPaymentInformation -> response.getOrderId : " + response.getOrderId());
+        log.info("getPaymentInformation -> response.getPurchaseType : " + response.getPurchaseType());
+        log.info("getPaymentInformation -> response.getAcknowledgementState : " + response.getAcknowledgementState());
+        log.info("getPaymentInformation -> response.getPurchaseToken : " + response.getPurchaseToken());
         log.info("getPaymentInformation -> response.getProductId : " + response.getProductId());
-        PaymentTable paymentTable = PaymentTable.from(response.getProductId());
+
+        PaymentTable paymentTable = PaymentTable.from(request.getProductId());
 
         return Payment.builder()
             .money(paymentTable.getPrice())
