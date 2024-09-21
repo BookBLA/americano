@@ -8,4 +8,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     Optional<Payment> findByReceipt(String receipt);
 
+    Optional<Payment> findByOrderId(String orderId);
+
 }
