@@ -30,13 +30,13 @@ public class MemberVerifyRepositoryCustomImpl implements MemberVerifyRepositoryC
                 .from(memberVerify)
                 .join(member).on(memberVerify.memberId.eq(member.id))
                 .where(
-                        (memberVerify.memberId.in(filteringMemberId)),
-                        (
-                            ((member.createdAt.before(twoDaysAgo))
-                                .and(memberVerify.verifyType.eq(MemberVerifyType.STUDENT_ID))
-                                .and(memberVerify.verifyStatus.eq(MemberVerifyStatus.SUCCESS)))
-                            .or((member.createdAt.after(twoDaysAgo)).or(member.createdAt.eq(twoDaysAgo))
-                                .and(memberVerify.verifyType.eq(MemberVerifyType.STUDENT_ID)))
+                        (memberVerify.memberId.in(filteringMemberId))
+                        .and(
+                                (member.createdAt.before(twoDaysAgo)
+                                    .and(memberVerify.verifyType.eq(MemberVerifyType.STUDENT_ID))
+                                    .and(memberVerify.verifyStatus.eq(MemberVerifyStatus.SUCCESS)))
+                                .or(member.createdAt.goe(twoDaysAgo)
+                                    .and(memberVerify.verifyType.eq(MemberVerifyType.STUDENT_ID)))
                         )
                 ).fetch();
     }
