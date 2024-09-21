@@ -110,7 +110,7 @@ public class MemberBookmark extends BaseEntity {
 
     private void watchBookmarkAdmob() {
         this.member.watchBookmarkAdmob();
-        this.bookmarkCount += 10;
+        this.bookmarkCount += 2;
     }
 
     public int getFreeBookmarkAdmobCount() {
