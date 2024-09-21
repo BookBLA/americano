@@ -92,6 +92,40 @@ jobs:
           name: build
           path: build/libs/*.jar
 
+      - name: Send Failure Message
+        if: ${{ failure() }}
+        uses: Ilshidur/action-discord@0.3.2
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.PROD_WEBHOOK_URL }}
+          DISCORD_USERNAME: 운영서버 배포봇
+          DISCORD_AVATAR: https://cdn.imweb.me/thumbnail/20240606/39684ae3c2783.png
+          DISCORD_EMBEDS: |
+            [
+              {
+                "author": {
+                  "name": "${{ github.event.pull_request.user.login }}",
+                  "url": "https://github.com/boookbla/americano",
+                  "icon_url": "${{ github.event.pull_request.user.avatar_url }}"
+                },
+                "title": "🚨운영서버 빌드/테스트 실패하였습니다.🚨 \n#${{ github.event.pull_request.number }} : ${{ github.event.pull_request.title }}",
+                "color": 13458524,
+                "description": "${{ github.event.pull_request.html_url }}",
+                "fields": [
+                  {
+                    "name": "Base Branch",
+                    "value": "${{ github.base_ref }}",
+                    "inline": true
+                  },
+                  {
+                    "name": "Compare Branch",
+                    "value": "${{ github.head_ref }}",
+                    "inline": true
+                  }
+                ]
+              }
+            ]
+
+
   Continuous-Deploy:
     # push 하는 경우에만 배포 JOB 실행
     if: github.event_name == 'push'
