@@ -8,7 +8,7 @@ import com.bookbla.americano.domain.payment.controller.dto.request.GooglePayment
 import com.bookbla.americano.domain.payment.enums.PaymentTable;
 import com.bookbla.americano.domain.payment.enums.PaymentType;
 import com.bookbla.americano.domain.payment.infrastructure.google.api.dto.response.GooglePaymentPurchaseResponse;
-import com.bookbla.americano.domain.payment.repository.Payment;
+import com.bookbla.americano.domain.payment.repository.entity.Payment;
 import com.bookbla.americano.domain.payment.repository.PaymentRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

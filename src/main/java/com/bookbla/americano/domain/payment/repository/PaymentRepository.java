@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.payment.repository;
 
+import com.bookbla.americano.domain.payment.repository.entity.Payment;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
