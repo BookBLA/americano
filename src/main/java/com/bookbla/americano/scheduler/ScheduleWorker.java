@@ -8,6 +8,7 @@ import com.bookbla.americano.domain.member.repository.MemberEmailRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.notification.service.MailService;
+import com.bookbla.americano.domain.payment.infrastructure.google.GoogleCertificationProvider;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.PostcardRepository;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
@@ -39,6 +40,7 @@ class ScheduleWorker {
     private final BookblaLogDiscord bookblaLogDiscord;
     private final MemberBookmarkRepository memberBookmarkRepository;
     private final PostcardRepository postcardRepository;
+    private final GoogleCertificationProvider googleCertificationProvider;
 
     @Scheduled(cron = EVERY_4_AM, zone = "Asia/Seoul")
     public void deleteMemberEmailSchedule() {
@@ -136,4 +138,21 @@ class ScheduleWorker {
             log.error(stackTraceToString(e));
         }
     }
+
+    @Scheduled(cron = EVERY_0_AM, zone = "Asia/Seoul")
+    public void refundVoidedPurchaseSchedule() {
+        try {
+            googleCertificationProvider.refundVoidedPurchase(0, 10);
+        } catch (Exception e) {
+            String txName = ScheduleWorker.class.getName() + "(refundVoidedPurchaseSchedule)";
+            String message = "구글 인앱 결제 환불 처리 작업이 실패하였습니다. 확인 부탁드립니다." + CRLF
+                + e.getMessage() + CRLF
+                + stackTraceToString(e);
+
+            log.debug("Exception in {}", ScheduleWorker.class.getName());
+            log.error(e.toString());
+            log.error(stackTraceToString(e));
+        }
+    }
+
 }
