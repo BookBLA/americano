@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.notification.service;
 
 import com.bookbla.americano.domain.notification.controller.dto.request.PushAlarmSettingCreateRequest;
+import com.bookbla.americano.domain.notification.controller.dto.response.MemberPushAlarmReadResponses;
 import com.bookbla.americano.domain.notification.controller.dto.response.PushAlarmSettingResponse;
 import java.util.List;
 
@@ -8,8 +9,10 @@ import com.bookbla.americano.domain.member.repository.MemberPushAlarmRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberPushAlarm;
-import com.bookbla.americano.domain.notification.controller.dto.response.MemberPushAlarmReadResponse;
+import com.bookbla.americano.domain.notification.controller.dto.response.MemberPushAlarmResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,10 +24,19 @@ public class MemberPushAlarmService {
     private final MemberPushAlarmRepository memberPushAlarmRepository;
 
     @Transactional(readOnly = true)
-    public MemberPushAlarmReadResponse readPushAlarm(Long memberId) {
+    public MemberPushAlarmResponse readPushAlarm(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         List<MemberPushAlarm> memberPushAlarms = memberPushAlarmRepository.findByMemberOrderByCreatedAtDesc(member);
-        return MemberPushAlarmReadResponse.from(member, memberPushAlarms);
+        return MemberPushAlarmResponse.from(member, memberPushAlarms);
+    }
+
+    @Transactional(readOnly = true)
+    public MemberPushAlarmReadResponses readPushAlarms(Long memberId, Pageable pageable) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        Page<MemberPushAlarm> memberPushAlarmPaging = memberPushAlarmRepository.findByMemberOrderByCreatedAtDesc(member, pageable);
+        List<MemberPushAlarm> memberPushAlarms = memberPushAlarmPaging.getContent();
+        long count = memberPushAlarms.size();
+        return MemberPushAlarmReadResponses.from(count, memberPushAlarms);
     }
 
     @Transactional
@@ -49,6 +61,7 @@ public class MemberPushAlarmService {
         return PushAlarmSettingResponse.from(member);
     }
 
+    @Transactional
     public PushAlarmSettingResponse getPushAlarmSetting(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         return PushAlarmSettingResponse.from(member);
