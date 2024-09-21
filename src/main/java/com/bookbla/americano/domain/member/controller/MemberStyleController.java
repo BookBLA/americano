@@ -34,9 +34,11 @@ public class MemberStyleController {
         return ResponseEntity.ok(memberStyleResponse);
     }
 
-    @GetMapping("/{memberId}")
-    public ResponseEntity<MemberStyleResponse> readMemberStyle(@PathVariable Long memberId) {
-        MemberStyleResponse memberStyleResponse = memberStyleService.readMemberStyle(memberId);
+    @GetMapping
+    public ResponseEntity<MemberStyleResponse> readMemberStyle(
+            @Parameter(hidden = true) @User LoginUser loginUser
+    ) {
+        MemberStyleResponse memberStyleResponse = memberStyleService.readMemberStyle(loginUser.getMemberId());
         return ResponseEntity.ok(memberStyleResponse);
     }
 

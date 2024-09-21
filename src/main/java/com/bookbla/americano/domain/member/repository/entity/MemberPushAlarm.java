@@ -41,7 +41,7 @@ public class MemberPushAlarm extends BaseInsertEntity {
     private String body;
 
     public void validateOwner(Long memberId) {
-        if (member.getId() != memberId) {
+        if (!member.getId().equals(memberId)) {
             throw new BaseException(PushAlarmExceptionType.INVALID_OWNER);
         }
     }
