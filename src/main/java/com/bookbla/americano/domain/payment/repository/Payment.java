@@ -37,6 +37,10 @@ public class Payment extends BaseEntity {
 
     private String receipt; // 거래 후 받는 영수증 정보
 
+    private String orderId; // 구글 인앱 결제 후 받는 주문 정보
+
+    private String purchaseToken; // 구글 인앱 결제 후 받는 토큰 정보
+
     @Column(columnDefinition = "TEXT")
     private String information; // 서버로부터 받는 json 정보
 
