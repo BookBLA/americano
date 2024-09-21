@@ -8,6 +8,7 @@ import com.bookbla.americano.domain.postcard.repository.entity.QPostcard;
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardFromResponse;
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardToResponse;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -97,10 +98,12 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                 .select(postcard.receiveMember.id)
                 .from(postcard)
                 .where(
-                        postcard.receiveMember.id.in(filteringMemberId),
-                        ((postcard.sendMember.id.eq(sendMemberId))
-                                .and(postcard.postcardStatus.eq(PostcardStatus.REFUSED))
-                                .and(postcard.postcardStatusRefusedAt.before(twoWeeksAgo))
+                        postcard.receiveMember.id.in(filteringMemberId)
+                        .and(
+                                postcard.sendMember.id.eq(sendMemberId)
+                                        .and(postcard.postcardStatus.eq(PostcardStatus.REFUSED))
+                                        .and(postcard.postcardStatusRefusedAt.before(twoWeeksAgo))
+                                .or(postcard.sendMember.id.ne(sendMemberId))
                         )
                 ).fetch();
     }
