@@ -7,6 +7,7 @@ import com.bookbla.americano.domain.payment.controller.dto.request.GooglePayment
 import com.bookbla.americano.domain.payment.controller.dto.request.ApplePaymentInAppPurchaseRequest;
 import com.bookbla.americano.domain.payment.controller.dto.response.PaymentPurchaseResponse;
 import com.bookbla.americano.domain.payment.service.PaymentService;
+import io.swagger.v3.oas.annotations.Parameter;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,12 +35,11 @@ public class PaymentController implements PaymentControllerDocs {
 
     @PostMapping("/in-app/google")
     public ResponseEntity<PaymentPurchaseResponse> orderBookmarkForGoogle(
-        @User LoginUser loginUser,
+        @Parameter(hidden = true) @User LoginUser loginUser,
         @Valid @RequestBody GooglePaymentInAppPurchaseRequest request
     ) {
         PaymentPurchaseResponse paymentPurchaseResponse = paymentService.orderBookmarkForGoogle(
             request, loginUser.getMemberId());
         return ResponseEntity.ok(paymentPurchaseResponse);
     }
-
 }
