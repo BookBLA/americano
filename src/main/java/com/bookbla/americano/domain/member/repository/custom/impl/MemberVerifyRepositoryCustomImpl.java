@@ -35,7 +35,7 @@ public class MemberVerifyRepositoryCustomImpl implements MemberVerifyRepositoryC
                             ((member.createdAt.before(twoDaysAgo))
                                 .and(memberVerify.verifyType.eq(MemberVerifyType.STUDENT_ID))
                                 .and(memberVerify.verifyStatus.eq(MemberVerifyStatus.SUCCESS)))
-                            .or(((member.createdAt.after(twoDaysAgo)).or(member.createdAt.eq(twoDaysAgo)))
+                            .or((member.createdAt.after(twoDaysAgo)).or(member.createdAt.eq(twoDaysAgo))
                                 .and(memberVerify.verifyType.eq(MemberVerifyType.STUDENT_ID)))
                         )
                 ).fetch();
