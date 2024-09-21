@@ -100,7 +100,7 @@ public class MemberBookmark extends BaseEntity {
 
     public void watchAdmob(AdmobType admobType) {
         if (admobType == AdmobType.FREE_BOOKMARK) {
-            watchBookmarkAdmob();
+            watchFreeBookmarkAdmob();
             return;
         }
         if (admobType == AdmobType.NEW_PERSON) {
@@ -108,7 +108,7 @@ public class MemberBookmark extends BaseEntity {
         }
     }
 
-    private void watchBookmarkAdmob() {
+    private void watchFreeBookmarkAdmob() {
         this.member.watchBookmarkAdmob();
         this.bookmarkCount += 2;
     }
@@ -121,7 +121,7 @@ public class MemberBookmark extends BaseEntity {
         return member.getNewPersonAdmobCount();
     }
 
-    public void addInitialAddBookmark() {
+    public void addInitialAddBookRewards() {
         this.member.useInitialAddBookBookmarkCount();
         this.bookmarkCount += 15;
     }
