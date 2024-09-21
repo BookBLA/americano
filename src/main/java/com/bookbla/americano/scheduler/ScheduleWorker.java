@@ -142,12 +142,15 @@ class ScheduleWorker {
     @Scheduled(cron = EVERY_0_AM, zone = "Asia/Seoul")
     public void refundVoidedPurchaseSchedule() {
         try {
-            googleCertificationProvider.refundVoidedPurchase(0, 10);
+            googleCertificationProvider.refundVoidedPurchase(0, 50);
         } catch (Exception e) {
             String txName = ScheduleWorker.class.getName() + "(refundVoidedPurchaseSchedule)";
             String message = "구글 인앱 결제 환불 처리 작업이 실패하였습니다. 확인 부탁드립니다." + CRLF
                 + e.getMessage() + CRLF
                 + stackTraceToString(e);
+
+            mailService.sendTransactionFailureEmail(txName, message);
+            bookblaLogDiscord.sendMessage(message);
 
             log.debug("Exception in {}", ScheduleWorker.class.getName());
             log.error(e.toString());
