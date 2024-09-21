@@ -85,7 +85,7 @@ jobs:
       # push 할 경우 CD job 에 jar file 업로드
       - name: (Push & Main) Archive production artifacts
         if: github.event_name == 'push'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build
           path: build/libs/*.jar
