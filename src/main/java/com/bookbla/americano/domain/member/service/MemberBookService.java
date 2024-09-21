@@ -58,7 +58,7 @@ public class MemberBookService {
         if (member.canGiveInitialBookmarkReward()) {
             MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(memberId)
                     .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.ADMOB_TYPE_NOT_FOUND));
-            memberBookmark.addInitialAddBookmark();
+            memberBookmark.addInitialAddBookRewards();
         }
 
         return MemberBookCreateResponse.from(savedMemberBook, savedQuizQuestion);
