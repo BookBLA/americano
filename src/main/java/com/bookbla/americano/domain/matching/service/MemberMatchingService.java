@@ -5,7 +5,7 @@ import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionTy
 import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
 import com.bookbla.americano.domain.matching.repository.entity.MemberMatching;
 import com.bookbla.americano.domain.matching.service.dto.MemberRecommendationDto;
-import com.bookbla.americano.domain.member.controller.dto.response.MemberIntroResponse;
+import com.bookbla.americano.domain.matching.controller.dto.response.MemberIntroResponse;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
