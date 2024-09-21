@@ -236,6 +236,7 @@ class InvitationServiceTest {
         // then
         assertThat(response.getInvitingRewardStatus()).isFalse();
         assertThat(response.getInvitedRewardStatus()).isTrue();
+        assertThat(response.getInvitedMembersGender()).isNull();
     }
 
     @Test
@@ -253,6 +254,7 @@ class InvitationServiceTest {
         // then
         assertThat(response.getInvitingRewardStatus()).isTrue();
         assertThat(response.getInvitedRewardStatus()).isFalse();
+        assertThat(response.getInvitedMembersGender()).isEqualTo(man2.getMemberProfile().getGender());
     }
 }
 
