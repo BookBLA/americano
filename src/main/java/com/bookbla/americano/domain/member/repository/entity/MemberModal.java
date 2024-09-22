@@ -1,5 +1,7 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
+import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.school.exception.InvitationExceptionType;
 import com.bookbla.americano.domain.school.repository.entity.InvitationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,26 +46,30 @@ public class MemberModal {
         this.libraryOnboarding = Boolean.TRUE;
     }
 
-    public InvitationStatus updateMemberInvitedRewardStatus(InvitationStatus invitationStatus) {
-        this.invitedRewardStatus = invitationStatus;
-        return this.invitedRewardStatus;
+    public boolean isInvitedRewardNotGiven() {
+        return invitedRewardStatus == InvitationStatus.BOOKMARK;
     }
 
-    public Boolean getAndUpdateInvitingRewardStatus() {
-        for (Map.Entry<Long, Boolean> entry : invitingRewardStatus.entrySet()) {
-            if (!entry.getValue()) {
-                entry.setValue(Boolean.TRUE);
-                return true;
-            }
-        }
-        return false;
+    public boolean isInvitingRewardNotGiven() {
+        return invitingRewardStatus.entrySet().stream().anyMatch(entry -> entry.getValue().equals(Boolean.FALSE));
     }
 
-    public Boolean getAndUpdateInvitedRewardStatus() {
-        if (invitedRewardStatus == InvitationStatus.BOOKMARK) {
-            updateMemberInvitedRewardStatus(InvitationStatus.COMPLETED);
-            return true;
-        }
-        return false;
+    public void updateMemberInvitedRewardStatusToBookmark() {
+        this.invitedRewardStatus = InvitationStatus.BOOKMARK;
+    }
+
+    public void updateMemberInvitedRewardStatusToComplete() {
+        this.invitedRewardStatus = InvitationStatus.COMPLETED;
+    }
+
+    public Long getInvitedMemberId() {
+        return invitingRewardStatus.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(Boolean.FALSE))
+                .findFirst()
+                .map(entry -> {
+                    entry.setValue(Boolean.TRUE);
+                    return entry.getKey();
+                })
+                .orElseThrow(() -> new BaseException(InvitationExceptionType.NO_INVITED_MEMBER));
     }
 }

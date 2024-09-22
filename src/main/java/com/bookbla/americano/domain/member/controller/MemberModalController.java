@@ -2,7 +2,6 @@ package com.bookbla.americano.domain.member.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberInvitationRewardRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberOnboardingStatusRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberInvitationRewardResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberOnboardingStatusResponse;
@@ -53,12 +52,11 @@ public class MemberModalController {
 
     @Operation(summary = "친구 초대 보상 상태 업데이트 API",
             description = "친구 초대 보상 상태를 업데이트<br>"
-                    + "memberOnboardingStatus : [PENDING, BOOKMARK, COMPLETED]")
+                    + "memberOnboardingStatus : [NONE, BOOKMARK, COMPLETED]")
     @PostMapping("/invitation-reward")
     public ResponseEntity<MemberInvitationRewardResponse> updateInvitationRewardStatus(
-            @Parameter(hidden = true) @User LoginUser loginUser,
-            @RequestBody @Valid MemberInvitationRewardRequest request
+            @Parameter(hidden = true) @User LoginUser loginUser
     ) {
-        return ResponseEntity.ok(invitationService.updateInvitationRewardStatus(loginUser.getMemberId(), request.getInvitationStatus()));
+        return ResponseEntity.ok(invitationService.updateInvitationRewardStatus(loginUser.getMemberId()));
     }
 }
