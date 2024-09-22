@@ -59,6 +59,9 @@ public class MemberMatchingService {
         List<MatchedInfo> matchingMembers = memberMatchingRepository
                 .getMatchingMembers(memberRecommendationDto);
 
+        // 차단한 회원 필터링
+        matchingMembers = memberMatchingFilter.memberBlockedFiltering(member.getId(), matchingMembers);
+
         // 학생증 인증 필터링
         matchingMembers = memberMatchingFilter.memberVerifyFiltering(matchingMembers);
 

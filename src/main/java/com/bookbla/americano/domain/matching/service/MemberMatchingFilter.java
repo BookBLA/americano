@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.matching.service;
 
 import com.bookbla.americano.domain.matching.repository.entity.MatchedInfo;
+import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
 import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
 import com.bookbla.americano.domain.postcard.repository.PostcardRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ public class MemberMatchingFilter {
 
     private final MemberVerifyRepository memberVerifyRepository;
     private final PostcardRepository postcardRepository;
+    private final MemberBlockRepository memberBlockRepository;
 
     /**
      * 학생증 상태 확인 필터링
@@ -55,4 +57,24 @@ public class MemberMatchingFilter {
                 .filter(matchedInfo -> !filteredMatchMemberIds.contains(matchedInfo.getMatchedMemberId()))
                 .collect(Collectors.toList());
     }
+
+    /**
+     * 차단된 회원 필터링
+     */
+    public List<MatchedInfo> memberBlockedFiltering(Long appMemberId, List<MatchedInfo> matchingMembers) {
+        Set<Long> filteringMemberIds = new HashSet<>();
+
+        matchingMembers.stream()
+                .map(MatchedInfo::getMatchedMemberId)
+                .forEach(filteringMemberIds::add);
+
+        // 앱 사용자로 부터 차단된 회원 = 추천되면 안되는 회원
+        List<Long> filteredMatchMemberIds = memberBlockRepository.getBlockedMemberIdsByBlockerMemberId(appMemberId, filteringMemberIds);
+
+        // matchingMembers - filteredMatchMemberIds => 최종적으로 뽑고싶은 추천 회원 id
+        return matchingMembers.stream()
+                .filter(matchedInfo -> !filteredMatchMemberIds.contains(matchedInfo.getMatchedMemberId()))
+                .collect(Collectors.toList());
+    }
+
 }
