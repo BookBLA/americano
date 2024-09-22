@@ -82,6 +82,13 @@ public class MemberMatchingService {
         return getDailyMemberIntroResponses(memberIntroResponses);
     }
 
+    public void rejectMemberMatching(Long memberId, Long rejectedMemberId, Long rejectedMemberBookId) {
+        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST));
+
+        memberMatching.addIgnoredMemberAndBook(rejectedMemberId, rejectedMemberBookId);
+    }
+
     private void buildMemberIntroResponses(List<MatchedInfo> matchedMemberList, List<MemberIntroResponse> memberIntroResponses) {
         for (MatchedInfo matchedInfo : matchedMemberList) {
             Member matchedMember = memberRepository.getByIdOrThrow(matchedInfo.getMatchedMemberId());
