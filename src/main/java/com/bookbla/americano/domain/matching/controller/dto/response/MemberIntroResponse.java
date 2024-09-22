@@ -1,6 +1,5 @@
-package com.bookbla.americano.domain.member.controller.dto.response;
+package com.bookbla.americano.domain.matching.controller.dto.response;
 
-import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import lombok.AllArgsConstructor;

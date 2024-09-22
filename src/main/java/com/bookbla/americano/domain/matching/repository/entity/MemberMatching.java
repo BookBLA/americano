@@ -47,4 +47,8 @@ public class MemberMatching {
     public void addExcludedMember(Long memberId) {
         excluded.add(memberId);
     }
+
+    public void addIgnoredMemberAndBook(Long memberId, Long memberBookId) {
+        ignoredMemberAndBook.put(memberId, memberBookId);
+    }
 }
