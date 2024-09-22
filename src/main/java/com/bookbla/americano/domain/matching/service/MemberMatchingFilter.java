@@ -47,8 +47,10 @@ public class MemberMatchingFilter {
                 .map(MatchedInfo::getMatchedMemberId)
                 .forEach(filteringMemberIds::add);
 
+        // 앱 사용자로 부터 받은 엽서를 거절한지 14일이 안된 회원 = 추천되면 안되는 회원
         List<Long> filteredMatchMemberIds = postcardRepository.getReceiveIdsRefusedAt(sendMemberId, filteringMemberIds);
 
+        // matchingMembers - filteredMatchMemberIds => 최종적으로 뽑고싶은 추천 회원 id
         return matchingMembers.stream()
                 .filter(matchedInfo -> !filteredMatchMemberIds.contains(matchedInfo.getMatchedMemberId()))
                 .collect(Collectors.toList());

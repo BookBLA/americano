@@ -99,16 +99,9 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                 .from(postcard)
                 .where(
                         postcard.receiveMember.id.in(filteringMemberId)
-                        .and(
-                                (
-                                        postcard.sendMember.id.eq(sendMemberId)
-                                        .and(postcard.postcardStatus.eq(PostcardStatus.REFUSED))
-                                        .and(postcard.postcardStatusRefusedAt.before(twoWeeksAgo))
-                                )
-                                .or(
-                                    postcard.sendMember.id.ne(sendMemberId)
-                                )
-                        )
+                                .and(postcard.sendMember.id.eq(sendMemberId))
+                                .and(postcard.postcardStatus.eq(PostcardStatus.REFUSED))
+                                .and(postcard.postcardStatusRefusedAt.after(twoWeeksAgo))
                 ).fetch();
     }
 }
