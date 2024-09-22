@@ -10,13 +10,13 @@ public class MemberInvitationRewardResponse {
 
     private Boolean invitingRewardStatus;
     private Boolean invitedRewardStatus;
-    private Gender invitedMembersGender;
+    private String invitedMembersGender;
 
-    public static MemberInvitationRewardResponse from(Boolean invitingRewardStatus, Boolean invitedRewardStatus) {
-        return new MemberInvitationRewardResponse(invitingRewardStatus, invitedRewardStatus, null);
+    public static MemberInvitationRewardResponse fromInvitingRewardNotGiven(Boolean invitedRewardStatus) {
+        return new MemberInvitationRewardResponse(false, invitedRewardStatus, null);
     }
 
-    public static MemberInvitationRewardResponse from(Boolean invitingRewardStatus, Boolean invitedRewardStatus, Gender invitedMembersGender) {
-        return new MemberInvitationRewardResponse(invitingRewardStatus, invitedRewardStatus, invitedMembersGender);
+    public static MemberInvitationRewardResponse fromInvitingRewardGiven(Boolean invitedRewardStatus, Gender invitedMembersGender) {
+        return new MemberInvitationRewardResponse(true, invitedRewardStatus, invitedMembersGender.name());
     }
 }
