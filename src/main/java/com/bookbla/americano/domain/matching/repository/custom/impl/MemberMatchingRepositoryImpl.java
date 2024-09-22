@@ -37,6 +37,7 @@ public class MemberMatchingRepositoryImpl implements MemberMatchingRepositoryCus
                 .where(
                         member.id.ne(recommendationDto.getMemberId()),
                         member.memberStatus.ne(MemberStatus.DELETED),
+                        member.memberStatus.ne(MemberStatus.MATCHING_DISABLED),
                         member.memberProfile.gender.ne(Gender.valueOf(recommendationDto.getMemberGender())),
                         member.lastUsedAt.coalesce(LocalDate.parse("1900-01-01").atStartOfDay()).after(twoWeeksAgo),
                         member.id.notIn(excludeMemberIds)
