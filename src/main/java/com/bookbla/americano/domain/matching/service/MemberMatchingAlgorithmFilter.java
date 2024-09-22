@@ -1,7 +1,6 @@
 package com.bookbla.americano.domain.matching.service;
 
-import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
+import com.bookbla.americano.domain.matching.repository.entity.MatchedInfo;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -9,8 +8,7 @@ import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
 /**
  * 알고리즘 우선순위
@@ -29,97 +27,51 @@ public class MemberMatchingAlgorithmFilter {
     private final MemberRepository memberRepository;
     private final MemberBookRepository memberBookRepository;
 
-    private final Map<Long, Double> priorityMap = new HashMap<>();
+    public void memberMatchingAlgorithmFiltering(Member member, List<MatchedInfo> matchingMembers) {
 
-    public List<Map<Long, Long>> memberMatchingAlgorithmFiltering(Member member, List<Map<Long, Long>> matchingMembers) {
+        for (MatchedInfo matchedInfo : matchingMembers) {
+            Member matchingMember = memberRepository.getByIdOrThrow(matchedInfo.getMatchedMemberId());
+            MemberBook matchingMemberBook = memberBookRepository.getByIdOrThrow(matchedInfo.getMatchedMemberBookId());
 
-        List<Map<Long, Double>> weightedMatchingMembers;
-
-        for (Map<Long, Long> matchingMember : matchingMembers) {
-            for (Long memberId : matchingMember.keySet()) {
-                Member matchingMemberEntity = memberRepository.getByIdOrThrow(memberId);
-
-                double weight = 0.0;
-
-                // 같은 학교 같은 책
-                if (member.getSchool().equals(matchingMemberEntity.getSchool()) && isSameBook(member, matchingMemberEntity)) {
-                    weight = 1.0;
-                }
-                // 다른 학교 같은 책
-                else if (!member.getSchool().equals(matchingMemberEntity.getSchool()) && isSameBook(member, matchingMemberEntity)) {
-                    weight = 0.9;
-                }
-                // 같은 학교 같은 작가
-                else if (member.getSchool().equals(matchingMemberEntity.getSchool()) && isSameAuthor(member, matchingMemberEntity)) {
-                    weight = 0.8;
-                }
-                // 다른 학교 같은 작가
-                else if (!member.getSchool().equals(matchingMemberEntity.getSchool()) && isSameAuthor(member, matchingMemberEntity)) {
-                    weight = 0.7;
-                }
-                // 같은 학교 흡연여부 동일
-                else if (member.getSchool().equals(matchingMemberEntity.getSchool()) && isSameSmoking(member, matchingMemberEntity)) {
-                    weight = 0.6;
-                }
-                // 다른 학교 흡연여부 동일
-                else if (!member.getSchool().equals(matchingMemberEntity.getSchool()) && isSameSmoking(member, matchingMemberEntity)) {
-                    weight = 0.5;
-                }
-
-                priorityMap.merge(memberId, weight, Double::sum);
+            if (isSameSchool(member, matchingMember) && isSameBook(member, matchingMemberBook)) {
+                matchedInfo.accumulateSimilarityWeight(1.0);
+            } else if (!isSameSchool(member, matchingMember) && isSameBook(member, matchingMemberBook)) {
+                matchedInfo.accumulateSimilarityWeight(0.8);
+            } else if (isSameSchool(member, matchingMember) && isSameAuthor(member, matchingMemberBook)) {
+                matchedInfo.accumulateSimilarityWeight(0.6);
+            } else if (!isSameSchool(member, matchingMember) && isSameAuthor(member, matchingMemberBook)) {
+                matchedInfo.accumulateSimilarityWeight(0.4);
+            } else if (isSameSchool(member, matchingMember) && isSameSmoking(member, matchingMember)) {
+                matchedInfo.accumulateSimilarityWeight(0.2);
+            } else if (!isSameSchool(member, matchingMember) && isSameSmoking(member, matchingMember)) {
+                matchedInfo.accumulateSimilarityWeight(0.1);
             }
         }
-
-        weightedMatchingMembers = priorityMap.entrySet().stream()
-                .sorted((entry1, entry2) -> Double.compare(entry2.getValue(), entry1.getValue()))  // 가중치 큰 순으로 정렬
-                .map(entry -> {
-                    Map<Long, Double> weightedMember = new HashMap<>();
-                    weightedMember.put(entry.getKey(), entry.getValue());
-                    return weightedMember;
-                })
-                .collect(Collectors.toList());
-
-        // 가중치가 높은 순으로 정렬된 매칭 멤버들을 반환
-        return weightedMatchingMembers.stream()
-                .map(weightedMember -> {
-                    Long memberId = weightedMember.keySet().iterator().next();
-                    Long memberBookId = matchingMembers.stream()
-                            .filter(matchingMember -> matchingMember.containsKey(memberId))
-                            .map(matchingMember -> matchingMember.get(memberId))
-                            .findFirst()
-                            .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MEMBER_BOOK));
-                    Map<Long, Long> matchingMember = new HashMap<>();
-                    matchingMember.put(memberId, memberBookId);
-                    return matchingMember;
-                })
-                .collect(Collectors.toList());
     }
 
-    private boolean isSameBook(Member member, Member matchingMember) {
+    private boolean isSameSchool(Member member, Member matchingMember) {
+        return member.getSchool().equals(matchingMember.getSchool());
+    }
+
+    private boolean isSameBook(Member member, MemberBook matchingMemberBook) {
         List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
-        List<MemberBook> matchingMemberBooks = memberBookRepository.findByMemberOrderByCreatedAt(matchingMember);
 
         for (MemberBook memberBook : memberBooks) {
-            for (MemberBook matchingMemberBook : matchingMemberBooks) {
-                if (memberBook.getBook().equals(matchingMemberBook.getBook())) {
-                    return true;
-                }
+            if (memberBook.getBook().equals(matchingMemberBook.getBook())) {
+                return true;
             }
         }
 
         return false;
     }
 
-    private boolean isSameAuthor(Member member, Member matchingMember) {
+    private boolean isSameAuthor(Member member, MemberBook matchingMemberBook) {
         List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
-        List<MemberBook> matchingMemberBooks = memberBookRepository.findByMemberOrderByCreatedAt(matchingMember);
 
         for (MemberBook memberBook : memberBooks) {
-            for (MemberBook matchingMemberBook : matchingMemberBooks) {
-                // 대표 저자로 확인
-                if (memberBook.getBook().getAuthors().get(0).equals(matchingMemberBook.getBook().getAuthors().get(0))) {
-                    return true;
-                }
+            // 대표 저자로 확인
+            if (memberBook.getBook().getAuthors().get(0).equals(matchingMemberBook.getBook().getAuthors().get(0))) {
+                return true;
             }
         }
 

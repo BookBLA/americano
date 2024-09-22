@@ -1,11 +1,12 @@
 package com.bookbla.americano.domain.matching.service;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.matching.controller.dto.response.MemberIntroResponse;
 import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
 import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
+import com.bookbla.americano.domain.matching.repository.entity.MatchedInfo;
 import com.bookbla.americano.domain.matching.repository.entity.MemberMatching;
 import com.bookbla.americano.domain.matching.service.dto.MemberRecommendationDto;
-import com.bookbla.americano.domain.matching.controller.dto.response.MemberIntroResponse;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -15,9 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 주석은 추후 삭제 예정
@@ -38,20 +37,27 @@ public class MemberMatchingService {
     public List<MemberIntroResponse> getRecommendationList(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
-        // 사용자의 책과 같다면 우선순위 부여
-        List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
-
-        // 사용자 기준으로 매칭 생성
         MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
                 .orElseGet(() -> MemberMatching.builder().member(member).build());
 
         member.updateLastUsedAt();
 
+        List<MatchedInfo> matchedMemberList = memberMatching.getMatched();
+        List<MemberIntroResponse> memberIntroResponses = new ArrayList<>();
+
+        if (!matchedMemberList.isEmpty()) {
+            // TODO: 회원 탈퇴, 신고, 엽서, 매칭 비활성화, 차단 검증하는 부분 추가
+
+            buildMemberIntroResponses(matchedMemberList, memberIntroResponses);
+
+            return getDailyMemberIntroResponses(memberIntroResponses);
+        }
+
         MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member, memberMatching.getExcluded());
 
         // 추천회원 id와 추천회원의 책 id 추출
-        List<Map<Long, Long>> matchingMembers = memberMatchingRepository
-                .getMatchingMemberList(memberRecommendationDto);
+        List<MatchedInfo> matchingMembers = memberMatchingRepository
+                .getMatchingMembers(memberRecommendationDto);
 
         // 학생증 인증 필터링
         matchingMembers = memberMatchingFilter.memberVerifyFiltering(matchingMembers);
@@ -59,25 +65,29 @@ public class MemberMatchingService {
         // "거절 + 14일 < 오늘" 필터링
         matchingMembers = memberMatchingFilter.memberRefusedAtFiltering(member.getId(), matchingMembers);
 
-        matchingMembers = memberMatchingAlgorithmFilter.memberMatchingAlgorithmFiltering(member, matchingMembers);
+        // 우선순위 알고리즘 적용
+        memberMatchingAlgorithmFilter.memberMatchingAlgorithmFiltering(member, matchingMembers);
 
-        // response 생성 후 반환
-        List<MemberIntroResponse> memberIntroResponses = new ArrayList<>();
-        for (Map<Long, Long> matchingMember : matchingMembers) {
-            Long matchedMemberId = matchingMember.keySet().iterator().next();
-            Long matchedMemberBookId = matchingMember.get(matchedMemberId);
+        // 추천회원 matched에 저장
+        memberMatching.updateMatched(matchingMembers);
 
-            Member matchedMember = memberRepository.getByIdOrThrow(matchedMemberId);
-            MemberBook matchedMemberBook = memberBookRepository.getByIdOrThrow(matchedMemberBookId);
+        // 추천회원 matched 정렬
+        memberMatching.sortMatched();
+
+        buildMemberIntroResponses(matchingMembers, memberIntroResponses);
+
+        return getDailyMemberIntroResponses(memberIntroResponses);
+    }
+
+    private void buildMemberIntroResponses(List<MatchedInfo> matchedMemberList, List<MemberIntroResponse> memberIntroResponses) {
+        for (MatchedInfo matchedInfo : matchedMemberList) {
+            Member matchedMember = memberRepository.getByIdOrThrow(matchedInfo.getMatchedMemberId());
+            MemberBook matchedMemberBook = memberBookRepository.getByIdOrThrow(matchedInfo.getMatchedMemberBookId());
 
             if (matchedMember != null && matchedMemberBook != null) {
                 memberIntroResponses.add(MemberIntroResponse.from(matchedMember, matchedMemberBook));
             }
         }
-
-        Collections.shuffle(memberIntroResponses);
-
-        return getDailyMemberIntroResponses(memberIntroResponses);
     }
 
     private List<MemberIntroResponse> getDailyMemberIntroResponses(List<MemberIntroResponse> memberIntroResponses) {
