@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.matching.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
+import com.bookbla.americano.domain.matching.controller.dto.request.RefreshMemberRequest;
 import com.bookbla.americano.domain.matching.controller.dto.request.RejectMemberRequest;
 import com.bookbla.americano.domain.matching.controller.dto.response.MemberIntroResponse;
 import com.bookbla.americano.domain.matching.service.MemberMatchingService;
@@ -13,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @Tag(name="회원 매칭" , description = "홈 화면 회원 매칭 관련 API")
 @RestController
@@ -25,9 +25,19 @@ public class MemberMatchingController {
 
     @Operation(summary = "매칭 회원 조회")
     @GetMapping
-    public ResponseEntity<List<MemberIntroResponse>> getRecommendation(
+    public ResponseEntity<MemberIntroResponse> getRecommendation(
             @Parameter(hidden = true) @User LoginUser loginUser) {
-        return ResponseEntity.ok(memberMatchingService.getRecommendationList(loginUser.getMemberId()));
+        return ResponseEntity.ok(memberMatchingService.getRecommendationMember(loginUser.getMemberId()));
+    }
+
+    @Operation(summary = "매칭 회원 새로고침")
+    @PostMapping("/refresh")
+    public ResponseEntity<MemberIntroResponse> refreshMemberMatching(
+            @Parameter(hidden = true) @User LoginUser loginUser,
+            @RequestBody @Valid RefreshMemberRequest request) {
+        memberMatchingService.refreshMemberMatching(loginUser.getMemberId(),
+                request.getRefreshMemberId(), request.getRefreshMemberBookId());
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "매칭 회원 거절")
@@ -35,8 +45,7 @@ public class MemberMatchingController {
     public ResponseEntity<Void> rejectMemberMatching(
             @Parameter(hidden = true) @User LoginUser loginUser,
             @RequestBody @Valid RejectMemberRequest request) {
-        memberMatchingService.rejectMemberMatching(loginUser.getMemberId(),
-                request.getRejectedMemberId(), request.getRejectedMemberBookId());
+        memberMatchingService.rejectMemberMatching(loginUser.getMemberId(), request.getRejectedMemberId());
         return ResponseEntity.ok().build();
     }
 }

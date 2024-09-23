@@ -11,7 +11,4 @@ public class RejectMemberRequest {
 
     @NotNull(message = "거절할 회원의 ID가 입력되지 않았습니다.")
     private Long rejectedMemberId;
-
-    @NotNull(message = "거절할 회원의 책 ID가 입력되지 않았습니다.")
-    private Long rejectedMemberBookId;
 }

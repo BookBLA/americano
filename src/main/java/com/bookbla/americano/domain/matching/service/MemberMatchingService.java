@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,15 +25,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MemberMatchingService {
 
-    final int MAX_RECOMMEND = 4; // 하루 최대 4명
-
     private final MemberRepository memberRepository;
     private final MemberBookRepository memberBookRepository;
     private final MemberMatchingRepository memberMatchingRepository;
     private final MemberMatchingFilter memberMatchingFilter;
     private final MemberMatchingAlgorithmFilter memberMatchingAlgorithmFilter;
 
-    public List<MemberIntroResponse> getRecommendationList(Long memberId) {
+    public MemberIntroResponse getRecommendationMember(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
         MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
@@ -43,14 +40,10 @@ public class MemberMatchingService {
         member.updateLastUsedAt();
 
         List<MatchedInfo> matchedMemberList = memberMatching.getMatched();
-        List<MemberIntroResponse> memberIntroResponses = new ArrayList<>();
 
         if (!matchedMemberList.isEmpty()) {
             // TODO: 회원 탈퇴, 신고, 엽서, 매칭 비활성화, 차단 검증하는 부분 추가
-
-            buildMemberIntroResponses(matchedMemberList, memberIntroResponses);
-
-            return getDailyMemberIntroResponses(memberIntroResponses);
+            return buildMemberIntroResponse(memberMatching.popMostPriorityMatched());
         }
 
         MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member, memberMatching.getExcluded());
@@ -77,35 +70,30 @@ public class MemberMatchingService {
         // 추천회원 matched 정렬
         memberMatching.sortMatched();
 
-        buildMemberIntroResponses(recommendedMembers, memberIntroResponses);
-
-        return getDailyMemberIntroResponses(memberIntroResponses);
+        return buildMemberIntroResponse(memberMatching.popMostPriorityMatched());
     }
 
-    public void rejectMemberMatching(Long memberId, Long rejectedMemberId, Long rejectedMemberBookId) {
+    public void refreshMemberMatching(Long memberId, Long refreshMemberId, Long refreshMemberBookId) {
         MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MATCHING));
 
-        memberMatching.addIgnoredMemberAndBook(rejectedMemberId, rejectedMemberBookId);
+        memberMatching.addIgnoredMemberAndBook(refreshMemberId, refreshMemberBookId);
     }
 
-    private void buildMemberIntroResponses(List<MatchedInfo> matchedMemberList, List<MemberIntroResponse> memberIntroResponses) {
-        for (MatchedInfo matchedInfo : matchedMemberList) {
-            Member matchedMember = memberRepository.getByIdOrThrow(matchedInfo.getMatchedMemberId());
-            MemberBook matchedMemberBook = memberBookRepository.getByIdOrThrow(matchedInfo.getMatchedMemberBookId());
+    public void rejectMemberMatching(Long memberId, Long rejectedMemberId) {
+        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MATCHING));
 
-            if (matchedMember != null && matchedMemberBook != null) {
-                memberIntroResponses.add(MemberIntroResponse.from(matchedMember, matchedMemberBook));
-            }
-        }
+        memberMatching.addExcludedMember(rejectedMemberId);
     }
 
-    private List<MemberIntroResponse> getDailyMemberIntroResponses(List<MemberIntroResponse> memberIntroResponses) {
-        if (memberIntroResponses.size() > MAX_RECOMMEND) {
-            return memberIntroResponses.subList(0, MAX_RECOMMEND);
-        } else if (memberIntroResponses.isEmpty()){
+    private MemberIntroResponse buildMemberIntroResponse(MatchedInfo matchedInfo) {
+        Member matchedMember = memberRepository.getByIdOrThrow(matchedInfo.getMatchedMemberId());
+        MemberBook matchedMemberBook = memberBookRepository.getByIdOrThrow(matchedInfo.getMatchedMemberBookId());
+
+        if (matchedMember == null || matchedMemberBook == null) {
             throw new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST);
         }
-        return memberIntroResponses;
+        return MemberIntroResponse.from(matchedMember, matchedMemberBook);
     }
 }

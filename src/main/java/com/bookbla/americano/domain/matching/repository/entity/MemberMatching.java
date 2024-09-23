@@ -1,5 +1,7 @@
 package com.bookbla.americano.domain.matching.repository.entity;
 
+import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import lombok.*;
 
@@ -62,5 +64,16 @@ public class MemberMatching {
         return MemberMatching.builder()
                 .member(member)
                 .build();
+    }
+
+    public MatchedInfo popMostPriorityMatched() {
+        if (matched.isEmpty()) {
+            throw new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST);
+        }
+
+        MatchedInfo mostPriorityMatched = matched.get(0);
+        matched.remove(0);
+
+        return mostPriorityMatched;
     }
 }
