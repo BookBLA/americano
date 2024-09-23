@@ -1,8 +1,9 @@
 package com.bookbla.americano.domain.matching.repository.custom.impl;
 
 import com.bookbla.americano.domain.matching.repository.custom.MemberMatchingRepositoryCustom;
-import com.bookbla.americano.domain.member.enums.Gender;
+import com.bookbla.americano.domain.matching.repository.entity.MatchedInfo;
 import com.bookbla.americano.domain.matching.service.dto.MemberRecommendationDto;
+import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -10,9 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,7 +25,7 @@ public class MemberMatchingRepositoryImpl implements MemberMatchingRepositoryCus
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Map<Long, Long>> getMatchingMemberList(MemberRecommendationDto recommendationDto) {
+    public List<MatchedInfo> getMatchingMembers(MemberRecommendationDto recommendationDto) {
         Set<Long> excludeMemberIds = recommendationDto.getExcludeMemberIds();
 
         LocalDateTime twoWeeksAgo = LocalDateTime.now().minusDays(14);
@@ -38,16 +37,16 @@ public class MemberMatchingRepositoryImpl implements MemberMatchingRepositoryCus
                 .where(
                         member.id.ne(recommendationDto.getMemberId()),
                         member.memberStatus.ne(MemberStatus.DELETED),
+                        member.memberStatus.ne(MemberStatus.MATCHING_DISABLED),
                         member.memberProfile.gender.ne(Gender.valueOf(recommendationDto.getMemberGender())),
                         member.lastUsedAt.coalesce(LocalDate.parse("1900-01-01").atStartOfDay()).after(twoWeeksAgo),
                         member.id.notIn(excludeMemberIds)
                 ).fetch()
                 .stream()
-                .map(m -> {
-                    Map<Long, Long> map = new HashMap<>();
-                    map.put(m.get(member.id), m.get(memberBook.id));
-                    return map;
-                })
+                .map(tuple -> MatchedInfo.builder()
+                        .matchedMemberId(tuple.get(member.id))
+                        .matchedMemberBookId(tuple.get(memberBook.id))
+                        .build())
                 .collect(Collectors.toList());
     }
 }

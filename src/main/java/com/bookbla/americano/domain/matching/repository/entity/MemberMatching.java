@@ -4,9 +4,8 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -25,23 +24,27 @@ public class MemberMatching {
     @JoinColumn(name = "member_id")
     private Member member; // 앱 사용 회원
 
-    @Builder.Default
-    @ElementCollection
-    @CollectionTable(name = "member_match_matched", joinColumns = @JoinColumn(name = "member_matching_id"))
-    private Map<Long, Long> matched = new HashMap<>(); // 매칭된 회원, 매칭된 회원의 책
+    @OneToMany(mappedBy = "memberMatching")
+    private List<MatchedInfo> matched; // 필터링을 거친 매칭된 회원 저장
 
     @Builder.Default
     @ElementCollection
     @CollectionTable(name = "member_match_excluded", joinColumns = @JoinColumn(name = "member_matching_id"))
     private Set<Long> excluded = new HashSet<>(); // 매칭에서 제외된 회원
 
-    @Builder.Default
-    @ElementCollection
-    @CollectionTable(name = "member_match_ignored_member_book", joinColumns = @JoinColumn(name = "member_matching_id"))
-    private Map<Long, Long> ignoredMemberAndBook = new HashMap<>();
+    @OneToMany(mappedBy = "memberMatching")
+    private List<MatchedInfo> ignoredMemberAndBook; // 매칭에서 제외된 회원
 
-    public void addMatchedMember(Long memberId, Long memberBookId) {
-        matched.put(memberId, memberBookId);
+    // TODO: matched 저장 쿼리 나가는지 확인
+    public void updateMatched(List<MatchedInfo> matchingMembers) {
+        matchingMembers.forEach(matchedInfo -> matchedInfo.updateMemberMatching(this));
+        this.matched = matchingMembers;
+    }
+
+    public void sortMatched() {
+        // 가중치 큰 순으로 정렬
+        matched.sort((matched1, matched2) ->
+                Double.compare(matched2.getSimilarityWeight(), matched1.getSimilarityWeight()));
     }
 
     public void addExcludedMember(Long memberId) {
@@ -49,6 +52,6 @@ public class MemberMatching {
     }
 
     public void addIgnoredMemberAndBook(Long memberId, Long memberBookId) {
-        ignoredMemberAndBook.put(memberId, memberBookId);
+        ignoredMemberAndBook.add(MatchedInfo.from(memberId, memberBookId));
     }
 }
