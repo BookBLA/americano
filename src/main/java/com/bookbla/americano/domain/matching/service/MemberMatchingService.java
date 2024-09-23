@@ -38,7 +38,7 @@ public class MemberMatchingService {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
         MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
-                .orElseGet(() -> MemberMatching.builder().member(member).build());
+                .orElseGet(() -> MemberMatching.of(member));
 
         member.updateLastUsedAt();
 
@@ -84,7 +84,7 @@ public class MemberMatchingService {
 
     public void rejectMemberMatching(Long memberId, Long rejectedMemberId, Long rejectedMemberBookId) {
         MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST));
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MATCHING));
 
         memberMatching.addIgnoredMemberAndBook(rejectedMemberId, rejectedMemberBookId);
     }

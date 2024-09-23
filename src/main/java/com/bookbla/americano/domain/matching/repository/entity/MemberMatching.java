@@ -57,4 +57,10 @@ public class MemberMatching {
     public void addIgnoredMemberAndBook(Long memberId, Long memberBookId) {
         ignoredMemberAndBook.add(MatchedInfo.from(memberId, memberBookId));
     }
+
+    public static MemberMatching of(Member member) {
+        return MemberMatching.builder()
+                .member(member)
+                .build();
+    }
 }
