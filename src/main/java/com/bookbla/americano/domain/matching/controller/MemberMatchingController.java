@@ -10,10 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -34,7 +31,7 @@ public class MemberMatchingController {
     }
 
     @Operation(summary = "매칭 회원 거절")
-    @GetMapping("/reject")
+    @PostMapping("/reject")
     public ResponseEntity<Void> rejectMemberMatching(
             @Parameter(hidden = true) @User LoginUser loginUser,
             @RequestBody @Valid RejectMemberRequest request) {
