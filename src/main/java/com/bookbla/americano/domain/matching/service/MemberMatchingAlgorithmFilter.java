@@ -69,9 +69,10 @@ public class MemberMatchingAlgorithmFilter {
         List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
 
         for (MemberBook memberBook : memberBooks) {
-            // 대표 저자로 확인
-            if (memberBook.getBook().getAuthors().get(0).equals(matchingMemberBook.getBook().getAuthors().get(0))) {
-                return true;
+            if (!memberBook.getBook().getAuthors().isEmpty() && !matchingMemberBook.getBook().getAuthors().isEmpty()) {
+                if (memberBook.getBook().getAuthors().get(0).equals(matchingMemberBook.getBook().getAuthors().get(0))) {
+                    return true;
+                }
             }
         }
 
