@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.matching.service;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.matching.controller.dto.response.MemberIntroResponse;
 import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
+import com.bookbla.americano.domain.matching.repository.MatchedInfoRepository;
 import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
 import com.bookbla.americano.domain.matching.repository.entity.MatchedInfo;
 import com.bookbla.americano.domain.matching.repository.entity.MemberMatching;
@@ -33,6 +34,7 @@ public class MemberMatchingService {
     private final MemberMatchingRepository memberMatchingRepository;
     private final MemberMatchingFilter memberMatchingFilter;
     private final MemberMatchingAlgorithmFilter memberMatchingAlgorithmFilter;
+    private final MatchedInfoRepository matchedInfoRepository;
 
     public List<MemberIntroResponse> getRecommendationList(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
@@ -56,28 +58,28 @@ public class MemberMatchingService {
         MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member, memberMatching.getExcluded());
 
         // 추천회원 id와 추천회원의 책 id 추출
-        List<MatchedInfo> matchingMembers = memberMatchingRepository
+        List<MatchedInfo> recommendedMembers = memberMatchingRepository
                 .getMatchingMembers(memberRecommendationDto);
 
         // 차단한 회원 필터링
-        matchingMembers = memberMatchingFilter.memberBlockedFiltering(member.getId(), matchingMembers);
+        recommendedMembers = memberMatchingFilter.memberBlockedFiltering(member.getId(), recommendedMembers);
 
         // 학생증 인증 필터링
-        matchingMembers = memberMatchingFilter.memberVerifyFiltering(matchingMembers);
+        recommendedMembers = memberMatchingFilter.memberVerifyFiltering(recommendedMembers);
 
         // "거절 + 14일 < 오늘" 필터링
-        matchingMembers = memberMatchingFilter.memberRefusedAtFiltering(member.getId(), matchingMembers);
+        recommendedMembers = memberMatchingFilter.memberRefusedAtFiltering(member.getId(), recommendedMembers);
 
         // 우선순위 알고리즘 적용
-        memberMatchingAlgorithmFilter.memberMatchingAlgorithmFiltering(member, matchingMembers);
+        memberMatchingAlgorithmFilter.memberMatchingAlgorithmFiltering(member, recommendedMembers);
 
         // 추천회원 matched에 저장
-        memberMatching.updateMatched(matchingMembers);
+        memberMatching.updateMatched(recommendedMembers);
 
         // 추천회원 matched 정렬
         memberMatching.sortMatched();
 
-        buildMemberIntroResponses(matchingMembers, memberIntroResponses);
+        buildMemberIntroResponses(recommendedMembers, memberIntroResponses);
 
         return getDailyMemberIntroResponses(memberIntroResponses);
     }
