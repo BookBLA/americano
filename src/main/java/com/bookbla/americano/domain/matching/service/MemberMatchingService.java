@@ -72,7 +72,7 @@ public class MemberMatchingService {
         memberMatchingAlgorithmFilter.memberMatchingAlgorithmFiltering(member, recommendedMembers);
 
         // 추천회원 matched에 저장
-        memberMatching.updateMatched(recommendedMembers);
+        memberMatching.saveAndUpdateMatched(recommendedMembers);
 
         // 추천회원 matched 정렬
         memberMatching.sortMatched();

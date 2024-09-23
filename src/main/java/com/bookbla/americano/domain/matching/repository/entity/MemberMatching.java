@@ -39,7 +39,7 @@ public class MemberMatching {
     private List<MatchedInfo> ignoredMemberAndBook = new ArrayList<>(); // 매칭에서 제외된 회원
 
     // TODO: matched 저장 쿼리 나가는지 확인
-    public void updateMatched(List<MatchedInfo> matchingMembers) {
+    public void saveAndUpdateMatched(List<MatchedInfo> matchingMembers) {
         matchingMembers.forEach(matchedInfo -> matchedInfo.updateMemberMatching(this));
         this.matched = matchingMembers;
     }
