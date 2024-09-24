@@ -221,7 +221,7 @@ class InvitationServiceTest {
 
             // then
             assertThat(response.getInvitingRewardStatus()).isFalse();
-            assertThat(response.getInvitedRewardStatus()).isFalse();
+            assertThat(response.getInvitedRewardStatus()).isEqualTo("NONE");
         }
 
         @Test
@@ -238,7 +238,7 @@ class InvitationServiceTest {
 
             // then
             assertThat(response.getInvitingRewardStatus()).isFalse();
-            assertThat(response.getInvitedRewardStatus()).isTrue();
+            assertThat(response.getInvitedRewardStatus()).isEqualTo("MEMBER");
             assertThat(response.getInvitedMembersGender()).isNull();
         }
 
@@ -256,8 +256,23 @@ class InvitationServiceTest {
 
             // then
             assertThat(response.getInvitingRewardStatus()).isTrue();
-            assertThat(response.getInvitedRewardStatus()).isFalse();
+            assertThat(response.getInvitedRewardStatus()).isEqualTo("NONE");
             assertThat(response.getInvitedMembersGender()).isEqualTo(man2.getMemberProfile().getGender().name());
+        }
+
+        @Test
+        void 축제_초대코드를_입력했다면_invitingRewardStatus는_festival이다() {
+            // given
+            Member man = memberRepository.save(프로필_등록_완료_여성_김밤비);
+            memberBookmarkRepository.save(MemberBookmark.builder().member(man).build());
+            sut.entryInvitationCode(man.getId(), new InvitationCodeEntryRequest("JUST4YOU"));
+
+            // when
+            MemberInvitationRewardResponse response = sut.getInvitationRewardStatus(man.getId());
+
+            // then
+            assertThat(response.getInvitingRewardStatus()).isFalse();
+            assertThat(response.getInvitedRewardStatus()).isEqualTo("FESTIVAL");
         }
     }
 }

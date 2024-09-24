@@ -87,7 +87,7 @@ public class MemberModal {
         return hasFestivalInvitationReward == Boolean.TRUE;
     }
 
-    public void completeFestivalInvitation() {
+    public void completeFestivalInvitationModal() {
         this.hasFestivalInvitationReward = Boolean.FALSE;
     }
 

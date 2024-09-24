@@ -166,7 +166,7 @@ public class InvitationService {
         }
 
         if (modal.hasFestivalInvitationReward()) {
-            modal.completeFestivalInvitation();
+            modal.completeFestivalInvitationModal();
             invitedRewardStatus = "FESTIVAL";
         }
 
