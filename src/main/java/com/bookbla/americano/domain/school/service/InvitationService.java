@@ -24,8 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.bookbla.americano.domain.school.repository.entity.InvitationType.MAN;
-import static com.bookbla.americano.domain.school.repository.entity.InvitationType.WOMAN;
+import static com.bookbla.americano.domain.school.repository.entity.InvitationType.*;
 
 
 /*
@@ -98,11 +97,11 @@ public class InvitationService {
     }
 
     private Invitation createInvitation(
-            boolean isWoman,
+            boolean isFemale,
             Long invitingMemberId,
             Long invitedMemberId
     ) {
-        InvitationType invitationType = isWoman ? WOMAN : MAN;
+        InvitationType invitationType = isFemale ? FEMALE : MALE;
 
         Invitation invitation = Invitation.builder()
                 .invitingMemberId(invitingMemberId)
@@ -138,12 +137,12 @@ public class InvitationService {
             MemberBookmark invitedMemberBookmark,
             MemberBookmark invitingMemberBookmark
     ) {
-        if (invitation.isWomanInvitation()) {
+        if (invitation.isFemaleInvitation()) {
             invitedMemberBookmark.addWomanInvitationBookmark();
             invitingMemberBookmark.addWomanInvitationBookmark();
         }
 
-        if (invitation.isManInvitation()) {
+        if (invitation.isMaleInvitation()) {
             invitedMemberBookmark.addManInvitationBookmark();
             invitingMemberBookmark.addManInvitationBookmark();
         }

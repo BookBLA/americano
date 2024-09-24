@@ -106,7 +106,7 @@ class InvitationServiceTest {
                     () -> assertThat(invitation.getInvitedMemberId()).isEqualTo(man2.getId()),
                     () -> assertThat(invitation.getInvitingMemberId()).isEqualTo(man1.getId()),
                     () -> assertThat(invitation.getInvitationStatus()).isEqualTo(BOOKMARK),
-                    () -> assertThat(invitation.getInvitationType()).isEqualTo(MAN)
+                    () -> assertThat(invitation.getInvitationType()).isEqualTo(MALE)
             );
         }
 
@@ -149,7 +149,7 @@ class InvitationServiceTest {
                     () -> assertThat(invitation.getInvitedMemberId()).isEqualTo(woman.getId()),
                     () -> assertThat(invitation.getInvitingMemberId()).isEqualTo(man.getId()),
                     () -> assertThat(invitation.getInvitationStatus()).isEqualTo(BOOKMARK),
-                    () -> assertThat(invitation.getInvitationType()).isEqualTo(WOMAN)
+                    () -> assertThat(invitation.getInvitationType()).isEqualTo(FEMALE)
             );
         }
 
