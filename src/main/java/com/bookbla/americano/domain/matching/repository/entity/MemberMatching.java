@@ -36,9 +36,8 @@ public class MemberMatching {
     @CollectionTable(name = "member_match_excluded", joinColumns = @JoinColumn(name = "member_matching_id"))
     private Set<Long> excluded = new HashSet<>(); // 매칭에서 제외된 회원
 
-    @Builder.Default
     @OneToMany(mappedBy = "memberMatching")
-    private List<MatchedInfo> ignoredMemberAndBook = new ArrayList<>(); // 매칭에서 제외된 회원
+    private List<MatchedInfo> ignoredMemberAndBook; // 매칭에서 제외된 회원
 
     // TODO: matched 저장 쿼리 나가는지 확인
     public void saveAndUpdateMatched(List<MatchedInfo> matchingMembers) {
@@ -63,6 +62,7 @@ public class MemberMatching {
     public static MemberMatching of(Member member) {
         return MemberMatching.builder()
                 .member(member)
+                .matched(new ArrayList<>())
                 .build();
     }
 
