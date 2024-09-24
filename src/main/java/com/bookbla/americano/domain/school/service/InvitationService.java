@@ -24,7 +24,8 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.bookbla.americano.domain.school.repository.entity.InvitationType.*;
+import static com.bookbla.americano.domain.school.repository.entity.InvitationType.FEMALE;
+import static com.bookbla.americano.domain.school.repository.entity.InvitationType.MALE;
 
 
 /*
@@ -57,6 +58,11 @@ public class InvitationService {
         if (FESTIVAL_TEMPORARY_INVITATION_CODE.equals(request.getInvitationCode())) {
             Invitation invitation = createFestivalInvitation(invitedMemberId);
             invitation.bookmark();
+            Member member = memberRepository.getByIdOrThrow(invitedMemberId);
+
+            MemberModal modal = member.getMemberModal();
+            modal.updateFestivalInvitationToExists();
+
             return InvitationResponse.from(invitation);
         }
 
@@ -111,8 +117,8 @@ public class InvitationService {
 
         return invitationRepository.save(invitation);
     }
-    
-        private void processInvitationReward(
+
+    private void processInvitationReward(
             Invitation invitation,
             Long invitedMemberId,
             Long invitingMemberId
@@ -152,11 +158,16 @@ public class InvitationService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberModal modal = member.getMemberModal();
 
-        boolean hasInvitedReward = false;
+        String invitedRewardStatus = "NONE";
 
         if (modal.isInvitedRewardNotGiven()) {
             modal.updateMemberInvitedRewardStatusToComplete();
-            hasInvitedReward = true;
+            invitedRewardStatus = "MEMBER";
+        }
+
+        if (modal.hasFestivalInvitationReward()) {
+            modal.completeFestivalInvitationModal();
+            invitedRewardStatus = "FESTIVAL";
         }
 
         if (modal.isInvitingRewardNotGiven()) {
@@ -164,10 +175,10 @@ public class InvitationService {
 
             Member invitedMember = memberRepository.getByIdOrThrow(invitedMemberId);
 
-            return MemberInvitationRewardResponse.fromInvitingRewardGiven(hasInvitedReward, invitedMember.getMemberProfile().getGender());
+            return MemberInvitationRewardResponse.fromInvitingRewardGiven(invitedRewardStatus, invitedMember.getMemberProfile().getGender());
         }
 
-        return MemberInvitationRewardResponse.fromInvitingRewardNotGiven(hasInvitedReward);
+        return MemberInvitationRewardResponse.fromInvitingRewardNotGiven(invitedRewardStatus);
     }
 
     public MemberInvitationRewardResponse updateInvitationRewardStatus(Long memberId) {

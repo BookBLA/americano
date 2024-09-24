@@ -1,16 +1,22 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.school.exception.InvitationExceptionType;
 import com.bookbla.americano.domain.school.repository.entity.InvitationStatus;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embeddable;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.util.HashMap;
-import java.util.Map;
 
 @Getter
 @Embeddable
@@ -32,6 +38,11 @@ public class MemberModal {
     @Builder.Default
     @ElementCollection(fetch = FetchType.LAZY)
     private Map<Long, Boolean> invitingRewardStatus = new HashMap<>(); // key: invitedMemberId, value: rewarded
+
+    @Builder.Default
+    @Column(length = 1)
+    @Convert(converter = BooleanToYNConverter.class)
+    private Boolean hasFestivalInvitationReward = Boolean.FALSE;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
@@ -70,5 +81,17 @@ public class MemberModal {
                     return entry.getKey();
                 })
                 .orElseThrow(() -> new BaseException(InvitationExceptionType.NO_INVITED_MEMBER));
+    }
+
+    public boolean hasFestivalInvitationReward() {
+        return hasFestivalInvitationReward == Boolean.TRUE;
+    }
+
+    public void completeFestivalInvitationModal() {
+        this.hasFestivalInvitationReward = Boolean.FALSE;
+    }
+
+    public void updateFestivalInvitationToExists() {
+        this.hasFestivalInvitationReward = Boolean.TRUE;
     }
 }
