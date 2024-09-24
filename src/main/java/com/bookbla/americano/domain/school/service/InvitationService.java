@@ -24,7 +24,8 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.bookbla.americano.domain.school.repository.entity.InvitationType.*;
+import static com.bookbla.americano.domain.school.repository.entity.InvitationType.FEMALE;
+import static com.bookbla.americano.domain.school.repository.entity.InvitationType.MALE;
 
 
 /*
@@ -57,6 +58,11 @@ public class InvitationService {
         if (FESTIVAL_TEMPORARY_INVITATION_CODE.equals(request.getInvitationCode())) {
             Invitation invitation = createFestivalInvitation(invitedMemberId);
             invitation.bookmark();
+            Member member = memberRepository.getByIdOrThrow(invitedMemberId);
+
+            MemberModal modal = member.getMemberModal();
+            modal.updateFestivalInvitationToExists();
+
             return InvitationResponse.from(invitation);
         }
 
@@ -111,8 +117,8 @@ public class InvitationService {
 
         return invitationRepository.save(invitation);
     }
-    
-        private void processInvitationReward(
+
+    private void processInvitationReward(
             Invitation invitation,
             Long invitedMemberId,
             Long invitingMemberId
@@ -160,7 +166,7 @@ public class InvitationService {
         }
 
         if (modal.hasFestivalInvitationReward()) {
-            modal.updateFestivalInvitationToComplete();
+            modal.completeFestivalInvitation();
             invitedRewardStatus = "FESTIVAL";
         }
 
