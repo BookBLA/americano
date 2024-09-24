@@ -73,11 +73,13 @@ public class MemberMatchingService {
         return buildMemberIntroResponse(memberMatching.popMostPriorityMatched());
     }
 
-    public void refreshMemberMatching(Long memberId, Long refreshMemberId, Long refreshMemberBookId) {
+    public MemberIntroResponse refreshMemberMatching(Long memberId, Long refreshMemberId, Long refreshMemberBookId) {
         MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MATCHING));
 
         memberMatching.addIgnoredMemberAndBook(refreshMemberId, refreshMemberBookId);
+
+        return buildMemberIntroResponse(memberMatching.popMostPriorityMatched());
     }
 
     public void rejectMemberMatching(Long memberId, Long rejectedMemberId) {
