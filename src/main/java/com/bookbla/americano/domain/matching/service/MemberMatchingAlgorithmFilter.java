@@ -7,6 +7,7 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,12 +22,14 @@ import java.util.List;
  * 6. 다른 학교 흡연여부 동일
  */
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class MemberMatchingAlgorithmFilter {
 
     private final MemberRepository memberRepository;
     private final MemberBookRepository memberBookRepository;
 
+    // TODO: 쿼리 최적화하기
     public void memberMatchingAlgorithmFiltering(Member member, List<MatchedInfo> matchingMembers) {
 
         for (MatchedInfo matchedInfo : matchingMembers) {
