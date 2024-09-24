@@ -152,11 +152,16 @@ public class InvitationService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberModal modal = member.getMemberModal();
 
-        boolean hasInvitedReward = false;
+        String invitedRewardStatus = "NONE";
 
         if (modal.isInvitedRewardNotGiven()) {
             modal.updateMemberInvitedRewardStatusToComplete();
-            hasInvitedReward = true;
+            invitedRewardStatus = "MEMBER";
+        }
+
+        if (modal.hasFestivalInvitationReward()) {
+            modal.updateFestivalInvitationToComplete();
+            invitedRewardStatus = "FESTIVAL";
         }
 
         if (modal.isInvitingRewardNotGiven()) {
@@ -164,10 +169,10 @@ public class InvitationService {
 
             Member invitedMember = memberRepository.getByIdOrThrow(invitedMemberId);
 
-            return MemberInvitationRewardResponse.fromInvitingRewardGiven(hasInvitedReward, invitedMember.getMemberProfile().getGender());
+            return MemberInvitationRewardResponse.fromInvitingRewardGiven(invitedRewardStatus, invitedMember.getMemberProfile().getGender());
         }
 
-        return MemberInvitationRewardResponse.fromInvitingRewardNotGiven(hasInvitedReward);
+        return MemberInvitationRewardResponse.fromInvitingRewardNotGiven(invitedRewardStatus);
     }
 
     public MemberInvitationRewardResponse updateInvitationRewardStatus(Long memberId) {
