@@ -68,6 +68,7 @@ public class MemberMatchingService {
 
         // 추천회원 matched에 저장
         memberMatching.saveAndUpdateMatched(recommendedMembers);
+        matchedInfoRepository.saveAll(recommendedMembers);
 
         // 추천회원 matched 정렬
         memberMatching.sortMatched();
