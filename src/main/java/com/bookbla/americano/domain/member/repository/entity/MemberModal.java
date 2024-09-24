@@ -31,7 +31,7 @@ public class MemberModal {
 
     @Builder.Default
     @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "member_inviting", joinColumns = @JoinColumn(name = "member_id"))
+//    @CollectionTable(name = "member_inviting", joinColumns = @JoinColumn(name = "member_id"))
     private Map<Long, Boolean> invitingRewardStatus = new HashMap<>(); // key: invitedMemberId, value: rewarded
 
     @Builder.Default
