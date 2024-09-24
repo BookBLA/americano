@@ -27,9 +27,8 @@ public class MemberMatching {
     @JoinColumn(name = "member_id")
     private Member member; // 앱 사용 회원
 
-    @Builder.Default
     @OneToMany(mappedBy = "memberMatching")
-    private List<MatchedInfo> matched = new ArrayList<>(); // 필터링을 거친 매칭된 회원 저장
+    private List<MatchedInfo> matched; // 필터링을 거친 매칭된 회원 저장
 
     @Builder.Default
     @ElementCollection
@@ -63,6 +62,7 @@ public class MemberMatching {
         return MemberMatching.builder()
                 .member(member)
                 .matched(new ArrayList<>())
+                .ignoredMemberAndBook(new ArrayList<>())
                 .build();
     }
 
