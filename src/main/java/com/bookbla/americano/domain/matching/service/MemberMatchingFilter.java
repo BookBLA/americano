@@ -66,11 +66,8 @@ public class MemberMatchingFilter {
     }
 
     private static @NotNull Set<Long> extractFilteringMemberIds(List<MatchedInfo> matchingMembers) {
-        Set<Long> filteringMemberIds = new HashSet<>();
-
-        matchingMembers.stream()
+        return matchingMembers.stream()
                 .map(MatchedInfo::getMatchedMemberId)
-                .forEach(filteringMemberIds::add);
-        return filteringMemberIds;
+                .collect(Collectors.toSet());
     }
 }

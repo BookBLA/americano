@@ -1,5 +1,7 @@
 package com.bookbla.americano.domain.matching.repository.entity;
 
+import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import lombok.*;
 
@@ -39,7 +41,7 @@ public class MemberMatching {
     private List<MatchedInfo> ignoredMemberAndBook = new ArrayList<>(); // 매칭에서 제외된 회원
 
     // TODO: matched 저장 쿼리 나가는지 확인
-    public void updateMatched(List<MatchedInfo> matchingMembers) {
+    public void saveAndUpdateMatched(List<MatchedInfo> matchingMembers) {
         matchingMembers.forEach(matchedInfo -> matchedInfo.updateMemberMatching(this));
         this.matched = matchingMembers;
     }
@@ -56,5 +58,22 @@ public class MemberMatching {
 
     public void addIgnoredMemberAndBook(Long memberId, Long memberBookId) {
         ignoredMemberAndBook.add(MatchedInfo.from(memberId, memberBookId));
+    }
+
+    public static MemberMatching of(Member member) {
+        return MemberMatching.builder()
+                .member(member)
+                .build();
+    }
+
+    public MatchedInfo popMostPriorityMatched() {
+        if (matched.isEmpty()) {
+            throw new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST);
+        }
+
+        MatchedInfo mostPriorityMatched = matched.get(0);
+        matched.remove(0);
+
+        return mostPriorityMatched;
     }
 }

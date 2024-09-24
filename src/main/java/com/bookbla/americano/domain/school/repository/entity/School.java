@@ -60,11 +60,11 @@ public class School extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         School school = (School) o;
-        return Objects.equals(id, school.id) && Objects.equals(name, school.name);
+        return Objects.equals(id, school.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hashCode(id);
     }
 }
