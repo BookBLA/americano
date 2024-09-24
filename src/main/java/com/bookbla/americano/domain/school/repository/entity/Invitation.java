@@ -64,12 +64,12 @@ public class Invitation extends BaseEntity {
         return this.invitationType == InvitationType.FESTIVAL;
     }
 
-    public boolean isWomanInvitation() {
-        return this.invitationType == InvitationType.WOMAN;
+    public boolean isFemaleInvitation() {
+        return this.invitationType == InvitationType.FEMALE;
     }
 
-    public boolean isManInvitation() {
-        return this.invitationType == InvitationType.MAN;
+    public boolean isMaleInvitation() {
+        return this.invitationType == InvitationType.MALE;
     }
 
     public boolean isComplete() {
