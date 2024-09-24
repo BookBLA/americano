@@ -5,7 +5,8 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.chat.repository.MemberChatRoomRepository;
 import com.bookbla.americano.domain.chat.repository.entity.MemberChatRoom;
 import com.bookbla.americano.domain.chat.service.ChatRoomService;
-import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
+import com.bookbla.americano.domain.matching.repository.MatchExcludedRepository;
+import com.bookbla.americano.domain.matching.repository.entity.MatchExcludedInfo;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
@@ -57,7 +58,7 @@ public class PostcardService {
     private final PushAlarmEventHandler postcardPushAlarmEventListener;
     private final ChatRoomService chatRoomService;
     private final MemberChatRoomRepository memberChatRoomRepository;
-    private final MemberMatchingRepository memberMatchingRepository;
+    private final MatchExcludedRepository matchExcludedRepository;
 
     public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
         MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
@@ -195,6 +196,8 @@ public class PostcardService {
             updateMemberMatchingExcluded(sendMember, receiveMember);
 
         } else if (postcardStatus.isRefused()) { // 거절 시 환불
+            // TODO: *엽서 거절 시 엽서를 보낸 회원의 책을 알 수 있는 정보가 필요*
+
             postcard.updatePostcardStatusRefusedAt();
             memberBookmark.addBookmark(35);
             // 해당 엽서로 생성된 채팅방을 모두 나가게 함
@@ -206,15 +209,11 @@ public class PostcardService {
     }
 
     private void updateMemberMatchingExcluded(Member sendMember, Member receiveMember) {
-        memberMatchingRepository.findByMemberId(sendMember.getId())
-                .ifPresent(it -> {
-                    it.addExcludedMember(receiveMember.getId());
-                });
+        matchExcludedRepository.findByMemberIdAndExcludedMemberId(sendMember.getId(), receiveMember.getId())
+                        .orElseGet(() -> matchExcludedRepository.save(MatchExcludedInfo.of(sendMember.getId(), receiveMember.getId())));
 
-        memberMatchingRepository.findByMemberId(receiveMember.getId())
-                .ifPresent(it -> {
-                    it.addExcludedMember(sendMember.getId());
-                });
+        matchExcludedRepository.findByMemberIdAndExcludedMemberId(receiveMember.getId(), sendMember.getId())
+                        .orElseGet(() -> matchExcludedRepository.save(MatchExcludedInfo.of(receiveMember.getId(), sendMember.getId())));
     }
 
     @Transactional(readOnly = true)
