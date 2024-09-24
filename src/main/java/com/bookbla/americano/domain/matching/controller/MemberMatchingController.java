@@ -35,9 +35,8 @@ public class MemberMatchingController {
     public ResponseEntity<MemberIntroResponse> refreshMemberMatching(
             @Parameter(hidden = true) @User LoginUser loginUser,
             @RequestBody @Valid RefreshMemberRequest request) {
-        memberMatchingService.refreshMemberMatching(loginUser.getMemberId(),
-                request.getRefreshMemberId(), request.getRefreshMemberBookId());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(memberMatchingService.refreshMemberMatching(loginUser.getMemberId(),
+                request.getRefreshMemberId(), request.getRefreshMemberBookId()));
     }
 
     @Operation(summary = "매칭 회원 거절")
