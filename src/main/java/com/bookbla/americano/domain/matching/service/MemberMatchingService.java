@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.matching.service;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.matching.controller.dto.response.MemberIntroResponse;
 import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
+import com.bookbla.americano.domain.matching.repository.MatchedInfoRepository;
 import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
 import com.bookbla.americano.domain.matching.repository.entity.MatchedInfo;
 import com.bookbla.americano.domain.matching.repository.entity.MemberMatching;
@@ -30,16 +31,17 @@ public class MemberMatchingService {
     private final MemberMatchingRepository memberMatchingRepository;
     private final MemberMatchingFilter memberMatchingFilter;
     private final MemberMatchingAlgorithmFilter memberMatchingAlgorithmFilter;
+    private final MatchedInfoRepository matchedInfoRepository;
 
     public MemberIntroResponse getRecommendationMember(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
         MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
-                .orElseGet(() -> MemberMatching.of(member));
+                .orElseGet(() -> memberMatchingRepository.save(MemberMatching.of(member)));
 
         member.updateLastUsedAt();
 
-        List<MatchedInfo> matchedMemberList = memberMatching.getMatched();
+        List<MatchedInfo> matchedMemberList = matchedInfoRepository.findAllByMemberMatchingId(memberMatching.getId());
 
         if (!matchedMemberList.isEmpty()) {
             // TODO: 회원 탈퇴, 신고, 엽서, 매칭 비활성화, 차단 검증하는 부분 추가
