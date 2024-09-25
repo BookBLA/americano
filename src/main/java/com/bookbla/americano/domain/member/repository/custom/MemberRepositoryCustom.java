@@ -10,5 +10,4 @@ public interface MemberRepositoryCustom {
 
     List<BookProfileResponse> getAllMembers(Long memberId, MemberBookProfileRequestDto requestDto);
 
-    List<Member> findByChatroomId(Long chatRoomId);
 }

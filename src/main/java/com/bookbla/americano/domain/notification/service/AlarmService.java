@@ -1,12 +1,5 @@
 package com.bookbla.americano.domain.notification.service;
 
-import com.bookbla.americano.domain.chat.repository.ChatRoomRepository;
-import com.bookbla.americano.domain.chat.repository.MemberChatRoomRepository;
-import com.bookbla.americano.domain.chat.repository.entity.Chat;
-import com.bookbla.americano.domain.chat.repository.entity.ChatRoom;
-import com.bookbla.americano.domain.chat.repository.entity.MemberChatRoom;
-import com.bookbla.americano.domain.notification.enums.PushAlarmForm;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -21,6 +14,7 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberPushAlarm;
 import com.bookbla.americano.domain.notification.controller.dto.request.PushAlarmAllCreateRequest;
 import com.bookbla.americano.domain.notification.controller.dto.response.PushAlarmAllCreateResponse;
+import com.bookbla.americano.domain.notification.enums.PushAlarmForm;
 import com.bookbla.americano.domain.notification.enums.PushAlarmStatus;
 import com.bookbla.americano.domain.notification.enums.PushAlarmType;
 import com.bookbla.americano.domain.notification.exception.PushAlarmExceptionType;
@@ -42,12 +36,11 @@ public class AlarmService {
     private final MemberRepository memberRepository;
     private final MemberPushAlarmRepository memberPushAlarmRepository;
     private final PushAlarmLogRepository pushAlarmLogRepository;
-    private final MemberChatRoomRepository memberChatRoomRepository;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendPushAlarmForReceivePostCard(Member sendMember, Member receiveMember) {
 
-        if (isPushAlarmAble(receiveMember)) {
+        if (canNotSendPushAlarm(receiveMember)) {
             return;
         }
 
@@ -74,7 +67,7 @@ public class AlarmService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendPushAlarmForAcceptPostcard(Member sendMember, Member receiveMember) {
 
-        if (isPushAlarmAble(sendMember)) {
+        if (canNotSendPushAlarm(sendMember)) {
             return;
         }
 
@@ -100,62 +93,9 @@ public class AlarmService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void sendPushAlarmForChat(Member receiver, Chat chat) {
-        if (isPushAlarmAble(receiver)) {
-            return;
-        }
-
-        // Select Member Query 발생 예상(Lazy FetchType)
-        String senderName = chat.getSender().getMemberProfile().getName();
-        String chatContent = chat.getContent();
-
-        sendToExpo(receiver.getPushToken(), senderName, chatContent);
-
-        MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
-                .member(receiver)
-                .title(senderName)
-                .body(chatContent)
-                .build();
-        memberPushAlarmRepository.save(memberPushAlarm);
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void sendPushAlarmForChat(List<Member> members, Chat chat) {
-        // Push 본문
-        Member sender = memberRepository.findById(chat.getSender().getId()).orElseThrow();
-        String senderName = sender.getMemberProfile().getName();
-        String chatContent = chat.getContent();
-
-        List<Member> alarmAbleMember = new ArrayList<>();
-
-        // 채팅방 알람 수신 검사
-        for (Member member : members) {
-            // TODO: Fetch Join 필요
-            MemberChatRoom memberChatRoom = memberChatRoomRepository.findByMember_IdAndChatRoom_Id(member.getId(), chat.getChatRoom().getId())
-                    .orElseThrow();
-
-            if (isPushAlarmAble(member) && memberChatRoom.getIsAlert()) {
-                alarmAbleMember.add(member);
-            }
-        }
-        sendListToExpo(alarmAbleMember.stream().map(Member::getPushToken)
-                .collect(Collectors.toList()), senderName, chatContent);
-
-        for (Member member : alarmAbleMember) {
-            MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
-                    .member(member)
-                    .title(senderName)
-                    .body(chatContent)
-                    .build();
-            memberPushAlarmRepository.save(memberPushAlarm);
-
-        }
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void sendPushAlarm(Member member, PushAlarmForm pushAlarmForm) {
 
-        if (isPushAlarmAble(member)) {
+        if (canNotSendPushAlarm(member)) {
             return;
         }
 
@@ -323,8 +263,8 @@ public class AlarmService {
         }
     }
 
-    private boolean isPushAlarmAble(Member member) {
-        return member.getPushToken() != null && member.getPushAlarmEnabled();
+    private boolean canNotSendPushAlarm(Member member) {
+        return member.getPushToken() == null || !member.getPushAlarmEnabled();
     }
 
 }
