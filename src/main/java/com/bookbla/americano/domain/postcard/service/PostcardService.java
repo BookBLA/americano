@@ -80,6 +80,8 @@ public class PostcardService {
         Member targetMember = memberRepository.getByIdOrThrow(request.getReceiveMemberId());
         memberBookmark.sendPostcard();
 
+        updateMemberMatchingExcluded(member, targetMember);
+
         PostcardType postCardType = postcardTypeRepository.getByIdOrThrow(
                 request.getPostcardTypeId());
         Postcard postcard = Postcard.builder()
