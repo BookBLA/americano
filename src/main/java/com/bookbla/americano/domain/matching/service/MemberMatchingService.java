@@ -17,10 +17,13 @@ import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -40,7 +43,7 @@ public class MemberMatchingService {
     private final MatchExcludedRepository matchExcludedRepository;
     private final MatchIgnoredRepository matchIgnoredRepository;
 
-    private final EntityManager em;
+    private final JdbcTemplate jdbcTemplate;
 
     public MemberIntroResponse getRecommendationMember(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
@@ -142,34 +145,41 @@ public class MemberMatchingService {
     }
 
     private void saveAllRecommendedMembers(List<MatchedInfo> recommendedMembers) {
-        int batchSize = 50;
+        String sql = "INSERT INTO matched_info (member_id, matched_member_id, matched_member_book_id) VALUES (?, ?, ?)";
 
-        for (int i = 0; i < recommendedMembers.size(); i++) {
-            matchedInfoRepository.save(recommendedMembers.get(i));
-
-            if (i > 0 && i % batchSize == 0) {
-                em.flush();
-                em.clear();
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                MatchedInfo matchedInfo = recommendedMembers.get(i);
+                ps.setLong(1, matchedInfo.getMemberId());
+                ps.setLong(2, matchedInfo.getMatchedMemberId());
+                ps.setLong(3, matchedInfo.getMatchedMemberBookId());
             }
-        }
 
-        em.flush();
-        em.clear();
+            @Override
+            public int getBatchSize() {
+                return recommendedMembers.size(); // 전체 리스트 크기
+            }
+        });
     }
 
-    private void updateAllRecommendedMembers(MemberMatching memberMatching, List<MatchedInfo> recommendedMembers) {
-        int batchSize = 50;
+    public void updateAllRecommendedMembers(MemberMatching memberMatching, List<MatchedInfo> recommendedMembers) {
+        String sql = "UPDATE matched_info SET member_matching_id = ? WHERE member_id = ? AND matched_member_id = ? AND matched_member_book_id = ?";
 
-        for (int i = 0; i < recommendedMembers.size(); i++) {
-            memberMatching.updateMatched(recommendedMembers.get(i));
-
-            if (i > 0 && i % batchSize == 0) {
-                em.flush();
-                em.clear();
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                MatchedInfo matchedInfo = recommendedMembers.get(i);
+                ps.setDouble(1, memberMatching.getId());
+                ps.setLong(2, matchedInfo.getMemberId());
+                ps.setLong(3, matchedInfo.getMatchedMemberId());
+                ps.setLong(4, matchedInfo.getMatchedMemberBookId());
             }
-        }
 
-        em.flush();
-        em.clear();
+            @Override
+            public int getBatchSize() {
+                return recommendedMembers.size(); // 전체 리스트 크기
+            }
+        });
     }
 }
