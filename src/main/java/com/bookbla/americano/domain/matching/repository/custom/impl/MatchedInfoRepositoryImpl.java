@@ -22,10 +22,7 @@ import static com.bookbla.americano.domain.member.repository.entity.QMember.memb
 @RequiredArgsConstructor
 public class MatchedInfoRepositoryImpl implements MatchedInfoRepositoryCustom {
 
-    private final MatchedInfoRepository matchedInfoRepository;
-
     private final JPAQueryFactory queryFactory;
-    private final EntityManager em;
 
     @Override
     public List<MatchedInfo> findAllByMemberMatchingId(Long memberMatchingId) {
@@ -53,41 +50,5 @@ public class MatchedInfoRepositoryImpl implements MatchedInfoRepositoryCustom {
                 .where(matchedInfo.memberMatching.id.eq(memberMatchingId))
                 .orderBy(matchedInfo.similarityWeight.desc())
                 .fetch();
-    }
-
-    @Override
-    @Transactional
-    public void saveAllRecommendedMembers(List<MatchedInfo> recommendedMembers) {
-        int batchSize = 50;
-
-        for (int i = 0; i < recommendedMembers.size(); i++) {
-            matchedInfoRepository.save(recommendedMembers.get(i));
-
-            if (i > 0 && i % batchSize == 0) {
-                em.flush();
-                em.clear();
-            }
-        }
-
-        em.flush();
-        em.clear();
-    }
-
-    @Override
-    @Transactional
-    public void updateAllRecommendedMembers(MemberMatching memberMatching, List<MatchedInfo> recommendedMembers) {
-        int batchSize = 50;
-
-        for (int i = 0; i < recommendedMembers.size(); i++) {
-            memberMatching.updateMatched(recommendedMembers.get(i));
-
-            if (i > 0 && i % batchSize == 0) {
-                em.flush();
-                em.clear();
-            }
-        }
-
-        em.flush();
-        em.clear();
     }
 }

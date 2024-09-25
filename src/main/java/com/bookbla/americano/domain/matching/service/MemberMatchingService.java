@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 /**
@@ -38,6 +39,8 @@ public class MemberMatchingService {
     private final MatchedInfoRepository matchedInfoRepository;
     private final MatchExcludedRepository matchExcludedRepository;
     private final MatchIgnoredRepository matchIgnoredRepository;
+
+    private final EntityManager em;
 
     public MemberIntroResponse getRecommendationMember(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
@@ -79,8 +82,8 @@ public class MemberMatchingService {
         // 우선순위 알고리즘 적용
         memberMatchingAlgorithmFilter.memberMatchingAlgorithmFiltering(member, recommendedMembers);
 
-        matchedInfoRepository.saveAllRecommendedMembers(recommendedMembers);
-        matchedInfoRepository.updateAllRecommendedMembers(memberMatching, recommendedMembers);
+        saveAllRecommendedMembers(recommendedMembers);
+        updateAllRecommendedMembers(memberMatching, recommendedMembers);
 
         MatchedInfo matchedInfo = getMostPriorityMatched(matchedInfoRepository.getAllByDesc(memberMatching.getId()));
 
@@ -136,5 +139,37 @@ public class MemberMatchingService {
         matchedMemberList.remove(0);
         matchedInfoRepository.delete(matchedInfo);
         return matchedInfo;
+    }
+
+    private void saveAllRecommendedMembers(List<MatchedInfo> recommendedMembers) {
+        int batchSize = 50;
+
+        for (int i = 0; i < recommendedMembers.size(); i++) {
+            matchedInfoRepository.save(recommendedMembers.get(i));
+
+            if (i > 0 && i % batchSize == 0) {
+                em.flush();
+                em.clear();
+            }
+        }
+
+        em.flush();
+        em.clear();
+    }
+
+    private void updateAllRecommendedMembers(MemberMatching memberMatching, List<MatchedInfo> recommendedMembers) {
+        int batchSize = 50;
+
+        for (int i = 0; i < recommendedMembers.size(); i++) {
+            memberMatching.updateMatched(recommendedMembers.get(i));
+
+            if (i > 0 && i % batchSize == 0) {
+                em.flush();
+                em.clear();
+            }
+        }
+
+        em.flush();
+        em.clear();
     }
 }
