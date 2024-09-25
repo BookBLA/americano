@@ -54,6 +54,7 @@ public class MemberMatchingService {
         member.updateLastUsedAt();
 
         List<MatchedInfo> matchedMemberList = matchedInfoRepository.findAllByMemberMatchingId(memberMatching.getId());
+        matchedInfoRepository.saveAll(matchedMemberList);
 
         if (!matchedMemberList.isEmpty()) {
             /** 조건 전부 쿼리에서 조건 걸고 땡겨옴
