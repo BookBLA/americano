@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.matching.repository.custom.impl;
 import com.bookbla.americano.domain.matching.repository.custom.MatchedInfoRepositoryCustom;
 import com.bookbla.americano.domain.matching.repository.entity.MatchedInfo;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -51,18 +52,21 @@ public class MatchedInfoRepositoryImpl implements MatchedInfoRepositoryCustom {
 
     @Override
     public long deleteByMemberMatchingId(Long memberMatchingId) {
-        JPQLQuery<Long> subQuery = queryFactory
-                .select(matchedInfo.id)
-                .from(matchedInfo)
-                .innerJoin(member).on(matchedInfo.memberId.eq(member.id))
-                .where(member.memberStatus.ne(MemberStatus.DELETED),
-                        member.memberStatus.ne(MemberStatus.BLOCKED),
-                        member.memberStatus.ne(MemberStatus.MATCHING_DISABLED),
-                        member.memberStatus.ne(MemberStatus.REPORTED),
-                        matchedInfo.memberMatching.id.eq(memberMatchingId));
-
         return queryFactory
                 .delete(matchedInfo)
-                .where(matchedInfo.id.in(subQuery)).execute();
+                .where(
+                        matchedInfo.memberMatching.id.eq(memberMatchingId),
+                        matchedInfo.memberId.in(
+                                JPAExpressions.select(member.id)
+                                        .from(member)
+                                        .where(
+                                                member.memberStatus.ne(MemberStatus.DELETED),
+                                                member.memberStatus.ne(MemberStatus.BLOCKED),
+                                                member.memberStatus.ne(MemberStatus.MATCHING_DISABLED),
+                                                member.memberStatus.ne(MemberStatus.REPORTED)
+                                        )
+                        )
+                )
+                .execute();
     }
 }
