@@ -58,7 +58,7 @@ public class MemberMatchingService {
              *   엽서 (X) -> 엽서 거절 부분 못함 그외 ok
              **/
 
-            return buildMemberIntroResponse(popMostPriorityMatched(matchedMemberList));
+            return buildMemberIntroResponse(getMostPriorityMatched(matchedMemberList));
         }
 
         MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member);
@@ -83,14 +83,19 @@ public class MemberMatchingService {
 
         recommendedMembers = matchedInfoRepository.getAllByDesc(memberMatching.getId());
 
-        return buildMemberIntroResponse(popMostPriorityMatched(recommendedMembers));
+        return buildMemberIntroResponse(getMostPriorityMatched(recommendedMembers));
     }
 
     public MemberIntroResponse refreshMemberMatching(Long memberId, Long refreshMemberId, Long refreshMemberBookId) {
         matchIgnoredRepository.findByMemberIdAndIgnoredMemberIdAndIgnoredMemberBookId(memberId, refreshMemberId, refreshMemberBookId)
                 .orElseGet(() -> matchIgnoredRepository.save(MatchIgnoredInfo.from(memberId, refreshMemberId, refreshMemberBookId)));
 
-        return getRecommendationMember(memberId);
+        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST));
+
+        List<MatchedInfo> recommendedMembers = matchedInfoRepository.findAllByMemberMatchingId(memberMatching.getId());
+
+        return buildMemberIntroResponse(popMostPriorityMatched(recommendedMembers));
     }
 
     public void rejectMemberMatching(Long memberId, Long rejectedMemberId) {
@@ -108,8 +113,20 @@ public class MemberMatchingService {
         return MemberIntroResponse.from(matchedMember, matchedMemberBook);
     }
 
+    private MatchedInfo getMostPriorityMatched(List<MatchedInfo> matchedMemberList) {
+        if (matchedMemberList.isEmpty()) {
+            throw new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST);
+        }
+
+        return popMostPriorityMatched(matchedMemberList);
+    }
+
     private MatchedInfo popMostPriorityMatched(List<MatchedInfo> matchedMemberList) {
+        if (matchedMemberList.isEmpty()) {
+            throw new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST);
+        }
         MatchedInfo matchedInfo = matchedMemberList.get(0);
+
         matchedMemberList.remove(0);
         matchedInfoRepository.delete(matchedInfo);
         return matchedInfo;

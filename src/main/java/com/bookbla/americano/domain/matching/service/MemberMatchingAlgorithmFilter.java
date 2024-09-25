@@ -48,6 +48,8 @@ public class MemberMatchingAlgorithmFilter {
                 matchedInfo.accumulateSimilarityWeight(0.2);
             } else if (!isSameSchool(member, matchingMember) && isSameSmoking(member, matchingMember)) {
                 matchedInfo.accumulateSimilarityWeight(0.1);
+            } else if (isSameSchool(member, matchingMember)) {
+                matchedInfo.accumulateSimilarityWeight(0.05);
             }
         }
     }
