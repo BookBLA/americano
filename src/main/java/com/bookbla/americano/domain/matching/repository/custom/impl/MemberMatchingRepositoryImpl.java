@@ -49,10 +49,7 @@ public class MemberMatchingRepositoryImpl implements MemberMatchingRepositoryCus
                         member.lastUsedAt.coalesce(LocalDate.parse("1900-01-01").atStartOfDay()).after(twoWeeksAgo))
                 .fetch()
                 .stream()
-                .map(tuple -> MatchedInfo.builder()
-                        .matchedMemberId(tuple.get(member.id))
-                        .matchedMemberBookId(tuple.get(memberBook.id))
-                        .build())
+                .map(tuple -> MatchedInfo.from(recommendationDto.getMemberId(), tuple.get(member.id), tuple.get(memberBook.id)))
                 .collect(Collectors.toList());
     }
 }

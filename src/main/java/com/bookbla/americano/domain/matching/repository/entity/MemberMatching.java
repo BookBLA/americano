@@ -40,4 +40,9 @@ public class MemberMatching {
                 .ignoredMemberAndBook(new ArrayList<>())
                 .build();
     }
+
+    public void updateMatched(MatchedInfo matchedInfo) {
+        this.matched.add(matchedInfo);
+        matchedInfo.updateMemberMatching(this);
+    }
 }

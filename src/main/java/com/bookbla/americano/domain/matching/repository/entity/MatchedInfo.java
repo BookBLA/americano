@@ -39,4 +39,8 @@ public class MatchedInfo {
                 .matchedMemberBookId(matchedMemberBookId)
                 .build();
     }
+
+    public void updateMemberMatching(MemberMatching memberMatching) {
+        this.memberMatching = memberMatching;
+    }
 }
