@@ -79,7 +79,9 @@ public class MemberMatchingService {
         // 우선순위 알고리즘 적용
         memberMatchingAlgorithmFilter.memberMatchingAlgorithmFiltering(member, recommendedMembers);
 
+        // TODO: insert 쿼리 batch 처리하기
         matchedInfoRepository.saveAll(recommendedMembers);
+        recommendedMembers.forEach(memberMatching::updateMatched);
 
         MatchedInfo matchedInfo = getMostPriorityMatched(matchedInfoRepository.getAllByDesc(memberMatching.getId()));
 
