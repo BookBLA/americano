@@ -25,10 +25,12 @@ public class MatchedInfoRepositoryImpl implements MatchedInfoRepositoryCustom {
         return queryFactory
                 .selectFrom(matchedInfo)
                 .innerJoin(member).on(matchedInfo.matchedMemberId.eq(member.id))
-                .innerJoin(matchExcludedInfo).on(matchedInfo.matchedMemberId.ne(matchExcludedInfo.excludedMemberId))
-                .innerJoin(matchIgnoredInfo).on(matchedInfo.matchedMemberId.ne(matchIgnoredInfo.ignoredMemberId))
+                .leftJoin(matchExcludedInfo).on(matchedInfo.matchedMemberId.eq(matchExcludedInfo.excludedMemberId))
+                .leftJoin(matchIgnoredInfo).on(matchedInfo.matchedMemberId.eq(matchIgnoredInfo.ignoredMemberId))
                 .where(
                         matchedInfo.memberMatching.id.eq(memberMatchingId),
+                        matchExcludedInfo.excludedMemberId.isNull(),
+                        matchIgnoredInfo.ignoredMemberId.isNull(),
                         member.memberStatus.ne(MemberStatus.DELETED),
                         member.memberStatus.ne(MemberStatus.BLOCKED),
                         member.memberStatus.ne(MemberStatus.MATCHING_DISABLED),
