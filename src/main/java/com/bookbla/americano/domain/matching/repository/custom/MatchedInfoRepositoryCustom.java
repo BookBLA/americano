@@ -9,4 +9,6 @@ public interface MatchedInfoRepositoryCustom {
     List<MatchedInfo> findAllByMemberMatchingId(Long memberMatchingId);
 
     List<MatchedInfo> getAllByDesc(Long memberMatchingId);
+
+    long deleteByMemberMatchingId(Long memberMatchingId);
 }

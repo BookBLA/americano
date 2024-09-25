@@ -54,7 +54,6 @@ public class MemberMatchingService {
         member.updateLastUsedAt();
 
         List<MatchedInfo> matchedMemberList = matchedInfoRepository.findAllByMemberMatchingId(memberMatching.getId());
-        matchedInfoRepository.saveAll(matchedMemberList);
 
         if (!matchedMemberList.isEmpty()) {
             /** 조건 전부 쿼리에서 조건 걸고 땡겨옴
@@ -64,6 +63,7 @@ public class MemberMatchingService {
              *   차단 (O)
              *   엽서 (X) -> 엽서 거절 부분 못함 그외 ok
              **/
+            matchedInfoRepository.deleteByMemberMatchingId(memberMatching.getId());
 
             return buildMemberIntroResponse(getMostPriorityMatched(matchedMemberList));
         }

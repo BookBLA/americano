@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.matching.repository.custom.impl;
 import com.bookbla.americano.domain.matching.repository.custom.MatchedInfoRepositoryCustom;
 import com.bookbla.americano.domain.matching.repository.entity.MatchedInfo;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -46,5 +47,22 @@ public class MatchedInfoRepositoryImpl implements MatchedInfoRepositoryCustom {
                 .where(matchedInfo.memberMatching.id.eq(memberMatchingId))
                 .orderBy(matchedInfo.similarityWeight.desc())
                 .fetch();
+    }
+
+    @Override
+    public long deleteByMemberMatchingId(Long memberMatchingId) {
+        JPQLQuery<Long> subQuery = queryFactory
+                .select(matchedInfo.id)
+                .from(matchedInfo)
+                .innerJoin(member).on(matchedInfo.matchedMemberId.eq(member.id))
+                .where(member.memberStatus.ne(MemberStatus.DELETED),
+                        member.memberStatus.ne(MemberStatus.BLOCKED),
+                        member.memberStatus.ne(MemberStatus.MATCHING_DISABLED),
+                        member.memberStatus.ne(MemberStatus.REPORTED),
+                        matchedInfo.memberMatching.id.eq(memberMatchingId));
+
+        return queryFactory
+                .delete(matchedInfo)
+                .where(matchedInfo.id.in(subQuery)).execute();
     }
 }
