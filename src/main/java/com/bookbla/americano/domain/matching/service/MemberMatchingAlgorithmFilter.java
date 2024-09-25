@@ -77,20 +77,33 @@ public class MemberMatchingAlgorithmFilter {
         if (memberBooks == null || matchingMemberBook == null || matchingMemberBook.getBook() == null) {
             return false;
         }
-        return memberBooks.stream().anyMatch(book -> book.getBook().equals(matchingMemberBook.getBook()));
+        return memberBooks.stream()
+                .filter(book -> book.getBook() != null)
+                .anyMatch(book -> book.getBook().equals(matchingMemberBook.getBook()));
     }
 
     private boolean isSameAuthor(List<MemberBook> memberBooks, MemberBook matchingMemberBook) {
-        return memberBooks.stream().anyMatch(book -> !book.getBook().getAuthors().isEmpty() &&
-                !matchingMemberBook.getBook().getAuthors().isEmpty() &&
-                book.getBook().getAuthors().get(0).equals(matchingMemberBook.getBook().getAuthors().get(0)));
+        if (memberBooks == null || matchingMemberBook == null || matchingMemberBook.getBook() == null) {
+            return false;
+        }
+        return memberBooks.stream()
+                .filter(book -> book.getBook() != null && !book.getBook().getAuthors().isEmpty())
+                .anyMatch(book -> !matchingMemberBook.getBook().getAuthors().isEmpty() &&
+                        book.getBook().getAuthors().get(0).equals(matchingMemberBook.getBook().getAuthors().get(0)));
     }
 
     private boolean isSameSchool(Member member, Member matchingMember) {
+        if (member == null || matchingMember == null || member.getSchool() == null || matchingMember.getSchool() == null) {
+            return false;
+        }
         return member.getSchool().equals(matchingMember.getSchool());
     }
 
     private boolean isSameSmoking(Member member, Member matchingMember) {
+        if (member == null || matchingMember == null || member.getMemberStyle() == null || matchingMember.getMemberStyle() == null) {
+            return false;
+        }
         return member.getMemberStyle().getSmokeType() == matchingMember.getMemberStyle().getSmokeType();
     }
+
 }
