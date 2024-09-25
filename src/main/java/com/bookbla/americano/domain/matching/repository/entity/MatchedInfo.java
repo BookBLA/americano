@@ -15,6 +15,8 @@ public class MatchedInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long memberId;
+
     private Long matchedMemberId;
 
     private Long matchedMemberBookId;
@@ -30,8 +32,9 @@ public class MatchedInfo {
         this.similarityWeight += similarityWeight;
     }
 
-    public static MatchedInfo from(Long matchedMemberId, Long matchedMemberBookId) {
+    public static MatchedInfo from(Long memberId, Long matchedMemberId, Long matchedMemberBookId) {
         return MatchedInfo.builder()
+                .memberId(memberId)
                 .matchedMemberId(matchedMemberId)
                 .matchedMemberBookId(matchedMemberBookId)
                 .build();

@@ -35,9 +35,11 @@ public class MemberMatchingRepositoryImpl implements MemberMatchingRepositoryCus
                 .selectDistinct(member.id, memberBook.id)
                 .from(member)
                 .innerJoin(memberBook).on(member.id.eq(memberBook.member.id))
-                .innerJoin(matchExcludedInfo).on(member.id.ne(matchExcludedInfo.excludedMemberId))
-                .innerJoin(matchIgnoredInfo).on(member.id.ne(matchIgnoredInfo.ignoredMemberId))
+                .leftJoin(matchExcludedInfo).on(member.id.eq(matchExcludedInfo.excludedMemberId))
+                .leftJoin(matchIgnoredInfo).on(member.id.eq(matchIgnoredInfo.ignoredMemberId))
                 .where(
+                        matchExcludedInfo.excludedMemberId.isNull(),
+                        matchIgnoredInfo.ignoredMemberId.isNull(),
                         member.id.ne(recommendationDto.getMemberId()),
                         member.memberStatus.ne(MemberStatus.DELETED),
                         member.memberStatus.ne(MemberStatus.MATCHING_DISABLED),

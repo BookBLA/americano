@@ -81,9 +81,9 @@ public class MemberMatchingService {
 
         matchedInfoRepository.saveAll(recommendedMembers);
 
-        recommendedMembers = matchedInfoRepository.getAllByDesc(memberMatching.getId());
+        MatchedInfo matchedInfo = getMostPriorityMatched(matchedInfoRepository.getAllByDesc(memberMatching.getId()));
 
-        return buildMemberIntroResponse(getMostPriorityMatched(recommendedMembers));
+        return buildMemberIntroResponse(matchedInfo);
     }
 
     public MemberIntroResponse refreshMemberMatching(Long memberId, Long refreshMemberId, Long refreshMemberBookId) {
@@ -126,6 +126,11 @@ public class MemberMatchingService {
             throw new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST);
         }
         MatchedInfo matchedInfo = matchedMemberList.get(0);
+
+        matchIgnoredRepository.findByMemberIdAndIgnoredMemberIdAndIgnoredMemberBookId(
+                matchedInfo.getMemberId(), matchedInfo.getMatchedMemberId(), matchedInfo.getMatchedMemberBookId())
+                .orElseGet(() -> matchIgnoredRepository.save(MatchIgnoredInfo.from(matchedInfo.getMemberId(),
+                        matchedInfo.getMatchedMemberId(), matchedInfo.getMatchedMemberBookId())));
 
         matchedMemberList.remove(0);
         matchedInfoRepository.delete(matchedInfo);
