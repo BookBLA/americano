@@ -74,6 +74,9 @@ public class MemberMatchingAlgorithmFilter {
     }
 
     private boolean isSameBook(List<MemberBook> memberBooks, MemberBook matchingMemberBook) {
+        if (memberBooks == null || matchingMemberBook == null || matchingMemberBook.getBook() == null) {
+            return false;
+        }
         return memberBooks.stream().anyMatch(book -> book.getBook().equals(matchingMemberBook.getBook()));
     }
 
