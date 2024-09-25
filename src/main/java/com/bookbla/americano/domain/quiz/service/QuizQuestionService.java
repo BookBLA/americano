@@ -1,9 +1,8 @@
 package com.bookbla.americano.domain.quiz.service;
 
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
-import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
-import com.bookbla.americano.domain.matching.repository.entity.MemberMatching;
+import com.bookbla.americano.domain.matching.repository.MatchExcludedRepository;
+import com.bookbla.americano.domain.matching.repository.entity.MatchExcludedInfo;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -27,7 +26,7 @@ public class QuizQuestionService {
     private final QuizQuestionRepository quizQuestionRepository;
     private final MemberRepository memberRepository;
     private final MemberBookRepository memberBookRepository;
-    private final MemberMatchingRepository memberMatchingRepository;
+    private final MatchExcludedRepository matchExcludedRepository;
 
     @Transactional(readOnly = true)
     public QuizQuestionReadResponse getQuizQuestion(Long memberId, Long memberBookId) {
@@ -49,13 +48,11 @@ public class QuizQuestionService {
 
         CorrectStatus status = quizQuestion.solve(request.getQuizAnswer());
 
-        MemberMatching quizMakerMatching = memberMatchingRepository.findByMemberId(request.getQuizMakerId())
-                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MATCHING));
-
         boolean isCorrect = true;
 
         if (status == CorrectStatus.WRONG) {
-            quizMakerMatching.addIgnoredMemberAndBook(memberId, quizQuestion.getMemberBook().getId());
+            matchExcludedRepository.findByMemberIdAndExcludedMemberId(request.getQuizMakerId(), memberId)
+                    .orElseGet(() -> matchExcludedRepository.save(MatchExcludedInfo.of(memberId, request.getQuizMakerId())));
             isCorrect = false;
         }
 

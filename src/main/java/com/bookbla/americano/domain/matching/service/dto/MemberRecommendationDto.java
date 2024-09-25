@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.Set;
-
 @Getter
 @Builder
 @AllArgsConstructor
@@ -14,13 +12,11 @@ public class MemberRecommendationDto {
 
     private Long memberId;
     private String memberGender;
-    private Set<Long> excludeMemberIds;
 
-    public static MemberRecommendationDto from(Member member, Set<Long> excludeMemberIds) {
+    public static MemberRecommendationDto from(Member member) {
         return MemberRecommendationDto.builder()
                 .memberId(member.getId())
                 .memberGender(member.getMemberProfile().getGender().name())
-                .excludeMemberIds(excludeMemberIds)
                 .build();
     }
 }

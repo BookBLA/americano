@@ -26,16 +26,8 @@ public class MatchedInfo {
     @JoinColumn(name = "member_matching_id")
     private MemberMatching memberMatching;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_book_id")
-    private MemberMatching ignoredMemberAndMemberBook;
-
     public void accumulateSimilarityWeight(Double similarityWeight) {
         this.similarityWeight += similarityWeight;
-    }
-
-    public void updateMemberMatching(MemberMatching memberMatching) {
-        this.memberMatching = memberMatching;
     }
 
     public static MatchedInfo from(Long matchedMemberId, Long matchedMemberBookId) {

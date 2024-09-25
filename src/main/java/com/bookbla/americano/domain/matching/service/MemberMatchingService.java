@@ -3,8 +3,12 @@ package com.bookbla.americano.domain.matching.service;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.matching.controller.dto.response.MemberIntroResponse;
 import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
+import com.bookbla.americano.domain.matching.repository.MatchExcludedRepository;
+import com.bookbla.americano.domain.matching.repository.MatchIgnoredRepository;
 import com.bookbla.americano.domain.matching.repository.MatchedInfoRepository;
 import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
+import com.bookbla.americano.domain.matching.repository.entity.MatchExcludedInfo;
+import com.bookbla.americano.domain.matching.repository.entity.MatchIgnoredInfo;
 import com.bookbla.americano.domain.matching.repository.entity.MatchedInfo;
 import com.bookbla.americano.domain.matching.repository.entity.MemberMatching;
 import com.bookbla.americano.domain.matching.service.dto.MemberRecommendationDto;
@@ -32,6 +36,8 @@ public class MemberMatchingService {
     private final MemberMatchingFilter memberMatchingFilter;
     private final MemberMatchingAlgorithmFilter memberMatchingAlgorithmFilter;
     private final MatchedInfoRepository matchedInfoRepository;
+    private final MatchExcludedRepository matchExcludedRepository;
+    private final MatchIgnoredRepository matchIgnoredRepository;
 
     public MemberIntroResponse getRecommendationMember(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
@@ -44,11 +50,18 @@ public class MemberMatchingService {
         List<MatchedInfo> matchedMemberList = matchedInfoRepository.findAllByMemberMatchingId(memberMatching.getId());
 
         if (!matchedMemberList.isEmpty()) {
-            // TODO: 회원 탈퇴, 신고, 엽서, 매칭 비활성화, 차단 검증하는 부분 추가
-            return buildMemberIntroResponse(memberMatching.popMostPriorityMatched());
+            /** 조건 전부 쿼리에서 조건 걸고 땡겨옴
+             *   회원 탈퇴 (O)
+             *   매칭 비활성화 (O)
+             *   신고 (O)
+             *   차단 (O)
+             *   엽서 (X) -> 엽서 거절 부분 못함 그외 ok
+             **/
+
+            return buildMemberIntroResponse(popMostPriorityMatched(matchedMemberList));
         }
 
-        MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member, memberMatching.getExcluded());
+        MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member);
 
         // 추천회원 id와 추천회원의 책 id 추출
         List<MatchedInfo> recommendedMembers = memberMatchingRepository
@@ -66,30 +79,23 @@ public class MemberMatchingService {
         // 우선순위 알고리즘 적용
         memberMatchingAlgorithmFilter.memberMatchingAlgorithmFiltering(member, recommendedMembers);
 
-        // 추천회원 matched에 저장
-        memberMatching.saveAndUpdateMatched(recommendedMembers);
         matchedInfoRepository.saveAll(recommendedMembers);
 
-        // 추천회원 matched 정렬
-        memberMatching.sortMatched();
+        recommendedMembers = matchedInfoRepository.getAllByDesc(memberMatching.getId());
 
-        return buildMemberIntroResponse(memberMatching.popMostPriorityMatched());
+        return buildMemberIntroResponse(popMostPriorityMatched(recommendedMembers));
     }
 
     public MemberIntroResponse refreshMemberMatching(Long memberId, Long refreshMemberId, Long refreshMemberBookId) {
-        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MATCHING));
+        matchIgnoredRepository.findByMemberIdAndIgnoredMemberIdAndIgnoredMemberBookId(memberId, refreshMemberId, refreshMemberBookId)
+                .orElseGet(() -> matchIgnoredRepository.save(MatchIgnoredInfo.from(memberId, refreshMemberId, refreshMemberBookId)));
 
-        memberMatching.addIgnoredMemberAndBook(refreshMemberId, refreshMemberBookId);
-
-        return buildMemberIntroResponse(memberMatching.popMostPriorityMatched());
+        return getRecommendationMember(memberId);
     }
 
     public void rejectMemberMatching(Long memberId, Long rejectedMemberId) {
-        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MATCHING));
-
-        memberMatching.addExcludedMember(rejectedMemberId);
+        matchExcludedRepository.findByMemberIdAndExcludedMemberId(memberId, rejectedMemberId)
+                .orElseGet(() -> matchExcludedRepository.save(MatchExcludedInfo.of(memberId, rejectedMemberId)));
     }
 
     private MemberIntroResponse buildMemberIntroResponse(MatchedInfo matchedInfo) {
@@ -100,5 +106,12 @@ public class MemberMatchingService {
             throw new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST);
         }
         return MemberIntroResponse.from(matchedMember, matchedMemberBook);
+    }
+
+    private MatchedInfo popMostPriorityMatched(List<MatchedInfo> matchedMemberList) {
+        MatchedInfo matchedInfo = matchedMemberList.get(0);
+        matchedMemberList.remove(0);
+        matchedInfoRepository.delete(matchedInfo);
+        return matchedInfo;
     }
 }
