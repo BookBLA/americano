@@ -4,6 +4,7 @@ import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.ProfileImageTypeRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.ProfileImageType;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @SuppressWarnings("NonAsciiCharacters")
 @SpringBootTest
-@Transactional
 class ProfileImageTypeServiceTest {
 
     private static final ProfileImageType MALE_DEFAULT = ProfileImageType.builder()
@@ -58,5 +58,11 @@ class ProfileImageTypeServiceTest {
                 .extracting("gender", "profileImageUrl")
                 .containsExactly(tuple("MALE", "남자사진"));
 
+    }
+
+    @AfterEach
+    void tearDown() {
+        memberRepository.deleteAllInBatch();
+        profileImageTypeRepository.deleteAllInBatch();
     }
 }
