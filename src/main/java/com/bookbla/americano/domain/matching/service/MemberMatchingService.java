@@ -118,7 +118,7 @@ public class MemberMatchingService {
             throw new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST);
         }
 
-        return popMostPriorityMatched(matchedMemberList);
+        return matchedMemberList.get(0);
     }
 
     private MatchedInfo popMostPriorityMatched(List<MatchedInfo> matchedMemberList) {
