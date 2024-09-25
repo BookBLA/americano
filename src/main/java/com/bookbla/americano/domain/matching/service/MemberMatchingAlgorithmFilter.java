@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.matching.service;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
+import com.bookbla.americano.domain.matching.repository.MatchedInfoRepository;
 import com.bookbla.americano.domain.matching.repository.entity.MatchedInfo;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
@@ -33,6 +34,7 @@ import static com.bookbla.americano.domain.matching.service.dto.MatchingSimilari
 public class MemberMatchingAlgorithmFilter {
 
     private final MemberRepository memberRepository;
+    private final MatchedInfoRepository matchedInfoRepository;
     private final MemberBookRepository memberBookRepository;
 
     public void memberMatchingAlgorithmFiltering(Member member, List<MatchedInfo> matchingMembers) {
@@ -70,6 +72,8 @@ public class MemberMatchingAlgorithmFilter {
             } else if (isSameBook(memberBooks, matchingMemberBook)) {
                 matchedInfo.accumulateSimilarityWeight(SAME_BOOK);
             }
+
+            matchedInfoRepository.save(matchedInfo);
         }
     }
 
