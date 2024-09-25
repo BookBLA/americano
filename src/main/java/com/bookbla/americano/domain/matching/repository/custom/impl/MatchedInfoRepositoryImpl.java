@@ -54,7 +54,7 @@ public class MatchedInfoRepositoryImpl implements MatchedInfoRepositoryCustom {
         JPQLQuery<Long> subQuery = queryFactory
                 .select(matchedInfo.id)
                 .from(matchedInfo)
-                .innerJoin(member).on(matchedInfo.matchedMemberId.eq(member.id))
+                .innerJoin(member).on(matchedInfo.memberId.eq(member.id))
                 .where(member.memberStatus.ne(MemberStatus.DELETED),
                         member.memberStatus.ne(MemberStatus.BLOCKED),
                         member.memberStatus.ne(MemberStatus.MATCHING_DISABLED),
