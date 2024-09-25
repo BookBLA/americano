@@ -97,12 +97,7 @@ public class MemberMatchingService {
         matchIgnoredRepository.findByMemberIdAndIgnoredMemberIdAndIgnoredMemberBookId(memberId, refreshMemberId, refreshMemberBookId)
                 .orElseGet(() -> matchIgnoredRepository.save(MatchIgnoredInfo.from(memberId, refreshMemberId, refreshMemberBookId)));
 
-        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST));
-
-        List<MatchedInfo> recommendedMembers = matchedInfoRepository.findAllByMemberMatchingId(memberMatching.getId());
-
-        return buildMemberIntroResponse(popMostPriorityMatched(recommendedMembers));
+        return buildMemberIntroResponse(popMostPriorityMatched(memberId, refreshMemberId, refreshMemberBookId));
     }
 
     public void rejectMemberMatching(Long memberId, Long rejectedMemberId) {
@@ -128,20 +123,19 @@ public class MemberMatchingService {
         return matchedMemberList.get(0);
     }
 
-    private MatchedInfo popMostPriorityMatched(List<MatchedInfo> matchedMemberList) {
-        if (matchedMemberList.isEmpty()) {
+    private MatchedInfo popMostPriorityMatched(Long memberId, Long refreshMemberId, Long refreshMemberBookId) {
+        matchedInfoRepository.deleteByMemberIdAndMatchedMemberIdAndMatchedMemberBookId(memberId, refreshMemberId, refreshMemberBookId);
+
+        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST));
+
+        List<MatchedInfo> recommendedMembers = matchedInfoRepository.findAllByMemberMatchingId(memberMatching.getId());
+
+        if (recommendedMembers.isEmpty()) {
             throw new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST);
         }
-        MatchedInfo matchedInfo = matchedMemberList.get(0);
 
-        matchIgnoredRepository.findByMemberIdAndIgnoredMemberIdAndIgnoredMemberBookId(
-                matchedInfo.getMemberId(), matchedInfo.getMatchedMemberId(), matchedInfo.getMatchedMemberBookId())
-                .orElseGet(() -> matchIgnoredRepository.save(MatchIgnoredInfo.from(matchedInfo.getMemberId(),
-                        matchedInfo.getMatchedMemberId(), matchedInfo.getMatchedMemberBookId())));
-
-        matchedMemberList.remove(0);
-        matchedInfoRepository.delete(matchedInfo);
-        return matchedInfo;
+        return recommendedMembers.get(0);
     }
 
     private void saveAllRecommendedMembers(List<MatchedInfo> recommendedMembers) {
