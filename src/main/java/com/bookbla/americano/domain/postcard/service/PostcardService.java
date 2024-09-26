@@ -3,7 +3,9 @@ package com.bookbla.americano.domain.postcard.service;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.matching.repository.MatchExcludedRepository;
+import com.bookbla.americano.domain.matching.repository.MatchIgnoredRepository;
 import com.bookbla.americano.domain.matching.repository.entity.MatchExcludedInfo;
+import com.bookbla.americano.domain.matching.repository.entity.MatchIgnoredInfo;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
@@ -54,6 +56,7 @@ public class PostcardService {
     private final MemberBookService memberBookService;
     private final PushAlarmEventHandler postcardPushAlarmEventListener;
     private final MatchExcludedRepository matchExcludedRepository;
+    private final MatchIgnoredRepository matchIgnoredRepository;
 
     public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
         MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
@@ -151,7 +154,7 @@ public class PostcardService {
                 .orElseThrow(
                         () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
         memberBookmark.readPostcard();
-        updatePostcardStatus(memberId, postcardId, PostcardStatus.READ);
+        updatePostcardStatus(memberId, postcardId, PostcardStatus.READ, null);
     }
 
     public PostcardStatus getPostcardStatus(Long postcardId) {
@@ -162,7 +165,7 @@ public class PostcardService {
     }
 
     public void updatePostcardStatus(Long memberId, Long postcardId,
-                                     PostcardStatus postcardStatus) {
+                                     PostcardStatus postcardStatus, Long memberBookId) {
         Postcard postcard = postcardRepository.findById(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
         Member member = memberRepository.getByIdOrThrow(memberId);
@@ -191,7 +194,7 @@ public class PostcardService {
             updateMemberMatchingExcluded(sendMember, receiveMember);
 
         } else if (postcardStatus.isRefused()) { // 거절 시 환불
-            // TODO: *엽서 거절 시 엽서를 보낸 회원의 책을 알 수 있는 정보가 필요*
+            updateMemberMatchingIgnored(sendMember, receiveMember, memberBookId);
 
             postcard.updatePostcardStatusRefusedAt();
             memberBookmark.addBookmark(35);
@@ -204,6 +207,12 @@ public class PostcardService {
 
         matchExcludedRepository.findByMemberIdAndExcludedMemberId(receiveMember.getId(), sendMember.getId())
                         .orElseGet(() -> matchExcludedRepository.save(MatchExcludedInfo.of(receiveMember.getId(), sendMember.getId())));
+    }
+
+    private void updateMemberMatchingIgnored(Member sendMember, Member receiveMember, Long memberBookId) {
+        matchIgnoredRepository.findByMemberIdAndIgnoredMemberIdAndIgnoredMemberBookId(
+                sendMember.getId(), receiveMember.getId(), memberBookId)
+                .orElseGet(() -> matchIgnoredRepository.save(MatchIgnoredInfo.from(sendMember.getId(), receiveMember.getId(), memberBookId)));
     }
 
     @Transactional(readOnly = true)

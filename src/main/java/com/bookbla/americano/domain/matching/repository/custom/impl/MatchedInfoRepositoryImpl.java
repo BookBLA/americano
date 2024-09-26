@@ -4,7 +4,6 @@ import com.bookbla.americano.domain.matching.repository.custom.MatchedInfoReposi
 import com.bookbla.americano.domain.matching.repository.entity.MatchedInfo;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -59,12 +58,10 @@ public class MatchedInfoRepositoryImpl implements MatchedInfoRepositoryCustom {
                         matchedInfo.memberId.in(
                                 JPAExpressions.select(member.id)
                                         .from(member)
-                                        .where(
-                                                member.memberStatus.ne(MemberStatus.DELETED),
-                                                member.memberStatus.ne(MemberStatus.BLOCKED),
-                                                member.memberStatus.ne(MemberStatus.MATCHING_DISABLED),
-                                                member.memberStatus.ne(MemberStatus.REPORTED)
-                                        )
+                                        .where(member.memberStatus.eq(MemberStatus.DELETED)
+                                                .or(member.memberStatus.eq(MemberStatus.BLOCKED))
+                                                .or(member.memberStatus.eq(MemberStatus.MATCHING_DISABLED))
+                                                .or(member.memberStatus.eq(MemberStatus.REPORTED)))
                         )
                 )
                 .execute();
