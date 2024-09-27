@@ -8,10 +8,7 @@ import com.bookbla.americano.domain.matching.repository.entity.MatchExcludedInfo
 import com.bookbla.americano.domain.matching.repository.entity.MatchIgnoredInfo;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
-import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
-import com.bookbla.americano.domain.member.repository.MemberBookRepository;
-import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
-import com.bookbla.americano.domain.member.repository.MemberRepository;
+import com.bookbla.americano.domain.member.repository.*;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
@@ -59,6 +56,10 @@ public class PostcardService {
     private final MatchIgnoredRepository matchIgnoredRepository;
 
     public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
+        // 엽서 보내는 회원의 학생증 상태 검증
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        member.validateStudentIdStatusRegistered();
+
         MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
                         memberId)
                 .orElseThrow(
@@ -74,7 +75,6 @@ public class PostcardService {
         sentPostcards.forEach(Postcard::validateSendPostcard);
         PostcardStatus status = PostcardStatus.PENDING;
 
-        Member member = memberRepository.getByIdOrThrow(memberId);
         Member targetMember = memberRepository.getByIdOrThrow(request.getReceiveMemberId());
         memberBookmark.sendPostcard();
 

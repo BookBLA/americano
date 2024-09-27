@@ -14,6 +14,7 @@ public enum MemberProfileExceptionType implements ExceptionType {
     ALREADY_EXISTS_NICKNAME(HttpStatus.BAD_REQUEST, "member_profile_03", "이미 사용중인 닉네임입니다."),
     CONTAIN_BAD_WORDS(HttpStatus.BAD_REQUEST, "member_profile_04", "사용할 수 없는 단어가(비속어, 북블라 등) 포함되어있습니다."),
     PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "member_profile_05", "프로필이 등록되지 않은 회원입니다."),
+    STUDENT_ID_NOT_VALID(HttpStatus.NOT_FOUND, "member_profile_06", "학생증이 인증되지 않은 회원입니다.")
     ;
 
     private final HttpStatus httpStatus;

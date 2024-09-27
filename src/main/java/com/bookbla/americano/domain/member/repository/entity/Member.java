@@ -21,6 +21,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.bookbla.americano.domain.member.enums.StudentIdImageStatus.DONE;
+
 @Entity
 @Getter
 @Builder
@@ -208,6 +210,12 @@ public class Member extends BaseEntity {
     public void validateStyleRegistered() {
         if (this.memberStyle != null) {
             throw new BaseException(MemberExceptionType.STYLE_ALREADY_REGISTERED);
+        }
+    }
+
+    public void validateStudentIdStatusRegistered() {
+        if (this.memberProfile.getStudentIdImageStatus() != DONE) {
+            throw new BaseException(MemberProfileExceptionType.STUDENT_ID_NOT_VALID);
         }
     }
 
