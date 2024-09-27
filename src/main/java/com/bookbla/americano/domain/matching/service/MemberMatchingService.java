@@ -84,9 +84,8 @@ public class MemberMatchingService {
         recommendedMembers = memberMatchingFilter.memberRefusedAtFiltering(member.getId(), recommendedMembers);
 
         // 우선순위 알고리즘 적용
-        memberMatchingAlgorithmFilter.memberMatchingAlgorithmFiltering(member, recommendedMembers);
+        recommendedMembers = memberMatchingAlgorithmFilter.memberMatchingAlgorithmFiltering(member, recommendedMembers);
 
-        saveAllRecommendedMembers(recommendedMembers);
         updateAllRecommendedMembers(memberMatching, recommendedMembers);
 
         MatchedInfo matchedInfo = getMostPriorityMatched(matchedInfoRepository.getAllByDesc(memberMatching.getId()));
@@ -139,26 +138,7 @@ public class MemberMatchingService {
         return recommendedMembers.get(0);
     }
 
-    private void saveAllRecommendedMembers(List<MatchedInfo> recommendedMembers) {
-        String sql = "INSERT INTO matched_info (member_id, matched_member_id, matched_member_book_id) VALUES (?, ?, ?)";
-
-        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
-            @Override
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
-                MatchedInfo matchedInfo = recommendedMembers.get(i);
-                ps.setLong(1, matchedInfo.getMemberId());
-                ps.setLong(2, matchedInfo.getMatchedMemberId());
-                ps.setLong(3, matchedInfo.getMatchedMemberBookId());
-            }
-
-            @Override
-            public int getBatchSize() {
-                return recommendedMembers.size(); // 전체 리스트 크기
-            }
-        });
-    }
-
-    public void updateAllRecommendedMembers(MemberMatching memberMatching, List<MatchedInfo> recommendedMembers) {
+    private void updateAllRecommendedMembers(MemberMatching memberMatching, List<MatchedInfo> recommendedMembers) {
         String sql = "UPDATE matched_info SET member_matching_id = ? WHERE member_id = ? AND matched_member_id = ? AND matched_member_book_id = ?";
 
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
