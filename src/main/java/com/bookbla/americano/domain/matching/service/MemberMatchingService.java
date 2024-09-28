@@ -106,12 +106,16 @@ public class MemberMatchingService {
     }
 
     private MemberIntroResponse buildMemberIntroResponse(MatchedInfo matchedInfo) {
+        MemberMatching memberMatching = memberMatchingRepository.getByIdOrThrow(matchedInfo.getMemberMatching().getId());
         Member matchedMember = memberRepository.getByIdOrThrow(matchedInfo.getMatchedMemberId());
         MemberBook matchedMemberBook = memberBookRepository.getByIdOrThrow(matchedInfo.getMatchedMemberBookId());
 
         if (matchedMember == null || matchedMemberBook == null) {
             throw new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST);
         }
+
+        memberMatching.updateCurrentMatchedInfo(matchedMember.getId(), matchedMemberBook.getId());
+
         return MemberIntroResponse.from(matchedMember, matchedMemberBook);
     }
 
