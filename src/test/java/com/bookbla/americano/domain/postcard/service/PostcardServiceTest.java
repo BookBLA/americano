@@ -1,12 +1,14 @@
 package com.bookbla.americano.domain.postcard.service;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBlock;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
+import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
@@ -62,9 +64,28 @@ class PostcardServiceTest {
     }
 
     @Test
+    void 학생증_인증을_하지_않으면_엽서를_보낼_수_없다() throws Exception{
+        MemberProfile memberProfile = MemberProfile.builder().studentIdImageStatus(StudentIdImageStatus.UNREGISTER).build();
+        Member sendMember = memberRepository.save(Member.builder().memberProfile(memberProfile).build());
+        Member reciveMember = memberRepository.save(Member.builder().build());
+        MemberBookmark memberBookmark = MemberBookmark.builder()
+                .member(sendMember)
+                .bookmarkCount(100).build();
+        bookmarkRepository.save(memberBookmark);
+
+        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), reciveMember.getId(), "memberReply");
+
+        //when & then
+        assertThatThrownBy(() -> postcardService.send(sendMember.getId(), request))
+                .isInstanceOf(BaseException.class)
+                .hasMessageContaining("학생증이 인증되지 않은 회원입니다.");
+    }
+
+    @Test
     void 엽서를_보낼_수_있다() {
         //given
-        Member sendMember = memberRepository.save(Member.builder().build());
+        MemberProfile memberProfile = MemberProfile.builder().studentIdImageStatus(StudentIdImageStatus.DONE).build();
+        Member sendMember = memberRepository.save(Member.builder().memberProfile(memberProfile).build());
         Member reciveMember = memberRepository.save(Member.builder().build());
         MemberBookmark memberBookmark = MemberBookmark.builder()
                 .member(sendMember)
@@ -83,7 +104,8 @@ class PostcardServiceTest {
     @Test
     void 북마크_개수가_부족하면_엽서를_보낼_수_없다() {
         //given
-        Member sendMember = memberRepository.save(Member.builder().build());
+        MemberProfile memberProfile = MemberProfile.builder().studentIdImageStatus(StudentIdImageStatus.DONE).build();
+        Member sendMember = memberRepository.save(Member.builder().memberProfile(memberProfile).build());
         Member reciveMember = memberRepository.save(Member.builder().build());
         MemberBookmark memberBookmark = MemberBookmark.builder()
                 .member(sendMember)
