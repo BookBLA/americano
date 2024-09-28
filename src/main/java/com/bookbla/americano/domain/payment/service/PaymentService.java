@@ -10,8 +10,8 @@ import com.bookbla.americano.domain.payment.controller.dto.request.GooglePayment
 import com.bookbla.americano.domain.payment.controller.dto.response.PaymentPurchaseResponse;
 import com.bookbla.americano.domain.payment.exception.PaymentExceptionType;
 import com.bookbla.americano.domain.payment.infrastructure.google.GooglePaymentStrategy;
-import com.bookbla.americano.domain.payment.repository.Payment;
-import com.bookbla.americano.domain.payment.repository.PaymentNotification;
+import com.bookbla.americano.domain.payment.repository.entity.Payment;
+import com.bookbla.americano.domain.payment.repository.entity.PaymentNotification;
 import com.bookbla.americano.domain.payment.repository.PaymentNotificationRepository;
 import com.bookbla.americano.domain.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
@@ -46,14 +46,9 @@ public class PaymentService {
     }
 
     public PaymentPurchaseResponse orderBookmarkForGoogle(GooglePaymentInAppPurchaseRequest request, Long memberId) {
-        Payment payment = googlePaymentStrategy.getPaymentInformation(request);
+        Payment payment = googlePaymentStrategy.getPaymentInformation(request, memberId);
         payment.updateMemberId(memberId);
         paymentRepository.save(payment);
-
-        MemberBookmark memberBookmark = findMemberBookmarkByMemberId(memberId);
-
-        int updateCount = payment.getBookmark();
-        memberBookmark.addBookmark(updateCount);
 
         return PaymentPurchaseResponse.from(payment);
     }

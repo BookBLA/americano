@@ -20,14 +20,15 @@ public class GoogleCertificationProvider {
 
     private final GooglePaymentConfig googlePaymentConfig;
 
-    public GooglePaymentPurchaseResponse getPurchaseReceipt(String productId, String purchaseToken) {
+    public GooglePaymentPurchaseResponse getPurchaseReceipt(String productId,
+        String purchaseToken) {
         try {
             AndroidPublisher publisher = googlePaymentConfig.getAndroidPublisher();
 
             // Google Play Developer API Method: purchases.products.get
             // https://developers.google.com/android-publisher/api-ref/rest/v3/purchases.products/get?hl=ko
             AndroidPublisher.Purchases.Products.Get get = publisher.purchases().products()
-                    .get(googlePaymentConfig.getPackageName(), productId, purchaseToken);
+                .get(googlePaymentConfig.getPackageName(), productId, purchaseToken);
 
             ProductPurchase purchase = get.execute();
 
@@ -44,7 +45,7 @@ public class GoogleCertificationProvider {
         }
     }
 
-    public void verifyPurchaseState(int purchaseState) {
+    private void verifyPurchaseState(int purchaseState) {
         if (PurchaseState.from(purchaseState) != PurchaseState.PURCHASED) {
             throw new BaseException(GooglePaymentExceptionType.NOT_PURCHASE);
         }

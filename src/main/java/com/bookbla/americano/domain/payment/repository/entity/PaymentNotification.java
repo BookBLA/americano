@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.payment.repository;
+package com.bookbla.americano.domain.payment.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseEntity;
 import javax.persistence.Column;

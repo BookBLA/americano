@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.payment.controller.dto.response;
 
-import com.bookbla.americano.domain.payment.repository.Payment;
+import com.bookbla.americano.domain.payment.repository.entity.Payment;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
