@@ -75,13 +75,13 @@ class PostcardServiceTest {
         Member sendMember = memberRepository.save(Member.builder().memberProfile(memberProfile).build());
         Member receiveMember = memberRepository.save(Member.builder().build());
         Book book = bookRepository.save(Book.builder().build());
-        MemberBook reciveMemberBook = memberBookRepository.save(MemberBook.builder().member(receiveMember).book(book).build());
+        MemberBook receiveMemberBook = memberBookRepository.save(MemberBook.builder().member(receiveMember).book(book).build());
         MemberBookmark memberBookmark = MemberBookmark.builder()
                 .member(sendMember)
                 .bookmarkCount(100).build();
         bookmarkRepository.save(memberBookmark);
 
-        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(),reciveMemberBook.getId(), "memberReply");
+        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(),receiveMemberBook.getId(), "memberReply");
 
         //when & then
         assertThatThrownBy(() -> postcardService.send(sendMember.getId(), request))
@@ -96,13 +96,13 @@ class PostcardServiceTest {
         Member sendMember = memberRepository.save(Member.builder().memberProfile(memberProfile).build());
         Member receiveMember = memberRepository.save(Member.builder().build());
         Book book = bookRepository.save(Book.builder().build());
-        MemberBook reciveMemberBook = memberBookRepository.save(MemberBook.builder().member(receiveMember).book(book).build());
+        MemberBook receiveMemberBook = memberBookRepository.save(MemberBook.builder().member(receiveMember).book(book).build());
         MemberBookmark memberBookmark = MemberBookmark.builder()
                 .member(sendMember)
                 .bookmarkCount(100).build();
         bookmarkRepository.save(memberBookmark);
 
-        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(), reciveMemberBook.getId(),"memberReply");
+        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(), receiveMemberBook.getId(),"memberReply");
 
         //when
         SendPostcardResponse response = postcardService.send(sendMember.getId(), request);
@@ -118,13 +118,13 @@ class PostcardServiceTest {
         Member sendMember = memberRepository.save(Member.builder().memberProfile(memberProfile).build());
         Member receiveMember = memberRepository.save(Member.builder().build());
         Book book = bookRepository.save(Book.builder().build());
-        MemberBook reciveMemberBook = memberBookRepository.save(MemberBook.builder().member(receiveMember).book(book).build());
+        MemberBook receiveMemberBook = memberBookRepository.save(MemberBook.builder().member(receiveMember).book(book).build());
         MemberBookmark memberBookmark = MemberBookmark.builder()
                 .member(sendMember)
                 .bookmarkCount(10).build();
         bookmarkRepository.save(memberBookmark);
 
-        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(), reciveMemberBook.getId(), "memberReply");
+        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(), receiveMemberBook.getId(), "memberReply");
 
         // when & then
         assertThatThrownBy(() -> postcardService.send(sendMember.getId(), request))
@@ -154,16 +154,16 @@ class PostcardServiceTest {
     void 엽서를_보낼_수_없다면_예외를_반환한다(PostcardStatus postcardStatus) {
         // given
         Member sendMember = memberRepository.save(Member.builder().build());
-        Member reciveMember = memberRepository.save(Member.builder().build());
+        Member receiveMember = memberRepository.save(Member.builder().build());
 
         postcardRepository.save(Postcard.builder()
                 .sendMember(sendMember)
-                .receiveMember(reciveMember)
+                .receiveMember(receiveMember)
                 .postcardStatus(postcardStatus)
                 .build());
 
         // when, then
-        assertThatThrownBy(() -> postcardService.validateSendPostcard(sendMember.getId(), reciveMember.getId()))
+        assertThatThrownBy(() -> postcardService.validateSendPostcard(sendMember.getId(), receiveMember.getId()))
                 .isInstanceOf(BaseException.class)
                 .hasMessageContaining(" 엽서가 존재합니다");
     }
@@ -185,16 +185,16 @@ class PostcardServiceTest {
     void 기존에_보낸_엽서가_거절되었다면_엽서를_전송할_수_있다() {
         // given
         Member sendMember = memberRepository.save(Member.builder().build());
-        Member reciveMember = memberRepository.save(Member.builder().build());
+        Member receiveMember = memberRepository.save(Member.builder().build());
 
         postcardRepository.save(Postcard.builder()
                 .sendMember(sendMember)
-                .receiveMember(reciveMember)
+                .receiveMember(receiveMember)
                 .postcardStatus(REFUSED)
                 .build());
 
         // when
-        PostcardSendValidateResponse response = postcardService.validateSendPostcard(sendMember.getId(), reciveMember.getId());
+        PostcardSendValidateResponse response = postcardService.validateSendPostcard(sendMember.getId(), receiveMember.getId());
 
         // then
         assertThat(response.getIsRefused()).isTrue();
