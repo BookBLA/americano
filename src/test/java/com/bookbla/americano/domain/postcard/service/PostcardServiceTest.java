@@ -1,14 +1,14 @@
 package com.bookbla.americano.domain.postcard.service;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.book.repository.BookRepository;
+import com.bookbla.americano.domain.book.repository.entity.Book;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
+import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
-import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.bookbla.americano.domain.member.repository.entity.MemberBlock;
-import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
-import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
+import com.bookbla.americano.domain.member.repository.entity.*;
 import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
@@ -56,6 +56,12 @@ class PostcardServiceTest {
     @Autowired
     private PostcardTypeRepository postcardTypeRepository;
 
+    @Autowired
+    private MemberBookRepository memberBookRepository;
+
+    @Autowired
+    private BookRepository bookRepository;
+
     private PostcardType postcardType;
 
     @BeforeEach
@@ -87,12 +93,14 @@ class PostcardServiceTest {
         MemberProfile memberProfile = MemberProfile.builder().studentIdImageStatus(StudentIdImageStatus.DONE).build();
         Member sendMember = memberRepository.save(Member.builder().memberProfile(memberProfile).build());
         Member reciveMember = memberRepository.save(Member.builder().build());
+        Book book = bookRepository.save(Book.builder().build());
+        MemberBook reciveMemberBook = memberBookRepository.save(MemberBook.builder().member(reciveMember).book(book).build());
         MemberBookmark memberBookmark = MemberBookmark.builder()
                 .member(sendMember)
                 .bookmarkCount(100).build();
         bookmarkRepository.save(memberBookmark);
 
-        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), reciveMember.getId(), 1L,"memberReply");
+        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), reciveMember.getId(), reciveMemberBook.getId(),"memberReply");
 
         //when
         SendPostcardResponse response = postcardService.send(sendMember.getId(), request);
@@ -195,5 +203,7 @@ class PostcardServiceTest {
         postcardRepository.deleteAllInBatch();
         postcardTypeRepository.deleteAllInBatch();
         memberBlockRepository.deleteAllInBatch();
+        memberBookRepository.deleteAllInBatch();
+        bookmarkRepository.deleteAllInBatch();
     }
 }
