@@ -73,7 +73,7 @@ class PostcardServiceTest {
                 .bookmarkCount(100).build();
         bookmarkRepository.save(memberBookmark);
 
-        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), reciveMember.getId(), "memberReply");
+        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), reciveMember.getId(),1L, "memberReply");
 
         //when & then
         assertThatThrownBy(() -> postcardService.send(sendMember.getId(), request))
@@ -92,7 +92,7 @@ class PostcardServiceTest {
                 .bookmarkCount(100).build();
         bookmarkRepository.save(memberBookmark);
 
-        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), reciveMember.getId(), "memberReply");
+        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), reciveMember.getId(), 1L,"memberReply");
 
         //when
         SendPostcardResponse response = postcardService.send(sendMember.getId(), request);
@@ -112,7 +112,7 @@ class PostcardServiceTest {
                 .bookmarkCount(10).build();
         bookmarkRepository.save(memberBookmark);
 
-        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), reciveMember.getId(), "memberReply");
+        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), reciveMember.getId(), 1L, "memberReply");
 
         // when & then
         assertThatThrownBy(() -> postcardService.send(sendMember.getId(), request))

@@ -19,6 +19,9 @@ public class SendPostcardRequest {
     @NotNull(message = "엽서를 보낼 상대방의 식별자가 입력되지 않았습니다")
     private Long receiveMemberId;
 
+    @NotNull(message = "엽서를 보낼 상대방의 책 식별자가 입력되지 않았습니다")
+    private Long receiveMemberBookId;
+
     @NotNull(message = "memberReply가 입력되지 않았습니다.")
     @Size(max = 150)
     private String memberReply;
