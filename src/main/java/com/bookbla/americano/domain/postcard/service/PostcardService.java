@@ -76,7 +76,7 @@ public class PostcardService {
         PostcardStatus status = PostcardStatus.PENDING;
 
         Member targetMember = memberRepository.getByIdOrThrow(request.getReceiveMemberId());
-        MemberBook targetMemberBook = memberBookRepository.getByIdOrThrow(request.getReceiveMemberId());
+        MemberBook targetMemberBook = memberBookRepository.getByIdOrThrow(request.getReceiveMemberBookId());
         targetMemberBook.validateOwner(targetMember);
         memberBookmark.sendPostcard();
 
