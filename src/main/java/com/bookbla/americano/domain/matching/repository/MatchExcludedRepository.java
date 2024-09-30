@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface MatchExcludedRepository extends JpaRepository<MatchExcludedInfo, Long> {
 
     Optional<MatchExcludedInfo> findByMemberIdAndExcludedMemberId(Long memberId, Long excludedMemberId);
+
+    void deleteByMemberIdAndExcludedMemberId(Long memberId, Long excludedMemberId);
 }

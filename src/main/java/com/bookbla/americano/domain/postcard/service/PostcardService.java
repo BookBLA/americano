@@ -198,6 +198,7 @@ public class PostcardService {
 
         } else if (postcardStatus.isRefused()) { // 거절 시 환불
             updateMemberMatchingIgnored(sendMember, receiveMember, memberBookId);
+            extractMemberMatchingExcluded(sendMember, receiveMember);
 
             postcard.updatePostcardStatusRefusedAt();
             memberBookmark.addBookmark(35);
@@ -216,6 +217,11 @@ public class PostcardService {
         matchIgnoredRepository.findByMemberIdAndIgnoredMemberIdAndIgnoredMemberBookId(
                 sendMember.getId(), receiveMember.getId(), memberBookId)
                 .orElseGet(() -> matchIgnoredRepository.save(MatchIgnoredInfo.from(sendMember.getId(), receiveMember.getId(), memberBookId)));
+    }
+
+    private void extractMemberMatchingExcluded(Member sendMember, Member receiveMember) {
+        matchExcludedRepository.deleteByMemberIdAndExcludedMemberId(sendMember.getId(), receiveMember.getId());
+        matchExcludedRepository.deleteByMemberIdAndExcludedMemberId(receiveMember.getId(), sendMember.getId());
     }
 
     @Transactional(readOnly = true)
