@@ -87,6 +87,7 @@ public class PostcardService {
         Postcard postcard = Postcard.builder()
                 .sendMember(member)
                 .receiveMember(targetMember)
+                .receiveMemberBook(targetMemberBook)
                 .postcardStatus(status)
                 .message(request.getMemberReply())
                 .postcardType(postCardType)
