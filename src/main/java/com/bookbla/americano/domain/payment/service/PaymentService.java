@@ -9,11 +9,12 @@ import com.bookbla.americano.domain.payment.controller.dto.request.ApplePaymentI
 import com.bookbla.americano.domain.payment.controller.dto.request.GooglePaymentInAppPurchaseRequest;
 import com.bookbla.americano.domain.payment.controller.dto.response.PaymentPurchaseResponse;
 import com.bookbla.americano.domain.payment.exception.PaymentExceptionType;
+import com.bookbla.americano.domain.payment.infrastructure.apple.ApplePaymentStrategy;
 import com.bookbla.americano.domain.payment.infrastructure.google.GooglePaymentStrategy;
-import com.bookbla.americano.domain.payment.repository.entity.Payment;
-import com.bookbla.americano.domain.payment.repository.entity.PaymentNotification;
 import com.bookbla.americano.domain.payment.repository.PaymentNotificationRepository;
 import com.bookbla.americano.domain.payment.repository.PaymentRepository;
+import com.bookbla.americano.domain.payment.repository.entity.Payment;
+import com.bookbla.americano.domain.payment.repository.entity.PaymentNotification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,14 +25,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class PaymentService {
 
     private final PaymentNotificationRepository paymentNotificationRepository;
-    private final PaymentStrategies paymentStrategies;
+    private final ApplePaymentStrategy applePaymentStrategy;
     private final GooglePaymentStrategy googlePaymentStrategy;
     private final PaymentRepository paymentRepository;
     private final MemberBookmarkRepository memberBookmarkRepository;
     private final MemberRepository memberRepository;
 
     public PaymentPurchaseResponse orderBookmarkForApple(ApplePaymentInAppPurchaseRequest request, Long memberId) {
-        PaymentStrategy applePaymentStrategy = paymentStrategies.findApple();
 
         Payment payment = applePaymentStrategy.getPaymentInformation(request.getTransactionId());
         payment.updateMemberId(memberId);
@@ -56,7 +56,6 @@ public class PaymentService {
     // https://developer.apple.com/documentation/storekit/in-app_purchase/original_api_for_in-app_purchase/handling_refund_notifications
     @Transactional(noRollbackFor = {BaseException.class, Exception.class})
     public void receiveAppleNotification(String signedPayload) {
-        PaymentStrategy applePaymentStrategy = paymentStrategies.findApple();
         PaymentNotification paymentNotification = applePaymentStrategy.getNotificationInformation(signedPayload);
         paymentNotificationRepository.save(paymentNotification);
 
