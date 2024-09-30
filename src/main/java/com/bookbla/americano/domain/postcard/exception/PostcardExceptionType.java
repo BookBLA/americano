@@ -17,7 +17,7 @@ public enum PostcardExceptionType implements ExceptionType {
     PENDING_POSTCARD_EXISTS(HttpStatus.BAD_REQUEST, "postcard-004", "대기중인 엽서가 존재합니다."),
     ACCEPTED_POSTCARD_EXISTS(HttpStatus.BAD_REQUEST, "postcard-005", "매칭된 엽서가 존재합니다."),
     ALL_WRONG_POSTCARD_EXISTS(HttpStatus.BAD_REQUEST, "postcard-006", "독서 퀴즈를 모두 틀린 엽서가 존재합니다."),
-    BLOCKED(HttpStatus.BAD_REQUEST, "postcard-007", "상대방이 차단되어 엽서를 보낼 수 없습니다."),
+    BLOCKED(HttpStatus.BAD_REQUEST, "postcard-007", "엽서를 보낼 수 없는 상대입니다."),
 
     INVALID_POSTCARD_STATUS(HttpStatus.BAD_REQUEST, "postcard-008", "유효하지 않은 엽서 상태입니다."),
     INVALID_POSTCARD(HttpStatus.BAD_REQUEST, "postcard-009", "유효하지 않은 엽서 아이디입니다."),
