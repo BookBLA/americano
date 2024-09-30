@@ -70,7 +70,7 @@ class PostcardServiceTest {
     }
 
     @Test
-    void 학생증_인증을_하지_않으면_엽서를_보낼_수_없다() throws Exception{
+    void 학생증_인증을_하지_않으면_엽서를_보낼_수_없다() {
         MemberProfile memberProfile = MemberProfile.builder().studentIdImageStatus(StudentIdImageStatus.UNREGISTER).build();
         Member sendMember = memberRepository.save(Member.builder().memberProfile(memberProfile).build());
         Member receiveMember = memberRepository.save(Member.builder().build());
@@ -132,73 +132,86 @@ class PostcardServiceTest {
                 .hasMessageContaining("책갈피 개수가 부족합니다.");
     }
 
-    @Test
-    void 받는_사람이_보내는_사람을_차단했다면_엽서를_보낼_수_없다() {
-        // given
-        Member blockerMember = memberRepository.save(Member.builder().build());
-        Member blockedMember = memberRepository.save(Member.builder().build());
+    @Nested
+    class 엽서_전송_검증 {
 
-        memberBlockRepository.save(MemberBlock.builder()
-                .blockedMember(blockedMember)
-                .blockerMember(blockerMember)
-                .build());
+        @Nested
+        class 성공 {
 
-        // when, then
-        assertThatThrownBy(() -> postcardService.validateSendPostcard(blockedMember.getId(), blockerMember.getId()))
-                .isInstanceOf(BaseException.class)
-                .hasMessageContaining(PostcardExceptionType.BLOCKED.getMessage());
+            @Test
+            void 기존에_보낸_엽서가_존재하지_않는다면_엽서를_전송할_수_있다() {
+                // given
+                Member sendMember = memberRepository.save(Member.builder().build());
+                Member reciveMember = memberRepository.save(Member.builder().build());
+
+                // when
+                PostcardSendValidateResponse response = postcardService.validateSendPostcard(sendMember.getId(), reciveMember.getId());
+
+                // then
+                assertThat(response.getIsRefused()).isFalse();
+            }
+
+            @Test
+            void 기존에_보낸_엽서가_거절되었다면_엽서를_전송할_수_있다() {
+                // given
+                Member sendMember = memberRepository.save(Member.builder().build());
+                Member receiveMember = memberRepository.save(Member.builder().build());
+
+                postcardRepository.save(Postcard.builder()
+                        .sendMember(sendMember)
+                        .receiveMember(receiveMember)
+                        .postcardStatus(REFUSED)
+                        .build());
+
+                // when
+                PostcardSendValidateResponse response = postcardService.validateSendPostcard(sendMember.getId(), receiveMember.getId());
+
+                // then
+                assertThat(response.getIsRefused()).isTrue();
+            }
+        }
+
+        @Nested
+        class 실패 {
+
+            @Test
+            void 받는_사람이_보내는_사람을_차단했다면_엽서를_보낼_수_없다() {
+                // given
+                Member blockerMember = memberRepository.save(Member.builder().build());
+                Member blockedMember = memberRepository.save(Member.builder().build());
+
+                memberBlockRepository.save(MemberBlock.builder()
+                        .blockedMember(blockedMember)
+                        .blockerMember(blockerMember)
+                        .build());
+
+                // when, then
+                assertThatThrownBy(() -> postcardService.validateSendPostcard(blockedMember.getId(), blockerMember.getId()))
+                        .isInstanceOf(BaseException.class)
+                        .hasMessageContaining(PostcardExceptionType.BLOCKED.getMessage());
+            }
+
+            @EnumSource(mode = INCLUDE, names = {"PENDING", "ACCEPT", "ALL_WRONG", "READ"})
+            @ParameterizedTest(name = "엽서를_보낼_수_없다면_예외를_반환한다")
+            void 엽서를_보낼_수_없다면_예외를_반환한다(PostcardStatus postcardStatus) {
+                // given
+                Member sendMember = memberRepository.save(Member.builder().build());
+                Member receiveMember = memberRepository.save(Member.builder().build());
+
+                postcardRepository.save(Postcard.builder()
+                        .sendMember(sendMember)
+                        .receiveMember(receiveMember)
+                        .postcardStatus(postcardStatus)
+                        .build());
+
+                // when, then
+                assertThatThrownBy(() -> postcardService.validateSendPostcard(sendMember.getId(), receiveMember.getId()))
+                        .isInstanceOf(BaseException.class)
+                        .hasMessageContaining(" 엽서가 존재합니다");
+            }
+        }
     }
 
-    @EnumSource(mode = INCLUDE, names = {"PENDING", "ACCEPT", "ALL_WRONG", "READ"})
-    @ParameterizedTest(name = "엽서를_보낼_수_없다면_예외를_반환한다")
-    void 엽서를_보낼_수_없다면_예외를_반환한다(PostcardStatus postcardStatus) {
-        // given
-        Member sendMember = memberRepository.save(Member.builder().build());
-        Member receiveMember = memberRepository.save(Member.builder().build());
-
-        postcardRepository.save(Postcard.builder()
-                .sendMember(sendMember)
-                .receiveMember(receiveMember)
-                .postcardStatus(postcardStatus)
-                .build());
-
-        // when, then
-        assertThatThrownBy(() -> postcardService.validateSendPostcard(sendMember.getId(), receiveMember.getId()))
-                .isInstanceOf(BaseException.class)
-                .hasMessageContaining(" 엽서가 존재합니다");
-    }
-
-    @Test
-    void 기존에_보낸_엽서가_존재하지_않는다면_엽서를_전송할_수_있다() {
-        // given
-        Member sendMember = memberRepository.save(Member.builder().build());
-        Member reciveMember = memberRepository.save(Member.builder().build());
-
-        // when
-        PostcardSendValidateResponse response = postcardService.validateSendPostcard(sendMember.getId(), reciveMember.getId());
-
-        // then
-        assertThat(response.getIsRefused()).isFalse();
-    }
-
-    @Test
-    void 기존에_보낸_엽서가_거절되었다면_엽서를_전송할_수_있다() {
-        // given
-        Member sendMember = memberRepository.save(Member.builder().build());
-        Member receiveMember = memberRepository.save(Member.builder().build());
-
-        postcardRepository.save(Postcard.builder()
-                .sendMember(sendMember)
-                .receiveMember(receiveMember)
-                .postcardStatus(REFUSED)
-                .build());
-
-        // when
-        PostcardSendValidateResponse response = postcardService.validateSendPostcard(sendMember.getId(), receiveMember.getId());
-
-        // then
-        assertThat(response.getIsRefused()).isTrue();
-    }
 
     @AfterEach
     void tearDown() {
