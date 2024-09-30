@@ -17,8 +17,8 @@ import static org.junit.jupiter.params.provider.EnumSource.Mode.INCLUDE;
 class PostcardTest {
 
     @EnumSource(mode = INCLUDE, names = {"PENDING", "ACCEPT", "ALL_WRONG", "READ"})
-    @ParameterizedTest(name = "엽서를_보낼_수_없다면_예외를_던진다")
-    void 엽서를_보낼_수_없다면_예외를_던진다(PostcardStatus status) {
+    @ParameterizedTest(name = "기존_전송한_엽서의_상태에_따라_새로_엽서를_전송할_수_없다")
+    void 기존_전송한_엽서의_상태에_따라_새로_엽서를_전송할_수_없다(PostcardStatus status) {
         // given
         Postcard postcard = Postcard.builder().postcardStatus(status).build();
 
@@ -29,7 +29,7 @@ class PostcardTest {
     }
 
     @Test
-    void 엽서를_보낼_수_있는지_검증한다() {
+    void 기존_전송한_엽서가_거절되었다면_새로_엽서를_보낼_수_있다() {
         // given
         Postcard postcard = Postcard.builder().postcardStatus(PostcardStatus.REFUSED).build();
 
