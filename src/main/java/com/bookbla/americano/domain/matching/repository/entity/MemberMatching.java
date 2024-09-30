@@ -52,4 +52,8 @@ public class MemberMatching {
         this.currentMatchedMemberId = currentMatchedMemberId;
         this.currentMatchedMemberBookId = currentMatchedMemberBookId;
     }
+
+    public boolean hasCurrentMatchedInfo() {
+        return currentMatchedMemberId != null && currentMatchedMemberBookId != null;
+    }
 }

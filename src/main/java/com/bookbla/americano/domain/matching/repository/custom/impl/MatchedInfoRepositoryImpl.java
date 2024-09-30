@@ -30,10 +30,9 @@ public class MatchedInfoRepositoryImpl implements MatchedInfoRepositoryCustom {
                 .leftJoin(matchIgnoredInfo).on(matchedInfo.matchedMemberId.eq(matchIgnoredInfo.ignoredMemberId))
                 .where(
                         matchedInfo.memberMatching.id.eq(memberMatchingId),
-                        matchExcludedInfo.excludedMemberId.isNull(),
+                        matchExcludedInfo.excludedMemberId.ne(matchedInfo.memberId),
                         matchIgnoredInfo.ignoredMemberId.isNull(),
                         member.memberStatus.ne(MemberStatus.DELETED),
-                        member.memberStatus.ne(MemberStatus.BLOCKED),
                         member.memberStatus.ne(MemberStatus.MATCHING_DISABLED),
                         member.memberStatus.ne(MemberStatus.REPORTED))
                 .orderBy(matchedInfo.similarityWeight.desc())
@@ -59,7 +58,6 @@ public class MatchedInfoRepositoryImpl implements MatchedInfoRepositoryCustom {
                                 JPAExpressions.select(member.id)
                                         .from(member)
                                         .where(member.memberStatus.eq(MemberStatus.DELETED)
-                                                .or(member.memberStatus.eq(MemberStatus.BLOCKED))
                                                 .or(member.memberStatus.eq(MemberStatus.MATCHING_DISABLED))
                                                 .or(member.memberStatus.eq(MemberStatus.REPORTED)))
                         )

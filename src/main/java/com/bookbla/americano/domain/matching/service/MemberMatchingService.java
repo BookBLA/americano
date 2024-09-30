@@ -52,13 +52,10 @@ public class MemberMatchingService {
 
         member.updateLastUsedAt();
 
-        List<MatchedInfo> matchedMemberList = matchedInfoRepository.findAllByMemberMatchingId(memberMatching.getId());
-        log.info("캐싱된 디비로 가져온 추천 회원 수: {}", matchedMemberList.size());
+        if (memberMatching.hasCurrentMatchedInfo()) {
+            MatchedInfo matchedInfo = getMatchedInfo(memberId, memberMatching);
 
-        if (!matchedMemberList.isEmpty()) {
-            matchedInfoRepository.deleteByMemberMatchingId(memberMatching.getId());
-
-            return buildMemberIntroResponse(getMostPriorityMatched(matchedMemberList), memberMatching);
+            return buildMemberIntroResponse(matchedInfo);
         }
 
         MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member);
@@ -82,7 +79,17 @@ public class MemberMatchingService {
 
         MatchedInfo matchedInfo = getMostPriorityMatched(matchedInfoRepository.getAllByDesc(memberMatching.getId()));
 
-        return buildMemberIntroResponse(matchedInfo, memberMatching);
+        MemberIntroResponse memberIntroResponse = buildMemberIntroResponse(matchedInfo);
+
+        updateCurrentMatchedInfo(memberMatching, memberIntroResponse.getMemberId(), memberIntroResponse.getMemberBookId());
+
+        return memberIntroResponse;
+    }
+
+    private MatchedInfo getMatchedInfo(Long memberId, MemberMatching memberMatching) {
+        return matchedInfoRepository.findByMemberIdAndMatchedMemberIdAndMatchedMemberBookId(memberId,
+                        memberMatching.getCurrentMatchedMemberId(), memberMatching.getCurrentMatchedMemberBookId())
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST));
     }
 
     public MemberIntroResponse refreshMemberMatching(Long memberId, Long refreshMemberId, Long refreshMemberBookId) {
@@ -92,7 +99,9 @@ public class MemberMatchingService {
         MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MATCHING));
 
-        return buildMemberIntroResponse(popMostPriorityMatched(memberId, refreshMemberId, refreshMemberBookId), memberMatching);
+        MatchedInfo matchedInfo = popMostPriorityMatched(memberId, memberMatching.getCurrentMatchedMemberId(), memberMatching.getCurrentMatchedMemberBookId());
+
+        return buildMemberIntroResponse(matchedInfo);
     }
 
     public void rejectMemberMatching(Long memberId, Long rejectedMemberId) {
@@ -100,7 +109,7 @@ public class MemberMatchingService {
                 .orElseGet(() -> matchExcludedRepository.save(MatchExcludedInfo.of(memberId, rejectedMemberId)));
     }
 
-    private MemberIntroResponse buildMemberIntroResponse(MatchedInfo matchedInfo, MemberMatching memberMatching) {
+    private MemberIntroResponse buildMemberIntroResponse(MatchedInfo matchedInfo) {
         if (matchedInfo == null) return MemberIntroResponse.empty();
 
         Member matchedMember = memberRepository.getByIdOrThrow(matchedInfo.getMatchedMemberId());
@@ -109,8 +118,6 @@ public class MemberMatchingService {
         if (matchedMember == null || matchedMemberBook == null) {
             throw new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST);
         }
-
-        memberMatching.updateCurrentMatchedInfo(matchedMember.getId(), matchedMemberBook.getId());
 
         return MemberIntroResponse.from(matchedMember, matchedMemberBook);
     }
@@ -127,13 +134,9 @@ public class MemberMatchingService {
         MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST));
 
-        List<MatchedInfo> recommendedMembers = matchedInfoRepository.findAllByMemberMatchingId(memberMatching.getId());
+        updateCurrentMatchedInfo(memberMatching, refreshMemberId, refreshMemberBookId);
 
-        if (recommendedMembers.isEmpty()) {
-            throw new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST);
-        }
-
-        return recommendedMembers.get(0);
+        return getMatchedInfo(memberId, memberMatching);
     }
 
     private void updateAllRecommendedMembers(MemberMatching memberMatching, List<MatchedInfo> recommendedMembers) {
@@ -154,5 +157,10 @@ public class MemberMatchingService {
                 return recommendedMembers.size(); // 전체 리스트 크기
             }
         });
+    }
+
+    private void updateCurrentMatchedInfo(MemberMatching memberMatching, Long currentMatchedMemberId, Long currentMatchedMemberBookId) {
+        memberMatching.updateCurrentMatchedInfo(currentMatchedMemberId, currentMatchedMemberBookId);
+        memberMatchingRepository.save(memberMatching);
     }
 }
