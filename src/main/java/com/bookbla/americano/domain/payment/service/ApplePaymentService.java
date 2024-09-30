@@ -51,7 +51,7 @@ public class ApplePaymentService {
     }
 
     // https://developer.apple.com/documentation/storekit/in-app_purchase/original_api_for_in-app_purchase/handling_refund_notifications
-    @Transactional(noRollbackFor = {BaseException.class, Exception.class})
+    @Transactional(noRollbackFor = BaseException.class)
     public void receiveAppleNotification(String signedPayload) {
         PaymentNotification paymentNotification = applePaymentStrategy.getNotificationInformation(signedPayload);
         paymentNotificationRepository.save(paymentNotification);
@@ -77,5 +77,4 @@ public class ApplePaymentService {
         return paymentRepository.findByReceipt(receipt)
                 .orElseThrow(() -> new BaseException(PaymentExceptionType.PAYMENT_TYPE_NOT_FOUND));
     }
-
 }
