@@ -33,10 +33,8 @@ public class MemberMatchingController {
     @Operation(summary = "매칭 회원 새로고침")
     @PostMapping("/refresh")
     public ResponseEntity<MemberIntroResponse> refreshMemberMatching(
-            @Parameter(hidden = true) @User LoginUser loginUser,
-            @RequestBody @Valid RefreshMemberRequest request) {
-        return ResponseEntity.ok(memberMatchingService.refreshMemberMatching(loginUser.getMemberId(),
-                request.getRefreshMemberId(), request.getRefreshMemberBookId()));
+            @Parameter(hidden = true) @User LoginUser loginUser) {
+        return ResponseEntity.ok(memberMatchingService.refreshMemberMatching(loginUser.getMemberId()));
     }
 
     @Operation(summary = "매칭 회원 거절")

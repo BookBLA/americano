@@ -92,14 +92,19 @@ public class MemberMatchingService {
                 .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST));
     }
 
-    public MemberIntroResponse refreshMemberMatching(Long memberId, Long refreshMemberId, Long refreshMemberBookId) {
-        matchIgnoredRepository.findByMemberIdAndIgnoredMemberIdAndIgnoredMemberBookId(memberId, refreshMemberId, refreshMemberBookId)
-                .orElseGet(() -> matchIgnoredRepository.save(MatchIgnoredInfo.from(memberId, refreshMemberId, refreshMemberBookId)));
-
+    public MemberIntroResponse refreshMemberMatching(Long memberId) {
         MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MATCHING));
 
-        MatchedInfo matchedInfo = popMostPriorityMatched(memberId, memberMatching.getCurrentMatchedMemberId(), memberMatching.getCurrentMatchedMemberBookId());
+        Long refreshMemberId = memberMatching.getCurrentMatchedMemberId();
+        Long refreshMemberBookId = memberMatching.getCurrentMatchedMemberBookId();
+
+        matchIgnoredRepository.findByMemberIdAndIgnoredMemberIdAndIgnoredMemberBookId(memberId, refreshMemberId, refreshMemberBookId)
+                .orElseGet(() -> matchIgnoredRepository.save(MatchIgnoredInfo.from(memberId, refreshMemberId, refreshMemberBookId)));
+
+        MatchedInfo matchedInfo = popMostPriorityMatched(memberMatching.getId(), memberId, refreshMemberId, refreshMemberBookId);
+
+        updateCurrentMatchedInfo(memberMatching, matchedInfo.getMatchedMemberId(), matchedInfo.getMatchedMemberBookId());
 
         return buildMemberIntroResponse(matchedInfo);
     }
@@ -128,15 +133,10 @@ public class MemberMatchingService {
         return matchedMemberList.get(0);
     }
 
-    private MatchedInfo popMostPriorityMatched(Long memberId, Long refreshMemberId, Long refreshMemberBookId) {
+    private MatchedInfo popMostPriorityMatched(Long memberMatchingId, Long memberId, Long refreshMemberId, Long refreshMemberBookId) {
         matchedInfoRepository.deleteByMemberIdAndMatchedMemberIdAndMatchedMemberBookId(memberId, refreshMemberId, refreshMemberBookId);
 
-        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST));
-
-        updateCurrentMatchedInfo(memberMatching, refreshMemberId, refreshMemberBookId);
-
-        return getMatchedInfo(memberId, memberMatching);
+        return getMostPriorityMatched(matchedInfoRepository.getAllByDesc(memberMatchingId));
     }
 
     private void updateAllRecommendedMembers(MemberMatching memberMatching, List<MatchedInfo> recommendedMembers) {
