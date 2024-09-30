@@ -48,11 +48,6 @@ public class MemberMatching {
                 .build();
     }
 
-    public void updateMatched(MatchedInfo matchedInfo) {
-        this.matched.add(matchedInfo);
-        matchedInfo.updateMemberMatching(this);
-    }
-
     public void updateCurrentMatchedInfo(Long currentMatchedMemberId, Long currentMatchedMemberBookId) {
         this.currentMatchedMemberId = currentMatchedMemberId;
         this.currentMatchedMemberBookId = currentMatchedMemberBookId;
