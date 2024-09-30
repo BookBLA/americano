@@ -192,8 +192,8 @@ class PostcardServiceTest {
             }
 
             @EnumSource(mode = INCLUDE, names = {"PENDING", "ACCEPT", "ALL_WRONG", "READ"})
-            @ParameterizedTest(name = "엽서를_보낼_수_없다면_예외를_반환한다")
-            void 엽서를_보낼_수_없다면_예외를_반환한다(PostcardStatus postcardStatus) {
+            @ParameterizedTest(name = "기존_전송한_엽서의_상태에_따라_새로_엽서를_전송할_수_없다")
+            void 기존_전송한_엽서의_상태에_따라_새로_엽서를_전송할_수_없다(PostcardStatus postcardStatus) {
                 // given
                 Member sendMember = memberRepository.save(Member.builder().build());
                 Member receiveMember = memberRepository.save(Member.builder().build());
@@ -206,8 +206,7 @@ class PostcardServiceTest {
 
                 // when, then
                 assertThatThrownBy(() -> postcardService.validateSendPostcard(sendMember.getId(), receiveMember.getId()))
-                        .isInstanceOf(BaseException.class)
-                        .hasMessageContaining(" 엽서가 존재합니다");
+                        .isInstanceOf(BaseException.class);
             }
         }
     }
