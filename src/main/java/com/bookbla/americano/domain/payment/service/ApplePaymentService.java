@@ -16,9 +16,9 @@ import com.bookbla.americano.domain.payment.repository.entity.PaymentNotificatio
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RequiredArgsConstructor
-@Transactional
 @Service
 public class ApplePaymentService {
 
@@ -27,16 +27,20 @@ public class ApplePaymentService {
     private final PaymentRepository paymentRepository;
     private final MemberBookmarkRepository memberBookmarkRepository;
     private final MemberRepository memberRepository;
+    private final TransactionTemplate txTemplate;
 
     public PaymentPurchaseResponse orderBookmarkForApple(ApplePaymentInAppPurchaseRequest request, Long memberId) {
         Payment payment = applePaymentStrategy.getPaymentInformation(request.getTransactionId());
         payment.updateMemberId(memberId);
-        paymentRepository.save(payment);
 
-        MemberBookmark memberBookmark = getMemberBookmarkByMemberId(memberId);
+        txTemplate.executeWithoutResult(it -> {
+            paymentRepository.save(payment);
 
-        int updateCount = payment.getBookmark();
-        memberBookmark.addBookmark(updateCount);
+            MemberBookmark memberBookmark = getMemberBookmarkByMemberId(memberId);
+
+            int updateCount = payment.getBookmark();
+            memberBookmark.addBookmark(updateCount);
+        });
 
         return PaymentPurchaseResponse.from(payment);
     }
