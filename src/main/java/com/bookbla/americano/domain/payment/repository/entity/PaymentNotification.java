@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 @Entity
-public class PaymentNotification extends BaseEntity {
+public class PaymentNotification extends BaseEntity { // 애플 공지 저장해두는 Entity
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class PaymentNotification extends BaseEntity {
     private String type;
 
     @Column(columnDefinition = "TEXT")
-    private String information; // 서버로부터 받는 json 정보
+    private String information; // 서버로부터 받는 토큰 정보
 
     private String receipt; // 거래 후 받은 영수증 정보
 

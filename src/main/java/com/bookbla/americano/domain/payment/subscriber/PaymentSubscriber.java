@@ -1,7 +1,7 @@
-package com.bookbla.americano.domain.payment.controller;
+package com.bookbla.americano.domain.payment.subscriber;
 
-import com.bookbla.americano.domain.payment.controller.dto.request.AppleNotificationRequest;
-import com.bookbla.americano.domain.payment.service.PaymentService;
+import com.bookbla.americano.domain.payment.service.ApplePaymentService;
+import com.bookbla.americano.domain.payment.subscriber.dto.AppleNotificationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class PaymentSubscriber {
 
-    private final PaymentService paymentService;
+    private final ApplePaymentService applePaymentService;
 
     @PostMapping("/in-app/apple/notification")
     public ResponseEntity<Void> receiveAppleNotification(
             @RequestBody AppleNotificationRequest request
     ) {
-        paymentService.receiveAppleNotification(request.getSignedPayload());
+        applePaymentService.receiveAppleNotification(request.getSignedPayload());
         return ResponseEntity.ok().build();
     }
 }

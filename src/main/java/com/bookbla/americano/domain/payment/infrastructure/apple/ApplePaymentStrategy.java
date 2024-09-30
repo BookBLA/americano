@@ -6,18 +6,16 @@ import com.bookbla.americano.domain.payment.enums.PaymentType;
 import com.bookbla.americano.domain.payment.infrastructure.apple.tokens.DecodedTokenPayload;
 import com.bookbla.americano.domain.payment.repository.entity.Payment;
 import com.bookbla.americano.domain.payment.repository.entity.PaymentNotification;
-import com.bookbla.americano.domain.payment.service.PaymentStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class ApplePaymentStrategy implements PaymentStrategy {
+public class ApplePaymentStrategy {
 
     private final AppleTokenProvider appleTokenProvider;
     private final AppleLibraryProvider appleLibraryProvider;
 
-    @Override
     public Payment getPaymentInformation(String transactionId) {
         String signedTransactionInfo = appleLibraryProvider.getSignedTransactionInfo(transactionId);
 
@@ -35,9 +33,8 @@ public class ApplePaymentStrategy implements PaymentStrategy {
                 .build();
     }
 
-    @Override
-    public PaymentNotification getNotificationInformation(String id) {
-        ResponseBodyV2DecodedPayload notificationPayload = appleLibraryProvider.getNotificationDecodedPayload(id);
+    public PaymentNotification getNotificationInformation(String signedPayload) {
+        ResponseBodyV2DecodedPayload notificationPayload = appleLibraryProvider.getNotificationDecodedPayload(signedPayload);
         String notificationType = notificationPayload.getNotificationType().getValue();
         String signedTransactionInfo = notificationPayload.getData().getSignedTransactionInfo();
 
@@ -51,10 +48,5 @@ public class ApplePaymentStrategy implements PaymentStrategy {
                 .receipt(payload.getTransactionId())
                 .productId(payload.getProductId())
                 .build();
-    }
-
-    @Override
-    public PaymentType getPaymentType() {
-        return PaymentType.APPLE;
     }
 }
