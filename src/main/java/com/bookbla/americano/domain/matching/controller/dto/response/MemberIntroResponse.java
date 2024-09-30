@@ -28,8 +28,6 @@ public class MemberIntroResponse {
     private List<String> bookAuthors;
     private String review;
 
-    private Boolean isNull;
-
     public static MemberIntroResponse from(Member member, MemberBook memberBook) {
         return MemberIntroResponse.builder()
                 .memberId(member.getId())
@@ -47,8 +45,7 @@ public class MemberIntroResponse {
                 .build();
     }
 
-    public static MemberIntroResponse from() {
-        return MemberIntroResponse.builder()
-                .isNull(true).build();
+    public static MemberIntroResponse empty() {
+        return MemberIntroResponse.builder().build();
     }
 }
