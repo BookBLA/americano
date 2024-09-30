@@ -58,7 +58,7 @@ public class MemberMatchingService {
         if (!matchedMemberList.isEmpty()) {
             matchedInfoRepository.deleteByMemberMatchingId(memberMatching.getId());
 
-            return buildMemberIntroResponse(getMostPriorityMatched(matchedMemberList));
+            return buildMemberIntroResponse(getMostPriorityMatched(matchedMemberList), memberMatching);
         }
 
         MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member);
@@ -82,14 +82,17 @@ public class MemberMatchingService {
 
         MatchedInfo matchedInfo = getMostPriorityMatched(matchedInfoRepository.getAllByDesc(memberMatching.getId()));
 
-        return buildMemberIntroResponse(matchedInfo);
+        return buildMemberIntroResponse(matchedInfo, memberMatching);
     }
 
     public MemberIntroResponse refreshMemberMatching(Long memberId, Long refreshMemberId, Long refreshMemberBookId) {
         matchIgnoredRepository.findByMemberIdAndIgnoredMemberIdAndIgnoredMemberBookId(memberId, refreshMemberId, refreshMemberBookId)
                 .orElseGet(() -> matchIgnoredRepository.save(MatchIgnoredInfo.from(memberId, refreshMemberId, refreshMemberBookId)));
 
-        return buildMemberIntroResponse(popMostPriorityMatched(memberId, refreshMemberId, refreshMemberBookId));
+        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MATCHING));
+
+        return buildMemberIntroResponse(popMostPriorityMatched(memberId, refreshMemberId, refreshMemberBookId), memberMatching);
     }
 
     public void rejectMemberMatching(Long memberId, Long rejectedMemberId) {
@@ -97,10 +100,9 @@ public class MemberMatchingService {
                 .orElseGet(() -> matchExcludedRepository.save(MatchExcludedInfo.of(memberId, rejectedMemberId)));
     }
 
-    private MemberIntroResponse buildMemberIntroResponse(MatchedInfo matchedInfo) {
+    private MemberIntroResponse buildMemberIntroResponse(MatchedInfo matchedInfo, MemberMatching memberMatching) {
         if (matchedInfo == null) return MemberIntroResponse.empty();
 
-        MemberMatching memberMatching = memberMatchingRepository.getByIdOrThrow(matchedInfo.getMemberMatching().getId());
         Member matchedMember = memberRepository.getByIdOrThrow(matchedInfo.getMatchedMemberId());
         MemberBook matchedMemberBook = memberBookRepository.getByIdOrThrow(matchedInfo.getMatchedMemberBookId());
 
@@ -141,7 +143,7 @@ public class MemberMatchingService {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 MatchedInfo matchedInfo = recommendedMembers.get(i);
-                ps.setDouble(1, memberMatching.getId());
+                ps.setLong(1, memberMatching.getId());
                 ps.setLong(2, matchedInfo.getMemberId());
                 ps.setLong(3, matchedInfo.getMatchedMemberId());
                 ps.setLong(4, matchedInfo.getMatchedMemberBookId());
