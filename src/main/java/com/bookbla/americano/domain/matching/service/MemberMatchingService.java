@@ -17,6 +17,7 @@ import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class MemberMatchingService {
 
     private final MemberRepository memberRepository;
@@ -54,15 +56,9 @@ public class MemberMatchingService {
         member.updateLastUsedAt();
 
         List<MatchedInfo> matchedMemberList = matchedInfoRepository.findAllByMemberMatchingId(memberMatching.getId());
+        log.info("캐싱된 디비로 가져온 추천 회원 수: {}", matchedMemberList.size());
 
         if (!matchedMemberList.isEmpty()) {
-            /** 조건 전부 쿼리에서 조건 걸고 땡겨옴
-             *   회원 탈퇴 (O)
-             *   매칭 비활성화 (O)
-             *   신고 (O)
-             *   차단 (O)
-             *   엽서 (X) -> 엽서 거절 부분 못함 그외 ok
-             **/
             matchedInfoRepository.deleteByMemberMatchingId(memberMatching.getId());
 
             return buildMemberIntroResponse(getMostPriorityMatched(matchedMemberList));
@@ -73,15 +69,19 @@ public class MemberMatchingService {
         // 추천회원 id와 추천회원의 책 id 추출
         List<MatchedInfo> recommendedMembers = memberMatchingRepository
                 .getMatchingMembers(memberRecommendationDto);
+        log.info("최소 조건으로 추출한 추천 회원 수: {}", recommendedMembers.size());
 
         // 차단한 회원 필터링
         recommendedMembers = memberMatchingFilter.memberBlockedFiltering(member.getId(), recommendedMembers);
+        log.info("차단한 회원 필터링 후 추천 회원 수: {}", recommendedMembers.size());
 
         // 학생증 인증 필터링
         recommendedMembers = memberMatchingFilter.memberVerifyFiltering(recommendedMembers);
+        log.info("학생증 인증 필터링 후 추천 회원 수: {}", recommendedMembers.size());
 
         // "거절 + 14일 < 오늘" 필터링
         recommendedMembers = memberMatchingFilter.memberRefusedAtFiltering(member.getId(), recommendedMembers);
+        log.info("엽서 거절 필터링 후 추천 회원 수: {}", recommendedMembers.size());
 
         // 우선순위 알고리즘 적용
         recommendedMembers = memberMatchingAlgorithmFilter.memberMatchingAlgorithmFiltering(member, recommendedMembers);
