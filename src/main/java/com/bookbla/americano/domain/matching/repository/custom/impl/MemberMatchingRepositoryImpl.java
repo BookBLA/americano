@@ -38,12 +38,12 @@ public class MemberMatchingRepositoryImpl implements MemberMatchingRepositoryCus
                 .leftJoin(matchExcludedInfo).on(member.id.eq(matchExcludedInfo.excludedMemberId))
                 .leftJoin(matchIgnoredInfo).on(member.id.eq(matchIgnoredInfo.ignoredMemberId))
                 .where(
-                        matchExcludedInfo.excludedMemberId.isNull(),
+                        matchExcludedInfo.excludedMemberId.ne(recommendationDto.getMemberId()),
                         matchIgnoredInfo.ignoredMemberId.isNull(),
                         member.id.ne(recommendationDto.getMemberId()),
+                        memberBook.isDeleted.isFalse(),
                         member.memberStatus.ne(MemberStatus.DELETED),
                         member.memberStatus.ne(MemberStatus.MATCHING_DISABLED),
-                        member.memberStatus.ne(MemberStatus.BLOCKED),
                         member.memberStatus.ne(MemberStatus.REPORTED),
                         member.memberProfile.gender.ne(Gender.valueOf(recommendationDto.getMemberGender())),
                         member.lastUsedAt.coalesce(LocalDate.parse("1900-01-01").atStartOfDay()).after(twoWeeksAgo))
