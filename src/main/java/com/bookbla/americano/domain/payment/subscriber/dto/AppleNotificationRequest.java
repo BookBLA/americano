@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.payment.controller.dto.request;
+package com.bookbla.americano.domain.payment.subscriber.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

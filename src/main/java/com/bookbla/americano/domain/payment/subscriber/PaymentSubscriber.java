@@ -1,7 +1,7 @@
-package com.bookbla.americano.domain.payment.controller;
+package com.bookbla.americano.domain.payment.subscriber;
 
-import com.bookbla.americano.domain.payment.controller.dto.request.AppleNotificationRequest;
 import com.bookbla.americano.domain.payment.service.ApplePaymentService;
+import com.bookbla.americano.domain.payment.subscriber.dto.AppleNotificationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
