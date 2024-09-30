@@ -23,6 +23,13 @@ public class MemberMatching {
     @JoinColumn(name = "member_id")
     private Member member; // 앱 사용 회원
 
+    private Long currentMatchedMemberId; // 현재 홈 화면에 보여지는 회원
+
+    private Long currentMatchedMemberBookId; // 현재 홈 화면에 보여지는 회원의 책
+
+    @Builder.Default
+    private boolean isInvitationCard = Boolean.TRUE;
+
     @OneToMany(mappedBy = "memberMatching")
     private List<MatchedInfo> matched; // 필터링을 거친 매칭된 회원 저장
 
@@ -44,5 +51,10 @@ public class MemberMatching {
     public void updateMatched(MatchedInfo matchedInfo) {
         this.matched.add(matchedInfo);
         matchedInfo.updateMemberMatching(this);
+    }
+
+    public void updateCurrentMatchedInfo(Long currentMatchedMemberId, Long currentMatchedMemberBookId) {
+        this.currentMatchedMemberId = currentMatchedMemberId;
+        this.currentMatchedMemberBookId = currentMatchedMemberBookId;
     }
 }
