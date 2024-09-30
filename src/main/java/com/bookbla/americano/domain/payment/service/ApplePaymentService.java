@@ -6,11 +6,9 @@ import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.payment.controller.dto.request.ApplePaymentInAppPurchaseRequest;
-import com.bookbla.americano.domain.payment.controller.dto.request.GooglePaymentInAppPurchaseRequest;
 import com.bookbla.americano.domain.payment.controller.dto.response.PaymentPurchaseResponse;
 import com.bookbla.americano.domain.payment.exception.PaymentExceptionType;
 import com.bookbla.americano.domain.payment.infrastructure.apple.ApplePaymentStrategy;
-import com.bookbla.americano.domain.payment.infrastructure.google.GooglePaymentStrategy;
 import com.bookbla.americano.domain.payment.repository.PaymentNotificationRepository;
 import com.bookbla.americano.domain.payment.repository.PaymentRepository;
 import com.bookbla.americano.domain.payment.repository.entity.Payment;
@@ -22,11 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 @Service
-public class PaymentService {
+public class ApplePaymentService {
 
     private final PaymentNotificationRepository paymentNotificationRepository;
     private final ApplePaymentStrategy applePaymentStrategy;
-    private final GooglePaymentStrategy googlePaymentStrategy;
     private final PaymentRepository paymentRepository;
     private final MemberBookmarkRepository memberBookmarkRepository;
     private final MemberRepository memberRepository;
@@ -41,14 +38,6 @@ public class PaymentService {
 
         int updateCount = payment.getBookmark();
         memberBookmark.addBookmark(updateCount);
-
-        return PaymentPurchaseResponse.from(payment);
-    }
-
-    public PaymentPurchaseResponse orderBookmarkForGoogle(GooglePaymentInAppPurchaseRequest request, Long memberId) {
-        Payment payment = googlePaymentStrategy.getPaymentInformation(request, memberId);
-        payment.updateMemberId(memberId);
-        paymentRepository.save(payment);
 
         return PaymentPurchaseResponse.from(payment);
     }
