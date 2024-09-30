@@ -36,7 +36,7 @@ import static org.junit.jupiter.params.provider.EnumSource.Mode.INCLUDE;
 class PostcardServiceTest {
 
     @Autowired
-    private PostcardService postcardService;
+    private PostcardService sut;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -81,10 +81,10 @@ class PostcardServiceTest {
                 .bookmarkCount(100).build();
         bookmarkRepository.save(memberBookmark);
 
-        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(),receiveMemberBook.getId(), "memberReply");
+        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(), receiveMemberBook.getId(), "memberReply");
 
         //when & then
-        assertThatThrownBy(() -> postcardService.send(sendMember.getId(), request))
+        assertThatThrownBy(() -> sut.send(sendMember.getId(), request))
                 .isInstanceOf(BaseException.class)
                 .hasMessageContaining("학생증이 인증되지 않은 회원입니다.");
     }
@@ -102,10 +102,10 @@ class PostcardServiceTest {
                 .bookmarkCount(100).build();
         bookmarkRepository.save(memberBookmark);
 
-        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(), receiveMemberBook.getId(),"memberReply");
+        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(), receiveMemberBook.getId(), "memberReply");
 
         //when
-        SendPostcardResponse response = postcardService.send(sendMember.getId(), request);
+        SendPostcardResponse response = sut.send(sendMember.getId(), request);
 
         //then
         assertThat(response.getIsSendSuccess()).isTrue();
@@ -127,7 +127,7 @@ class PostcardServiceTest {
         SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(), receiveMemberBook.getId(), "memberReply");
 
         // when & then
-        assertThatThrownBy(() -> postcardService.send(sendMember.getId(), request))
+        assertThatThrownBy(() -> sut.send(sendMember.getId(), request))
                 .isInstanceOf(BaseException.class)
                 .hasMessageContaining("책갈피 개수가 부족합니다.");
     }
@@ -145,7 +145,7 @@ class PostcardServiceTest {
                 Member reciveMember = memberRepository.save(Member.builder().build());
 
                 // when
-                PostcardSendValidateResponse response = postcardService.validateSendPostcard(sendMember.getId(), reciveMember.getId());
+                PostcardSendValidateResponse response = sut.validateSendPostcard(sendMember.getId(), reciveMember.getId());
 
                 // then
                 assertThat(response.getIsRefused()).isFalse();
@@ -164,7 +164,7 @@ class PostcardServiceTest {
                         .build());
 
                 // when
-                PostcardSendValidateResponse response = postcardService.validateSendPostcard(sendMember.getId(), receiveMember.getId());
+                PostcardSendValidateResponse response = sut.validateSendPostcard(sendMember.getId(), receiveMember.getId());
 
                 // then
                 assertThat(response.getIsRefused()).isTrue();
@@ -186,7 +186,7 @@ class PostcardServiceTest {
                         .build());
 
                 // when, then
-                assertThatThrownBy(() -> postcardService.validateSendPostcard(blockedMember.getId(), blockerMember.getId()))
+                assertThatThrownBy(() -> sut.validateSendPostcard(blockedMember.getId(), blockerMember.getId()))
                         .isInstanceOf(BaseException.class)
                         .hasMessageContaining(PostcardExceptionType.BLOCKED.getMessage());
             }
@@ -205,7 +205,7 @@ class PostcardServiceTest {
                         .build());
 
                 // when, then
-                assertThatThrownBy(() -> postcardService.validateSendPostcard(sendMember.getId(), receiveMember.getId()))
+                assertThatThrownBy(() -> sut.validateSendPostcard(sendMember.getId(), receiveMember.getId()))
                         .isInstanceOf(BaseException.class);
             }
         }
