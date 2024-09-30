@@ -29,17 +29,21 @@ public class ApplePaymentService {
     private final MemberRepository memberRepository;
 
     public PaymentPurchaseResponse orderBookmarkForApple(ApplePaymentInAppPurchaseRequest request, Long memberId) {
-
         Payment payment = applePaymentStrategy.getPaymentInformation(request.getTransactionId());
         payment.updateMemberId(memberId);
         paymentRepository.save(payment);
 
-        MemberBookmark memberBookmark = findMemberBookmarkByMemberId(memberId);
+        MemberBookmark memberBookmark = getMemberBookmarkByMemberId(memberId);
 
         int updateCount = payment.getBookmark();
         memberBookmark.addBookmark(updateCount);
 
         return PaymentPurchaseResponse.from(payment);
+    }
+
+    private MemberBookmark getMemberBookmarkByMemberId(Long payment) {
+        return memberBookmarkRepository.findMemberBookmarkByMemberId(payment)
+                .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
     }
 
     // https://developer.apple.com/documentation/storekit/in-app_purchase/original_api_for_in-app_purchase/handling_refund_notifications
@@ -54,26 +58,20 @@ public class ApplePaymentService {
     }
 
     private void handleRefund(PaymentNotification paymentNotification) {
-        Payment payment = findPaymentByReceipt(paymentNotification.getReceipt());
+        Payment payment = getPaymentByReceipt(paymentNotification.getReceipt());
         if (!memberRepository.existsById(payment.getMemberId())) {
             return;
         }
 
-        MemberBookmark memberBookmark = findMemberBookmarkByMemberId(payment.getMemberId());
-
+        MemberBookmark memberBookmark = getMemberBookmarkByMemberId(payment.getMemberId());
         if (payment.canRefund(memberBookmark)) {
             memberBookmark.refundBookmark(payment.getBookmark());
         }
     }
 
-    private Payment findPaymentByReceipt(String receipt) {
+    private Payment getPaymentByReceipt(String receipt) {
         return paymentRepository.findByReceipt(receipt)
                 .orElseThrow(() -> new BaseException(PaymentExceptionType.PAYMENT_TYPE_NOT_FOUND));
     }
 
-
-    private MemberBookmark findMemberBookmarkByMemberId(Long payment) {
-        return memberBookmarkRepository.findMemberBookmarkByMemberId(payment)
-                .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
-    }
 }
