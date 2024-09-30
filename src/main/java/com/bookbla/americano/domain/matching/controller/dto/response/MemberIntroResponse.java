@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.matching.controller.dto.response;
 
+import com.bookbla.americano.domain.book.repository.BookRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,8 @@ public class MemberIntroResponse {
     private List<String> bookAuthors;
     private String review;
 
+    private Boolean isNull;
+
     public static MemberIntroResponse from(Member member, MemberBook memberBook) {
         return MemberIntroResponse.builder()
                 .memberId(member.getId())
@@ -42,5 +45,10 @@ public class MemberIntroResponse {
                 .bookAuthors(memberBook.getBook().getAuthors())
                 .review(memberBook.getReview())
                 .build();
+    }
+
+    public static MemberIntroResponse from() {
+        return MemberIntroResponse.builder()
+                .isNull(true).build();
     }
 }

@@ -106,6 +106,8 @@ public class MemberMatchingService {
     }
 
     private MemberIntroResponse buildMemberIntroResponse(MatchedInfo matchedInfo) {
+        if (matchedInfo == null) return MemberIntroResponse.from();
+
         Member matchedMember = memberRepository.getByIdOrThrow(matchedInfo.getMatchedMemberId());
         MemberBook matchedMemberBook = memberBookRepository.getByIdOrThrow(matchedInfo.getMatchedMemberBookId());
 
@@ -117,7 +119,8 @@ public class MemberMatchingService {
 
     private MatchedInfo getMostPriorityMatched(List<MatchedInfo> matchedMemberList) {
         if (matchedMemberList.isEmpty()) {
-            throw new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST);
+            return null;
+//            throw new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST);
         }
 
         return matchedMemberList.get(0);
