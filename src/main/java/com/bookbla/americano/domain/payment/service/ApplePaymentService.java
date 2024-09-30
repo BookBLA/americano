@@ -23,10 +23,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class ApplePaymentService {
 
     private final PaymentNotificationRepository paymentNotificationRepository;
-    private final ApplePaymentStrategy applePaymentStrategy;
     private final PaymentRepository paymentRepository;
     private final MemberBookmarkRepository memberBookmarkRepository;
     private final MemberRepository memberRepository;
+    private final ApplePaymentStrategy applePaymentStrategy;
     private final TransactionTemplate txTemplate;
 
     public PaymentPurchaseResponse orderBookmarkForApple(ApplePaymentInAppPurchaseRequest request, Long memberId) {

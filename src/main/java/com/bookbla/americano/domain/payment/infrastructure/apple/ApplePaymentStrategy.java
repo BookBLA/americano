@@ -33,8 +33,8 @@ public class ApplePaymentStrategy {
                 .build();
     }
 
-    public PaymentNotification getNotificationInformation(String id) {
-        ResponseBodyV2DecodedPayload notificationPayload = appleLibraryProvider.getNotificationDecodedPayload(id);
+    public PaymentNotification getNotificationInformation(String signedPayload) {
+        ResponseBodyV2DecodedPayload notificationPayload = appleLibraryProvider.getNotificationDecodedPayload(signedPayload);
         String notificationType = notificationPayload.getNotificationType().getValue();
         String signedTransactionInfo = notificationPayload.getData().getSignedTransactionInfo();
 

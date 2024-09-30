@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 @Entity
-public class PaymentVoidPurchase extends BaseEntity {
+public class PaymentVoidPurchase extends BaseEntity { // 구글 환불 정보
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
