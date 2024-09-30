@@ -27,9 +27,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
-/**
- * 주석은 추후 삭제 예정
- */
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -66,24 +63,19 @@ public class MemberMatchingService {
 
         MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member);
 
-        // 추천회원 id와 추천회원의 책 id 추출
         List<MatchedInfo> recommendedMembers = memberMatchingRepository
                 .getMatchingMembers(memberRecommendationDto);
         log.info("최소 조건으로 추출한 추천 회원 수: {}", recommendedMembers.size());
 
-        // 차단한 회원 필터링
         recommendedMembers = memberMatchingFilter.memberBlockedFiltering(member.getId(), recommendedMembers);
         log.info("차단한 회원 필터링 후 추천 회원 수: {}", recommendedMembers.size());
 
-        // 학생증 인증 필터링
         recommendedMembers = memberMatchingFilter.memberVerifyFiltering(recommendedMembers);
         log.info("학생증 인증 필터링 후 추천 회원 수: {}", recommendedMembers.size());
 
-        // "거절 + 14일 < 오늘" 필터링
         recommendedMembers = memberMatchingFilter.memberRefusedAtFiltering(member.getId(), recommendedMembers);
         log.info("엽서 거절 필터링 후 추천 회원 수: {}", recommendedMembers.size());
 
-        // 우선순위 알고리즘 적용
         recommendedMembers = memberMatchingAlgorithmFilter.memberMatchingAlgorithmFiltering(member, recommendedMembers);
 
         updateAllRecommendedMembers(memberMatching, recommendedMembers);
@@ -106,7 +98,7 @@ public class MemberMatchingService {
     }
 
     private MemberIntroResponse buildMemberIntroResponse(MatchedInfo matchedInfo) {
-        if (matchedInfo == null) return MemberIntroResponse.from();
+        if (matchedInfo == null) return MemberIntroResponse.empty();
 
         MemberMatching memberMatching = memberMatchingRepository.getByIdOrThrow(matchedInfo.getMemberMatching().getId());
         Member matchedMember = memberRepository.getByIdOrThrow(matchedInfo.getMatchedMemberId());
@@ -122,10 +114,7 @@ public class MemberMatchingService {
     }
 
     private MatchedInfo getMostPriorityMatched(List<MatchedInfo> matchedMemberList) {
-        if (matchedMemberList.isEmpty()) {
-            return null;
-//            throw new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST);
-        }
+        if (matchedMemberList.isEmpty()) return null;
 
         return matchedMemberList.get(0);
     }
