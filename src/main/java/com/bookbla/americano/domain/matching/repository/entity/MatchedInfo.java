@@ -32,11 +32,12 @@ public class MatchedInfo {
         this.similarityWeight += similarityWeight;
     }
 
-    public static MatchedInfo from(Long memberId, Long matchedMemberId, Long matchedMemberBookId) {
+    public static MatchedInfo from(Long memberId, Long matchedMemberId, Long matchedMemberBookId, MemberMatching memberMatching) {
         return MatchedInfo.builder()
                 .memberId(memberId)
                 .matchedMemberId(matchedMemberId)
                 .matchedMemberBookId(matchedMemberBookId)
+                .memberMatching(memberMatching)
                 .build();
     }
 

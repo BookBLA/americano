@@ -2,13 +2,13 @@ package com.bookbla.americano.domain.matching.service;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
-import com.bookbla.americano.domain.matching.repository.MatchedInfoRepository;
 import com.bookbla.americano.domain.matching.repository.entity.MatchedInfo;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,23 +18,13 @@ import java.util.stream.Collectors;
 
 import static com.bookbla.americano.domain.matching.service.dto.MatchingSimilarityWeightConstants.*;
 
-/**
- * 알고리즘 우선순위
- *
- * 1. 같은 학교 같은책
- * 2. 다른 학교 같은 책
- * 3. 같은 학교 같은 작가
- * 4. 다른 학교 같은 작가
- * 5. 같은학교 흡연여부 동일
- * 6. 다른 학교 흡연여부 동일
- */
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class MemberMatchingAlgorithmFilter {
 
     private final MemberRepository memberRepository;
-    private final MatchedInfoRepository matchedInfoRepository;
     private final MemberBookRepository memberBookRepository;
 
     public List<MatchedInfo> memberMatchingAlgorithmFiltering(Member member, List<MatchedInfo> matchingMembers) {
@@ -43,25 +33,28 @@ public class MemberMatchingAlgorithmFilter {
                 .map(MatchedInfo::getMatchedMemberId)
                 .collect(Collectors.toList()));
 
+        log.info("추천 회원의 책 리스트 가져오는 쿼리 ⬇️⬇️⬇️");
         Map<Long, MemberBook> memberBookMap = memberBookRepository.findAllById(matchingMembers.stream()
                         .map(MatchedInfo::getMatchedMemberBookId)
                         .collect(Collectors.toList()))
                 .stream()
                 .collect(Collectors.toMap(MemberBook::getId, book -> book));
 
+        log.info("앱 사용자의 책 저자 리스트를 가져오는 쿼리 ⬇️⬇️⬇️");
         Map<Long, List<String>> memberBookAuthorsMap = memberBooks.stream()
                 .collect(Collectors.toMap(
                         MemberBook::getId,
                         book -> book.getBook().getAuthors())
                 );
 
+        log.info("추천 회원의 책 저자 리스트를 가져오는 쿼리 ⬇️⬇️⬇️");
         Map<Long, List<String>> matchingMemberBookAuthorsMap = memberBookMap.values().stream()
                 .collect(Collectors.toMap(
                         MemberBook::getId,
                         book -> book.getBook().getAuthors())
                 );
 
-        List<MatchedInfo> updatedMatchedInfos = matchingMembers.stream().map(matchedInfo -> {
+        return matchingMembers.stream().map(matchedInfo -> {
             Member matchingMember = matchingMemberList.stream()
                     .filter(m -> m.getId().equals(matchedInfo.getMatchedMemberId()))
                     .findFirst()
@@ -88,10 +81,6 @@ public class MemberMatchingAlgorithmFilter {
 
             return matchedInfo;
         }).collect(Collectors.toList());
-
-        matchedInfoRepository.saveAll(updatedMatchedInfos);
-
-        return updatedMatchedInfos;
     }
 
     private boolean isSameBook(List<MemberBook> memberBooks, MemberBook matchingMemberBook) {
@@ -131,5 +120,4 @@ public class MemberMatchingAlgorithmFilter {
         }
         return member.getMemberStyle().getSmokeType() == matchingMember.getMemberStyle().getSmokeType();
     }
-
 }
