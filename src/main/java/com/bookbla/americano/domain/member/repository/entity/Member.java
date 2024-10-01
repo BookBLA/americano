@@ -104,7 +104,7 @@ public class Member extends BaseEntity {
 
     @Column
     @Builder.Default
-    private Integer newPersonAdmobCount = 3;
+    private Integer newPersonAdmobCount = 4;
 
     @Column
     @Builder.Default
