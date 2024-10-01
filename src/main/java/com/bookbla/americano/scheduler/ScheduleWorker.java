@@ -106,6 +106,25 @@ class ScheduleWorker {
         }
     }
 
+    @Scheduled(cron = EVERY_0_AM, zone = "Asia/Seoul")
+    public void resetNewPersonCount() {
+        try {
+            memberRepository.resetNewPersonCount(4);
+        } catch (Exception e) {
+            String txName = ScheduleWorker.class.getName() + "(resetNewPersonCount)";
+            String message = "새로고침 횟수 초기화 기능 실패  " + CRLF
+                    + e.getMessage() + CRLF
+                    + stackTraceToString(e);
+
+            mailService.sendTransactionFailureEmail(txName, message);
+            bookblaLogDiscord.sendMessage(message);
+
+            log.debug("Exception in {}", ScheduleWorker.class.getName());
+            log.error(e.toString());
+            log.error(stackTraceToString(e));
+        }
+    }
+
     private String stackTraceToString(Exception e) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
