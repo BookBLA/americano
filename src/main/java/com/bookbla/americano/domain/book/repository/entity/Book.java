@@ -35,7 +35,7 @@ public class Book extends BaseEntity {
     private String title;
 
     @Builder.Default
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> authors = new ArrayList<>();
 
     private String imageUrl;
