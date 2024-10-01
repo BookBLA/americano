@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.MemberType;
@@ -262,7 +263,7 @@ public class Member extends BaseEntity {
 
     public void watchNewPersonAdmob() {
         if (newPersonAdmobCount <= 0) {
-            throw new BaseException(MemberBookmarkExceptionType.ADMOB_COUNT_NOT_VALID);
+            throw new BaseException(MemberMatchingExceptionType.EXCEED_MAX_RECOMMENDATION);
         }
         this.newPersonAdmobCount--;
     }
