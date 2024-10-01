@@ -34,7 +34,7 @@ public class MemberMatchingAlgorithmFilter {
                 .collect(Collectors.toList()));
 
         log.info("추천 회원의 책 리스트 가져오는 쿼리 ⬇️⬇️⬇️");
-        Map<Long, MemberBook> memberBookMap = memberBookRepository.findAllByMemberBookId(matchingMembers.stream()
+        Map<Long, MemberBook> memberBookMap = memberBookRepository.findAllById(matchingMembers.stream()
                         .map(MatchedInfo::getMatchedMemberBookId)
                         .collect(Collectors.toList()))
                 .stream()

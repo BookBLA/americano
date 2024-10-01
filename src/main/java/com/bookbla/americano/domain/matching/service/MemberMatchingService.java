@@ -162,7 +162,7 @@ public class MemberMatchingService {
         });
 }
 
-private void updateAllRecommendedMembers(MemberMatching memberMatching, List<MatchedInfo> recommendedMembers) {
+    private void updateAllRecommendedMembers(MemberMatching memberMatching, List<MatchedInfo> recommendedMembers) {
     String sql = "UPDATE matched_info SET member_matching_id = ? WHERE member_id = ? AND matched_member_id = ? AND matched_member_book_id = ?";
 
     jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
@@ -182,7 +182,7 @@ private void updateAllRecommendedMembers(MemberMatching memberMatching, List<Mat
     });
 }
 
-private void updateCurrentMatchedInfo(MemberMatching memberMatching, Long currentMatchedMemberId, Long currentMatchedMemberBookId) {
+    private void updateCurrentMatchedInfo(MemberMatching memberMatching, Long currentMatchedMemberId, Long currentMatchedMemberBookId) {
     memberMatching.updateCurrentMatchedInfo(currentMatchedMemberId, currentMatchedMemberBookId);
     memberMatchingRepository.save(memberMatching);
 }
