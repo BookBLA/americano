@@ -160,30 +160,30 @@ public class MemberMatchingService {
                 return recommendedMembers.size(); // 전체 리스트 크기
             }
         });
-}
+    }
 
-private void updateAllRecommendedMembers(MemberMatching memberMatching, List<MatchedInfo> recommendedMembers) {
-    String sql = "UPDATE matched_info SET member_matching_id = ? WHERE member_id = ? AND matched_member_id = ? AND matched_member_book_id = ?";
+    private void updateAllRecommendedMembers(MemberMatching memberMatching, List<MatchedInfo> recommendedMembers) {
+        String sql = "UPDATE matched_info SET member_matching_id = ? WHERE member_id = ? AND matched_member_id = ? AND matched_member_book_id = ?";
 
-    jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
-        @Override
-        public void setValues(PreparedStatement ps, int i) throws SQLException {
-            MatchedInfo matchedInfo = recommendedMembers.get(i);
-            ps.setLong(1, memberMatching.getId());
-            ps.setLong(2, matchedInfo.getMemberId());
-            ps.setLong(3, matchedInfo.getMatchedMemberId());
-            ps.setLong(4, matchedInfo.getMatchedMemberBookId());
-        }
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                MatchedInfo matchedInfo = recommendedMembers.get(i);
+                ps.setLong(1, memberMatching.getId());
+                ps.setLong(2, matchedInfo.getMemberId());
+                ps.setLong(3, matchedInfo.getMatchedMemberId());
+                ps.setLong(4, matchedInfo.getMatchedMemberBookId());
+            }
 
-        @Override
-        public int getBatchSize() {
-            return recommendedMembers.size(); // 전체 리스트 크기
-        }
-    });
-}
+            @Override
+            public int getBatchSize() {
+                return recommendedMembers.size(); // 전체 리스트 크기
+            }
+        });
+    }
 
-private void updateCurrentMatchedInfo(MemberMatching memberMatching, Long currentMatchedMemberId, Long currentMatchedMemberBookId) {
-    memberMatching.updateCurrentMatchedInfo(currentMatchedMemberId, currentMatchedMemberBookId);
-    memberMatchingRepository.save(memberMatching);
-}
+    private void updateCurrentMatchedInfo(MemberMatching memberMatching, Long currentMatchedMemberId, Long currentMatchedMemberBookId) {
+        memberMatching.updateCurrentMatchedInfo(currentMatchedMemberId, currentMatchedMemberBookId);
+        memberMatchingRepository.save(memberMatching);
+    }
 }
