@@ -3,13 +3,15 @@ package com.bookbla.americano.domain.member.repository;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.book.repository.entity.Book;
 import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
+import com.bookbla.americano.domain.member.repository.custom.MemberBookRepositoryCustom;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
+import java.util.List;
+import java.util.Optional;
+
+public interface MemberBookRepository extends JpaRepository<MemberBook, Long>, MemberBookRepositoryCustom {
 
     default MemberBook getByIdOrThrow(Long memberBookId) {
         return findById(memberBookId)
