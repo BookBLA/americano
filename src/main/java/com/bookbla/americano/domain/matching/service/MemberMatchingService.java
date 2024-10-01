@@ -58,7 +58,7 @@ public class MemberMatchingService {
             return buildMemberIntroResponse(matchedInfo);
         }
 
-        MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member);
+        MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member, memberMatching);
 
         List<MatchedInfo> recommendedMembers = memberMatchingRepository
                 .getMatchingMembers(memberRecommendationDto);
@@ -73,8 +73,11 @@ public class MemberMatchingService {
         recommendedMembers = memberMatchingFilter.memberRefusedAtFiltering(member.getId(), recommendedMembers);
         log.info("엽서 거절 필터링 후 추천 회원 수: {}", recommendedMembers.size());
 
+        log.info("알고리즘 가중치 적용 쿼리 ⬇️⬇️⬇️");
         recommendedMembers = memberMatchingAlgorithmFilter.memberMatchingAlgorithmFiltering(member, recommendedMembers);
 
+        log.info("필터링된 회원 저장 쿼리 ⬇️⬇️⬇️");
+        saveAllRecommendedMembers(recommendedMembers);
         updateAllRecommendedMembers(memberMatching, recommendedMembers);
 
         MatchedInfo matchedInfo = getMostPriorityMatched(matchedInfoRepository.getAllByDesc(memberMatching.getId()));
@@ -139,28 +142,48 @@ public class MemberMatchingService {
         return getMostPriorityMatched(matchedInfoRepository.findAllByMemberMatchingId(memberMatchingId));
     }
 
-    private void updateAllRecommendedMembers(MemberMatching memberMatching, List<MatchedInfo> recommendedMembers) {
-        String sql = "UPDATE matched_info SET member_matching_id = ? WHERE member_id = ? AND matched_member_id = ? AND matched_member_book_id = ?";
+    private void saveAllRecommendedMembers(List<MatchedInfo> recommendedMembers) {
+        String sql = "INSERT INTO matched_info (member_id, matched_member_id, matched_member_book_id, member_matching_id) VALUES (?, ?, ?, ?)";
 
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 MatchedInfo matchedInfo = recommendedMembers.get(i);
-                ps.setLong(1, memberMatching.getId());
-                ps.setLong(2, matchedInfo.getMemberId());
-                ps.setLong(3, matchedInfo.getMatchedMemberId());
-                ps.setLong(4, matchedInfo.getMatchedMemberBookId());
+                ps.setLong(1, matchedInfo.getMemberId());
+                ps.setLong(2, matchedInfo.getMatchedMemberId());
+                ps.setLong(3, matchedInfo.getMatchedMemberBookId());
+                ps.setLong(4, matchedInfo.getMemberMatching().getId());
             }
 
             @Override
-            public int getBatchSize() {
+            public int getBatchSize () {
                 return recommendedMembers.size(); // 전체 리스트 크기
             }
         });
-    }
+}
 
-    private void updateCurrentMatchedInfo(MemberMatching memberMatching, Long currentMatchedMemberId, Long currentMatchedMemberBookId) {
-        memberMatching.updateCurrentMatchedInfo(currentMatchedMemberId, currentMatchedMemberBookId);
-        memberMatchingRepository.save(memberMatching);
-    }
+private void updateAllRecommendedMembers(MemberMatching memberMatching, List<MatchedInfo> recommendedMembers) {
+    String sql = "UPDATE matched_info SET member_matching_id = ? WHERE member_id = ? AND matched_member_id = ? AND matched_member_book_id = ?";
+
+    jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+        @Override
+        public void setValues(PreparedStatement ps, int i) throws SQLException {
+            MatchedInfo matchedInfo = recommendedMembers.get(i);
+            ps.setLong(1, memberMatching.getId());
+            ps.setLong(2, matchedInfo.getMemberId());
+            ps.setLong(3, matchedInfo.getMatchedMemberId());
+            ps.setLong(4, matchedInfo.getMatchedMemberBookId());
+        }
+
+        @Override
+        public int getBatchSize() {
+            return recommendedMembers.size(); // 전체 리스트 크기
+        }
+    });
+}
+
+private void updateCurrentMatchedInfo(MemberMatching memberMatching, Long currentMatchedMemberId, Long currentMatchedMemberBookId) {
+    memberMatching.updateCurrentMatchedInfo(currentMatchedMemberId, currentMatchedMemberBookId);
+    memberMatchingRepository.save(memberMatching);
+}
 }
