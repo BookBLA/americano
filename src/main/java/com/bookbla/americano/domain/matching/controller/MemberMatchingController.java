@@ -2,7 +2,6 @@ package com.bookbla.americano.domain.matching.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
-import com.bookbla.americano.domain.matching.controller.dto.request.RefreshMemberRequest;
 import com.bookbla.americano.domain.matching.controller.dto.request.RejectMemberRequest;
 import com.bookbla.americano.domain.matching.controller.dto.response.MemberIntroResponse;
 import com.bookbla.americano.domain.matching.service.MemberMatchingService;

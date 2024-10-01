@@ -1,6 +1,5 @@
 package com.bookbla.americano.domain.matching.controller.dto.response;
 
-import com.bookbla.americano.domain.book.repository.BookRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import lombok.AllArgsConstructor;
