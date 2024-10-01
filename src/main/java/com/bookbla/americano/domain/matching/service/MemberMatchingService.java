@@ -136,7 +136,7 @@ public class MemberMatchingService {
     private MatchedInfo popMostPriorityMatched(Long memberMatchingId, Long memberId, Long refreshMemberId, Long refreshMemberBookId) {
         matchedInfoRepository.deleteByMemberIdAndMatchedMemberIdAndMatchedMemberBookId(memberId, refreshMemberId, refreshMemberBookId);
 
-        return getMostPriorityMatched(matchedInfoRepository.getAllByDesc(memberMatchingId));
+        return getMostPriorityMatched(matchedInfoRepository.findAllByMemberMatchingId(memberMatchingId));
     }
 
     private void updateAllRecommendedMembers(MemberMatching memberMatching, List<MatchedInfo> recommendedMembers) {
