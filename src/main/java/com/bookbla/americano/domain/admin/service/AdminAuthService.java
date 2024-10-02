@@ -23,6 +23,7 @@ public class AdminAuthService {
     private final AdminRepository adminRepository;
     private final AdminSessionRepository adminSessionRepository;
 
+    @Transactional(rollbackFor = BaseException.class)
     public AdminLoginResponse login(AdminLoginRequest adminLoginRequest) {
         Admin admin = adminRepository.findByUserId(adminLoginRequest.getId())
                 .orElseThrow(() -> new BaseException(AdminExceptionType.USER_ID_NOT_FOUND));
