@@ -78,7 +78,6 @@ public class MemberMatchingService {
 
         log.info("필터링된 회원 저장 쿼리 ⬇️⬇️⬇️");
         saveAllRecommendedMembers(recommendedMembers);
-        updateAllRecommendedMembers(memberMatching, recommendedMembers);
 
         MatchedInfo matchedInfo = getMostPriorityMatched(matchedInfoRepository.getAllByDesc(memberMatching.getId()));
 
@@ -143,7 +142,10 @@ public class MemberMatchingService {
     }
 
     private void saveAllRecommendedMembers(List<MatchedInfo> recommendedMembers) {
-        String sql = "INSERT INTO matched_info (member_id, matched_member_id, matched_member_book_id, member_matching_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO matched_info (member_id, matched_member_id, matched_member_book_id, member_matching_id, similarity_weight) " +
+                "VALUES (?, ?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE " +
+                "similarity_weight = VALUES(similarity_weight)";
 
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
@@ -153,37 +155,18 @@ public class MemberMatchingService {
                 ps.setLong(2, matchedInfo.getMatchedMemberId());
                 ps.setLong(3, matchedInfo.getMatchedMemberBookId());
                 ps.setLong(4, matchedInfo.getMemberMatching().getId());
+                ps.setDouble(5, matchedInfo.getSimilarityWeight());
             }
 
             @Override
-            public int getBatchSize () {
+            public int getBatchSize() {
                 return recommendedMembers.size(); // 전체 리스트 크기
             }
         });
-}
-
-    private void updateAllRecommendedMembers(MemberMatching memberMatching, List<MatchedInfo> recommendedMembers) {
-    String sql = "UPDATE matched_info SET member_matching_id = ? WHERE member_id = ? AND matched_member_id = ? AND matched_member_book_id = ?";
-
-    jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
-        @Override
-        public void setValues(PreparedStatement ps, int i) throws SQLException {
-            MatchedInfo matchedInfo = recommendedMembers.get(i);
-            ps.setLong(1, memberMatching.getId());
-            ps.setLong(2, matchedInfo.getMemberId());
-            ps.setLong(3, matchedInfo.getMatchedMemberId());
-            ps.setLong(4, matchedInfo.getMatchedMemberBookId());
-        }
-
-        @Override
-        public int getBatchSize() {
-            return recommendedMembers.size(); // 전체 리스트 크기
-        }
-    });
-}
+    }
 
     private void updateCurrentMatchedInfo(MemberMatching memberMatching, Long currentMatchedMemberId, Long currentMatchedMemberBookId) {
-    memberMatching.updateCurrentMatchedInfo(currentMatchedMemberId, currentMatchedMemberBookId);
-    memberMatchingRepository.save(memberMatching);
-}
+        memberMatching.updateCurrentMatchedInfo(currentMatchedMemberId, currentMatchedMemberBookId);
+        memberMatchingRepository.save(memberMatching);
+    }
 }
