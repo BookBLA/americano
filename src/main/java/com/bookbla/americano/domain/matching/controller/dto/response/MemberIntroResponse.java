@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.matching.controller.dto.response;
 
+import com.bookbla.americano.domain.matching.repository.entity.MemberMatching;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import lombok.AllArgsConstructor;
@@ -27,7 +28,9 @@ public class MemberIntroResponse {
     private List<String> bookAuthors;
     private String review;
 
-    public static MemberIntroResponse from(Member member, MemberBook memberBook) {
+    private Boolean isInvitationCard;
+
+    public static MemberIntroResponse from(Member member, MemberBook memberBook, MemberMatching memberMatching) {
         return MemberIntroResponse.builder()
                 .memberId(member.getId())
                 .memberProfileImageUrl(member.getMemberStyle().getProfileImageType().getImageUrl())
@@ -41,6 +44,7 @@ public class MemberIntroResponse {
                 .bookTitle(memberBook.getBook().getTitle())
                 .bookAuthors(memberBook.getBook().getAuthors())
                 .review(memberBook.getReview())
+                .isInvitationCard(memberMatching.isInvitationCard())
                 .build();
     }
 
