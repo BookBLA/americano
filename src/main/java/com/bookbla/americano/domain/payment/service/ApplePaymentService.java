@@ -6,57 +6,53 @@ import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.payment.controller.dto.request.ApplePaymentInAppPurchaseRequest;
-import com.bookbla.americano.domain.payment.controller.dto.request.GooglePaymentInAppPurchaseRequest;
 import com.bookbla.americano.domain.payment.controller.dto.response.PaymentPurchaseResponse;
 import com.bookbla.americano.domain.payment.exception.PaymentExceptionType;
-import com.bookbla.americano.domain.payment.infrastructure.google.GooglePaymentStrategy;
-import com.bookbla.americano.domain.payment.repository.entity.Payment;
-import com.bookbla.americano.domain.payment.repository.entity.PaymentNotification;
+import com.bookbla.americano.domain.payment.infrastructure.apple.ApplePaymentStrategy;
 import com.bookbla.americano.domain.payment.repository.PaymentNotificationRepository;
 import com.bookbla.americano.domain.payment.repository.PaymentRepository;
+import com.bookbla.americano.domain.payment.repository.entity.Payment;
+import com.bookbla.americano.domain.payment.repository.entity.PaymentNotification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RequiredArgsConstructor
-@Transactional
 @Service
-public class PaymentService {
+public class ApplePaymentService {
 
     private final PaymentNotificationRepository paymentNotificationRepository;
-    private final PaymentStrategies paymentStrategies;
-    private final GooglePaymentStrategy googlePaymentStrategy;
     private final PaymentRepository paymentRepository;
     private final MemberBookmarkRepository memberBookmarkRepository;
     private final MemberRepository memberRepository;
+    private final ApplePaymentStrategy applePaymentStrategy;
+    private final TransactionTemplate txTemplate;
 
     public PaymentPurchaseResponse orderBookmarkForApple(ApplePaymentInAppPurchaseRequest request, Long memberId) {
-        PaymentStrategy applePaymentStrategy = paymentStrategies.findApple();
-
         Payment payment = applePaymentStrategy.getPaymentInformation(request.getTransactionId());
         payment.updateMemberId(memberId);
-        paymentRepository.save(payment);
 
-        MemberBookmark memberBookmark = findMemberBookmarkByMemberId(memberId);
+        txTemplate.executeWithoutResult(it -> {
+            paymentRepository.save(payment);
 
-        int updateCount = payment.getBookmark();
-        memberBookmark.addBookmark(updateCount);
+            MemberBookmark memberBookmark = getMemberBookmarkByMemberId(memberId);
+
+            int updateCount = payment.getBookmark();
+            memberBookmark.addBookmark(updateCount);
+        });
 
         return PaymentPurchaseResponse.from(payment);
     }
 
-    public PaymentPurchaseResponse orderBookmarkForGoogle(GooglePaymentInAppPurchaseRequest request, Long memberId) {
-        Payment payment = googlePaymentStrategy.getPaymentInformation(request, memberId);
-        payment.updateMemberId(memberId);
-        paymentRepository.save(payment);
-
-        return PaymentPurchaseResponse.from(payment);
+    private MemberBookmark getMemberBookmarkByMemberId(Long payment) {
+        return memberBookmarkRepository.findMemberBookmarkByMemberId(payment)
+                .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
     }
 
     // https://developer.apple.com/documentation/storekit/in-app_purchase/original_api_for_in-app_purchase/handling_refund_notifications
-    @Transactional(noRollbackFor = {BaseException.class, Exception.class})
+    @Transactional(noRollbackFor = BaseException.class)
     public void receiveAppleNotification(String signedPayload) {
-        PaymentStrategy applePaymentStrategy = paymentStrategies.findApple();
         PaymentNotification paymentNotification = applePaymentStrategy.getNotificationInformation(signedPayload);
         paymentNotificationRepository.save(paymentNotification);
 
@@ -66,26 +62,19 @@ public class PaymentService {
     }
 
     private void handleRefund(PaymentNotification paymentNotification) {
-        Payment payment = findPaymentByReceipt(paymentNotification.getReceipt());
+        Payment payment = getPaymentByReceipt(paymentNotification.getReceipt());
         if (!memberRepository.existsById(payment.getMemberId())) {
             return;
         }
 
-        MemberBookmark memberBookmark = findMemberBookmarkByMemberId(payment.getMemberId());
-
+        MemberBookmark memberBookmark = getMemberBookmarkByMemberId(payment.getMemberId());
         if (payment.canRefund(memberBookmark)) {
             memberBookmark.refundBookmark(payment.getBookmark());
         }
     }
 
-    private Payment findPaymentByReceipt(String receipt) {
+    private Payment getPaymentByReceipt(String receipt) {
         return paymentRepository.findByReceipt(receipt)
                 .orElseThrow(() -> new BaseException(PaymentExceptionType.PAYMENT_TYPE_NOT_FOUND));
-    }
-
-
-    private MemberBookmark findMemberBookmarkByMemberId(Long payment) {
-        return memberBookmarkRepository.findMemberBookmarkByMemberId(payment)
-                .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
     }
 }

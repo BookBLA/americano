@@ -4,13 +4,17 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.exception.MemberBookmarkExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
+import com.bookbla.americano.domain.payment.controller.dto.request.GooglePaymentInAppPurchaseRequest;
+import com.bookbla.americano.domain.payment.controller.dto.response.PaymentPurchaseResponse;
 import com.bookbla.americano.domain.payment.enums.PaymentType;
 import com.bookbla.americano.domain.payment.enums.VoidedReason;
 import com.bookbla.americano.domain.payment.enums.VoidedSource;
+import com.bookbla.americano.domain.payment.infrastructure.google.GooglePaymentStrategy;
 import com.bookbla.americano.domain.payment.infrastructure.google.config.GooglePaymentConfig;
 import com.bookbla.americano.domain.payment.infrastructure.google.exception.GooglePaymentExceptionType;
 import com.bookbla.americano.domain.payment.repository.PaymentRepository;
 import com.bookbla.americano.domain.payment.repository.PaymentVoidPurchaseRepository;
+import com.bookbla.americano.domain.payment.repository.entity.Payment;
 import com.bookbla.americano.domain.payment.repository.entity.PaymentVoidPurchase;
 import com.bookbla.americano.domain.payment.service.dto.PaymentVoidPurchaseDto;
 import com.google.api.services.androidpublisher.AndroidPublisher;
@@ -32,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class GooglePaymentService {
 
     private final GooglePaymentConfig googlePaymentConfig;
+    private final GooglePaymentStrategy googlePaymentStrategy;
     private final PaymentRepository paymentRepository;
     private final PaymentVoidPurchaseRepository paymentVoidPurchaseRepository;
     private final MemberBookmarkRepository memberBookmarkRepository;
@@ -92,5 +97,13 @@ public class GooglePaymentService {
             log.error(e.getMessage());
             throw new BaseException(GooglePaymentExceptionType.SECURITY_ERROR);
         }
+    }
+
+    public PaymentPurchaseResponse orderBookmarkForGoogle(GooglePaymentInAppPurchaseRequest request, Long memberId) {
+        Payment payment = googlePaymentStrategy.getPaymentInformation(request, memberId);
+        payment.updateMemberId(memberId);
+        paymentRepository.save(payment);
+
+        return PaymentPurchaseResponse.from(payment);
     }
 }

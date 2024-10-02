@@ -6,7 +6,8 @@ import com.bookbla.americano.domain.payment.controller.docs.PaymentControllerDoc
 import com.bookbla.americano.domain.payment.controller.dto.request.GooglePaymentInAppPurchaseRequest;
 import com.bookbla.americano.domain.payment.controller.dto.request.ApplePaymentInAppPurchaseRequest;
 import com.bookbla.americano.domain.payment.controller.dto.response.PaymentPurchaseResponse;
-import com.bookbla.americano.domain.payment.service.PaymentService;
+import com.bookbla.americano.domain.payment.service.ApplePaymentService;
+import com.bookbla.americano.domain.payment.service.GooglePaymentService;
 import io.swagger.v3.oas.annotations.Parameter;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +22,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class PaymentController implements PaymentControllerDocs {
 
-    private final PaymentService paymentService;
+    private final ApplePaymentService applePaymentService;
+    private final GooglePaymentService googlePaymentService;
 
     @PostMapping("/in-app/apple")
     public ResponseEntity<PaymentPurchaseResponse> orderBookmarkForApple(
         @User LoginUser loginUser,
         @Valid @RequestBody ApplePaymentInAppPurchaseRequest request
     ) {
-        PaymentPurchaseResponse paymentPurchaseResponse = paymentService.orderBookmarkForApple(
+        PaymentPurchaseResponse paymentPurchaseResponse = applePaymentService.orderBookmarkForApple(
             request, loginUser.getMemberId());
         return ResponseEntity.ok(paymentPurchaseResponse);
     }
@@ -38,7 +40,7 @@ public class PaymentController implements PaymentControllerDocs {
         @Parameter(hidden = true) @User LoginUser loginUser,
         @Valid @RequestBody GooglePaymentInAppPurchaseRequest request
     ) {
-        PaymentPurchaseResponse paymentPurchaseResponse = paymentService.orderBookmarkForGoogle(
+        PaymentPurchaseResponse paymentPurchaseResponse = googlePaymentService.orderBookmarkForGoogle(
             request, loginUser.getMemberId());
         return ResponseEntity.ok(paymentPurchaseResponse);
     }
