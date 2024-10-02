@@ -40,7 +40,7 @@ public class MemberMatchingRepositoryImpl implements MemberMatchingRepositoryCus
                 .leftJoin(matchIgnoredInfo).on(member.id.eq(matchIgnoredInfo.ignoredMemberId))
                 .where(
                         matchExcludedInfo.excludedMemberId.ne(recommendationDto.getMemberId()),
-                        matchIgnoredInfo.ignoredMemberId.ne(matchedInfo.memberId),
+                        matchIgnoredInfo.ignoredMemberId.ne(recommendationDto.getMemberId()),
                         member.id.ne(recommendationDto.getMemberId()),
                         memberBook.isDeleted.isFalse(),
                         member.memberStatus.ne(MemberStatus.DELETED),
