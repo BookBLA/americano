@@ -44,7 +44,7 @@ public class MemberIntroResponse {
                 .bookTitle(memberBook.getBook().getTitle())
                 .bookAuthors(memberBook.getBook().getAuthors())
                 .review(memberBook.getReview())
-                .isInvitationCard(memberMatching.isInvitationCard())
+                .isInvitationCard(memberMatching.getIsInvitationCard())
                 .build();
     }
 

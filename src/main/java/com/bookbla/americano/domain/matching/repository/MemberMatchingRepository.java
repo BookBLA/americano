@@ -4,6 +4,7 @@ import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
 import com.bookbla.americano.domain.matching.repository.custom.MemberMatchingRepositoryCustom;
 import com.bookbla.americano.domain.matching.repository.entity.MemberMatching;
+import com.bookbla.americano.domain.member.repository.entity.Member;
 import feign.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -19,6 +20,8 @@ public interface MemberMatchingRepository extends JpaRepository<MemberMatching, 
     }
 
     Optional<MemberMatching> findByMemberId(Long memberId);
+
+    MemberMatching findByMember(Member member);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "UPDATE member_matching SET is_invitation_card = :isInvitationCard", nativeQuery = true)

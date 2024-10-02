@@ -55,7 +55,9 @@ public class MemberMatchingService {
         if (memberMatching.hasCurrentMatchedInfo()) {
             MatchedInfo matchedInfo = getMatchedInfo(memberId, memberMatching);
 
-            return buildMemberIntroResponse(matchedInfo);
+            memberMatching.updateInvitationCard(false);
+
+            return buildMemberIntroResponse(matchedInfo, memberMatching);
         }
 
         MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member, memberMatching);
@@ -81,7 +83,7 @@ public class MemberMatchingService {
 
         MatchedInfo matchedInfo = getMostPriorityMatched(matchedInfoRepository.getAllByDesc(memberMatching.getId()));
 
-        MemberIntroResponse memberIntroResponse = buildMemberIntroResponse(matchedInfo);
+        MemberIntroResponse memberIntroResponse = buildMemberIntroResponse(matchedInfo, memberMatching);
 
         updateCurrentMatchedInfo(memberMatching, memberIntroResponse.getMemberId(), memberIntroResponse.getMemberBookId());
 
@@ -108,7 +110,8 @@ public class MemberMatchingService {
 
         updateCurrentMatchedInfo(memberMatching, matchedInfo.getMatchedMemberId(), matchedInfo.getMatchedMemberBookId());
 
-        return buildMemberIntroResponse(matchedInfo);
+        memberMatching.updateInvitationCard(false);
+        return buildMemberIntroResponse(matchedInfo, memberMatching);
     }
 
     public void rejectMemberMatching(Long memberId, Long rejectedMemberId) {
@@ -116,7 +119,7 @@ public class MemberMatchingService {
                 .orElseGet(() -> matchExcludedRepository.save(MatchExcludedInfo.of(memberId, rejectedMemberId)));
     }
 
-    private MemberIntroResponse buildMemberIntroResponse(MatchedInfo matchedInfo) {
+    private MemberIntroResponse buildMemberIntroResponse(MatchedInfo matchedInfo, MemberMatching memberMatching) {
         if (matchedInfo == null) return MemberIntroResponse.empty();
 
         Member matchedMember = memberRepository.getByIdOrThrow(matchedInfo.getMatchedMemberId());
@@ -126,7 +129,7 @@ public class MemberMatchingService {
             throw new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST);
         }
 
-        return MemberIntroResponse.from(matchedMember, matchedMemberBook);
+        return MemberIntroResponse.from(matchedMember, matchedMemberBook, memberMatching);
     }
 
     private MatchedInfo getMostPriorityMatched(List<MatchedInfo> matchedMemberList) {
