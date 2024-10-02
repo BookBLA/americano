@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.bookbla.americano.domain.matching.repository.entity.QMatchedInfo.matchedInfo;
 import static com.bookbla.americano.domain.member.repository.entity.QMember.member;
 import static com.bookbla.americano.domain.member.repository.entity.QMemberBook.memberBook;
 
@@ -39,7 +40,7 @@ public class MemberMatchingRepositoryImpl implements MemberMatchingRepositoryCus
                 .leftJoin(matchIgnoredInfo).on(member.id.eq(matchIgnoredInfo.ignoredMemberId))
                 .where(
                         matchExcludedInfo.excludedMemberId.ne(recommendationDto.getMemberId()),
-                        matchIgnoredInfo.ignoredMemberId.isNull(),
+                        matchIgnoredInfo.ignoredMemberId.ne(matchedInfo.memberId),
                         member.id.ne(recommendationDto.getMemberId()),
                         memberBook.isDeleted.isFalse(),
                         member.memberStatus.ne(MemberStatus.DELETED),

@@ -31,7 +31,7 @@ public class MatchedInfoRepositoryImpl implements MatchedInfoRepositoryCustom {
                 .where(
                         matchedInfo.memberMatching.id.eq(memberMatchingId),
                         matchExcludedInfo.excludedMemberId.ne(matchedInfo.memberId),
-                        matchIgnoredInfo.ignoredMemberId.isNull(),
+                        matchIgnoredInfo.ignoredMemberId.ne(matchedInfo.memberId),
                         member.memberStatus.ne(MemberStatus.DELETED),
                         member.memberStatus.ne(MemberStatus.MATCHING_DISABLED),
                         member.memberStatus.ne(MemberStatus.REPORTED))
