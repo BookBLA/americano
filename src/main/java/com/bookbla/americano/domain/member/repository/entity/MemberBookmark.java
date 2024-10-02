@@ -77,6 +77,10 @@ public class MemberBookmark extends BaseEntity {
         bookmarkCount += 35;
     }
 
+    public void addStudentIdCertificationReward() {
+        bookmarkCount += 35;
+    }
+
     public void addBookmark(int count) {
         this.bookmarkCount += count;
     }
@@ -86,16 +90,6 @@ public class MemberBookmark extends BaseEntity {
             throw new BaseException(MemberBookmarkExceptionType.INVALID_BOOKMARK_COUNTS);
         }
         this.bookmarkCount -= count;
-    }
-
-    public void updateBookmarksByInitialBook(int memberBooks) {
-        if (memberBooks >= 4) {
-            this.bookmarkCount += 60;
-            return;
-        }
-
-        int counts = memberBooks * 15;
-        this.bookmarkCount += counts;
     }
 
     public void watchAdmob(AdmobType admobType) {
