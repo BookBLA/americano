@@ -2,6 +2,7 @@ package com.bookbla.americano.scheduler;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.log.discord.BookblaLogDiscord;
+import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberEmailRepository;
@@ -42,6 +43,7 @@ class ScheduleWorker {
     private final MemberBookmarkRepository memberBookmarkRepository;
     private final PostcardRepository postcardRepository;
     private final GooglePaymentService googlePaymentService;
+    private final MemberMatchingRepository memberMatchingRepository;
 
     @Scheduled(cron = EVERY_4_AM, zone = "Asia/Seoul")
     public void deleteMemberEmailSchedule() {
@@ -113,6 +115,25 @@ class ScheduleWorker {
         } catch (Exception e) {
             String txName = ScheduleWorker.class.getName() + "(resetNewPersonCount)";
             String message = "새로고침 횟수 초기화 기능 실패  " + CRLF
+                    + e.getMessage() + CRLF
+                    + stackTraceToString(e);
+
+            mailService.sendTransactionFailureEmail(txName, message);
+            bookblaLogDiscord.sendMessage(message);
+
+            log.debug("Exception in {}", ScheduleWorker.class.getName());
+            log.error(e.toString());
+            log.error(stackTraceToString(e));
+        }
+    }
+
+    @Scheduled(cron = EVERY_0_AM, zone = "Asia/Seoul")
+    public void resetIsInvitationCard() {
+        try {
+            memberMatchingRepository.resetIsInvitationCard(true);
+        } catch (Exception e) {
+            String txName = ScheduleWorker.class.getName() + "(resetIsInvitationCard)";
+            String message = "초대 카드 초기화 실패 " + CRLF
                     + e.getMessage() + CRLF
                     + stackTraceToString(e);
 
