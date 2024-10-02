@@ -3,6 +3,8 @@ package com.bookbla.americano.domain.postcard.service;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.book.repository.BookRepository;
 import com.bookbla.americano.domain.book.repository.entity.Book;
+import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
+import com.bookbla.americano.domain.matching.repository.entity.MemberMatching;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
@@ -24,6 +26,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import javax.transaction.Transactional;
 
 import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.REFUSED;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,6 +66,9 @@ class PostcardServiceTest {
     @Autowired
     private BookRepository bookRepository;
 
+    @Autowired
+    private MemberMatchingRepository memberMatchingRepository;
+
     private PostcardType postcardType;
 
     @BeforeEach
@@ -90,6 +97,7 @@ class PostcardServiceTest {
     }
 
     @Test
+    @Transactional
     void 엽서를_보낼_수_있다() {
         //given
         MemberProfile memberProfile = MemberProfile.builder().studentIdImageStatus(StudentIdImageStatus.DONE).build();
@@ -101,7 +109,12 @@ class PostcardServiceTest {
                 .member(sendMember)
                 .bookmarkCount(100).build();
         bookmarkRepository.save(memberBookmark);
-
+        MemberMatching memberMatching = memberMatchingRepository.save(MemberMatching.builder()
+                .member(sendMember)
+                .currentMatchedMemberId(receiveMember.getId())
+                .currentMatchedMemberBookId(receiveMemberBook.getId())
+                .isInvitationCard(false)
+                .build());
         SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(), receiveMemberBook.getId(), "memberReply");
 
         //when
@@ -109,6 +122,7 @@ class PostcardServiceTest {
 
         //then
         assertThat(response.getIsSendSuccess()).isTrue();
+        assertThat(memberMatching.getIsInvitationCard()).isTrue();
     }
 
     @Test
@@ -220,6 +234,6 @@ class PostcardServiceTest {
         postcardTypeRepository.deleteAllInBatch();
         memberBlockRepository.deleteAllInBatch();
         memberBookRepository.deleteAllInBatch();
-        bookmarkRepository.deleteAllInBatch();
+        memberMatchingRepository.deleteAllInBatch();
     }
 }
