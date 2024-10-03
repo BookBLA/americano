@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.postcard.service;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.book.repository.BookRepository;
 import com.bookbla.americano.domain.book.repository.entity.Book;
+import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
 import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
 import com.bookbla.americano.domain.matching.repository.entity.MemberMatching;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
@@ -97,7 +98,6 @@ class PostcardServiceTest {
     }
 
     @Test
-    @Transactional
     void 엽서를_보낼_수_있다() {
         //given
         MemberProfile memberProfile = MemberProfile.builder().studentIdImageStatus(StudentIdImageStatus.DONE).build();
@@ -109,7 +109,7 @@ class PostcardServiceTest {
                 .member(sendMember)
                 .bookmarkCount(100).build();
         bookmarkRepository.save(memberBookmark);
-        MemberMatching memberMatching = memberMatchingRepository.save(MemberMatching.builder()
+        memberMatchingRepository.save(MemberMatching.builder()
                 .member(sendMember)
                 .currentMatchedMemberId(receiveMember.getId())
                 .currentMatchedMemberBookId(receiveMemberBook.getId())
@@ -122,7 +122,9 @@ class PostcardServiceTest {
 
         //then
         assertThat(response.getIsSendSuccess()).isTrue();
-        assertThat(memberMatching.getIsInvitationCard()).isTrue();
+        MemberMatching updatedMemberMatching = memberMatchingRepository.findByMember(sendMember)
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MATCHING));
+        assertThat(updatedMemberMatching.getIsInvitationCard()).isTrue();
     }
 
     @Test
