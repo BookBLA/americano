@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
 import com.bookbla.americano.domain.matching.repository.MatchExcludedRepository;
 import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
 import com.bookbla.americano.domain.matching.repository.entity.MatchExcludedInfo;
@@ -83,7 +84,8 @@ public class MemberReportService {
         memberReportRepository.save(memberReport);
         applicationEventPublisher.publishEvent(new AdminNotificationEvent("새 신고가 접수되었습니다", "신고당한 회원 id : " + reportedMember.getId().toString()));
 
-        MemberMatching memberMatching = memberMatchingRepository.findByMember(reporterMember);
+        MemberMatching memberMatching = memberMatchingRepository.findByMember(reporterMember)
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MATCHING));
         memberMatching.updateInvitationCard(true);
 
         // 신고 당한 회원 매칭 제외
