@@ -2,10 +2,13 @@ package com.bookbla.americano.domain.postcard.service;
 
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
 import com.bookbla.americano.domain.matching.repository.MatchExcludedRepository;
 import com.bookbla.americano.domain.matching.repository.MatchIgnoredRepository;
+import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
 import com.bookbla.americano.domain.matching.repository.entity.MatchExcludedInfo;
 import com.bookbla.americano.domain.matching.repository.entity.MatchIgnoredInfo;
+import com.bookbla.americano.domain.matching.repository.entity.MemberMatching;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.*;
@@ -54,6 +57,7 @@ public class PostcardService {
     private final PushAlarmEventHandler postcardPushAlarmEventListener;
     private final MatchExcludedRepository matchExcludedRepository;
     private final MatchIgnoredRepository matchIgnoredRepository;
+    private final MemberMatchingRepository memberMatchingRepository;
 
     public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
         // 엽서 보내는 회원의 학생증 상태 검증
@@ -95,6 +99,9 @@ public class PostcardService {
                 .build();
         postcardRepository.save(postcard);
 
+        MemberMatching memberMatching = memberMatchingRepository.findByMember(member)
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MATCHING));
+        memberMatching.updateInvitationCard(true);
 
         postcardPushAlarmEventListener.sendPostcard(new PostcardAlarmEvent(member, targetMember));
 

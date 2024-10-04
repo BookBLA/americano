@@ -1,8 +1,11 @@
 package com.bookbla.americano.domain.quiz.service;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
 import com.bookbla.americano.domain.matching.repository.MatchExcludedRepository;
+import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
 import com.bookbla.americano.domain.matching.repository.entity.MatchExcludedInfo;
+import com.bookbla.americano.domain.matching.repository.entity.MemberMatching;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -27,6 +30,7 @@ public class QuizQuestionService {
     private final MemberRepository memberRepository;
     private final MemberBookRepository memberBookRepository;
     private final MatchExcludedRepository matchExcludedRepository;
+    private final MemberMatchingRepository memberMatchingRepository;
 
     @Transactional(readOnly = true)
     public QuizQuestionReadResponse getQuizQuestion(Long memberId, Long memberBookId) {
@@ -47,12 +51,15 @@ public class QuizQuestionService {
                 .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
 
         CorrectStatus status = quizQuestion.solve(request.getQuizAnswer());
+        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MATCHING));
 
         boolean isCorrect = true;
 
         if (status == CorrectStatus.WRONG) {
             matchExcludedRepository.findByMemberIdAndExcludedMemberId(request.getQuizMakerId(), memberId)
                     .orElseGet(() -> matchExcludedRepository.save(MatchExcludedInfo.of(memberId, request.getQuizMakerId())));
+            memberMatching.updateInvitationCard(true);
             isCorrect = false;
         }
 
