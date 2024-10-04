@@ -25,8 +25,7 @@ import static com.bookbla.americano.domain.member.repository.entity.QMemberBook.
 
 @Repository
 @RequiredArgsConstructor
-public class
-MemberMatchingRepositoryImpl implements MemberMatchingRepositoryCustom {
+public class MemberMatchingRepositoryImpl implements MemberMatchingRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
@@ -34,24 +33,12 @@ MemberMatchingRepositoryImpl implements MemberMatchingRepositoryCustom {
     public List<MatchedInfo> getMatchingMembers(MemberRecommendationDto recommendationDto) {
         LocalDateTime twoWeeksAgo = LocalDateTime.now().minusDays(14);
         QMatchExcludedInfo matchExcludedInfo = QMatchExcludedInfo.matchExcludedInfo;
-        QMatchIgnoredInfo matchIgnoredInfo = QMatchIgnoredInfo.matchIgnoredInfo;
-
-        // 서브쿼리 : match_ignored_info 에서 앱사용자가 무시한 회원과 그 회원의 책 정보 추출
-        JPAQuery<Tuple> subQuery = queryFactory
-                .select(member.id, memberBook.id)
-                .from(member)
-                .innerJoin(memberBook).on(member.id.eq(memberBook.member.id))
-                .leftJoin(matchIgnoredInfo).on(member.id.eq(matchIgnoredInfo.ignoredMemberId)
-                        .and(memberBook.id.eq(matchIgnoredInfo.ignoredMemberBookId)))
-                .where(matchIgnoredInfo.memberId.eq(recommendationDto.getMemberId()));
 
         return queryFactory
                 .selectDistinct(member.id, memberBook.id)
                 .from(member)
                 .innerJoin(memberBook).on(member.id.eq(memberBook.member.id))
                 .leftJoin(matchExcludedInfo).on(member.id.eq(matchExcludedInfo.excludedMemberId))
-                .leftJoin(matchIgnoredInfo).on(member.id.eq(matchIgnoredInfo.ignoredMemberId)
-                        .and(memberBook.id.eq(matchIgnoredInfo.ignoredMemberBookId)))
                 .where(
                         matchExcludedInfo.memberId.ne(recommendationDto.getMemberId()),
                         memberBook.isDeleted.isFalse(),
@@ -59,16 +46,7 @@ MemberMatchingRepositoryImpl implements MemberMatchingRepositoryCustom {
                         member.memberStatus.ne(MemberStatus.MATCHING_DISABLED),
                         member.memberStatus.ne(MemberStatus.REPORTED),
                         member.memberProfile.gender.ne(Gender.valueOf(recommendationDto.getMemberGender())),
-                        member.lastUsedAt.coalesce(LocalDate.parse("1900-01-01").atStartOfDay()).after(twoWeeksAgo),
-                        // 서브쿼리의 결과 조합 제외
-                        JPAExpressions.selectOne()
-                                .from(member)
-                                .innerJoin(memberBook).on(member.id.eq(memberBook.member.id))
-                                .where(
-                                        member.id.eq(subQuery.select(member.id)),
-                                        memberBook.id.eq(subQuery.select(memberBook.id))
-                                )
-                                .notExists()
+                        member.lastUsedAt.coalesce(LocalDate.parse("1900-01-01").atStartOfDay()).after(twoWeeksAgo)
                 )
                 .fetch()
                 .stream()
