@@ -1,16 +1,16 @@
 package com.bookbla.americano.domain.matching.service;
 
+import com.bookbla.americano.domain.matching.repository.MatchIgnoredRepository;
+import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
 import com.bookbla.americano.domain.matching.repository.entity.MatchedInfo;
+import com.bookbla.americano.domain.matching.service.dto.MemberRecommendationDto;
 import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
-import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
 import com.bookbla.americano.domain.postcard.repository.PostcardRepository;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,57 +18,57 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MemberMatchingFilter {
 
-    private final MemberVerifyRepository memberVerifyRepository;
     private final PostcardRepository postcardRepository;
     private final MemberBlockRepository memberBlockRepository;
-
-    /**
-     * 학생증 상태 확인 필터링
-     */
-    public List<MatchedInfo> memberVerifyFiltering(List<MatchedInfo> matchingMembers) {
-        Set<Long> filteringMemberIds = extractFilteringMemberIds(matchingMembers);
-
-        // filteringMemberIds 필터링 -> filteredMatchMemberIds
-        List<Long> filteredMatchMemberIds = memberVerifyRepository.getMemberIdsByStudentIdVerify(filteringMemberIds);
-
-        return matchingMembers.stream()
-                .filter(matchedInfo -> filteredMatchMemberIds.contains(matchedInfo.getMatchedMemberId()))
-                .collect(Collectors.toList());
-    }
+    private final MatchIgnoredRepository matchIgnoredRepository;
+    private final MemberMatchingRepository memberMatchingRepository;
 
     /**
      * 엽서 거절 조건 필터링
      */
-    public List<MatchedInfo> memberRefusedAtFiltering(Long sendMemberId, List<MatchedInfo> matchingMembers) {
-        Set<Long> filteringMemberIds = extractFilteringMemberIds(matchingMembers);
+    public List<Long> memberRefusedAtFiltering(Long sendMemberId, List<Long> matchingMemberIds) {
 
         // 앱 사용자로 부터 받은 엽서를 거절한지 14일이 안된 회원 = 추천되면 안되는 회원
-        List<Long> filteredMatchMemberIds = postcardRepository.getReceiveIdsRefusedAt(sendMemberId, filteringMemberIds);
+        List<Long> filteredMatchMemberIds = postcardRepository.getReceiveIdsRefusedAt(sendMemberId, matchingMemberIds);
 
         // matchingMembers - filteredMatchMemberIds => 최종적으로 뽑고싶은 추천 회원 id
-        return matchingMembers.stream()
-                .filter(matchedInfo -> !filteredMatchMemberIds.contains(matchedInfo.getMatchedMemberId()))
+        return matchingMemberIds.stream()
+                .filter(memberId -> !filteredMatchMemberIds.contains(memberId))
                 .collect(Collectors.toList());
     }
 
     /**
      * 차단된 회원 필터링
      */
-    public List<MatchedInfo> memberBlockedFiltering(Long appMemberId, List<MatchedInfo> matchingMembers) {
-        Set<Long> filteringMemberIds = extractFilteringMemberIds(matchingMembers);
+    public List<Long> memberBlockedFiltering(Long appMemberId, List<Long> matchingMemberIds) {
 
         // 앱 사용자로 부터 차단된 회원 = 추천되면 안되는 회원
-        List<Long> filteredMatchMemberIds = memberBlockRepository.getBlockedMemberIdsByBlockerMemberId(appMemberId, filteringMemberIds);
+        List<Long> filteredMatchMemberIds = memberBlockRepository.getBlockedMemberIdsByBlockerMemberId(appMemberId, matchingMemberIds);
 
         // matchingMembers - filteredMatchMemberIds => 최종적으로 뽑고싶은 추천 회원 id
-        return matchingMembers.stream()
-                .filter(matchedInfo -> !filteredMatchMemberIds.contains(matchedInfo.getMatchedMemberId()))
+        return matchingMemberIds.stream()
+                .filter(memberId -> !filteredMatchMemberIds.contains(memberId))
                 .collect(Collectors.toList());
     }
 
-    private static @NotNull Set<Long> extractFilteringMemberIds(List<MatchedInfo> matchingMembers) {
-        return matchingMembers.stream()
-                .map(MatchedInfo::getMatchedMemberId)
-                .collect(Collectors.toSet());
+    /**
+     * 무시한 회원 필터링
+     */
+    public List<MatchedInfo> memberIgnoredFiltering(List<Long> matchingMemberIds, MemberRecommendationDto memberRecommendationDto) {
+        List<MatchedInfo> matches = memberMatchingRepository.getAllMatching(matchingMemberIds, memberRecommendationDto);
+        List<MatchedInfo> filteredMatches = matchIgnoredRepository.getIgnoredMemberIdsAndIgnoredMemberBookIdByMemberId(matchingMemberIds, memberRecommendationDto);
+
+        return matches.stream()
+                .filter(match -> filteredMatches.stream()
+                        .noneMatch(filteredMatch -> filteredMatch.getMatchedMemberId().equals(match.getMatchedMemberId())))
+                .collect(Collectors.toList());
+
+    }
+
+    /**
+     * 필터링 최종 결과
+     */
+    public List<MatchedInfo> finalFiltering(List<Long> matchingMemberIds, MemberRecommendationDto memberRecommendationDto) {
+         return memberMatchingRepository.getMatchingInfo(matchingMemberIds,memberRecommendationDto);
     }
 }

@@ -62,15 +62,18 @@ public class MemberMatchingService {
 
         MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member, memberMatching);
 
-        List<MatchedInfo> recommendedMembers = memberMatchingRepository
-                .getMatchingMembers(memberRecommendationDto);
-        log.info("최소 조건으로 추출한 추천 회원 수: {}", recommendedMembers.size());
+        List<Long> recommendedMemberIds = memberMatchingRepository.getMatchingMemberIds(memberRecommendationDto);
+        log.info("최소 조건(제외 및 회원 상태)으로 추출한 추천 회원 ID 수: {}", recommendedMemberIds.size());
 
-        recommendedMembers = memberMatchingFilter.memberBlockedFiltering(member.getId(), recommendedMembers);
-        log.info("차단한 회원 필터링 후 추천 회원 수: {}", recommendedMembers.size());
+        recommendedMemberIds = memberMatchingFilter.memberBlockedFiltering(member.getId(), recommendedMemberIds);
+        log.info("차단한 회원 필터링 후 추천 회원 ID 수: {}", recommendedMemberIds.size());
 
-        recommendedMembers = memberMatchingFilter.memberRefusedAtFiltering(member.getId(), recommendedMembers);
-        log.info("엽서 거절 필터링 후 추천 회원 수: {}", recommendedMembers.size());
+        recommendedMemberIds = memberMatchingFilter.memberRefusedAtFiltering(member.getId(), recommendedMemberIds);
+        log.info("엽서 거절 필터링 후 추천 회원 ID 수: {}", recommendedMemberIds.size());
+
+//        List<MatchedInfo> recommendedMembers = memberMatchingFilter.memberIgnoredFiltering(recommendedMemberIds, memberRecommendationDto);
+        List<MatchedInfo> recommendedMembers = memberMatchingFilter.finalFiltering(recommendedMemberIds, memberRecommendationDto);
+        log.info("무시한 회원 필터링 후 ❗️최종 추천 수: {}", recommendedMembers.size());
 
         log.info("알고리즘 가중치 적용 쿼리 ⬇️⬇️⬇️");
         recommendedMembers = memberMatchingAlgorithmFilter.memberMatchingAlgorithmFiltering(member, recommendedMembers);

@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Set;
 
 import static com.bookbla.americano.domain.member.repository.entity.QMemberBlock.memberBlock;
 
@@ -17,13 +16,13 @@ public class MemberBlockRepositoryImpl implements MemberBlockRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Long> getBlockedMemberIdsByBlockerMemberId(Long memberId, Set<Long> matchingMembers) {
+    public List<Long> getBlockedMemberIdsByBlockerMemberId(Long memberId, List<Long> matchingMemberIds) {
 
         return queryFactory
                 .select(memberBlock.blockedMember.id)
                 .from(memberBlock)
                 .where(memberBlock.blockerMember.id.eq(memberId),
-                        memberBlock.blockedMember.id.in(matchingMembers)
+                        memberBlock.blockedMember.id.in(matchingMemberIds)
                 ).fetch();
     }
 }

@@ -8,7 +8,6 @@ import com.bookbla.americano.domain.postcard.repository.entity.QPostcard;
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardFromResponse;
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardToResponse;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 import static com.bookbla.americano.domain.postcard.repository.entity.QPostcard.postcard;
 
@@ -90,7 +88,7 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
     }
 
     @Override
-    public List<Long> getReceiveIdsRefusedAt(Long sendMemberId, Set<Long> filteringMemberId) {
+    public List<Long> getReceiveIdsRefusedAt(Long sendMemberId, List<Long> filteringMemberId) {
 
         LocalDateTime twoWeeksAgo = LocalDateTime.now().minusWeeks(2);
 
