@@ -39,9 +39,9 @@ public class MemberMatchingRepositoryImpl implements MemberMatchingRepositoryCus
                 .leftJoin(matchExcludedInfo).on(member.id.eq(matchExcludedInfo.excludedMemberId))
                 .leftJoin(matchIgnoredInfo).on(member.id.eq(matchIgnoredInfo.ignoredMemberId))
                 .where(
-                        matchExcludedInfo.excludedMemberId.ne(recommendationDto.getMemberId()),
-                        matchIgnoredInfo.ignoredMemberId.ne(recommendationDto.getMemberId())
-                                .or(matchIgnoredInfo.ignoredMemberId.isNull()),
+                        matchExcludedInfo.memberId.ne(recommendationDto.getMemberId()),
+                        matchIgnoredInfo.memberId.ne(recommendationDto.getMemberId())
+                                .or(matchIgnoredInfo.memberId.isNull()),
                         member.id.ne(recommendationDto.getMemberId()),
                         memberBook.isDeleted.isFalse(),
                         member.memberStatus.ne(MemberStatus.DELETED),

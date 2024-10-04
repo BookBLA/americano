@@ -69,9 +69,6 @@ public class MemberMatchingService {
         recommendedMembers = memberMatchingFilter.memberBlockedFiltering(member.getId(), recommendedMembers);
         log.info("차단한 회원 필터링 후 추천 회원 수: {}", recommendedMembers.size());
 
-        recommendedMembers = memberMatchingFilter.memberVerifyFiltering(recommendedMembers);
-        log.info("학생증 인증 필터링 후 추천 회원 수: {}", recommendedMembers.size());
-
         recommendedMembers = memberMatchingFilter.memberRefusedAtFiltering(member.getId(), recommendedMembers);
         log.info("엽서 거절 필터링 후 추천 회원 수: {}", recommendedMembers.size());
 
