@@ -61,7 +61,10 @@ public class MemberMatchingService {
         MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member, memberMatching);
 
         List<Long> recommendedMemberIds = memberMatchingRepository.getMinimumConstraintMemberIds(memberRecommendationDto);
-        log.info("최소 조건(제외 및 회원 상태)으로 추출한 추천 회원 ID 수: {}", recommendedMemberIds.size());
+        log.info("최소 조건(회원 상태)으로 추출한 추천 회원 ID 수: {}", recommendedMemberIds.size());
+
+        recommendedMemberIds = memberMatchingFilter.memberExcludedFiltering(member.getId(), recommendedMemberIds);
+        log.info("제외된 회원 필터링 한 추천 회원 ID 수: {}", recommendedMemberIds.size());
 
         recommendedMemberIds = memberMatchingFilter.memberBlockedFiltering(member.getId(), recommendedMemberIds);
         log.info("차단한 회원 필터링 후 추천 회원 ID 수: {}", recommendedMemberIds.size());
