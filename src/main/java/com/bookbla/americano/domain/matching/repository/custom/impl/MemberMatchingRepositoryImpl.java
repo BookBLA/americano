@@ -31,7 +31,8 @@ public class MemberMatchingRepositoryImpl implements MemberMatchingRepositoryCus
                 .from(member)
                 .leftJoin(matchExcludedInfo).on(member.id.eq(matchExcludedInfo.excludedMemberId))
                 .where(
-                        matchExcludedInfo.memberId.ne(recommendationDto.getMemberId()),
+                        (matchExcludedInfo.memberId.ne(recommendationDto.getMemberId())
+                                .or(matchExcludedInfo.excludedMemberId.isNull())),
                         member.memberStatus.ne(MemberStatus.DELETED),
                         member.memberStatus.ne(MemberStatus.MATCHING_DISABLED),
                         member.memberStatus.ne(MemberStatus.REPORTED),
