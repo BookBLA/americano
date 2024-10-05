@@ -1,7 +1,7 @@
 package com.bookbla.americano.domain.matching.service;
 
 import com.bookbla.americano.domain.matching.repository.MatchIgnoredRepository;
-import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
+import com.bookbla.americano.domain.matching.repository.MatchedInfoRepository;
 import com.bookbla.americano.domain.matching.repository.entity.MatchedInfo;
 import com.bookbla.americano.domain.matching.service.dto.MemberRecommendationDto;
 import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
@@ -21,7 +21,7 @@ public class MemberMatchingFilter {
     private final PostcardRepository postcardRepository;
     private final MemberBlockRepository memberBlockRepository;
     private final MatchIgnoredRepository matchIgnoredRepository;
-    private final MemberMatchingRepository memberMatchingRepository;
+    private final MatchedInfoRepository matchedInfoRepository;
 
     /**
      * 엽서 거절 조건 필터링
@@ -55,7 +55,7 @@ public class MemberMatchingFilter {
      * 무시한 회원 필터링
      */
     public List<MatchedInfo> memberIgnoredFiltering(List<Long> matchingMemberIds, MemberRecommendationDto memberRecommendationDto) {
-        List<MatchedInfo> matches = memberMatchingRepository.getAllMatching(matchingMemberIds, memberRecommendationDto);
+        List<MatchedInfo> matches = matchedInfoRepository.getAllMatches(matchingMemberIds, memberRecommendationDto);
         List<MatchedInfo> filteredMatches = matchIgnoredRepository.getIgnoredMemberIdsAndIgnoredMemberBookIdByMemberId(matchingMemberIds, memberRecommendationDto);
 
         return matches.stream()
@@ -69,6 +69,6 @@ public class MemberMatchingFilter {
      * 필터링 최종 결과
      */
     public List<MatchedInfo> finalFiltering(List<Long> matchingMemberIds, MemberRecommendationDto memberRecommendationDto) {
-         return memberMatchingRepository.getMatchingInfo(matchingMemberIds,memberRecommendationDto);
+         return matchedInfoRepository.getFinalFilteredMatches(matchingMemberIds,memberRecommendationDto);
     }
 }
