@@ -96,7 +96,8 @@ public class MatchedInfoRepositoryImpl implements MatchedInfoRepositoryCustom {
         // 모든 매칭 정보 - 무시된 정보
         return matches.stream()
                 .filter(match -> filteredMatches.stream()
-                        .noneMatch(filteredMatch -> filteredMatch.getMatchedMemberId().equals(match.getMatchedMemberId())))
+                        .noneMatch(filteredMatch -> filteredMatch.getMatchedMemberId().equals(match.getMatchedMemberId())
+                                                        && filteredMatch.getMatchedMemberBookId().equals(match.getMatchedMemberBookId())))
                 .collect(Collectors.toList());
     }
 
