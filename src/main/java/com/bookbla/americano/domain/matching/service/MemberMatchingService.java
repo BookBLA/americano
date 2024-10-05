@@ -55,8 +55,6 @@ public class MemberMatchingService {
         if (memberMatching.hasCurrentMatchedInfo()) {
             MatchedInfo matchedInfo = getMatchedInfo(memberId, memberMatching);
 
-            memberMatching.updateInvitationCard(false);
-
             return buildMemberIntroResponse(matchedInfo, memberMatching);
         }
 
