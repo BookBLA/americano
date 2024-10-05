@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.matching.service;
 
+import com.bookbla.americano.domain.matching.repository.MatchExcludedRepository;
 import com.bookbla.americano.domain.matching.repository.MatchIgnoredRepository;
 import com.bookbla.americano.domain.matching.repository.MatchedInfoRepository;
 import com.bookbla.americano.domain.matching.repository.entity.MatchedInfo;
@@ -22,6 +23,18 @@ public class MemberMatchingFilter {
     private final MemberBlockRepository memberBlockRepository;
     private final MatchIgnoredRepository matchIgnoredRepository;
     private final MatchedInfoRepository matchedInfoRepository;
+    private final MatchExcludedRepository matchExcludedRepository;
+
+    /**
+     * 제외된 회원 필터링
+     */
+    public List<Long> memberExcludedFiltering(Long appMemberId, List<Long> matchingMemberIds){
+        List<Long> filteredMatchMemberIds = matchExcludedRepository.getExcludedMemberIdsByMemberId(appMemberId, matchingMemberIds);
+
+        return matchingMemberIds.stream()
+                .filter(memberId -> !filteredMatchMemberIds.contains(memberId))
+                .collect(Collectors.toList());
+    }
 
     /**
      * 엽서 거절 조건 필터링
