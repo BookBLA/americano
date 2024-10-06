@@ -61,26 +61,46 @@ public class MemberMatchingAlgorithmFilter {
                     .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST));
             MemberBook matchingMemberBook = memberBookMap.get(matchedInfo.getMatchedMemberBookId());
 
-            if (isSameSchool(member, matchingMember) && isSameBook(memberBooks, matchingMemberBook)) {
-                matchedInfo.accumulateSimilarityWeight(SAME_SCHOOL_SAME_BOOK);
-            } else if (!isSameSchool(member, matchingMember) && isSameBook(memberBooks, matchingMemberBook)) {
-                matchedInfo.accumulateSimilarityWeight(OTHER_SCHOOL_SAME_BOOK);
-            } else if (isSameSchool(member, matchingMember) && isSameAuthor(memberBookAuthorsMap, matchingMemberBookAuthorsMap, matchingMemberBook)) {
-                matchedInfo.accumulateSimilarityWeight(SAME_SCHOOL_SAME_AUTHOR);
-            } else if (!isSameSchool(member, matchingMember) && isSameAuthor(memberBookAuthorsMap, matchingMemberBookAuthorsMap, matchingMemberBook)) {
-                matchedInfo.accumulateSimilarityWeight(OTHER_SCHOOL_SAME_AUTHOR);
-            } else if (isSameSchool(member, matchingMember) && isSameSmoking(member, matchingMember)) {
-                matchedInfo.accumulateSimilarityWeight(SAME_SCHOOL_SAME_SMOKING);
-            } else if (!isSameSchool(member, matchingMember) && isSameSmoking(member, matchingMember)) {
-                matchedInfo.accumulateSimilarityWeight(OTHER_SCHOOL_SAME_SMOKING);
-            } else if (isSameSchool(member, matchingMember)) {
-                matchedInfo.accumulateSimilarityWeight(SAME_SCHOOL);
-            } else if (isSameBook(memberBooks, matchingMemberBook)) {
-                matchedInfo.accumulateSimilarityWeight(SAME_BOOK);
-            }
+            applySimilarityWeight(member, matchedInfo, matchingMember, memberBooks, matchingMemberBook, memberBookAuthorsMap, matchingMemberBookAuthorsMap);
 
             return matchedInfo;
         }).collect(Collectors.toList());
+    }
+
+    private void applySimilarityWeight(Member member, MatchedInfo matchedInfo, Member matchingMember, List<MemberBook> memberBooks,
+                                       MemberBook matchingMemberBook, Map<Long, List<String>> memberBookAuthorsMap, Map<Long, List<String>> matchingMemberBookAuthorsMap) {
+
+        if (isSameSchool(member, matchingMember)) { // 같은 학교
+            if (isSameBook(memberBooks, matchingMemberBook)) { // 같은 책
+                matchedInfo.accumulateSimilarityWeight(SAME_SCHOOL_SAME_BOOK);
+            } else if (isSameAuthor(memberBookAuthorsMap, matchingMemberBookAuthorsMap, matchingMemberBook)) { // 같은 저자
+                matchedInfo.accumulateSimilarityWeight(SAME_SCHOOL_SAME_AUTHOR);
+            } else {
+                matchedInfo.accumulateSimilarityWeight(SAME_SCHOOL);
+            }
+
+            if (isSameSmoking(member, matchingMember)) { // 같은 흡연 여부
+                matchedInfo.accumulateSimilarityWeight(SAME_SCHOOL_SAME_SMOKING);
+            }
+        } else { // 다른 학교
+            if (isSameBook(memberBooks, matchingMemberBook)) { // 같은 책
+                matchedInfo.accumulateSimilarityWeight(SAME_BOOK);
+            } else if (isSameAuthor(memberBookAuthorsMap, matchingMemberBookAuthorsMap, matchingMemberBook)) { // 같은 저자
+                matchedInfo.accumulateSimilarityWeight(SAME_AUTHOR);
+            }
+
+            if (isSameSmoking(member, matchingMember)) { // 같은 흡연 여부
+                matchedInfo.accumulateSimilarityWeight(SAME_SMOKING);
+            }
+        }
+
+        if (checkReviewLength(matchingMemberBook)) { // 리뷰 길이 체크
+            matchedInfo.accumulateSimilarityWeight(GREAT_REVIEW);
+        }
+
+        if (checkAgeDifference(member, matchingMember)) { // 나이 차이 체크
+            matchedInfo.accumulateSimilarityWeight(PEER);
+        }
     }
 
     private boolean isSameBook(List<MemberBook> memberBooks, MemberBook matchingMemberBook) {
@@ -119,5 +139,19 @@ public class MemberMatchingAlgorithmFilter {
             return false;
         }
         return member.getMemberStyle().getSmokeType() == matchingMember.getMemberStyle().getSmokeType();
+    }
+
+    private boolean checkReviewLength(MemberBook memberBook) {
+        if (memberBook == null || memberBook.getReview() == null) {
+            return false;
+        }
+        return memberBook.getReview().length() >= 60;
+    }
+
+    private boolean checkAgeDifference(Member member, Member matchingMember) {
+        if (member == null || matchingMember == null) {
+            return false;
+        }
+        return Math.abs(member.getMemberProfile().getBirthDate().getYear() - matchingMember.getMemberProfile().getBirthDate().getYear()) <= 3;
     }
 }
