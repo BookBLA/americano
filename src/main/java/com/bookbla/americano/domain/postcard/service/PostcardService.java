@@ -162,7 +162,7 @@ public class PostcardService {
                 .orElseThrow(
                         () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
         memberBookmark.readPostcard();
-        updatePostcardStatus(memberId, postcardId, PostcardStatus.READ, null);
+        updatePostcardStatus(memberId, postcardId, PostcardStatus.READ);
 
         return PostcardReadResponse.from(postcard.getChannelUrl());
     }
@@ -175,7 +175,7 @@ public class PostcardService {
     }
 
     public void updatePostcardStatus(Long memberId, Long postcardId,
-                                     PostcardStatus postcardStatus, Long memberBookId) {
+                                     PostcardStatus postcardStatus) {
         Postcard postcard = postcardRepository.findById(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
         Member member = memberRepository.getByIdOrThrow(memberId);
@@ -204,9 +204,6 @@ public class PostcardService {
             updateMemberMatchingExcluded(sendMember, receiveMember);
 
         } else if (postcardStatus.isRefused()) { // 거절 시 환불
-            updateMemberMatchingIgnored(sendMember, receiveMember, memberBookId);
-            extractMemberMatchingExcluded(sendMember, receiveMember);
-
             postcard.updatePostcardStatusRefusedAt();
             memberBookmark.addBookmark(35);
         }
@@ -218,17 +215,6 @@ public class PostcardService {
 
         matchExcludedRepository.findByMemberIdAndExcludedMemberId(receiveMember.getId(), sendMember.getId())
                         .orElseGet(() -> matchExcludedRepository.save(MatchExcludedInfo.of(receiveMember.getId(), sendMember.getId())));
-    }
-
-    private void updateMemberMatchingIgnored(Member sendMember, Member receiveMember, Long memberBookId) {
-        matchIgnoredRepository.findByMemberIdAndIgnoredMemberIdAndIgnoredMemberBookId(
-                sendMember.getId(), receiveMember.getId(), memberBookId)
-                .orElseGet(() -> matchIgnoredRepository.save(MatchIgnoredInfo.from(sendMember.getId(), receiveMember.getId(), memberBookId)));
-    }
-
-    private void extractMemberMatchingExcluded(Member sendMember, Member receiveMember) {
-        matchExcludedRepository.deleteByMemberIdAndExcludedMemberId(sendMember.getId(), receiveMember.getId());
-        matchExcludedRepository.deleteByMemberIdAndExcludedMemberId(receiveMember.getId(), sendMember.getId());
     }
 
     @Transactional(readOnly = true)

@@ -21,7 +21,7 @@ public class MatchIgnoredRepositoryImpl implements MatchIgnoredRepositoryCustom 
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<MatchedInfo> getIgnoredMemberIdsAndIgnoredMemberBookIdByMemberId(List<Long> matchingMemberIds, MemberRecommendationDto memberRecommendationDto) {
+    public List<MatchedInfo> getIgnoredMemberIdsAndIgnoredMemberBookIdByMemberId(MemberRecommendationDto memberRecommendationDto) {
         return queryFactory
                 .select(member.id, memberBook.id)
                 .from(member)
