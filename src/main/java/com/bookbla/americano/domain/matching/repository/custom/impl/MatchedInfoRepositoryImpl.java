@@ -4,22 +4,27 @@ import com.bookbla.americano.domain.matching.repository.custom.MatchedInfoReposi
 import com.bookbla.americano.domain.matching.repository.entity.MatchedInfo;
 import com.bookbla.americano.domain.matching.service.dto.MemberRecommendationDto;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
+import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.bookbla.americano.domain.matching.repository.entity.QMatchExcludedInfo.matchExcludedInfo;
 import static com.bookbla.americano.domain.matching.repository.entity.QMatchIgnoredInfo.matchIgnoredInfo;
 import static com.bookbla.americano.domain.matching.repository.entity.QMatchedInfo.matchedInfo;
 import static com.bookbla.americano.domain.member.repository.entity.QMember.member;
 import static com.bookbla.americano.domain.member.repository.entity.QMemberBook.memberBook;
+import static com.bookbla.americano.domain.postcard.repository.entity.QPostcard.postcard;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class MatchedInfoRepositoryImpl implements MatchedInfoRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
@@ -68,6 +73,9 @@ public class MatchedInfoRepositoryImpl implements MatchedInfoRepositoryCustom {
 
     @Override
     public List<MatchedInfo> getFinalFilteredMatches(List<Long> matchingMemberIds, MemberRecommendationDto recommendationDto) {
+
+        LocalDateTime twoWeeksAgo = LocalDateTime.now().minusWeeks(2);
+
         // 모든 매칭 정보 ( member_id + member_book_id )
         List<MatchedInfo> matches = queryFactory
                 .select(member.id, memberBook.id)
@@ -79,9 +87,26 @@ public class MatchedInfoRepositoryImpl implements MatchedInfoRepositoryCustom {
                 .stream()
                 .map(tuple -> MatchedInfo.from(recommendationDto.getMemberId(), tuple.get(member.id), tuple.get(memberBook.id), recommendationDto.getMemberMatching()))
                 .collect(Collectors.toList());
+        log.info("모든 추천 매칭 정보 수: {}", matches.size());
+
+        // 엽서 거절 정보
+        List<MatchedInfo> filteredMatchesByPostcard = queryFactory
+                .select(postcard.receiveMember.id, postcard.receiveMemberBook.id)
+                .from(postcard)
+                .where(postcard.sendMember.id.eq(recommendationDto.getMemberId()),
+                        postcard.postcardStatus.eq(PostcardStatus.REFUSED),
+                        postcard.postcardStatusRefusedAt.after(twoWeeksAgo))
+                .fetch()
+                .stream()
+                .map(tuple -> MatchedInfo.from(recommendationDto.getMemberId(), tuple.get(member.id), tuple.get(memberBook.id), recommendationDto.getMemberMatching()))
+                .collect(Collectors.toList());
+        log.info("엽서 거절 필터링 추천 매칭 정보 수: {}", filteredMatchesByPostcard.size());
+
+        // 모든 매칭 정보 - 엽서 거절
+        List<MatchedInfo> filteredMatches = getFilteringMatches(matches, filteredMatchesByPostcard);
 
         // 무시된 정보
-        List<MatchedInfo> filteredMatches = queryFactory
+        List<MatchedInfo> filteredMatchesByIgnoredInfo = queryFactory
                 .select(member.id, memberBook.id)
                 .from(member)
                 .innerJoin(memberBook).on(member.id.eq(memberBook.member.id))
@@ -92,8 +117,14 @@ public class MatchedInfoRepositoryImpl implements MatchedInfoRepositoryCustom {
                 .stream()
                 .map(tuple -> MatchedInfo.from(recommendationDto.getMemberId(), tuple.get(member.id), tuple.get(memberBook.id), recommendationDto.getMemberMatching()))
                 .collect(Collectors.toList());
+        log.info("matchIgnoredInfo 필터링 추천 매칭 정보 수: {}", filteredMatchesByIgnoredInfo.size());
 
-        // 모든 매칭 정보 - 무시된 정보
+        // 모든 매칭 정보 - 엽서 거절 필터링 - matchIgnoredInfo 필터링
+        return getFilteringMatches(filteredMatches, filteredMatchesByIgnoredInfo);
+    }
+
+    @NotNull
+    private static List<MatchedInfo> getFilteringMatches(List<MatchedInfo> matches, List<MatchedInfo> filteredMatches) {
         return matches.stream()
                 .filter(match -> filteredMatches.stream()
                         .noneMatch(filteredMatch -> filteredMatch.getMatchedMemberId().equals(match.getMatchedMemberId())
