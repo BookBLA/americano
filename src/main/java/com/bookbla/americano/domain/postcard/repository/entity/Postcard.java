@@ -61,6 +61,8 @@ public class Postcard extends BaseEntity {
 
     private LocalDateTime postcardStatusRefusedAt;
 
+    private String channelUrl;
+
     public void validateSendPostcard() {
         if (postcardStatus == READ) {
             throw new BaseException(PostcardExceptionType.PENDING_POSTCARD_EXISTS);
