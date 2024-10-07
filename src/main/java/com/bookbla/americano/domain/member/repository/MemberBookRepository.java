@@ -26,6 +26,6 @@ public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
 
     List<MemberBook> findByMemberOrderByCreatedAt(Member member);
 
-    @EntityGraph(attributePaths = {"book", "book.authors"})
-    List<MemberBook> findAllById(List<Long> memberBookIds);
+    @EntityGraph(value = "WithBookAndAuthors", type = EntityGraph.EntityGraphType.LOAD)
+    List<MemberBook> findAllByIdIn(List<Long> memberBookIds);
 }
