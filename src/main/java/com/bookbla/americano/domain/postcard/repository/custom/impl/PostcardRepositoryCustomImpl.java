@@ -104,7 +104,7 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                         postcard.postcardStatusRefusedAt.after(twoWeeksAgo))
                 .fetch()
                 .stream()
-                .map(tuple -> MatchedInfo.from(memberRecommendationDto.getMemberId(), tuple.get(member.id), tuple.get(memberBook.id), memberRecommendationDto.getMemberMatching()))
+                .map(tuple -> MatchedInfo.from(memberRecommendationDto.getMemberId(), tuple.get(postcard.receiveMember.id), tuple.get(postcard.receiveMemberBook.id), memberRecommendationDto.getMemberMatching()))
                 .collect(Collectors.toList());
     }
 }
