@@ -47,7 +47,6 @@ public class MemberMatchingAlgorithmFilter {
                         book -> book.getBook().getAuthors())
                 );
 
-        log.info("추천 회원의 책 저자 리스트를 가져오는 쿼리 ⬇️⬇️⬇️");
         Map<Long, List<String>> matchingMemberBookAuthorsMap = memberBookMap.values().stream()
                 .collect(Collectors.toMap(
                         MemberBook::getId,

@@ -100,6 +100,10 @@ public class MemberMatchingService {
         MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MATCHING));
 
+        if (!memberMatching.hasCurrentMatchedInfo()) {
+            return getRecommendationMember(memberId);
+        }
+
         Long refreshMemberId = memberMatching.getCurrentMatchedMemberId();
         Long refreshMemberBookId = memberMatching.getCurrentMatchedMemberBookId();
 
