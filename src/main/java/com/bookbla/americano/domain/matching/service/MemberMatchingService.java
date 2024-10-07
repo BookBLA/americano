@@ -67,21 +67,17 @@ public class MemberMatchingService {
         recommendedMemberIds = memberMatchingFilter.memberExcludedFiltering(member.getId(), recommendedMemberIds);
         log.info("제외된 회원 필터링 한 추천 회원 ID 수: {}", recommendedMemberIds.size());
 
-        recommendedMemberIds = memberMatchingFilter.memberBlockedFiltering(member.getId(), recommendedMemberIds);
-        log.info("차단한 회원 필터링 후 추천 회원 ID 수: {}", recommendedMemberIds.size());
+        List<MatchedInfo> recommendedMatches = memberMatchingFilter.memberRefusedAtFiltering(recommendedMemberIds, memberRecommendationDto);
+        log.info("엽서 거절 필터링 후 추천 매칭 정보 수: {}", recommendedMatches.size());
 
-        recommendedMemberIds = memberMatchingFilter.memberRefusedAtFiltering(member.getId(), recommendedMemberIds);
-        log.info("엽서 거절 필터링 후 추천 회원 ID 수: {}", recommendedMemberIds.size());
-
-//        List<MatchedInfo> recommendedMembers = memberMatchingFilter.memberIgnoredFiltering(recommendedMemberIds, memberRecommendationDto);
-        List<MatchedInfo> recommendedMembers = memberMatchingFilter.finalFiltering(recommendedMemberIds, memberRecommendationDto);
-        log.info("무시한 회원 필터링 후 ❗️최종 추천 수: {}", recommendedMembers.size());
+        recommendedMatches = memberMatchingFilter.memberIgnoredFiltering(recommendedMatches, memberRecommendationDto);
+        log.info("MatchIgnoredInfo 필터링 후 ❗️최종 매칭 추천 수: {}", recommendedMatches.size());
 
         log.info("알고리즘 가중치 적용 쿼리 ⬇️⬇️⬇️");
-        recommendedMembers = memberMatchingAlgorithmFilter.memberMatchingAlgorithmFiltering(member, recommendedMembers);
+        recommendedMatches = memberMatchingAlgorithmFilter.memberMatchingAlgorithmFiltering(member, recommendedMatches);
 
-        log.info("필터링된 회원 저장 쿼리 ⬇️⬇️⬇️");
-        saveAllRecommendedMembers(recommendedMembers);
+        log.info("필터링된 매칭 정보 저장 쿼리 ⬇️⬇️⬇️");
+        saveAllRecommendedMembers(recommendedMatches);
 
         MatchedInfo matchedInfo = getMostPriorityMatched(matchedInfoRepository.getAllByDesc(memberMatching.getId()));
 
@@ -120,11 +116,6 @@ public class MemberMatchingService {
         return buildMemberIntroResponse(matchedInfo, memberMatching);
     }
 
-    public void rejectMemberMatching(Long memberId, Long rejectedMemberId) {
-        matchExcludedRepository.findByMemberIdAndExcludedMemberId(memberId, rejectedMemberId)
-                .orElseGet(() -> matchExcludedRepository.save(MatchExcludedInfo.of(memberId, rejectedMemberId)));
-    }
-
     private MemberIntroResponse buildMemberIntroResponse(MatchedInfo matchedInfo, MemberMatching memberMatching) {
         if (matchedInfo == null) return MemberIntroResponse.empty();
 
@@ -150,7 +141,7 @@ public class MemberMatchingService {
         return getMostPriorityMatched(matchedInfoRepository.findAllByMemberMatchingId(memberMatchingId));
     }
 
-    private void saveAllRecommendedMembers(List<MatchedInfo> recommendedMembers) {
+    private void saveAllRecommendedMembers(List<MatchedInfo> recommendedMatches) {
         String sql = "INSERT INTO matched_info (member_id, matched_member_id, matched_member_book_id, member_matching_id, similarity_weight) " +
                 "VALUES (?, ?, ?, ?, ?) " +
                 "ON DUPLICATE KEY UPDATE " +
@@ -159,7 +150,7 @@ public class MemberMatchingService {
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
-                MatchedInfo matchedInfo = recommendedMembers.get(i);
+                MatchedInfo matchedInfo = recommendedMatches.get(i);
                 ps.setLong(1, matchedInfo.getMemberId());
                 ps.setLong(2, matchedInfo.getMatchedMemberId());
                 ps.setLong(3, matchedInfo.getMatchedMemberBookId());
@@ -169,7 +160,7 @@ public class MemberMatchingService {
 
             @Override
             public int getBatchSize() {
-                return recommendedMembers.size(); // 전체 리스트 크기
+                return recommendedMatches.size(); // 전체 리스트 크기
             }
         });
     }

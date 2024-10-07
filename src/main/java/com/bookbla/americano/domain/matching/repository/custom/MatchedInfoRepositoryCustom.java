@@ -13,9 +13,4 @@ public interface MatchedInfoRepositoryCustom {
 
     // 모든 매칭 추천 회원 + 회원 책 정보
     List<MatchedInfo> getAllMatches(List<Long> matchingMemberIds, MemberRecommendationDto memberRecommendationDto);
-
-    // 최종 필터링한 매칭 추천 회원 + 회원 책 정보
-    List<MatchedInfo> getFinalFilteredMatches(List<Long> matchingMemberIds, MemberRecommendationDto recommendationDto);
-
-    long deleteByMemberMatchingId(Long memberMatchingId);
 }

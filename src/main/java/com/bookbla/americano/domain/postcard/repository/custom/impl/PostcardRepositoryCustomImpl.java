@@ -1,5 +1,7 @@
 package com.bookbla.americano.domain.postcard.repository.custom.impl;
 
+import com.bookbla.americano.domain.matching.repository.entity.MatchedInfo;
+import com.bookbla.americano.domain.matching.service.dto.MemberRecommendationDto;
 import com.bookbla.americano.domain.member.repository.entity.QMember;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.custom.PostcardRepositoryCustom;
@@ -15,7 +17,10 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static com.bookbla.americano.domain.member.repository.entity.QMember.member;
+import static com.bookbla.americano.domain.member.repository.entity.QMemberBook.memberBook;
 import static com.bookbla.americano.domain.postcard.repository.entity.QPostcard.postcard;
 
 @Repository
@@ -87,19 +92,19 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                 .fetch();
     }
 
-    @Override
-    public List<Long> getReceiveIdsRefusedAt(Long sendMemberId, List<Long> filteringMemberId) {
+    public List<MatchedInfo> getReceiveIdsAndReceiveMemberBookIdsByRefusedAt(MemberRecommendationDto memberRecommendationDto) {
 
         LocalDateTime twoWeeksAgo = LocalDateTime.now().minusWeeks(2);
 
         return queryFactory
-                .select(postcard.receiveMember.id)
+                .select(postcard.receiveMember.id, postcard.receiveMemberBook.id)
                 .from(postcard)
-                .where(
-                        postcard.receiveMember.id.in(filteringMemberId)
-                                .and(postcard.sendMember.id.eq(sendMemberId))
-                                .and(postcard.postcardStatus.eq(PostcardStatus.REFUSED))
-                                .and(postcard.postcardStatusRefusedAt.after(twoWeeksAgo))
-                ).fetch();
+                .where(postcard.sendMember.id.eq(memberRecommendationDto.getMemberId()),
+                        postcard.postcardStatus.eq(PostcardStatus.REFUSED),
+                        postcard.postcardStatusRefusedAt.after(twoWeeksAgo))
+                .fetch()
+                .stream()
+                .map(tuple -> MatchedInfo.from(memberRecommendationDto.getMemberId(), tuple.get(member.id), tuple.get(memberBook.id), memberRecommendationDto.getMemberMatching()))
+                .collect(Collectors.toList());
     }
 }
