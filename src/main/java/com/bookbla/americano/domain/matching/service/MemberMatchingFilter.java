@@ -64,11 +64,4 @@ public class MemberMatchingFilter {
                                                         && filteredMatch.getMatchedMemberBookId().equals(recommendedMatch.getMatchedMemberBookId())))
                 .collect(Collectors.toList());
     }
-
-    /**
-     * 필터링 최종 결과
-     */
-    public List<MatchedInfo> finalFiltering(List<Long> matchingMemberIds, MemberRecommendationDto memberRecommendationDto) {
-         return matchedInfoRepository.getFinalFilteredMatches(matchingMemberIds,memberRecommendationDto);
-    }
 }

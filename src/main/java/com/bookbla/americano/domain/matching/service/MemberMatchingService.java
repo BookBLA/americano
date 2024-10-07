@@ -67,13 +67,11 @@ public class MemberMatchingService {
         recommendedMemberIds = memberMatchingFilter.memberExcludedFiltering(member.getId(), recommendedMemberIds);
         log.info("제외된 회원 필터링 한 추천 회원 ID 수: {}", recommendedMemberIds.size());
 
-//        List<MatchedInfo> recommendedMatches = memberMatchingFilter.memberRefusedAtFiltering(recommendedMemberIds, memberRecommendationDto);
-//        log.info("엽서 거절 필터링 후 추천 매칭 정보 수: {}", recommendedMatches.size());
-//
-//        recommendedMatches = memberMatchingFilter.memberIgnoredFiltering(recommendedMatches, memberRecommendationDto);
-//        log.info("무시한 회원 필터링 후 ❗️최종 매칭 추천 수: {}", recommendedMatches.size());
-        List<MatchedInfo> recommendedMatches = memberMatchingFilter.finalFiltering(recommendedMemberIds, memberRecommendationDto);
-        log.info("엽서 거절 + 무시한 회원 필터링 후 ❗️최종 추천 수: {}", recommendedMatches.size());
+        List<MatchedInfo> recommendedMatches = memberMatchingFilter.memberRefusedAtFiltering(recommendedMemberIds, memberRecommendationDto);
+        log.info("엽서 거절 필터링 후 추천 매칭 정보 수: {}", recommendedMatches.size());
+
+        recommendedMatches = memberMatchingFilter.memberIgnoredFiltering(recommendedMatches, memberRecommendationDto);
+        log.info("MatchIgnoredInfo 필터링 후 ❗️최종 매칭 추천 수: {}", recommendedMatches.size());
 
         log.info("알고리즘 가중치 적용 쿼리 ⬇️⬇️⬇️");
         recommendedMatches = memberMatchingAlgorithmFilter.memberMatchingAlgorithmFiltering(member, recommendedMatches);
@@ -116,11 +114,6 @@ public class MemberMatchingService {
 
         memberMatching.updateInvitationCard(false);
         return buildMemberIntroResponse(matchedInfo, memberMatching);
-    }
-
-    public void rejectMemberMatching(Long memberId, Long rejectedMemberId) {
-        matchExcludedRepository.findByMemberIdAndExcludedMemberId(memberId, rejectedMemberId)
-                .orElseGet(() -> matchExcludedRepository.save(MatchExcludedInfo.of(memberId, rejectedMemberId)));
     }
 
     private MemberIntroResponse buildMemberIntroResponse(MatchedInfo matchedInfo, MemberMatching memberMatching) {
