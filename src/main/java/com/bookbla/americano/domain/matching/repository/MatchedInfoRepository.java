@@ -11,4 +11,6 @@ public interface MatchedInfoRepository extends JpaRepository<MatchedInfo, Long>,
     void deleteByMemberIdAndMatchedMemberIdAndMatchedMemberBookId(Long memberId, Long matchedMemberId, Long matchedMemberBookId);
 
     Optional<MatchedInfo> findByMemberIdAndMatchedMemberIdAndMatchedMemberBookId(Long memberId, Long matchedMemberId, Long matchedMemberBookId);
+
+    void deleteByMemberIdAndMatchedMemberId(Long memberId, Long matchedMemberId);
 }
