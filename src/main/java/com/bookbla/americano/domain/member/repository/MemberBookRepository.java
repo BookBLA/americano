@@ -5,6 +5,7 @@ import com.bookbla.americano.domain.book.repository.entity.Book;
 import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -24,4 +25,7 @@ public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
     long countByMember(Member member);
 
     List<MemberBook> findByMemberOrderByCreatedAt(Member member);
+
+    @EntityGraph(value = "WithBookAndAuthors", type = EntityGraph.EntityGraphType.LOAD)
+    List<MemberBook> findAllByIdIn(List<Long> memberBookIds);
 }
