@@ -2,6 +2,7 @@ package com.bookbla.americano.scheduler;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.log.discord.BookblaLogDiscord;
+import com.bookbla.americano.domain.matching.repository.MatchedInfoRepository;
 import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
@@ -9,7 +10,6 @@ import com.bookbla.americano.domain.member.repository.MemberEmailRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.notification.service.MailService;
-import com.bookbla.americano.domain.payment.infrastructure.google.GoogleCertificationProvider;
 import com.bookbla.americano.domain.payment.service.GooglePaymentService;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.repository.PostcardRepository;
@@ -44,6 +44,7 @@ class ScheduleWorker {
     private final PostcardRepository postcardRepository;
     private final GooglePaymentService googlePaymentService;
     private final MemberMatchingRepository memberMatchingRepository;
+    private final MatchedInfoRepository matchedInfoRepository;
 
     @Scheduled(cron = EVERY_4_AM, zone = "Asia/Seoul")
     public void deleteMemberEmailSchedule() {
@@ -134,6 +135,26 @@ class ScheduleWorker {
         } catch (Exception e) {
             String txName = ScheduleWorker.class.getName() + "(resetIsInvitationCard)";
             String message = "초대 카드 초기화 실패 " + CRLF
+                    + e.getMessage() + CRLF
+                    + stackTraceToString(e);
+
+            mailService.sendTransactionFailureEmail(txName, message);
+            bookblaLogDiscord.sendMessage(message);
+
+            log.debug("Exception in {}", ScheduleWorker.class.getName());
+            log.error(e.toString());
+            log.error(stackTraceToString(e));
+        }
+    }
+
+    @Scheduled(cron = EVERY_0_AM, zone = "Asia/Seoul")
+    public void resetMatchedInfo() {
+        try {
+            matchedInfoRepository.deleteAll();
+            memberMatchingRepository.resetCurrentMatchedInfo();
+        } catch (Exception e) {
+            String txName = ScheduleWorker.class.getName() + "(resetMatchedInfo)";
+            String message = "매칭 정보 초기화 실패 " + CRLF
                     + e.getMessage() + CRLF
                     + stackTraceToString(e);
 
