@@ -88,8 +88,8 @@ class PostcardServiceTest {
                 .member(sendMember)
                 .bookmarkCount(100).build();
         bookmarkRepository.save(memberBookmark);
-
-        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(), receiveMemberBook.getId(), "memberReply");
+        String channelUrl = "aaabbbccc";
+        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(), receiveMemberBook.getId(), "memberReply", channelUrl);
 
         //when & then
         assertThatThrownBy(() -> sut.send(sendMember.getId(), request))
@@ -115,7 +115,8 @@ class PostcardServiceTest {
                 .currentMatchedMemberBookId(receiveMemberBook.getId())
                 .isInvitationCard(false)
                 .build());
-        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(), receiveMemberBook.getId(), "memberReply");
+        String channelUrl = "aaabbbccc";
+        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(), receiveMemberBook.getId(), "memberReply", channelUrl);
 
         //when
         SendPostcardResponse response = sut.send(sendMember.getId(), request);
@@ -139,8 +140,8 @@ class PostcardServiceTest {
                 .member(sendMember)
                 .bookmarkCount(10).build();
         bookmarkRepository.save(memberBookmark);
-
-        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(), receiveMemberBook.getId(), "memberReply");
+        String channelUrl = "aaabbbccc";
+        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(), receiveMemberBook.getId(), "memberReply", channelUrl);
 
         // when & then
         assertThatThrownBy(() -> sut.send(sendMember.getId(), request))

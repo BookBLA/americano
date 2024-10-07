@@ -18,10 +18,7 @@ import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.member.service.MemberBookService;
 import com.bookbla.americano.domain.notification.event.PostcardAlarmEvent;
 import com.bookbla.americano.domain.notification.event.PushAlarmEventHandler;
-import com.bookbla.americano.domain.postcard.controller.dto.response.ContactInfoResponse;
-import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardFromResponse;
-import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardToResponse;
-import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
+import com.bookbla.americano.domain.postcard.controller.dto.response.*;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
 import com.bookbla.americano.domain.postcard.repository.PostcardRepository;
@@ -96,6 +93,7 @@ public class PostcardService {
                 .message(request.getMemberReply())
                 .postcardType(postCardType)
                 .imageUrl(postCardType.getImageUrl())
+                .channelUrl(request.getChannelUrl())
                 .build();
         postcardRepository.save(postcard);
 
@@ -147,7 +145,7 @@ public class PostcardService {
                 .collect(Collectors.toList());
     }
 
-    public void readMemberPostcard(Long memberId, Long postcardId) {
+    public PostcardReadResponse readMemberPostcard(Long memberId, Long postcardId) {
         Postcard postcard = postcardRepository.findById(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
         if (!Objects.equals(postcard.getReceiveMember().getId(), memberId)) {
@@ -165,6 +163,8 @@ public class PostcardService {
                         () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
         memberBookmark.readPostcard();
         updatePostcardStatus(memberId, postcardId, PostcardStatus.READ, null);
+
+        return PostcardReadResponse.from(postcard.getChannelUrl());
     }
 
     public PostcardStatus getPostcardStatus(Long postcardId) {
