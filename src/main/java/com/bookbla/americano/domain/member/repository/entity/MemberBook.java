@@ -4,13 +4,9 @@ import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.book.repository.entity.Book;
 import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+
+import javax.persistence.*;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +22,12 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "update member_book set is_deleted = true where id = ?")
 @Where(clause = "is_deleted = false")
+@NamedEntityGraph(name = "WithBookAndAuthors", attributeNodes = {
+        @NamedAttributeNode("book"),
+        @NamedAttributeNode(value = "book", subgraph = "authors")
+}, subgraphs = {
+        @NamedSubgraph(name = "authors", attributeNodes = @NamedAttributeNode("authors"))
+})
 public class MemberBook extends BaseEntity {
 
     public static final int MEMBER_BOOK_REMOVABLE_COUNT = 2;

@@ -45,6 +45,7 @@ public class MemberMatchingService {
     private final JdbcTemplate jdbcTemplate;
 
     public MemberIntroResponse getRecommendationMember(Long memberId) {
+        log.info("알고리즘 매칭 시작 ⬇️⬇️⬇️");
         Member member = memberRepository.getByIdOrThrow(memberId);
 
         MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
