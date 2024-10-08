@@ -57,8 +57,7 @@ public class PostcardController {
     @PostMapping("/status")
     public void updatePostcardStatus(@Parameter(hidden = true) @User LoginUser loginUser,
                                      @RequestBody @Valid PostcardStatusUpdateRequest request) {
-        postcardService.updatePostcardStatus(loginUser.getMemberId(), request.getPostcardId(),
-                PostcardStatus.from(request.getStatus()), request.getMemberBookId());
+        postcardService.updatePostcardStatus(loginUser.getMemberId(), request.getPostcardId(), PostcardStatus.from(request.getStatus()));
     }
 
     @Operation(summary = "Postcard 상태 조회", description = "postcardId를 이용하여 엽서 상태를 반환")

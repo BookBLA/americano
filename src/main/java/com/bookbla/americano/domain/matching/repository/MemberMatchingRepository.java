@@ -26,4 +26,8 @@ public interface MemberMatchingRepository extends JpaRepository<MemberMatching, 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "UPDATE member_matching SET is_invitation_card = :isInvitationCard", nativeQuery = true)
     void resetIsInvitationCard(@Param("isInvitationCard") boolean isInvitationCard);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = "UPDATE member_matching SET current_matched_member_id = NULL, current_matched_member_book_id = NULL", nativeQuery = true)
+    void resetCurrentMatchedInfo();
 }

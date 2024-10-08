@@ -1,5 +1,7 @@
 package com.bookbla.americano.domain.postcard.repository.custom;
 
+import com.bookbla.americano.domain.matching.repository.entity.MatchedInfo;
+import com.bookbla.americano.domain.matching.service.dto.MemberRecommendationDto;
 import com.bookbla.americano.domain.postcard.repository.entity.Postcard;
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardFromResponse;
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardToResponse;
@@ -14,5 +16,5 @@ public interface PostcardRepositoryCustom {
 
     List<Postcard> refuseExpiredPostcard();
 
-    List<Long> getReceiveIdsRefusedAt(Long sendMemberId, List<Long> filteringMemberId);
+    List<MatchedInfo> getReceiveIdsAndReceiveMemberBookIdsByRefusedAt(MemberRecommendationDto memberRecommendationDto);
 }

@@ -35,13 +35,4 @@ public class MemberMatchingController {
             @Parameter(hidden = true) @User LoginUser loginUser) {
         return ResponseEntity.ok(memberMatchingService.refreshMemberMatching(loginUser.getMemberId()));
     }
-
-    @Operation(summary = "매칭 회원 거절")
-    @PostMapping("/reject")
-    public ResponseEntity<Void> rejectMemberMatching(
-            @Parameter(hidden = true) @User LoginUser loginUser,
-            @RequestBody @Valid RejectMemberRequest request) {
-        memberMatchingService.rejectMemberMatching(loginUser.getMemberId(), request.getRejectedMemberId());
-        return ResponseEntity.ok().build();
-    }
 }
