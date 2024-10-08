@@ -12,6 +12,7 @@ import com.bookbla.americano.base.log.discord.DiscordAlarm;
 import com.bookbla.americano.base.response.ExceptionResponse;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.sendbird.client.ApiException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -69,5 +70,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.warn("잘못된 요청이 들어왔습니다. URI: {}, 내용 : {}", requestURI, message);
         return ResponseEntity.badRequest()
                 .body(new ExceptionResponse(BaseExceptionType.ARGUMENT_NOT_VALID, message));
+    }
+
+    // TODO: 코드 추가 수정하기
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<String> handleApiException(ApiException e) {
+        String errorMessage = "SendBird API 오류: " + e.getMessage();
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        log.error("SendBird API 오류", e);
+
+        return ResponseEntity.status(status).body(errorMessage);
     }
 }
