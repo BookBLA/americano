@@ -101,8 +101,16 @@ dependencies {
 
     // apple appstore
     implementation 'com.apple.itunes.storekit:app-store-server-library:3.1.0'
+
+    // sendbird
+    implementation "org.sendbird:sendbird-platform-sdk:1.0.23"
 }
 
+allprojects {
+    repositories {
+        maven { url "https://repo.sendbird.com/public/maven" }
+    }
+}
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
