@@ -42,8 +42,7 @@ public class AuthConfig implements WebMvcConfigurer {
         // 어드민 인터셉터
         registry.addInterceptor(adminInterceptor)
                 .addPathPatterns("/admin/**")
-                .excludePathPatterns("/admin/auth/login")
-                .excludePathPatterns("/admin/notification");
+                .excludePathPatterns("/admin/auth/login");
     }
 
     @Override
