@@ -61,4 +61,24 @@ public class SendbirdService {
         member.updateSendbirdToken(response.getToken());
         return SendbirdResponse.of(member ,response);
     }
+
+    public void updateSendbirdNickname(Long memberId, String newNickname) {
+        try {
+
+            Member member = memberRepository.getByIdOrThrow(memberId);
+            String userId = member.getId().toString();
+
+            UpdateUserByIdData updateUserByIdData = new UpdateUserByIdData()
+                    .nickname(newNickname);
+
+            userApi.updateUserById(userId)
+                    .apiToken(apiToken)
+                    .updateUserByIdData(updateUserByIdData)
+                    .execute();
+        } catch (ApiException e) {
+            throw new RuntimeException("Sendbird 유저 닉네임 업데이트 실패: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error while updating Sendbird user", e);
+        }
+    }
 }
