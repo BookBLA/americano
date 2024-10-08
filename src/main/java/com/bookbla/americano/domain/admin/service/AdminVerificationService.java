@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
@@ -31,6 +32,7 @@ public class AdminVerificationService {
     private final MemberVerifyRepository memberVerifyRepository;
     private final AlarmService alarmService;
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void updateMemberStudentIdStatus(StatusUpdateDto dto) {
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
