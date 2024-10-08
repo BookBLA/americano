@@ -61,4 +61,44 @@ public class SendbirdService {
         member.updateSendbirdToken(response.getToken());
         return SendbirdResponse.of(member ,response);
     }
+
+    public void updateSendbirdNickname(Long memberId, String newNickname) {
+        try {
+
+            Member member = memberRepository.getByIdOrThrow(memberId);
+            String userId = member.getId().toString();
+
+            UpdateUserByIdData updateUserByIdData = new UpdateUserByIdData()
+                    .nickname(newNickname);
+
+            userApi.updateUserById(userId)
+                    .apiToken(apiToken)
+                    .updateUserByIdData(updateUserByIdData)
+                    .execute();
+        } catch (ApiException e) {
+            throw new RuntimeException("Sendbird 유저 닉네임 업데이트 실패: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error while updating Sendbird user", e);
+        }
+    }
+
+    public void updateSendbirdProfileUrl(Long memberId, String newProfileUrl) {
+        try {
+
+            Member member = memberRepository.getByIdOrThrow(memberId);
+            String userId = member.getId().toString();
+
+            UpdateUserByIdData updateUserByIdData = new UpdateUserByIdData()
+                    .profileUrl(newProfileUrl);
+
+            userApi.updateUserById(userId)
+                    .apiToken(apiToken)
+                    .updateUserByIdData(updateUserByIdData)
+                    .execute();
+        } catch (ApiException e) {
+            throw new RuntimeException("Sendbird 유저 프로필 사진 업데이트 실패: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error while updating Sendbird user", e);
+        }
+    }
 }

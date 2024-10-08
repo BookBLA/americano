@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.member.service;
 import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT_ID;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.sendbird.service.SendbirdService;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileStudentIdImageUrlUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberProfileUpdateRequest;
@@ -28,7 +29,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.vane.badwordfiltering.BadWordFiltering;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -45,6 +45,7 @@ public class MemberProfileService {
     private final MemberEmailRepository memberEmailRepository;
     private final MemberVerifyRepository memberVerifyRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final SendbirdService sendbirdService;
 
     @Transactional
     public MemberProfileResponse createMemberProfile(Long memberId,
@@ -124,6 +125,7 @@ public class MemberProfileService {
         validateDuplicateName(request.getName());
 
         update(member, memberProfile, request);
+        sendbirdService.updateSendbirdNickname(memberId, request.getName());
 
         return MemberProfileResponse.from(member, member.getMemberProfile());
     }
