@@ -69,36 +69,28 @@ public class MemberMatchingAlgorithmFilter {
     private void applySimilarityWeight(Member member, MatchedInfo matchedInfo, Member matchingMember, List<MemberBook> memberBooks,
                                        MemberBook matchingMemberBook, Map<Long, List<String>> memberBookAuthorsMap, Map<Long, List<String>> matchingMemberBookAuthorsMap) {
 
-        if (isSameSchool(member, matchingMember)) { // 같은 학교
-            if (isSameBook(memberBooks, matchingMemberBook)) { // 같은 책
-                matchedInfo.accumulateSimilarityWeight(SAME_SCHOOL_SAME_BOOK);
-            } else if (isSameAuthor(memberBookAuthorsMap, matchingMemberBookAuthorsMap, matchingMemberBook)) { // 같은 저자
-                matchedInfo.accumulateSimilarityWeight(SAME_SCHOOL_SAME_AUTHOR);
-            } else {
-                matchedInfo.accumulateSimilarityWeight(SAME_SCHOOL);
-            }
-
-            if (isSameSmoking(member, matchingMember)) { // 같은 흡연 여부
-                matchedInfo.accumulateSimilarityWeight(SAME_SCHOOL_SAME_SMOKING);
-            }
-        } else { // 다른 학교
-            if (isSameBook(memberBooks, matchingMemberBook)) { // 같은 책
-                matchedInfo.accumulateSimilarityWeight(SAME_BOOK);
-            } else if (isSameAuthor(memberBookAuthorsMap, matchingMemberBookAuthorsMap, matchingMemberBook)) { // 같은 저자
-                matchedInfo.accumulateSimilarityWeight(SAME_AUTHOR);
-            }
-
-            if (isSameSmoking(member, matchingMember)) { // 같은 흡연 여부
-                matchedInfo.accumulateSimilarityWeight(SAME_SMOKING);
-            }
+        if (isSameSchool(member, matchingMember)) {
+            matchedInfo.accumulateSimilarityWeight(SAME_SCHOOL);
         }
 
-        if (checkReviewLength(matchingMemberBook)) { // 리뷰 길이 체크
-            matchedInfo.accumulateSimilarityWeight(GREAT_REVIEW);
+        if (isSameSmoking(member, matchingMember)) {
+            matchedInfo.accumulateSimilarityWeight(SAME_SMOKING);
         }
 
-        if (checkAgeDifference(member, matchingMember)) { // 나이 차이 체크
+        if (checkAgeDifference(member, matchingMember)) {
             matchedInfo.accumulateSimilarityWeight(PEER);
+        }
+
+        /* 아래부터 곱연산 적용 */
+
+        matchedInfo.multiplySimilarityWeight(getReviewWeight(matchingMemberBook.getReview().length()));
+
+        if (isSameBook(memberBooks, matchingMemberBook)) {
+            matchedInfo.multiplySimilarityWeight(SAME_BOOK);
+        } else if (isSameAuthor(memberBookAuthorsMap, matchingMemberBookAuthorsMap, matchingMemberBook)) {
+            matchedInfo.multiplySimilarityWeight(SAME_AUTHOR);
+        } else {
+            matchedInfo.multiplySimilarityWeight(BOOK_DEFAULT);
         }
     }
 
