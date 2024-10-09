@@ -126,12 +126,13 @@ public class MemberMatchingAlgorithmFilter {
     }
 
     private boolean isSameSmoking(Member member, Member matchingMember) {
+        if (member == null || matchingMember == null || member.getMemberStyle() == null || matchingMember.getMemberStyle() == null) {
+            log.warn("멤버 스타일이 등록되지 않았거나 멤버 null");
+            return false;
+        }
         log.info("member - style_smokeType: {} ", member.getMemberStyle().getSmokeType());
         log.info("matching member - style_smokeType: {} ", matchingMember.getMemberStyle().getSmokeType());
 
-        if (member == null || matchingMember == null || member.getMemberStyle() == null || matchingMember.getMemberStyle() == null) {
-            return false;
-        }
         return member.getMemberStyle().getSmokeType() == matchingMember.getMemberStyle().getSmokeType();
     }
 
