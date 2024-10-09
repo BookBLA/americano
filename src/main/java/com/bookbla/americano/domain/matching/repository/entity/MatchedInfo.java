@@ -32,6 +32,10 @@ public class MatchedInfo {
         this.similarityWeight += similarityWeight;
     }
 
+    public void multiplySimilarityWeight(Double similarityWeight) {
+        this.similarityWeight *= similarityWeight;
+    }
+
     public static MatchedInfo from(Long memberId, Long matchedMemberId, Long matchedMemberBookId, MemberMatching memberMatching) {
         return MatchedInfo.builder()
                 .memberId(memberId)
@@ -39,9 +43,5 @@ public class MatchedInfo {
                 .matchedMemberBookId(matchedMemberBookId)
                 .memberMatching(memberMatching)
                 .build();
-    }
-
-    public void updateMemberMatching(MemberMatching memberMatching) {
-        this.memberMatching = memberMatching;
     }
 }

@@ -37,6 +37,8 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String sendbirdToken;
+
     private String oauthEmail;
 
     @Builder.Default
@@ -113,6 +115,10 @@ public class Member extends BaseEntity {
     @Column
     @Builder.Default
     private Integer initialRewardBookmarkCount = 4;
+
+    public void updateSendbirdToken(String sendbirdToken) {
+        this.sendbirdToken = sendbirdToken;
+    }
 
     public Member updatePushToken(String pushToken) {
         this.pushToken = pushToken;

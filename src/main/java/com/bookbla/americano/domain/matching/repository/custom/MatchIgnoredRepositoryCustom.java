@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface MatchIgnoredRepositoryCustom {
 
-    List<MatchedInfo> getIgnoredMemberIdsAndIgnoredMemberBookIdByMemberId(List<Long> matchingMemberIds, MemberRecommendationDto memberRecommendationDto);
+    List<MatchedInfo> getIgnoredMemberIdsAndIgnoredMemberBookIdByMemberId(MemberRecommendationDto memberRecommendationDto);
 }

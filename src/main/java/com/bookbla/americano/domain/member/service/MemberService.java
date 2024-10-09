@@ -25,6 +25,7 @@ import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.MemberStatusLog;
 import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
 import com.bookbla.americano.domain.school.repository.entity.School;
+import com.bookbla.americano.domain.sendbird.service.SendbirdService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +44,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final MemberStatusLogRepository memberStatusLogRepository;
     private final MemberVerifyRepository memberVerifyRepository;
+    private final SendbirdService sendbirdService;
 
     @Transactional(readOnly = true)
     public MemberResponse readMember(Long memberId) {
@@ -142,6 +144,8 @@ public class MemberService {
                 .smokeType(SmokeType.from(request.getSmokeType()))
                 .height(request.getHeight())
                 .build());
+
+        sendbirdService.updateSendbirdNickname(memberId, request.getName());
     }
 
     private void validateName(Member member, String name) {

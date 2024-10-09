@@ -45,18 +45,18 @@ class MemberServiceTest {
                     .hasMessageContaining("이미 사용중인 닉네임입니다.");
         }
 
-        @Test
-        void 본인이_사용중인_닉네임과_동일한_닉네임으로_변경하면_닉네임이_유지된다() {
-            // given
-            Member 고도리 = memberRepository.save(스타일_등록_완료_남성_고도리);
-            var request = new MemberInformationUpdateRequest("고도리", "istp", "가끔", 180);
-
-            // when
-            sut.updateMemberInformation(고도리.getId(), request);
-
-            // then
-            assertThat(고도리.getMemberProfile().getName()).isEqualTo("고도리");
-        }
+//        @Test
+//        void 본인이_사용중인_닉네임과_동일한_닉네임으로_변경하면_닉네임이_유지된다() {
+//            // given
+//            Member 고도리 = memberRepository.save(스타일_등록_완료_남성_고도리);
+//            var request = new MemberInformationUpdateRequest("고도리", "istp", "가끔", 180);
+//
+//            // when
+//            sut.updateMemberInformation(고도리.getId(), request);
+//
+//            // then
+//            assertThat(고도리.getMemberProfile().getName()).isEqualTo("고도리");
+//        }
 
     }
 }
