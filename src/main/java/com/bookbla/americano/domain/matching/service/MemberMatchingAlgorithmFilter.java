@@ -126,6 +126,9 @@ public class MemberMatchingAlgorithmFilter {
     }
 
     private boolean isSameSmoking(Member member, Member matchingMember) {
+        log.info("member - style_smokeType: {} ", member.getMemberStyle().getSmokeType());
+        log.info("matching member - style_smokeType: {} ", matchingMember.getMemberStyle().getSmokeType());
+
         if (member == null || matchingMember == null || member.getMemberStyle() == null || matchingMember.getMemberStyle() == null) {
             return false;
         }
