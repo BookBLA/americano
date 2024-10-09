@@ -4,7 +4,6 @@ package com.bookbla.americano.domain.postcard.service;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
 import com.bookbla.americano.domain.matching.repository.MatchExcludedRepository;
-import com.bookbla.americano.domain.matching.repository.MatchIgnoredRepository;
 import com.bookbla.americano.domain.matching.repository.MatchedInfoRepository;
 import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
 import com.bookbla.americano.domain.matching.repository.entity.MatchExcludedInfo;
@@ -149,8 +148,12 @@ public class PostcardService {
     }
 
     public PostcardReadResponse readMemberPostcard(Long memberId, Long postcardId) {
-        Postcard postcard = postcardRepository.findById(postcardId)
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        member.validateStudentIdStatusRegistered();
+
+        Postcard postcard = postcardRepository.findByIdWithMembers(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
+
         if (!Objects.equals(postcard.getReceiveMember().getId(), memberId)) {
             throw new BaseException(PostcardExceptionType.ACCESS_DENIED_TO_POSTCARD);
         } else if (!postcard.getPostcardStatus().equals(PostcardStatus.PENDING)) {
@@ -160,10 +163,9 @@ public class PostcardService {
                 throw new BaseException(PostcardExceptionType.READ_POSTCARD_ALREADY);
             }
         }
-        MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
-                        memberId)
-                .orElseThrow(
-                        () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
+        MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(memberId)
+                .orElseThrow(() -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
+
         memberBookmark.readPostcard();
         updatePostcardStatus(memberId, postcardId, PostcardStatus.READ);
 
@@ -171,7 +173,7 @@ public class PostcardService {
     }
 
     public PostcardStatus getPostcardStatus(Long postcardId) {
-        Postcard postcard = postcardRepository.findById(postcardId)
+        Postcard postcard = postcardRepository.findByIdWithMembers(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
 
         return postcard.getPostcardStatus();
@@ -179,7 +181,7 @@ public class PostcardService {
 
     public void updatePostcardStatus(Long memberId, Long postcardId,
                                      PostcardStatus postcardStatus) {
-        Postcard postcard = postcardRepository.findById(postcardId)
+        Postcard postcard = postcardRepository.findByIdWithMembers(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
         Member member = memberRepository.getByIdOrThrow(memberId);
         if (!member.equals(postcard.getSendMember()) && !member.equals(
@@ -238,7 +240,7 @@ public class PostcardService {
     }
 
     public ContactInfoResponse getContactInfo(Long memberId, Long postcardId) {
-        Postcard postcard = postcardRepository.findById(postcardId)
+        Postcard postcard = postcardRepository.findByIdWithMembers(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
 
         if (!Objects.equals(postcard.getReceiveMember().getId(), memberId) && !Objects.equals(postcard.getSendMember().getId(), memberId))
