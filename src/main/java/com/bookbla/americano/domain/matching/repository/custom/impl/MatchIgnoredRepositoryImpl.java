@@ -4,6 +4,7 @@ import com.bookbla.americano.domain.matching.repository.custom.MatchIgnoredRepos
 import com.bookbla.americano.domain.matching.repository.entity.MatchedInfo;
 import com.bookbla.americano.domain.matching.service.dto.MemberRecommendationDto;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import datadog.trace.api.Trace;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -20,6 +21,7 @@ public class MatchIgnoredRepositoryImpl implements MatchIgnoredRepositoryCustom 
 
     private final JPAQueryFactory queryFactory;
 
+    @Trace(resourceName = "getIgnoredMemberIdsAndIgnoredMemberBookIdByMemberId query")
     @Override
     public List<MatchedInfo> getIgnoredMemberIdsAndIgnoredMemberBookIdByMemberId(MemberRecommendationDto memberRecommendationDto) {
         return queryFactory
