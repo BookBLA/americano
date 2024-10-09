@@ -6,12 +6,17 @@ import com.bookbla.americano.domain.book.repository.entity.Book;
 import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
 import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
 import com.bookbla.americano.domain.matching.repository.entity.MemberMatching;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
 import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
-import com.bookbla.americano.domain.member.repository.entity.*;
+import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberBlock;
+import com.bookbla.americano.domain.member.repository.entity.MemberBook;
+import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
+import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
@@ -22,12 +27,19 @@ import com.bookbla.americano.domain.postcard.repository.entity.PostcardType;
 import com.bookbla.americano.domain.postcard.service.dto.request.SendPostcardRequest;
 import com.bookbla.americano.domain.postcard.service.dto.response.SendPostcardResponse;
 import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import static com.bookbla.americano.domain.member.exception.MemberProfileExceptionType.STUDENT_ID_NOT_VALID;
+import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.PENDING;
 import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.REFUSED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -224,6 +236,32 @@ class PostcardServiceTest {
                         .isInstanceOf(BaseException.class);
             }
         }
+    }
+
+    @Nested
+    class 엽서_읽기 {
+
+        @Test
+        void 학생증_인증이_되지_않은_회원은_엽서를_읽을_수_없다() {
+            // given
+            Member sendMember = memberRepository.save(Member.builder().build());
+            Member studentIdUnregisterdMember = memberRepository.save(Member.builder()
+                    .memberProfile(MemberProfile.builder().studentIdImageStatus(StudentIdImageStatus.UNREGISTER).build())
+                    .memberStatus(MemberStatus.APPROVAL)
+                    .build());
+
+            Postcard postcard = postcardRepository.save(Postcard.builder()
+                    .sendMember(sendMember)
+                    .receiveMember(studentIdUnregisterdMember)
+                    .postcardStatus(PENDING)
+                    .build());
+
+            // when, then
+            assertThatThrownBy(() -> sut.readMemberPostcard(studentIdUnregisterdMember.getId(), postcard.getId()))
+                    .isInstanceOf(BaseException.class)
+                    .hasMessageContaining(STUDENT_ID_NOT_VALID.getMessage());
+        }
+
     }
 
 
