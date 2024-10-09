@@ -149,7 +149,10 @@ public class PostcardService {
     }
 
     public PostcardReadResponse readMemberPostcard(Long memberId, Long postcardId) {
-        Postcard postcard = postcardRepository.findById(postcardId)
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        member.validateStudentIdStatusRegistered();
+
+        Postcard postcard = postcardRepository.findByIdWithMembers(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
         if (!Objects.equals(postcard.getReceiveMember().getId(), memberId)) {
             throw new BaseException(PostcardExceptionType.ACCESS_DENIED_TO_POSTCARD);
