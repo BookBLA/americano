@@ -104,6 +104,9 @@ dependencies {
 
     // sendbird
     implementation "org.sendbird:sendbird-platform-sdk:1.0.23"
+
+    // datadog
+    implementation group: 'com.datadoghq', name: 'dd-trace-api', version: '1.21.0'
 }
 
 allprojects {
