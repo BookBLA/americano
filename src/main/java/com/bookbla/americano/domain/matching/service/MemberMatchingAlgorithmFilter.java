@@ -27,14 +27,14 @@ public class MemberMatchingAlgorithmFilter {
     private final MemberRepository memberRepository;
     private final MemberBookRepository memberBookRepository;
 
-    public List<MatchedInfo> memberMatchingAlgorithmFiltering(Member member, List<MatchedInfo> matchingMembers) {
+    public List<MatchedInfo> memberMatchingAlgorithmFiltering(Member member, List<MatchedInfo> matchingMatches) {
         List<MemberBook> memberBooks = memberBookRepository.findByMemberOrderByCreatedAt(member);
-        List<Member> matchingMemberList = memberRepository.findAllById(matchingMembers.stream()
+        List<Member> matchingMemberList = memberRepository.findAllById(matchingMatches.stream()
                 .map(MatchedInfo::getMatchedMemberId)
                 .collect(Collectors.toList()));
 
         log.info("추천 회원의 책 리스트 가져오는 쿼리 ⬇️⬇️⬇️");
-        Map<Long, MemberBook> memberBookMap = memberBookRepository.findAllByIdIn(matchingMembers.stream()
+        Map<Long, MemberBook> memberBookMap = memberBookRepository.findAllByIdIn(matchingMatches.stream()
                         .map(MatchedInfo::getMatchedMemberBookId)
                         .collect(Collectors.toList()))
                 .stream()
@@ -53,17 +53,19 @@ public class MemberMatchingAlgorithmFilter {
                         book -> book.getBook().getAuthors())
                 );
 
-        return matchingMembers.stream().map(matchedInfo -> {
-            Member matchingMember = matchingMemberList.stream()
-                    .filter(m -> m.getId().equals(matchedInfo.getMatchedMemberId()))
-                    .findFirst()
-                    .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST));
-            MemberBook matchingMemberBook = memberBookMap.get(matchedInfo.getMatchedMemberBookId());
+        return matchingMatches.stream()
+                .map(matchedInfo -> {
+                    Member matchingMember = matchingMemberList.stream()
+                            .filter(m -> m.getId().equals(matchedInfo.getMatchedMemberId()))
+                            .findFirst()
+                            .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST));
+                    MemberBook matchingMemberBook = memberBookMap.get(matchedInfo.getMatchedMemberBookId());
 
-            applySimilarityWeight(member, matchedInfo, matchingMember, memberBooks, matchingMemberBook, memberBookAuthorsMap, matchingMemberBookAuthorsMap);
-
-            return matchedInfo;
-        }).collect(Collectors.toList());
+                    applySimilarityWeight(member, matchedInfo, matchingMember, memberBooks, matchingMemberBook, memberBookAuthorsMap, matchingMemberBookAuthorsMap);
+                    log.info("가중치 적용 완료");
+                    return matchedInfo;
+                })
+                .collect(Collectors.toList());
     }
 
     private void applySimilarityWeight(Member member, MatchedInfo matchedInfo, Member matchingMember, List<MemberBook> memberBooks,
@@ -82,7 +84,7 @@ public class MemberMatchingAlgorithmFilter {
         }
 
         /* 아래부터 곱연산 적용 */
-
+        log.info("가중치 곱연산 적용");
         matchedInfo.multiplySimilarityWeight(getReviewWeight(matchingMemberBook.getReview().length()));
 
         if (isSameBook(memberBooks, matchingMemberBook)) {
@@ -95,6 +97,7 @@ public class MemberMatchingAlgorithmFilter {
     }
 
     private boolean isSameBook(List<MemberBook> memberBooks, MemberBook matchingMemberBook) {
+        log.info("CHECK: Same Book");
         if (memberBooks == null || matchingMemberBook == null || matchingMemberBook.getBook() == null) {
             return false;
         }
@@ -104,6 +107,7 @@ public class MemberMatchingAlgorithmFilter {
     }
 
     private boolean isSameAuthor(Map<Long, List<String>> memberBookAuthorsMap, Map<Long, List<String>> matchingMemberBookAuthorsMap, MemberBook matchingMemberBook) {
+        log.info("CHECK: Same Author");
         if (matchingMemberBook == null || matchingMemberBook.getBook() == null) {
             return false;
         }
@@ -119,6 +123,7 @@ public class MemberMatchingAlgorithmFilter {
     }
 
     private boolean isSameSchool(Member member, Member matchingMember) {
+        log.info("CHECK: Same School");
         if (member == null || matchingMember == null || member.getSchool() == null || matchingMember.getSchool() == null) {
             return false;
         }
@@ -126,13 +131,10 @@ public class MemberMatchingAlgorithmFilter {
     }
 
     private boolean isSameSmoking(Member member, Member matchingMember) {
+        log.info("CHECK: Same Smoking");
         if (member == null || matchingMember == null || member.getMemberStyle() == null || matchingMember.getMemberStyle() == null) {
-            log.warn("멤버 스타일이 등록되지 않았거나 멤버 null");
             return false;
         }
-        log.info("member - style_smokeType: {} ", member.getMemberStyle().getSmokeType());
-        log.info("matching member - style_smokeType: {} ", matchingMember.getMemberStyle().getSmokeType());
-
         return member.getMemberStyle().getSmokeType() == matchingMember.getMemberStyle().getSmokeType();
     }
 
@@ -144,6 +146,7 @@ public class MemberMatchingAlgorithmFilter {
     }
 
     private boolean checkAgeDifference(Member member, Member matchingMember) {
+        log.info("CHECK: Age Difference");
         if (member == null || matchingMember == null) {
             return false;
         }
