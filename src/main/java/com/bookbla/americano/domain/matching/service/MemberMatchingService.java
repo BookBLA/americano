@@ -3,11 +3,9 @@ package com.bookbla.americano.domain.matching.service;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.matching.controller.dto.response.MemberIntroResponse;
 import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
-import com.bookbla.americano.domain.matching.repository.MatchExcludedRepository;
 import com.bookbla.americano.domain.matching.repository.MatchIgnoredRepository;
 import com.bookbla.americano.domain.matching.repository.MatchedInfoRepository;
 import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
-import com.bookbla.americano.domain.matching.repository.entity.MatchExcludedInfo;
 import com.bookbla.americano.domain.matching.repository.entity.MatchIgnoredInfo;
 import com.bookbla.americano.domain.matching.repository.entity.MatchedInfo;
 import com.bookbla.americano.domain.matching.repository.entity.MemberMatching;
@@ -39,7 +37,6 @@ public class MemberMatchingService {
     private final MemberMatchingFilter memberMatchingFilter;
     private final MemberMatchingAlgorithmFilter memberMatchingAlgorithmFilter;
     private final MatchedInfoRepository matchedInfoRepository;
-    private final MatchExcludedRepository matchExcludedRepository;
     private final MatchIgnoredRepository matchIgnoredRepository;
 
     private final JdbcTemplate jdbcTemplate;
