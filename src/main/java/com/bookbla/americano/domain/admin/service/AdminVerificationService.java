@@ -14,6 +14,8 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
+import com.bookbla.americano.domain.notification.enums.PushAlarmForm;
+import com.bookbla.americano.domain.notification.event.PushAlarmEventHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,7 @@ public class AdminVerificationService {
     private final MemberBookmarkRepository memberBookmarkRepository;
     private final MemberRepository memberRepository;
     private final MemberVerifyRepository memberVerifyRepository;
+    private final PushAlarmEventHandler pushAlarmEventHandler;
 
     public void updateMemberStudentIdStatus(StatusUpdateDto dto) {
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
@@ -59,13 +62,13 @@ public class AdminVerificationService {
         memberVerify.fail(dto.getReason());
         member.updateMemberStatus(MemberStatus.REJECTED, LocalDateTime.now());
 
-//        alarmService.sendPushAlarm(member, PushAlarmForm.ADMIN_STUDENT_ID_IMAGE_REJECT);
+        pushAlarmEventHandler.sendByAdmin(member, PushAlarmForm.ADMIN_STUDENT_ID_IMAGE_REJECT);
     }
 
     private void checkInitialMemberApprove(Member member) {
         if (member.getMemberStatus().equals(MemberStatus.APPROVAL)) {
             member.updateMemberStatus(MemberStatus.COMPLETED, LocalDateTime.now());
-//            alarmService.sendPushAlarm(member, PushAlarmForm.ADMIN_VERIFICATION_ACCEPT);
+            pushAlarmEventHandler.sendByAdmin(member, PushAlarmForm.ADMIN_STUDENT_ID_IMAGE_REJECT);
         }
     }
 }

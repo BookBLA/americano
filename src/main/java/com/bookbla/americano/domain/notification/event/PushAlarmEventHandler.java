@@ -99,8 +99,17 @@ public class PushAlarmEventHandler {
                 PushAlarmForm.INVITATION_SUCCESS.getTitle(),
                 PushAlarmForm.INVITATION_SUCCESS.getBody()
         );
+
+        MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
+                .member(member)
+                .title(PushAlarmForm.INVITATION_SUCCESS.getTitle())
+                .body(PushAlarmForm.INVITATION_SUCCESS.getBody())
+                .build();
+        txTemplate.executeWithoutResult(it -> memberPushAlarmRepository.save(memberPushAlarm));
     }
 
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Async
     public void sendAll(PushAlarmAllCreateRequest pushAlarmAllCreateRequest) {
         List<Member> canSendPushAlarmMembers = memberRepository.findAll()
                 .stream()
@@ -125,5 +134,22 @@ public class PushAlarmEventHandler {
                                 .build())
                 )
         );
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Async
+    public void sendByAdmin(Member member, PushAlarmForm pushAlarmForm) {
+        expoNotificationClient.send(
+                member.getPushToken(),
+                pushAlarmForm.getTitle(),
+                pushAlarmForm.getBody()
+        );
+
+        MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
+                .member(member)
+                .title(pushAlarmForm.getTitle())
+                .body(pushAlarmForm.getBody())
+                .build();
+        txTemplate.executeWithoutResult(it -> memberPushAlarmRepository.save(memberPushAlarm));
     }
 }
