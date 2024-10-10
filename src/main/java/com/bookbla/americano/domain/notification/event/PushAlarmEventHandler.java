@@ -76,8 +76,10 @@ public class PushAlarmEventHandler {
         }
 
         String title = PushAlarmForm.POSTCARD_ACCEPT.getTitle();
-        String body = PushAlarmForm.POSTCARD_ACCEPT.getBody();
-        body = String.format(body, receiveMember.getMemberProfile().getName());
+        String body = String.format(
+                PushAlarmForm.POSTCARD_ACCEPT.getBody(),
+                receiveMember.getMemberProfile().getName()
+        );
 
         notificationClient.send(sendMember.getPushToken(), title, body);
 
@@ -100,9 +102,12 @@ public class PushAlarmEventHandler {
     }
 
     public void sendAll(PushAlarmAllCreateRequest pushAlarmAllCreateRequest) {
-        List<String> tokens = memberRepository.findAll()
+        List<Member> canSendPushAlarmMembers = memberRepository.findAll()
                 .stream()
                 .filter(Member::canSendPushAlarm)
+                .collect(Collectors.toList());
+
+        List<String> tokens = canSendPushAlarmMembers.stream()
                 .map(Member::getPushToken)
                 .collect(Collectors.toList());
 
@@ -111,17 +116,14 @@ public class PushAlarmEventHandler {
                 pushAlarmAllCreateRequest.getBody()
         );
 
-        memberRepository.findAll()
-                .stream()
-                .filter(Member::canSendPushAlarm)
-                .forEach(pushAlarmSendableMember ->
-                        txTemplate.executeWithoutResult(
-                                it -> memberPushAlarmRepository.save(MemberPushAlarm.builder()
-                                        .member(pushAlarmSendableMember)
-                                        .title(pushAlarmAllCreateRequest.getTitle())
-                                        .body(pushAlarmAllCreateRequest.getBody())
-                                        .build())
-                        )
-                );
+        canSendPushAlarmMembers.forEach(member ->
+                txTemplate.executeWithoutResult(
+                        none -> memberPushAlarmRepository.save(MemberPushAlarm.builder()
+                                .member(member)
+                                .title(pushAlarmAllCreateRequest.getTitle())
+                                .body(pushAlarmAllCreateRequest.getBody())
+                                .build())
+                )
+        );
     }
 }
