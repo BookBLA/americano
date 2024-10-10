@@ -1,35 +1,131 @@
 package com.bookbla.americano.domain.notification.event;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.member.enums.MemberStatus;
+import com.bookbla.americano.domain.member.repository.MemberPushAlarmRepository;
+import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberPushAlarm;
+import com.bookbla.americano.domain.notification.controller.dto.request.PushAlarmAllCreateRequest;
 import com.bookbla.americano.domain.notification.enums.PushAlarmForm;
-import com.bookbla.americano.domain.notification.service.AlarmService;
+import com.bookbla.americano.domain.notification.exception.PushAlarmExceptionType;
+import com.bookbla.americano.domain.notification.infra.expo.ExpoNotificationClient;
+import com.bookbla.americano.domain.notification.service.NotificationClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RequiredArgsConstructor
 @Component
 public class PushAlarmEventHandler {
 
-    private final AlarmService alarmService;
+    private final MemberRepository memberRepository;
+    private final MemberPushAlarmRepository memberPushAlarmRepository;
+    private final NotificationClient notificationClient;
+    private final ExpoNotificationClient expoNotificationClient;
+    private final TransactionTemplate txTemplate;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
     public void sendPostcard(PostcardAlarmEvent postcardAlarmEvent) {
-        alarmService.sendPushAlarmForReceivePostCard(postcardAlarmEvent.getSendMember(), postcardAlarmEvent.getReceiveMember());
+        Member receiveMember = postcardAlarmEvent.getReceiveMember();
+        if (canNotSendPushAlarm(receiveMember)) {
+            return;
+        }
+
+        // 해당 멤버가 회원가입 완료상태가 아니라면
+        if (!receiveMember.getMemberStatus().equals(MemberStatus.COMPLETED)) {
+            throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
+        }
+
+        String title = PushAlarmForm.POSTCARD_SEND.getTitle();
+        String body = String.format(
+                PushAlarmForm.POSTCARD_SEND.getBody(),
+                postcardAlarmEvent.getSendMember().getMemberProfile().getName()
+        );
+
+        notificationClient.send(receiveMember.getPushToken(), title, body);
+
+        MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
+                .member(receiveMember)
+                .title(title)
+                .body(body)
+                .build();
+        txTemplate.executeWithoutResult(it -> memberPushAlarmRepository.save(memberPushAlarm));
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
     public void acceptPostcard(PostcardAlarmEvent postcardAlarmEvent) {
-        alarmService.sendPushAlarmForAcceptPostcard(postcardAlarmEvent.getSendMember(), postcardAlarmEvent.getReceiveMember());
+        Member sendMember = postcardAlarmEvent.getSendMember();
+        Member receiveMember = postcardAlarmEvent.getReceiveMember();
+        if (canNotSendPushAlarm(sendMember)) {
+            return;
+        }
+
+        // 해당 멤버가 회원가입 완료상태가 아니면서 매칭 비활성화가 아니라면
+        if (!sendMember.getMemberStatus().equals(MemberStatus.COMPLETED)
+                && !sendMember.getMemberStatus().equals(MemberStatus.MATCHING_DISABLED)) {
+            throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
+        }
+
+        String title = PushAlarmForm.POSTCARD_ACCEPT.getTitle();
+        String body = PushAlarmForm.POSTCARD_ACCEPT.getBody();
+        body = String.format(body, receiveMember.getMemberProfile().getName());
+
+        notificationClient.send(sendMember.getPushToken(), title, body);
+
+        MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
+                .member(sendMember)
+                .title(title)
+                .body(body)
+                .build();
+        txTemplate.executeWithoutResult(it -> memberPushAlarmRepository.save(memberPushAlarm));
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
     public void sendInvitationSuccessMessage(Member member) {
-        alarmService.sendPushAlarm(member, PushAlarmForm.INVITATION_SUCCESS);
+        expoNotificationClient.send(
+                member.getPushToken(),
+                PushAlarmForm.INVITATION_SUCCESS.getTitle(),
+                PushAlarmForm.INVITATION_SUCCESS.getBody()
+        );
+    }
+
+    private boolean canNotSendPushAlarm(Member member) {
+        return member.getPushToken() == null || !member.getPushAlarmEnabled();
+    }
+
+    public void sendAll(PushAlarmAllCreateRequest pushAlarmAllCreateRequest) {
+        List<String> tokens = memberRepository.findAll()
+                .stream()
+                .filter(member -> !canNotSendPushAlarm(member))
+                .map(Member::getPushToken)
+                .collect(Collectors.toList());
+
+        notificationClient.sendAll(tokens,
+                pushAlarmAllCreateRequest.getTitle(),
+                pushAlarmAllCreateRequest.getBody()
+        );
+
+        memberRepository.findAll()
+                .stream()
+                .filter(member -> !canNotSendPushAlarm(member))
+                .forEach(pushAlarmSendableMember ->
+                        txTemplate.executeWithoutResult(
+                                it -> memberPushAlarmRepository.save(MemberPushAlarm.builder()
+                                        .member(pushAlarmSendableMember)
+                                        .title(pushAlarmAllCreateRequest.getTitle())
+                                        .body(pushAlarmAllCreateRequest.getBody())
+                                        .build())
+                        )
+                );
     }
 }
