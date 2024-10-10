@@ -20,6 +20,8 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import static com.bookbla.americano.domain.notification.enums.PushAlarmForm.POSTCARD_ACCEPT;
+
 @RequiredArgsConstructor
 @Component
 public class PushAlarmEventHandler {
@@ -32,57 +34,47 @@ public class PushAlarmEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
     public void sendPostcard(PostcardAlarmEvent postcardAlarmEvent) {
-        Member receiveMember = postcardAlarmEvent.getReceiveMember();
-        if (receiveMember.canNotSendPushAlarm()) {
+        Member targetMember = postcardAlarmEvent.getPostcardAcceptMember();
+        if (targetMember.canNotSendPushAlarm()) {
             return;
         }
 
         // 해당 멤버가 회원가입 완료상태가 아니라면
-        if (!receiveMember.getMemberStatus().equals(MemberStatus.COMPLETED)) {
+        if (!targetMember.getMemberStatus().equals(MemberStatus.COMPLETED)) {
             throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
         }
 
-        String title = PushAlarmForm.POSTCARD_SEND.getTitle();
-        String body = String.format(
-                PushAlarmForm.POSTCARD_SEND.getBody(),
-                postcardAlarmEvent.getSendMember().getMemberProfile().getName()
+        notificationClient.sendWithForm(targetMember.getPushToken(), PushAlarmForm.POSTCARD_SEND);
+
+        txTemplate.executeWithoutResult(it -> memberPushAlarmRepository.save(
+                MemberPushAlarm.fromPushAlarmForm(targetMember, PushAlarmForm.POSTCARD_SEND))
         );
-
-        notificationClient.send(receiveMember.getPushToken(), title, body);
-
-        MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
-                .member(receiveMember)
-                .title(title)
-                .body(body)
-                .build();
-        txTemplate.executeWithoutResult(it -> memberPushAlarmRepository.save(memberPushAlarm));
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
     public void acceptPostcard(PostcardAlarmEvent postcardAlarmEvent) {
-        Member sendMember = postcardAlarmEvent.getSendMember();
-        Member receiveMember = postcardAlarmEvent.getReceiveMember();
-        if (sendMember.canNotSendPushAlarm()) {
+        Member targetMember = postcardAlarmEvent.getTargetMember();
+        if (targetMember.canNotSendPushAlarm()) {
             return;
         }
 
         // 해당 멤버가 회원가입 완료상태가 아니면서 매칭 비활성화가 아니라면
-        if (!sendMember.getMemberStatus().equals(MemberStatus.COMPLETED)
-                && !sendMember.getMemberStatus().equals(MemberStatus.MATCHING_DISABLED)) {
+        if (!targetMember.getMemberStatus().equals(MemberStatus.COMPLETED)
+                && !targetMember.getMemberStatus().equals(MemberStatus.MATCHING_DISABLED)) {
             throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
         }
 
-        String title = PushAlarmForm.POSTCARD_ACCEPT.getTitle();
-        String body = String.format(
-                PushAlarmForm.POSTCARD_ACCEPT.getBody(),
-                receiveMember.getMemberProfile().getName()
+        String title = POSTCARD_ACCEPT.getTitle();
+        String body = PushAlarmForm.getBodyWithFormat(
+                postcardAlarmEvent.getPostcardAcceptMember().getMemberProfile().getName(),
+                POSTCARD_ACCEPT
         );
 
-        notificationClient.send(sendMember.getPushToken(), title, body);
+        notificationClient.send(targetMember.getPushToken(), title, body);
 
         MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
-                .member(sendMember)
+                .member(targetMember)
                 .title(title)
                 .body(body)
                 .build();
@@ -92,17 +84,12 @@ public class PushAlarmEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
     public void sendInvitationSuccessMessage(Member member) {
-        notificationClient.send(
+        notificationClient.sendWithForm(
                 member.getPushToken(),
-                PushAlarmForm.INVITATION_SUCCESS.getTitle(),
-                PushAlarmForm.INVITATION_SUCCESS.getBody()
+                PushAlarmForm.INVITATION_SUCCESS
         );
 
-        MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
-                .member(member)
-                .title(PushAlarmForm.INVITATION_SUCCESS.getTitle())
-                .body(PushAlarmForm.INVITATION_SUCCESS.getBody())
-                .build();
+        MemberPushAlarm memberPushAlarm = MemberPushAlarm.fromPushAlarmForm(member, PushAlarmForm.INVITATION_SUCCESS);
         txTemplate.executeWithoutResult(it -> memberPushAlarmRepository.save(memberPushAlarm));
     }
 
