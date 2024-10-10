@@ -35,7 +35,7 @@ public class PushAlarmEventHandler {
     @Async
     public void sendPostcard(PostcardAlarmEvent postcardAlarmEvent) {
         Member receiveMember = postcardAlarmEvent.getReceiveMember();
-        if (canNotSendPushAlarm(receiveMember)) {
+        if (receiveMember.canNotSendPushAlarm()) {
             return;
         }
 
@@ -65,7 +65,7 @@ public class PushAlarmEventHandler {
     public void acceptPostcard(PostcardAlarmEvent postcardAlarmEvent) {
         Member sendMember = postcardAlarmEvent.getSendMember();
         Member receiveMember = postcardAlarmEvent.getReceiveMember();
-        if (canNotSendPushAlarm(sendMember)) {
+        if (sendMember.canNotSendPushAlarm()) {
             return;
         }
 
@@ -99,14 +99,10 @@ public class PushAlarmEventHandler {
         );
     }
 
-    private boolean canNotSendPushAlarm(Member member) {
-        return member.getPushToken() == null || !member.getPushAlarmEnabled();
-    }
-
     public void sendAll(PushAlarmAllCreateRequest pushAlarmAllCreateRequest) {
         List<String> tokens = memberRepository.findAll()
                 .stream()
-                .filter(member -> !canNotSendPushAlarm(member))
+                .filter(Member::canSendPushAlarm)
                 .map(Member::getPushToken)
                 .collect(Collectors.toList());
 
@@ -117,7 +113,7 @@ public class PushAlarmEventHandler {
 
         memberRepository.findAll()
                 .stream()
-                .filter(member -> !canNotSendPushAlarm(member))
+                .filter(Member::canSendPushAlarm)
                 .forEach(pushAlarmSendableMember ->
                         txTemplate.executeWithoutResult(
                                 it -> memberPushAlarmRepository.save(MemberPushAlarm.builder()
