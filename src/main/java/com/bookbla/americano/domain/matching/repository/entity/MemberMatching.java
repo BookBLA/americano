@@ -30,7 +30,7 @@ public class MemberMatching {
     @Builder.Default
     private boolean isInvitationCard = Boolean.TRUE;
 
-    @OneToMany(mappedBy = "memberMatching")
+    @OneToMany(mappedBy = "memberMatching", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MatchedInfo> matched; // 필터링을 거친 매칭된 회원 저장
 
     @OneToMany(mappedBy = "memberMatching")
