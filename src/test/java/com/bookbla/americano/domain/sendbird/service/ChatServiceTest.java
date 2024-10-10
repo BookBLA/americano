@@ -6,6 +6,7 @@ import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -51,5 +52,10 @@ class ChatServiceTest {
         assertThatThrownBy(() -> sut.chatAccept(targetmember.getId()))
                 .isInstanceOf(BaseException.class)
                 .hasMessageContaining("책갈피 개수가 부족합니다.");
+    }
+
+    @AfterEach
+    void tearDown() {
+        memberBookmarkRepository.deleteAll();
     }
 }
