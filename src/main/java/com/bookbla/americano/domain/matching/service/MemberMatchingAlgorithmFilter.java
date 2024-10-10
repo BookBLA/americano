@@ -138,13 +138,6 @@ public class MemberMatchingAlgorithmFilter {
         return member.getMemberStyle().getSmokeType() == matchingMember.getMemberStyle().getSmokeType();
     }
 
-    private boolean checkReviewLength(MemberBook memberBook) {
-        if (memberBook == null || memberBook.getReview() == null) {
-            return false;
-        }
-        return memberBook.getReview().length() >= 60;
-    }
-
     private boolean checkAgeDifference(Member member, Member matchingMember) {
         log.info("CHECK: Age Difference");
         if (member == null || matchingMember == null) {
