@@ -23,6 +23,8 @@ public interface MemberMatchingRepository extends JpaRepository<MemberMatching, 
 
     Optional<MemberMatching> findByMember(Member member);
 
+    void deleteByMemberId(Long memberId);
+
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "UPDATE member_matching SET is_invitation_card = :isInvitationCard", nativeQuery = true)
     void resetIsInvitationCard(@Param("isInvitationCard") boolean isInvitationCard);
