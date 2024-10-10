@@ -12,7 +12,6 @@ import com.bookbla.americano.domain.member.repository.entity.MemberPushAlarm;
 import com.bookbla.americano.domain.notification.controller.dto.request.PushAlarmAllCreateRequest;
 import com.bookbla.americano.domain.notification.enums.PushAlarmForm;
 import com.bookbla.americano.domain.notification.exception.PushAlarmExceptionType;
-import com.bookbla.americano.domain.notification.infra.expo.ExpoNotificationClient;
 import com.bookbla.americano.domain.notification.service.NotificationClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -28,7 +27,6 @@ public class PushAlarmEventHandler {
     private final MemberRepository memberRepository;
     private final MemberPushAlarmRepository memberPushAlarmRepository;
     private final NotificationClient notificationClient;
-    private final ExpoNotificationClient expoNotificationClient;
     private final TransactionTemplate txTemplate;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -94,7 +92,7 @@ public class PushAlarmEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
     public void sendInvitationSuccessMessage(Member member) {
-        expoNotificationClient.send(
+        notificationClient.send(
                 member.getPushToken(),
                 PushAlarmForm.INVITATION_SUCCESS.getTitle(),
                 PushAlarmForm.INVITATION_SUCCESS.getBody()
@@ -139,7 +137,7 @@ public class PushAlarmEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
     public void sendByAdmin(Member member, PushAlarmForm pushAlarmForm) {
-        expoNotificationClient.send(
+        notificationClient.send(
                 member.getPushToken(),
                 pushAlarmForm.getTitle(),
                 pushAlarmForm.getBody()
