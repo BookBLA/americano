@@ -21,6 +21,9 @@ public enum PushAlarmForm {
     INVITATION_SUCCESS("친구가 가입에 성공했어요!", "지금 접속해서 무료 책갈피를 받아가세요!"),
     ;
 
+    private final String title;
+    private final String body;
+
     public static String getBodyWithFormat(String target, PushAlarmForm form) {
         return Arrays.stream(values())
                 .filter(it -> it == form)
@@ -28,7 +31,4 @@ public enum PushAlarmForm {
                 .map(it -> String.format(it.body, target))
                 .orElseThrow();
     }
-
-    private final String title;
-    private final String body;
 }
