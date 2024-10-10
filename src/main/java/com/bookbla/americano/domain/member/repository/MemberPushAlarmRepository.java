@@ -9,8 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MemberPushAlarmRepository extends JpaRepository<MemberPushAlarm, Long> {
 
-    List<MemberPushAlarm> findByMember(Member member);
-
     List<MemberPushAlarm> findByMemberOrderByCreatedAtDesc(Member member);
 
     Page<MemberPushAlarm> findByMemberOrderByCreatedAtDesc(Member member, Pageable pageable);
