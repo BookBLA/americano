@@ -195,12 +195,9 @@ public class PostcardService {
 
         MemberBookmark sendMemberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(sendMember.getId())
                 .orElseThrow(() -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
-        MemberBookmark receiveMemberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(receiveMember.getId())
-                .orElseThrow(() -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
 
         if (postcardStatus.isAccept()) {
             updateMemberMatchingExcluded(sendMember, receiveMember);
-            receiveMemberBookmark.acceptPostcard();
             postcardPushAlarmEventListener.acceptPostcard(new PostcardAlarmEvent(sendMember, receiveMember));
 
         } else if (postcardStatus.isPending()) {
