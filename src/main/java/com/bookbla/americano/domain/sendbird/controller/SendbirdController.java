@@ -2,7 +2,9 @@ package com.bookbla.americano.domain.sendbird.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
+import com.bookbla.americano.domain.sendbird.controller.dto.ChatRequest;
 import com.bookbla.americano.domain.sendbird.controller.dto.SendbirdResponse;
+import com.bookbla.americano.domain.sendbird.service.ChatService;
 import com.bookbla.americano.domain.sendbird.service.SendbirdService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,6 +15,8 @@ import org.sendbird.client.ApiException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @Tag(name="Sendbird" , description = "Sendbird API")
 @RestController
 @RequiredArgsConstructor
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 public class SendbirdController {
 
     private final SendbirdService sendbirdService;
+    private final ChatService chatService;
 
     @Operation(summary = "Sendbird 유저 생성 및 유저 토큰 생성/저장")
     @PostMapping
@@ -28,5 +33,12 @@ public class SendbirdController {
         sendbirdService.createUser(loginUser.getMemberId());
         SendbirdResponse sendbirdToken = sendbirdService.createUserToken(loginUser.getMemberId());
         return ResponseEntity.ok(sendbirdToken);
+    }
+
+    @Operation(summary = "채팅 수락")
+    @PostMapping("/chat")
+    public ResponseEntity<Void> chatAccept(@RequestBody @Valid ChatRequest chatRequest){
+        chatService.chatAccept(chatRequest.getTargetMemberId());
+        return ResponseEntity.ok().build();
     }
 }
