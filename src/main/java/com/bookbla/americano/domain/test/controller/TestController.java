@@ -5,6 +5,7 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.test.controller.docs.TestControllerDocs;
 import com.bookbla.americano.domain.test.controller.dto.request.TestLoginRequest;
 import com.bookbla.americano.domain.test.controller.dto.request.TestSignUpRequest;
+import com.bookbla.americano.domain.test.controller.dto.response.TestLoginResponse;
 import com.bookbla.americano.domain.test.controller.dto.response.TestSignUpResponse;
 import com.bookbla.americano.domain.test.service.TestService;
 import lombok.RequiredArgsConstructor;
@@ -37,13 +38,13 @@ public class TestController implements TestControllerDocs {
         return ResponseEntity.ok(TestSignUpResponse.of(member.getId(), token));
     }
 
-    @PostMapping("/sign-up/script")
-    public ResponseEntity<String> testLoginScript(
+    @PostMapping("/login")
+    public ResponseEntity<TestLoginResponse> testLoginScript(
             @RequestBody TestLoginRequest testLoginRequest
     ) {
         Member member = testService.loginScript(testLoginRequest.getId());
         String token = jwtProvider.createToken(member.getId().toString());
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(TestLoginResponse.of(token));
     }
 
     @PostMapping("/sign-out")
