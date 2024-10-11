@@ -107,10 +107,12 @@ public class MemberMatchingService {
 
         MatchedInfo matchedInfo = popMostPriorityMatched(memberMatching.getId(), memberId, refreshMemberId, refreshMemberBookId);
 
-        updateCurrentMatchedInfo(memberMatching, matchedInfo.getMatchedMemberId(), matchedInfo.getMatchedMemberBookId());
+        MemberIntroResponse memberIntroResponse = buildMemberIntroResponse(matchedInfo, memberMatching);
 
+        updateCurrentMatchedInfo(memberMatching, matchedInfo.getMatchedMemberId(), matchedInfo.getMatchedMemberBookId());
         memberMatching.updateInvitationCard(false);
-        return buildMemberIntroResponse(matchedInfo, memberMatching);
+
+        return memberIntroResponse;
     }
 
     private MemberIntroResponse buildMemberIntroResponse(MatchedInfo matchedInfo, MemberMatching memberMatching) {
