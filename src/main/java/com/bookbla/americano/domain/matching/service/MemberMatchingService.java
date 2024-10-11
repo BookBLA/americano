@@ -109,6 +109,10 @@ public class MemberMatchingService {
 
         MemberIntroResponse memberIntroResponse = buildMemberIntroResponse(matchedInfo, memberMatching);
 
+        if (memberIntroResponse.equals(MemberIntroResponse.empty())) {
+            return memberIntroResponse;
+        }
+
         updateCurrentMatchedInfo(memberMatching, matchedInfo.getMatchedMemberId(), matchedInfo.getMatchedMemberBookId());
         memberMatching.updateInvitationCard(false);
 
