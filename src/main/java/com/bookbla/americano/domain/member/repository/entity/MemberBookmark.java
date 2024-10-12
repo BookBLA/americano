@@ -51,6 +51,10 @@ public class MemberBookmark extends BaseEntity {
         bookmarkCount = bookmarkCount - 30;
     }
 
+    public void rejectChat() {
+        bookmarkCount = bookmarkCount + 30;
+    }
+
     public void validateSendPostcard() {
         if (bookmarkCount < 35) {
             throw new BaseException(MemberBookmarkExceptionType.INVALID_BOOKMARK_COUNTS);

@@ -17,9 +17,16 @@ public class ChatService {
     private final MemberBookmarkRepository memberBookmarkRepository;
 
     public void chatAccept(Long targetMemberId) {
-        MemberBookmark targetMemberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(targetMemberId)
+        MemberBookmark targetMemberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(targetMemberId) // 채팅 수락한 사람 책갈피
                 .orElseThrow(() -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
 
         targetMemberBookmark.acceptChat();
+    }
+
+    public void chatReject(Long targetMemberId) {
+        MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(targetMemberId) // 채팅 보낸 사람 책갈피
+                .orElseThrow(() -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
+
+        memberBookmark.rejectChat();
     }
 }

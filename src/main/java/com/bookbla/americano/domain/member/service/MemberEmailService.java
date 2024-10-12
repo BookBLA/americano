@@ -2,7 +2,6 @@ package com.bookbla.americano.domain.member.service;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
-import com.bookbla.americano.base.utils.RedisUtil;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberEmailSendRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberEmailVerifyRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.EmailResponse;
@@ -43,7 +42,6 @@ public class MemberEmailService {
     private final SchoolRepository schoolRepository;
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
-    private final RedisUtil redisUtil;
 
     @Transactional
     public EmailResponse sendEmail(Long memberId, MemberEmailSendRequest memberEmailSendRequest) {
@@ -54,16 +52,10 @@ public class MemberEmailService {
 
         checkSchoolDomainUrl(requestSchool, schoolEmail);
 
-        // 이메일 중복 체크
-        checkDuplicatedEmail(schoolEmail);
+//        checkDuplicatedEmail(schoolEmail);
 
-        // 이메일 보내기
         String verifyCode = createVerifyCode();
         sendEmailMessage(schoolEmail, verifyCode);
-
-        // 5분 뒤에 redis 만료
-        redisUtil.setDataExpire(verifyCode, schoolEmail, 5 * 60);
-        redisUtil.setDataExpire(schoolEmail, verifyCode, 5 * 60);
 
         Member member = memberRepository.getByIdOrThrow(memberId);
 
@@ -71,10 +63,12 @@ public class MemberEmailService {
                 .orElseGet(() -> MemberEmail.builder()
                         .member(member)
                         .schoolEmail(schoolEmail)
+                        .verifyCode(verifyCode)
                         .emailVerifyStatus(EmailVerifyStatus.PENDING)
                         .build());
 
         memberEmail.updateSchoolEmail(schoolEmail)
+                .updateVerifyCode(verifyCode)
                 .updateEmailVerifyPending();
 
         memberEmailRepository.save(memberEmail);
@@ -88,17 +82,13 @@ public class MemberEmailService {
         String requestSchoolEmail = memberEmailVerifyRequest.getSchoolEmail();
         String requestVerifyCode = memberEmailVerifyRequest.getVerifyCode();
 
-        String redisSchoolEmail = redisUtil.getData(requestVerifyCode);
-        String redisVerifyCode = redisUtil.getData(requestSchoolEmail);
-
-        if (!requestSchoolEmail.equals(redisSchoolEmail) ||
-                !requestVerifyCode.equals(redisVerifyCode)) {
-            throw new BaseException(MemberEmailExceptionType.NOT_EQUAL_VERIFY_CODE);
-        }
-
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberEmail memberEmail = memberEmailRepository.findByMember(member)
                 .orElseThrow(() -> new BaseException(MemberEmailExceptionType.EMAIL_NOT_REGISTERED));
+
+        if (!requestVerifyCode.equals(memberEmail.getVerifyCode())) {
+            throw new BaseException(MemberEmailExceptionType.NOT_EQUAL_VERIFY_CODE);
+        }
 
         if (!requestSchoolEmail.equals(memberEmail.getSchoolEmail())) {
             throw new BaseException(MemberEmailExceptionType.NOT_EQUAL_SCHOOL_EMAIL);
@@ -119,8 +109,6 @@ public class MemberEmailService {
         int currentMemberCounts = (int) memberRepository.countValidMembers(school.getId());
         school.checkOpen(currentMemberCounts);
 
-        redisUtil.deleteData(requestSchoolEmail);
-        redisUtil.deleteData(redisVerifyCode);
         return EmailResponse.from(memberEmail);
     }
 

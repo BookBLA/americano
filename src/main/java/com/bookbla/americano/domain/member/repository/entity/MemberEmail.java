@@ -35,6 +35,8 @@ public class MemberEmail extends BaseEntity {
 
     private String schoolEmail;
 
+    private String verifyCode;
+
     @Enumerated(EnumType.STRING)
     private EmailVerifyStatus emailVerifyStatus;
 
@@ -46,6 +48,11 @@ public class MemberEmail extends BaseEntity {
 
     public MemberEmail updateSchoolEmail(String schoolEmail) {
         this.schoolEmail = schoolEmail;
+        return this;
+    }
+
+    public MemberEmail updateVerifyCode(String verifyCode) {
+        this.verifyCode = verifyCode;
         return this;
     }
 

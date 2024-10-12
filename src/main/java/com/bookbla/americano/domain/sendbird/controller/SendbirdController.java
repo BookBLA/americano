@@ -2,7 +2,7 @@ package com.bookbla.americano.domain.sendbird.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
-import com.bookbla.americano.domain.sendbird.controller.dto.ChatRequest;
+import com.bookbla.americano.domain.sendbird.controller.dto.EntryRequest;
 import com.bookbla.americano.domain.sendbird.controller.dto.SendbirdResponse;
 import com.bookbla.americano.domain.sendbird.service.ChatService;
 import com.bookbla.americano.domain.sendbird.service.SendbirdService;
@@ -13,7 +13,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.sendbird.client.ApiException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
@@ -36,9 +39,16 @@ public class SendbirdController {
     }
 
     @Operation(summary = "채팅 수락")
-    @PostMapping("/chat")
-    public ResponseEntity<Void> chatAccept(@RequestBody @Valid ChatRequest chatRequest){
-        chatService.chatAccept(chatRequest.getTargetMemberId());
+    @PostMapping("/entry/accept")
+    public ResponseEntity<Void> accept(@RequestBody @Valid EntryRequest entryRequest){
+        chatService.chatAccept(entryRequest.getTargetMemberId());
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "채팅 거절")
+    @PostMapping("/entry/reject")
+    public ResponseEntity<Void> reject(@RequestBody @Valid EntryRequest entryRequest){
+        chatService.chatReject(entryRequest.getTargetMemberId());
         return ResponseEntity.ok().build();
     }
 }
