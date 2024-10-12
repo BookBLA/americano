@@ -54,6 +54,21 @@ class ChatServiceTest {
                 .hasMessageContaining("책갈피 개수가 부족합니다.");
     }
 
+    @Test
+    void 채팅을_거절하면_보낸_사람은_책갈피를_30개_돌려받는다(){
+        //given
+        Member member = memberRepository.save(Member.builder().build());
+        MemberBookmark womanMemberBookmark = memberBookmarkRepository.save(MemberBookmark.builder().member(member).bookmarkCount(40).build());
+
+        //when
+        sut.chatReject(member.getId());
+
+        //then
+        MemberBookmark targetMemberBookmark = memberBookmarkRepository.findById(womanMemberBookmark.getId())
+                .orElseThrow(() -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
+        assertThat(targetMemberBookmark.getBookmarkCount()).isEqualTo(70);
+    }
+
     @AfterEach
     void tearDown() {
         memberBookmarkRepository.deleteAll();
