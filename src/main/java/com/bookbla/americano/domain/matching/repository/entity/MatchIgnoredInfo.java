@@ -1,5 +1,6 @@
 package com.bookbla.americano.domain.matching.repository.entity;
 
+import com.bookbla.americano.base.entity.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -9,7 +10,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class MatchIgnoredInfo {
+public class MatchIgnoredInfo extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
