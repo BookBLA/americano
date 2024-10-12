@@ -14,12 +14,14 @@ import com.bookbla.americano.domain.notification.service.AlarmService;
 import com.bookbla.americano.domain.notification.service.NotificationClient;
 import com.bookbla.americano.domain.notification.service.dto.NotificationResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class AdminMarketingService {
 
     private final NotificationClient notificationClient;
@@ -39,13 +41,20 @@ public class AdminMarketingService {
             ));
         }
 
-        List<NotificationResponse> response = notificationClient.send(member.getPushToken(), notificationDto.getTitle(), notificationDto.getContents());
+        List<NotificationResponse> responses = notificationClient.send(member.getPushToken(), notificationDto.getTitle(), notificationDto.getContents());
 
-        response.stream()
+        log.info("notification responses.size() : " + responses.size());
+        for (NotificationResponse response :responses) {
+            log.info("response id : " + response.getId());
+            log.info("response message : " + response.getMessage());
+            log.info("response status : " + response.getStatus());
+        }
+
+        responses.stream()
                 .filter(NotificationResponse::isSuccess)
                 .forEach(it -> saveMemberPushAlarm(notificationDto, member));
 
-        return response;
+        return responses;
     }
 
     private void saveMemberPushAlarm(NotificationDto notificationDto, Member member) {
