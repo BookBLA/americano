@@ -7,6 +7,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,13 +23,17 @@ public class MatchIgnoredRepositoryImpl implements MatchIgnoredRepositoryCustom 
 
     @Override
     public List<MatchedInfo> getIgnoredMemberIdsAndIgnoredMemberBookIdByMemberId(MemberRecommendationDto memberRecommendationDto) {
+
+        LocalDateTime ignoredFilterAt = LocalDateTime.now().minusWeeks(1);
+
         return queryFactory
                 .select(member.id, memberBook.id)
                 .from(member)
                 .innerJoin(memberBook).on(member.id.eq(memberBook.member.id))
                 .leftJoin(matchIgnoredInfo).on(member.id.eq(matchIgnoredInfo.ignoredMemberId)
                         .and(memberBook.id.eq(matchIgnoredInfo.ignoredMemberBookId)))
-                .where(matchIgnoredInfo.memberId.eq(memberRecommendationDto.getMemberId()))
+                .where(matchIgnoredInfo.memberId.eq(memberRecommendationDto.getMemberId()),
+                        matchIgnoredInfo.createdAt.after(ignoredFilterAt))
                 .fetch()
                 .stream()
                 .map(tuple -> MatchedInfo.from(memberRecommendationDto.getMemberId(), tuple.get(member.id), tuple.get(memberBook.id), memberRecommendationDto.getMemberMatching()))
