@@ -58,7 +58,7 @@ public class MemberMatchingAlgorithmFilter {
                     Member matchingMember = matchingMemberList.stream()
                             .filter(m -> m.getId().equals(matchedInfo.getMatchedMemberId()))
                             .findFirst()
-                            .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST));
+                            .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MEMBER));
                     MemberBook matchingMemberBook = memberBookMap.get(matchedInfo.getMatchedMemberBookId());
 
                     applySimilarityWeight(member, matchedInfo, matchingMember, memberBooks, matchingMemberBook, memberBookAuthorsMap, matchingMemberBookAuthorsMap);
