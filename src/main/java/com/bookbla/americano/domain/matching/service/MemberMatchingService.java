@@ -78,6 +78,8 @@ public class MemberMatchingService {
 
         MatchedInfo matchedInfo = getMostPriorityMatched(matchedInfoRepository.getAllByDesc(memberMatching.getId()));
 
+        if (matchedInfo == null) return MemberIntroResponse.empty();
+
         MemberIntroResponse memberIntroResponse = buildMemberIntroResponse(matchedInfo, memberMatching);
 
         updateCurrentMatchedInfo(memberMatching, memberIntroResponse.getMemberId(), memberIntroResponse.getMemberBookId());
@@ -88,7 +90,7 @@ public class MemberMatchingService {
     private MatchedInfo getMatchedInfo(Long memberId, MemberMatching memberMatching) {
         return matchedInfoRepository.findByMemberIdAndMatchedMemberIdAndMatchedMemberBookId(memberId,
                         memberMatching.getCurrentMatchedMemberId(), memberMatching.getCurrentMatchedMemberBookId())
-                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST));
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MATCHING_INFO_DOESNT_EXIST));
     }
 
     public MemberIntroResponse refreshMemberMatching(Long memberId) {
@@ -107,7 +109,10 @@ public class MemberMatchingService {
 
         MatchedInfo matchedInfo = popMostPriorityMatched(memberMatching.getId(), memberId, refreshMemberId, refreshMemberBookId);
 
-        if (matchedInfo == null) return MemberIntroResponse.empty();
+        if (matchedInfo == null) {
+            updateCurrentMatchedInfo(memberMatching, null,null);
+            return MemberIntroResponse.empty();
+        }
 
         updateCurrentMatchedInfo(memberMatching, matchedInfo.getMatchedMemberId(), matchedInfo.getMatchedMemberBookId());
         memberMatching.updateInvitationCard(false);
@@ -122,7 +127,7 @@ public class MemberMatchingService {
         MemberBook matchedMemberBook = memberBookRepository.getByIdOrThrow(matchedInfo.getMatchedMemberBookId());
 
         if (matchedMember == null || matchedMemberBook == null) {
-            throw new BaseException(MemberMatchingExceptionType.MATCHING_MEMBER_DOESNT_EXIST);
+            throw new BaseException(MemberMatchingExceptionType.VALID_MATCHING_INFO);
         }
 
         return MemberIntroResponse.from(matchedMember, matchedMemberBook, memberMatching);
