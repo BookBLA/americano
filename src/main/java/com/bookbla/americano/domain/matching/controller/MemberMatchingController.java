@@ -26,7 +26,7 @@ public class MemberMatchingController {
     @GetMapping
     public ResponseEntity<MemberIntroResponse> getRecommendation(
             @Parameter(hidden = true) @User LoginUser loginUser) {
-        return ResponseEntity.ok(memberMatchingService.getRecommendationMember(loginUser.getMemberId()));
+        return ResponseEntity.ok(memberMatchingService.getHomeMatch(loginUser.getMemberId()));
     }
 
     @Operation(summary = "매칭 회원 새로고침")

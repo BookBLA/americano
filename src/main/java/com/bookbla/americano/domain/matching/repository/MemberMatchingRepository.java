@@ -16,7 +16,7 @@ public interface MemberMatchingRepository extends JpaRepository<MemberMatching, 
 
     default MemberMatching getByIdOrThrow(Long memberMatchingId) {
         return findById(memberMatchingId)
-                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MATCHING));
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
     }
 
     Optional<MemberMatching> findByMemberId(Long memberId);

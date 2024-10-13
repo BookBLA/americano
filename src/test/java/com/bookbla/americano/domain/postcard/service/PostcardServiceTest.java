@@ -134,7 +134,7 @@ class PostcardServiceTest {
         //then
         assertThat(response.getIsSendSuccess()).isTrue();
         MemberMatching updatedMemberMatching = memberMatchingRepository.findByMember(sendMember)
-                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MATCHING));
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
         assertThat(updatedMemberMatching.getIsInvitationCard()).isTrue();
     }
 

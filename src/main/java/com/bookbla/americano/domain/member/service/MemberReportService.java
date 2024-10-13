@@ -85,7 +85,7 @@ public class MemberReportService {
         applicationEventPublisher.publishEvent(new AdminNotificationEvent("새 신고가 접수되었습니다", "신고당한 회원 id : " + reportedMember.getId().toString()));
 
         MemberMatching memberMatching = memberMatchingRepository.findByMember(reporterMember)
-                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MATCHING));
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
         memberMatching.updateInvitationCard(true);
 
         // 신고 당한 회원 매칭 제외
