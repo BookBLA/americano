@@ -107,9 +107,7 @@ public class MemberMatchingService {
 
         MatchedInfo matchedInfo = popMostPriorityMatched(memberMatching.getId(), memberId, refreshMemberId, refreshMemberBookId);
 
-        if (matchedInfo == null) {
-            return MemberIntroResponse.empty();
-        }
+        if (matchedInfo == null) return MemberIntroResponse.empty();
 
         updateCurrentMatchedInfo(memberMatching, matchedInfo.getMatchedMemberId(), matchedInfo.getMatchedMemberBookId());
         memberMatching.updateInvitationCard(false);
