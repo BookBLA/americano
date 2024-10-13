@@ -41,14 +41,12 @@ public class MemberMatchingService {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public MemberIntroResponse getRecommendationMember(Long memberId) {
-        log.info("알고리즘 매칭 시작 ⬇️⬇️⬇️");
+    public MemberIntroResponse getHomeMatch(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
+        member.updateLastUsedAt();
 
         MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
                 .orElseGet(() -> memberMatchingRepository.save(MemberMatching.of(member)));
-
-        member.updateLastUsedAt();
 
         if (memberMatching.hasCurrentMatchedInfo()) {
             MatchedInfo matchedInfo = getMatchedInfo(memberId, memberMatching);
@@ -56,29 +54,12 @@ public class MemberMatchingService {
             return buildMemberIntroResponse(matchedInfo, memberMatching);
         }
 
-        MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member, memberMatching);
-
-        List<Long> recommendedMemberIds = memberMatchingRepository.getMinimumConstraintMemberIds(memberRecommendationDto);
-        log.info("최소 조건(회원 상태)으로 추출한 추천 회원 ID 수: {}", recommendedMemberIds.size());
-
-        recommendedMemberIds = memberMatchingFilter.memberExcludedFiltering(member.getId(), recommendedMemberIds);
-        log.info("제외된 회원 필터링 한 추천 회원 ID 수: {}", recommendedMemberIds.size());
-
-        List<MatchedInfo> recommendedMatches = memberMatchingFilter.memberRefusedAtFiltering(recommendedMemberIds, memberRecommendationDto);
-        log.info("엽서 거절 필터링 후 추천 매칭 정보 수: {}", recommendedMatches.size());
-
-        recommendedMatches = memberMatchingFilter.memberIgnoredFiltering(recommendedMatches, memberRecommendationDto);
-        log.info("MatchIgnoredInfo 필터링 후 ❗️최종 매칭 추천 수: {}", recommendedMatches.size());
-
-        log.info("알고리즘 가중치 적용 쿼리 ⬇️⬇️⬇️");
-        recommendedMatches = memberMatchingAlgorithmFilter.memberMatchingAlgorithmFiltering(member, recommendedMatches);
-
-        log.info("필터링된 매칭 정보 저장 쿼리 ⬇️⬇️⬇️");
-        saveAllRecommendedMembers(recommendedMatches);
+        saveRecommendationMatches(memberId);
 
         MatchedInfo matchedInfo = getMostPriorityMatched(matchedInfoRepository.getAllByDesc(memberMatching.getId()));
-
         if (matchedInfo == null) return MemberIntroResponse.empty();
+
+        if(memberMatching.mealInvitationCard()) memberMatching.updateInvitationCard(true);
 
         MemberIntroResponse memberIntroResponse = buildMemberIntroResponse(matchedInfo, memberMatching);
 
@@ -95,10 +76,10 @@ public class MemberMatchingService {
 
     public MemberIntroResponse refreshMemberMatching(Long memberId) {
         MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MATCHING));
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
 
         if (!memberMatching.hasCurrentMatchedInfo()) {
-            return getRecommendationMember(memberId);
+            return getHomeMatch(memberId);
         }
 
         Long refreshMemberId = memberMatching.getCurrentMatchedMemberId();
@@ -111,6 +92,7 @@ public class MemberMatchingService {
 
         if (matchedInfo == null) {
             updateCurrentMatchedInfo(memberMatching, null, null);
+            memberMatching.updateInvitationCard(false);
             return MemberIntroResponse.empty();
         }
 
@@ -145,7 +127,35 @@ public class MemberMatchingService {
         return getMostPriorityMatched(matchedInfoRepository.findAllByMemberMatchingId(memberMatchingId));
     }
 
-    private void saveAllRecommendedMembers(List<MatchedInfo> recommendedMatches) {
+    private void saveRecommendationMatches(Long memberId) {
+        log.info("알고리즘 매칭 시작 ⬇️⬇️⬇️");
+        Member member = memberRepository.getByIdOrThrow(memberId);
+
+        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
+
+        MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member, memberMatching);
+
+        List<Long> recommendedMemberIds = memberMatchingRepository.getMinimumConstraintMemberIds(memberRecommendationDto);
+        log.info("최소 조건(회원 상태)으로 추출한 추천 회원 ID 수: {}", recommendedMemberIds.size());
+
+        recommendedMemberIds = memberMatchingFilter.memberExcludedFiltering(member.getId(), recommendedMemberIds);
+        log.info("제외된 회원 필터링 한 추천 회원 ID 수: {}", recommendedMemberIds.size());
+
+        List<MatchedInfo> recommendedMatches = memberMatchingFilter.memberRefusedAtFiltering(recommendedMemberIds, memberRecommendationDto);
+        log.info("엽서 거절 필터링 후 추천 매칭 정보 수: {}", recommendedMatches.size());
+
+        recommendedMatches = memberMatchingFilter.memberIgnoredFiltering(recommendedMatches, memberRecommendationDto);
+        log.info("MatchIgnoredInfo 필터링 후 ❗️최종 매칭 추천 수: {}", recommendedMatches.size());
+
+        log.info("알고리즘 가중치 적용 쿼리 ⬇️⬇️⬇️");
+        recommendedMatches = memberMatchingAlgorithmFilter.memberMatchingAlgorithmFiltering(member, recommendedMatches);
+
+        log.info("필터링된 매칭 정보 저장 쿼리 ⬇️⬇️⬇️");
+        saveAllRecommendedMatches(recommendedMatches);
+    }
+
+    private void saveAllRecommendedMatches(List<MatchedInfo> recommendedMatches) {
         String sql = "INSERT INTO matched_info (member_id, matched_member_id, matched_member_book_id, member_matching_id, similarity_weight) " +
                 "VALUES (?, ?, ?, ?, ?) " +
                 "ON DUPLICATE KEY UPDATE " +

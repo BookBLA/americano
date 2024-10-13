@@ -57,6 +57,10 @@ public class MemberMatching {
         return currentMatchedMemberId != null && currentMatchedMemberBookId != null;
     }
 
+    public boolean mealInvitationCard(){
+        return currentMatchedMemberId == null && currentMatchedMemberBookId == null && !isInvitationCard;
+    }
+
     public void updateInvitationCard(boolean isInvitationCard) {
         this.isInvitationCard = isInvitationCard;
     }
