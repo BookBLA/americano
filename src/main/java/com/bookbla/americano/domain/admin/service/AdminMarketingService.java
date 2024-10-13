@@ -48,6 +48,7 @@ public class AdminMarketingService {
             log.info("response id : " + response.getId());
             log.info("response message : " + response.getMessage());
             log.info("response status : " + response.getStatus());
+            log.info("response isSuccess" + response.isSuccess());
         }
 
         responses.stream()
