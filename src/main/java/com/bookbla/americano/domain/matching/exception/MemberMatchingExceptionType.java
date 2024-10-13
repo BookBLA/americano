@@ -16,6 +16,7 @@ public enum MemberMatchingExceptionType implements ExceptionType {
     NOT_FOUND_MEMBER_BOOK(HttpStatus.NOT_FOUND, "member_matching_005", "회원의 책 정보가 존재하지 않습니다."),
     NOT_FOUND_MATCHED(HttpStatus.NOT_FOUND, "member_matching_006", "필터링된 회원이 존재하지 않습니다."),
     VALID_MATCHING_INFO(HttpStatus.BAD_REQUEST, "member_matching_007", "유효하지 않은 매칭 정보입니다."),
+    NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "member_matching_008", "매칭에 해당하는 회원이 아닙니다")
     ;
 
     private final HttpStatus httpStatus;
