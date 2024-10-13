@@ -49,23 +49,25 @@ public class MemberMatchingService {
                 .orElseGet(() -> memberMatchingRepository.save(MemberMatching.of(member)));
 
         if (memberMatching.hasCurrentMatchedInfo()) {
-            MatchedInfo matchedInfo = getMatchedInfo(memberId, memberMatching);
+            validMatchedInfo(memberId, memberMatching);
 
-            return buildMemberIntroResponse(matchedInfo, memberMatching);
+            return buildMemberIntroResponse(memberMatching);
         }
 
         saveRecommendationMatches(memberId);
 
         MatchedInfo matchedInfo = getMostPriorityMatched(matchedInfoRepository.getAllByDesc(memberMatching.getId()));
-        if (matchedInfo == null) return MemberIntroResponse.empty();
+        if (matchedInfo == null) {
+            return MemberIntroResponse.empty();
+        }
 
         if(memberMatching.mealInvitationCard()) memberMatching.updateInvitationCard(true);
-
-        return buildMemberIntroResponse(matchedInfo, memberMatching);
+        updateCurrentMatchedInfo(memberMatching, matchedInfo.getMatchedMemberId(), matchedInfo.getMatchedMemberBookId());
+        return buildMemberIntroResponse(memberMatching);
     }
 
-    private MatchedInfo getMatchedInfo(Long memberId, MemberMatching memberMatching) {
-        return matchedInfoRepository.findByMemberIdAndMatchedMemberIdAndMatchedMemberBookId(memberId,
+    private void validMatchedInfo(Long memberId, MemberMatching memberMatching) {
+        matchedInfoRepository.findByMemberIdAndMatchedMemberIdAndMatchedMemberBookId(memberId,
                         memberMatching.getCurrentMatchedMemberId(), memberMatching.getCurrentMatchedMemberBookId())
                 .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MATCHING_INFO_DOESNT_EXIST));
     }
@@ -75,6 +77,7 @@ public class MemberMatchingService {
                 .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
 
         if (!memberMatching.hasCurrentMatchedInfo()) {
+            memberMatching.updateInvitationCard(false);
             return getHomeMatch(memberId);
         }
 
@@ -95,14 +98,14 @@ public class MemberMatchingService {
         updateCurrentMatchedInfo(memberMatching, matchedInfo.getMatchedMemberId(), matchedInfo.getMatchedMemberBookId());
         memberMatching.updateInvitationCard(false);
 
-        return buildMemberIntroResponse(matchedInfo, memberMatching);
+        return buildMemberIntroResponse(memberMatching);
     }
 
-    private MemberIntroResponse buildMemberIntroResponse(MatchedInfo matchedInfo, MemberMatching memberMatching) {
-        if (matchedInfo == null) return MemberIntroResponse.empty();
+    private MemberIntroResponse buildMemberIntroResponse(MemberMatching memberMatching) {
+        if (memberMatching == null) throw new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND);
 
-        Member matchedMember = memberRepository.getByIdOrThrow(matchedInfo.getMatchedMemberId());
-        MemberBook matchedMemberBook = memberBookRepository.getByIdOrThrow(matchedInfo.getMatchedMemberBookId());
+        Member matchedMember = memberRepository.getByIdOrThrow(memberMatching.getCurrentMatchedMemberId());
+        MemberBook matchedMemberBook = memberBookRepository.getByIdOrThrow(memberMatching.getCurrentMatchedMemberBookId());
 
         if (matchedMember == null || matchedMemberBook == null) {
             throw new BaseException(MemberMatchingExceptionType.VALID_MATCHING_INFO);
