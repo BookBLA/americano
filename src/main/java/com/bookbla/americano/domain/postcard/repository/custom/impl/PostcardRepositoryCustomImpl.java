@@ -72,9 +72,7 @@ public class PostcardRepositoryCustomImpl implements PostcardRepositoryCustom {
                 .from(member)
                 .innerJoin(postcard).on(member.eq(postcard.sendMember))
                 .where(postcard.receiveMember.id.eq(memberId)
-                        .and(postcard.postcardStatus.eq(PostcardStatus.PENDING)
-                                .or(postcard.postcardStatus.eq(PostcardStatus.READ))
-                                .or(postcard.postcardStatus.eq(PostcardStatus.ACCEPT))))
+                        .and(postcard.postcardStatus.eq(PostcardStatus.PENDING)))
                 .orderBy(postcard.createdAt.desc())
                 .fetch();
     }
