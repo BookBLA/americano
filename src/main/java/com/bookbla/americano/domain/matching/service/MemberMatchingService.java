@@ -61,11 +61,7 @@ public class MemberMatchingService {
 
         if(memberMatching.mealInvitationCard()) memberMatching.updateInvitationCard(true);
 
-        MemberIntroResponse memberIntroResponse = buildMemberIntroResponse(matchedInfo, memberMatching);
-
-        updateCurrentMatchedInfo(memberMatching, memberIntroResponse.getMemberId(), memberIntroResponse.getMemberBookId());
-
-        return memberIntroResponse;
+        return buildMemberIntroResponse(matchedInfo, memberMatching);
     }
 
     private MatchedInfo getMatchedInfo(Long memberId, MemberMatching memberMatching) {
@@ -91,12 +87,12 @@ public class MemberMatchingService {
         MatchedInfo matchedInfo = popMostPriorityMatched(memberMatching.getId(), memberId, refreshMemberId, refreshMemberBookId);
 
         if (matchedInfo == null) {
-            updateCurrentMatchedInfo(memberMatching, null, null);
+            memberMatching.updateCurrentMatchedInfo(null, null);
             memberMatching.updateInvitationCard(false);
             return MemberIntroResponse.empty();
         }
 
-        updateCurrentMatchedInfo(memberMatching, matchedInfo.getMatchedMemberId(), matchedInfo.getMatchedMemberBookId());
+        memberMatching.updateCurrentMatchedInfo(matchedInfo.getMatchedMemberId(), matchedInfo.getMatchedMemberBookId());
         memberMatching.updateInvitationCard(false);
 
         return buildMemberIntroResponse(matchedInfo, memberMatching);
@@ -177,10 +173,5 @@ public class MemberMatchingService {
                 return recommendedMatches.size(); // 전체 리스트 크기
             }
         });
-    }
-
-    private void updateCurrentMatchedInfo(MemberMatching memberMatching, Long currentMatchedMemberId, Long currentMatchedMemberBookId) {
-        memberMatching.updateCurrentMatchedInfo(currentMatchedMemberId, currentMatchedMemberBookId);
-        memberMatchingRepository.save(memberMatching);
     }
 }
