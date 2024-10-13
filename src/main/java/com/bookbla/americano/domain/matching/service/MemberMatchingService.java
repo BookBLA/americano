@@ -110,7 +110,7 @@ public class MemberMatchingService {
         MatchedInfo matchedInfo = popMostPriorityMatched(memberMatching.getId(), memberId, refreshMemberId, refreshMemberBookId);
 
         if (matchedInfo == null) {
-            updateCurrentMatchedInfo(memberMatching, null,null);
+            updateCurrentMatchedInfo(memberMatching, null, null);
             return MemberIntroResponse.empty();
         }
 
