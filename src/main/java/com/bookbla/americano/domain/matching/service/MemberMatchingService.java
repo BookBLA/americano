@@ -87,12 +87,12 @@ public class MemberMatchingService {
         MatchedInfo matchedInfo = popMostPriorityMatched(memberMatching.getId(), memberId, refreshMemberId, refreshMemberBookId);
 
         if (matchedInfo == null) {
-            memberMatching.updateCurrentMatchedInfo(null, null);
+            updateCurrentMatchedInfo(memberMatching, null, null);
             memberMatching.updateInvitationCard(false);
             return MemberIntroResponse.empty();
         }
 
-        memberMatching.updateCurrentMatchedInfo(matchedInfo.getMatchedMemberId(), matchedInfo.getMatchedMemberBookId());
+        updateCurrentMatchedInfo(memberMatching, matchedInfo.getMatchedMemberId(), matchedInfo.getMatchedMemberBookId());
         memberMatching.updateInvitationCard(false);
 
         return buildMemberIntroResponse(matchedInfo, memberMatching);
@@ -173,5 +173,10 @@ public class MemberMatchingService {
                 return recommendedMatches.size(); // 전체 리스트 크기
             }
         });
+    }
+
+    private void updateCurrentMatchedInfo(MemberMatching memberMatching, Long currentMatchedMemberId, Long currentMatchedMemberBookId) {
+        memberMatching.updateCurrentMatchedInfo(currentMatchedMemberId, currentMatchedMemberBookId);
+        memberMatchingRepository.save(memberMatching);
     }
 }
