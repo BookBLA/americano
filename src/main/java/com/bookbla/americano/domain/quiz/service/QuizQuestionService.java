@@ -52,7 +52,7 @@ public class QuizQuestionService {
 
         CorrectStatus status = quizQuestion.solve(request.getQuizAnswer());
         MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.NOT_FOUND_MATCHING));
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
 
         boolean isCorrect = true;
 
