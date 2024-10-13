@@ -30,12 +30,11 @@ public class SendbirdController {
     private final SendbirdService sendbirdService;
     private final ChatService chatService;
 
-    @Operation(summary = "Sendbird 유저 생성 및 유저 토큰 생성/저장")
+    @Operation(summary = "Sendbird 유저 생성 및 유저 토큰 생성/저장 or 유저 조회")
     @PostMapping
     public ResponseEntity<SendbirdResponse> sendbird(@Parameter(hidden = true) @User LoginUser loginUser) throws ApiException {
-        sendbirdService.createUser(loginUser.getMemberId());
-        SendbirdResponse sendbirdToken = sendbirdService.createUserToken(loginUser.getMemberId());
-        return ResponseEntity.ok(sendbirdToken);
+        SendbirdResponse sendbirdResponse = sendbirdService.createOrView(loginUser.getMemberId());
+        return ResponseEntity.ok(sendbirdResponse);
     }
 
     @Operation(summary = "채팅 수락")

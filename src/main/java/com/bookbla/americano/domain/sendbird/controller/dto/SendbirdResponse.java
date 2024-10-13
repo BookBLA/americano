@@ -13,10 +13,10 @@ public class SendbirdResponse {
     private final Long memberId;
     private final String sendbirdToken;
 
-    public static SendbirdResponse of(Member member, CreateUserTokenResponse createUserTokenResponse) {
+    public static SendbirdResponse of(Member member, String sendbirdToken) {
         return SendbirdResponse.builder()
                 .memberId(member.getId())
-                .sendbirdToken(createUserTokenResponse.getToken())
+                .sendbirdToken(sendbirdToken)
                 .build();
     }
 }

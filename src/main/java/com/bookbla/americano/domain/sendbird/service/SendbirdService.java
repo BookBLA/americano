@@ -32,8 +32,34 @@ public class SendbirdService {
         this.memberRepository = memberRepository;
     }
 
-    public void createUser(Long memberId) throws ApiException {
+    public SendbirdResponse createOrView(Long memberId) throws ApiException {
         Member member = memberRepository.getByIdOrThrow(memberId);
+        String userId = member.getId().toString();
+
+        String existingToken = member.getSendbirdToken();
+
+        if (existingToken != null && !existingToken.isEmpty()) {
+            return SendbirdResponse.of(member, existingToken);
+        }
+
+        try {
+            userApi.viewUserById(userId)
+                    .apiToken(apiToken)
+                    .execute();
+        } catch (ApiException e) {
+            // USER_NOT_FOUND 에러코드 400301
+            if (e.getCode() == 400301) {
+                createUser(member);
+                return createUserToken(member);
+            } else {
+                throw e;
+            }
+        }
+
+        return createUserToken(member);
+    }
+
+    private void createUser(Member member) throws ApiException {
         String userId = member.getId().toString();
         String imageUrl = member.getMemberStyle().getProfileImageType().getImageUrl();
         CreateUserData createUserData = new CreateUserData()
@@ -48,8 +74,8 @@ public class SendbirdService {
                 .execute();
     }
 
-    public SendbirdResponse createUserToken(Long memberId) throws ApiException {
-        String userId = memberId.toString();
+    private SendbirdResponse createUserToken(Member member) throws ApiException {
+        String userId = member.getId().toString();
         CreateUserTokenData createUserTokenData = new CreateUserTokenData();
         CreateUserTokenResponse response = userApi.createUserToken(userId)
                 .apiToken(apiToken)
@@ -57,14 +83,12 @@ public class SendbirdService {
                 .execute();
 
         // Sendbird에서 생성된 토큰을 해당 사용자의 Member 엔티티에 저장
-        Member member = memberRepository.getByIdOrThrow(memberId);
         member.updateSendbirdToken(response.getToken());
-        return SendbirdResponse.of(member ,response);
+        return SendbirdResponse.of(member ,response.getToken());
     }
 
     public void updateSendbirdNickname(Long memberId, String newNickname) {
         try {
-
             Member member = memberRepository.getByIdOrThrow(memberId);
             String userId = member.getId().toString();
 
@@ -101,4 +125,15 @@ public class SendbirdService {
             throw new RuntimeException("Unexpected error while updating Sendbird user", e);
         }
     }
+
+    public boolean isUserExists(Long memberId) throws ApiException {
+        String userId = memberId.toString();  // memberId를 userId로 사용
+
+            // Sendbird에서 해당 userId로 유저 조회
+            userApi.viewUserById(userId)
+                    .apiToken(apiToken)
+                    .execute();
+            // 조회가 성공하면 유저가 존재함
+            return true;
+}
 }
