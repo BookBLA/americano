@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Profile;
 
     security = @SecurityRequirement(name = "Bearer Authentication")
 )
-@Profile("!prod")
+@Profile({"local", "dev"})
 @Configuration
 public class SwaggerConfig {
 
