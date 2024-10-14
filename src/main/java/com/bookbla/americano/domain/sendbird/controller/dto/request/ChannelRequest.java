@@ -24,7 +24,4 @@ public class ChannelRequest {
 
     @NotNull(message = "채팅(엽서) 보내는 회원의 책이 입력되지 않았습니다.")
     private Long targetMemberBookId;
-
-    @NotNull(message = "채팅 URL이 입력되지 않았습니다.")
-    private String channelUrl;
 }

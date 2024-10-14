@@ -53,8 +53,8 @@ public class PostcardController {
     public ResponseEntity<PostcardReadResponse> usePostcard(@Parameter(hidden = true) @User LoginUser loginUser,
                                             @PathVariable Long postcardId, @RequestBody @Valid ChannelRequest channelRequest) {
         PostcardReadResponse postcardReadResponse = postcardService.readMemberPostcard(loginUser.getMemberId(), postcardId);
-        sendbirdService.createSendbirdGroupChannel(channelRequest);
-        sendbirdService.createSendbirdMetadata(channelRequest);
+        String channelUrl = sendbirdService.createSendbirdGroupChannel(channelRequest);
+        sendbirdService.createSendbirdMetadata(channelRequest, channelUrl);
         return ResponseEntity.ok(postcardReadResponse);
     }
 

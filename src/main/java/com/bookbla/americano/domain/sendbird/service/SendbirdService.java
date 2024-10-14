@@ -152,7 +152,7 @@ public class SendbirdService {
         return true;
     }
 
-    public void createSendbirdGroupChannel(ChannelRequest request) {
+    public String createSendbirdGroupChannel(ChannelRequest request) {
         GcCreateChannelData channelData = new GcCreateChannelData();
 
         List<String> userIds = new ArrayList<>();
@@ -164,10 +164,11 @@ public class SendbirdService {
         channelData.setIsPublic(false);
 
         try {
-            groupChannelApi.gcCreateChannel()
+            SendBirdGroupChannel groupChannel = groupChannelApi.gcCreateChannel()
                     .apiToken(apiToken)
                     .gcCreateChannelData(channelData)
                     .execute();
+            return groupChannel.getChannelUrl();
         } catch (ApiException e) {
             throw new RuntimeException("Sendbird 그룹 채널 생성 에러: " + e.getMessage(), e);
         } catch (Exception e) {
@@ -175,7 +176,7 @@ public class SendbirdService {
         }
     }
 
-    public void createSendbirdMetadata(ChannelRequest request) {
+    public void createSendbirdMetadata(ChannelRequest request, String channelUrl){
 
         Map<String, String> metadata = new HashMap<>();
         metadata.put("sendMemberId", request.getSendMemberId().toString());
@@ -188,7 +189,7 @@ public class SendbirdService {
                 .metadata(metadata);
 
         try {
-            metadataApi.createChannelMetadata(CHANNEL_TYPE, request.getChannelUrl())
+            metadataApi.createChannelMetadata(CHANNEL_TYPE, channelUrl)
                     .apiToken(apiToken)
                     .createChannelMetadataData(createChannelMetadataData)
                     .execute();
