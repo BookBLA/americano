@@ -74,7 +74,7 @@ public class SendbirdService {
                     .execute();
         } catch (ApiException e) {
             // USER_NOT_FOUND 에러코드 400301
-            if (e.getCode() == 400301) {
+            if (e.getCode() == 400301 || e.getCode() == 400201) {
                 createUser(member);
                 return createUserToken(member);
             } else {
