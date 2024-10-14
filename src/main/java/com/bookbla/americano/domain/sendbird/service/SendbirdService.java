@@ -167,7 +167,7 @@ public class SendbirdService {
 
         List<String> userIds = new ArrayList<>();
         userIds.add(postcardReadResponse.getSendMemberId().toString());
-        userIds.add(postcardReadResponse.getSendMemberId().toString());
+        userIds.add(postcardReadResponse.getReceiveMemberId().toString());
 
         channelData.setUserIds(userIds);
         channelData.setIsDistinct(true);
