@@ -194,9 +194,23 @@ public class SendbirdService {
                     .createChannelMetadataData(createChannelMetadataData)
                     .execute();
         } catch (ApiException e) {
+            deleteSendbirdGroupChannel(channelUrl);
             throw new RuntimeException("Sendbird 메타데이터 생성 에러: " + e.getMessage(), e);
         } catch (Exception e) {
+            deleteSendbirdGroupChannel(channelUrl);
             throw new RuntimeException("Unexpected error while creating Sendbird Metadata", e);
+        }
+    }
+
+    public void deleteSendbirdGroupChannel(String channelUrl) {
+        try {
+            groupChannelApi.gcDeleteChannelByUrl(channelUrl)
+                    .apiToken(apiToken)
+                    .execute();
+        } catch (ApiException e) {
+            throw new RuntimeException("Sendbird 그룹 채널 삭제 에러: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error while delete Sendbird GroupChannel", e);
         }
     }
 }
