@@ -1,4 +1,4 @@
-package com.bookbla.americano.domain.sendbird.controller.dto;
+package com.bookbla.americano.domain.sendbird.controller.dto.request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
