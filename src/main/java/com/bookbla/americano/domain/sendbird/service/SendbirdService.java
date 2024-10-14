@@ -1,14 +1,19 @@
 package com.bookbla.americano.domain.sendbird.service;
 
-import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardReadResponse;
-import com.bookbla.americano.domain.sendbird.controller.dto.response.SendbirdResponse;
+import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.book.repository.entity.Book;
+import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
+import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardReadResponse;
+import com.bookbla.americano.domain.sendbird.controller.dto.response.SendbirdResponse;
 import org.openapitools.client.model.*;
 import org.sendbird.client.ApiClient;
 import org.sendbird.client.ApiException;
 import org.sendbird.client.Configuration;
 import org.sendbird.client.api.GroupChannelApi;
+import org.sendbird.client.api.MessageApi;
 import org.sendbird.client.api.MetadataApi;
 import org.sendbird.client.api.UserApi;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,20 +29,23 @@ import java.util.Map;
 @Transactional
 public class SendbirdService {
 
-    private static final String CHANNEL_TYPE = "groupChannel";
+    private static final String CHANNEL_TYPE = "group_channels";
     private static final String ACCEPT_STATUS = "yet";
 
 
     private final UserApi userApi;
+    private final String apiToken;
     private final GroupChannelApi groupChannelApi;
     private final MetadataApi metadataApi;
-    private final String apiToken;
+    private final MessageApi messageApi;
     private final MemberRepository memberRepository;
+    private final MemberBookRepository memberBookRepository;
 
 
     public SendbirdService(@Value("${sendbird.app.id}") String appId,
                            @Value("${sendbird.api.token}") String apiToken,
-                           MemberRepository memberRepository) {
+                           MemberRepository memberRepository,
+                           MemberBookRepository memberBookRepository) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("https://api-" + appId + ".sendbird.com");
 
@@ -45,7 +53,9 @@ public class SendbirdService {
         this.userApi = new UserApi(defaultClient);
         this.groupChannelApi = new GroupChannelApi(defaultClient);
         this.metadataApi = new MetadataApi(defaultClient);
+        this.messageApi = new MessageApi(defaultClient);
         this.memberRepository = memberRepository;
+        this.memberBookRepository = memberBookRepository;
     }
 
     public SendbirdResponse createOrView(Long memberId) throws ApiException {
@@ -199,6 +209,41 @@ public class SendbirdService {
         } catch (Exception e) {
             deleteSendbirdGroupChannel(channelUrl);
             throw new RuntimeException("Unexpected error while creating Sendbird Metadata", e);
+        }
+    }
+
+    public void sendEntryMessage(PostcardReadResponse postcardReadResponse, String channelUrl) {
+        Book book = memberBookRepository.findBookById(postcardReadResponse.getReceiveMemberBookId())
+                .orElseThrow(() -> new BaseException(MemberBookExceptionType.BOOK_NOT_FOUND));
+
+        String userId = postcardReadResponse.getSendMemberId().toString();
+
+        SendMessageData sendMessageData1 = new SendMessageData()
+                .userId(userId)
+                .message("《" + book.getTitle() + "》")
+                .messageType("MESG");   // 일반 메시지
+
+        SendMessageData sendMessageData2 = new SendMessageData()
+                .userId(userId)
+                .message(postcardReadResponse.getMemberReply())
+                .messageType("MESG");
+
+        try {
+            messageApi.sendMessage(CHANNEL_TYPE, channelUrl)
+                    .apiToken(apiToken)
+                    .sendMessageData(sendMessageData1)
+                    .execute();
+
+            messageApi.sendMessage(CHANNEL_TYPE, channelUrl)
+                    .apiToken(apiToken)
+                    .sendMessageData(sendMessageData2)
+                    .execute();
+        } catch (ApiException e) {
+            deleteSendbirdGroupChannel(channelUrl);
+            throw new RuntimeException("Sendbird 엽서 인사말 보내기 실패: "+ e.getMessage(), e);
+        } catch (Exception e) {
+            deleteSendbirdGroupChannel(channelUrl);
+            throw new RuntimeException("Unexpected error while sending Sendbird Message", e);
         }
     }
 

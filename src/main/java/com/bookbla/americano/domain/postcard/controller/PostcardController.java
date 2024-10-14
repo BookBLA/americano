@@ -49,6 +49,7 @@ public class PostcardController {
         PostcardReadResponse postcardReadResponse = postcardService.readMemberPostcard(loginUser.getMemberId(), postcardId);
         String channelUrl = sendbirdService.createSendbirdGroupChannel(postcardReadResponse);
         sendbirdService.createSendbirdMetadata(postcardReadResponse, channelUrl);
+        sendbirdService.sendEntryMessage(postcardReadResponse, channelUrl);
         return ResponseEntity.ok(postcardReadResponse);
     }
 
