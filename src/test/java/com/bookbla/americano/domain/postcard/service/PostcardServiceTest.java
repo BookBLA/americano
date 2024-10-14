@@ -12,11 +12,7 @@ import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
-import com.bookbla.americano.domain.member.repository.entity.Member;
-import com.bookbla.americano.domain.member.repository.entity.MemberBlock;
-import com.bookbla.americano.domain.member.repository.entity.MemberBook;
-import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
-import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
+import com.bookbla.americano.domain.member.repository.entity.*;
 import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
@@ -27,12 +23,7 @@ import com.bookbla.americano.domain.postcard.repository.entity.PostcardType;
 import com.bookbla.americano.domain.postcard.service.dto.request.SendPostcardRequest;
 import com.bookbla.americano.domain.postcard.service.dto.response.SendPostcardResponse;
 import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,8 +89,12 @@ class PostcardServiceTest {
                 .member(sendMember)
                 .bookmarkCount(100).build();
         bookmarkRepository.save(memberBookmark);
-        String channelUrl = "aaabbbccc";
-        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(), receiveMemberBook.getId(), "memberReply", channelUrl);
+        SendPostcardRequest request = new SendPostcardRequest(
+                postcardType.getId(),
+                sendMember.getId(),
+                receiveMember.getId(),
+                receiveMemberBook.getId(),
+                "memberReply");
 
         //when & then
         assertThatThrownBy(() -> sut.send(sendMember.getId(), request))
@@ -125,8 +120,12 @@ class PostcardServiceTest {
                 .currentMatchedMemberBookId(receiveMemberBook.getId())
                 .isInvitationCard(false)
                 .build());
-        String channelUrl = "aaabbbccc";
-        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(), receiveMemberBook.getId(), "memberReply", channelUrl);
+        SendPostcardRequest request = new SendPostcardRequest(
+                postcardType.getId(),
+                sendMember.getId(),
+                receiveMember.getId(),
+                receiveMemberBook.getId(),
+                "memberReply");
 
         //when
         SendPostcardResponse response = sut.send(sendMember.getId(), request);
@@ -150,8 +149,12 @@ class PostcardServiceTest {
                 .member(sendMember)
                 .bookmarkCount(10).build();
         bookmarkRepository.save(memberBookmark);
-        String channelUrl = "aaabbbccc";
-        SendPostcardRequest request = new SendPostcardRequest(postcardType.getId(), receiveMember.getId(), receiveMemberBook.getId(), "memberReply", channelUrl);
+        SendPostcardRequest request = new SendPostcardRequest(
+                postcardType.getId(),
+                sendMember.getId(),
+                receiveMember.getId(),
+                receiveMemberBook.getId(),
+                "memberReply");
 
         // when & then
         assertThatThrownBy(() -> sut.send(sendMember.getId(), request))
