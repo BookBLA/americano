@@ -1,6 +1,6 @@
 package com.bookbla.americano.domain.sendbird.service;
 
-import com.bookbla.americano.domain.sendbird.controller.dto.request.ChannelRequest;
+import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardReadResponse;
 import com.bookbla.americano.domain.sendbird.controller.dto.response.SendbirdResponse;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -152,12 +152,12 @@ public class SendbirdService {
         return true;
     }
 
-    public String createSendbirdGroupChannel(ChannelRequest request) {
+    public String createSendbirdGroupChannel(PostcardReadResponse postcardReadResponse) {
         GcCreateChannelData channelData = new GcCreateChannelData();
 
         List<String> userIds = new ArrayList<>();
-        userIds.add(request.getSendMemberId().toString());
-        userIds.add(request.getTargetMemberId().toString());
+        userIds.add(postcardReadResponse.getSendMemberId().toString());
+        userIds.add(postcardReadResponse.getSendMemberId().toString());
 
         channelData.setUserIds(userIds);
         channelData.setIsDistinct(true);
@@ -176,13 +176,13 @@ public class SendbirdService {
         }
     }
 
-    public void createSendbirdMetadata(ChannelRequest request, String channelUrl){
+    public void createSendbirdMetadata(PostcardReadResponse postcardReadResponse, String channelUrl){
 
         Map<String, String> metadata = new HashMap<>();
-        metadata.put("sendMemberId", request.getSendMemberId().toString());
-        metadata.put("sendMemberName", request.getSendMemberName());
-        metadata.put("targetMemberId", request.getTargetMemberId().toString());
-        metadata.put("targetMemberBookId", request.getTargetMemberBookId().toString());
+        metadata.put("sendMemberId", postcardReadResponse.getSendMemberId().toString());
+        metadata.put("sendMemberName", postcardReadResponse.getSendMemberName());
+        metadata.put("targetMemberId", postcardReadResponse.getReceiveMemberId().toString());
+        metadata.put("targetMemberBookId", postcardReadResponse.getReceiveMemberBookId().toString());
         metadata.put("acceptStatus", ACCEPT_STATUS);
 
         CreateChannelMetadataData createChannelMetadataData = new CreateChannelMetadataData()
