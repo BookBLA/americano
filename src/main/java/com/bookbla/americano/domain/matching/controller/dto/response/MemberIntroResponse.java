@@ -53,4 +53,10 @@ public class MemberIntroResponse {
     public static MemberIntroResponse empty() {
         return MemberIntroResponse.builder().build();
     }
+
+    public static MemberIntroResponse isCardStatus(boolean status) {
+        return MemberIntroResponse.builder()
+                .isInvitationCard(status)
+                .build();
+    }
 }

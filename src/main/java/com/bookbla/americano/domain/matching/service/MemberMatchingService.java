@@ -57,11 +57,18 @@ public class MemberMatchingService {
 
         saveRecommendationMatches(memberId);
 
+        // 새로고침할때 로직
         MatchedInfo matchedInfo = getMostPriorityMatched(matchedInfoRepository.getAllByDesc(memberMatching.getId()));
         if (matchedInfo == null) {
             return MemberIntroResponse.empty();
         }
-        return buildMemberIntroResponse(matchedInfo, memberMatching);
+        if (memberMatching.mealInvitationCard()) {
+            memberMatching.updateInvitationCard(true);
+            return MemberIntroResponse.isCardStatus(memberMatching.getIsInvitationCard());
+        }
+        MemberIntroResponse memberIntroResponse = buildMemberIntroResponse(matchedInfo, memberMatching);
+        updateCurrentMatchedInfo(memberMatching, memberIntroResponse.getMemberId(), memberIntroResponse.getMemberBookId());
+        return memberIntroResponse;
     }
 
     private MatchedInfo getMatchedInfo(Long memberId, MemberMatching memberMatching) {
@@ -74,11 +81,11 @@ public class MemberMatchingService {
         MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
 
-        if (memberMatching.mealInvitationCard()){ // null null false
-            return getMemberIntroResponse(memberId, memberMatching, true);
+        if (!memberMatching.hasCurrentMatchedInfo()) {
+            return getHomeMatch(memberId);
         }
-        if (!memberMatching.hasCurrentMatchedInfo()) { // null null true
-            return getMemberIntroResponse(memberId, memberMatching, false);
+        if (memberMatching.mealInvitationCard()) {
+            return getHomeMatch(memberId);
         }
 
         Long refreshMemberId = memberMatching.getCurrentMatchedMemberId();
@@ -99,17 +106,6 @@ public class MemberMatchingService {
         memberMatching.updateInvitationCard(false);
 
         return buildMemberIntroResponse(matchedInfo, memberMatching);
-    }
-
-    @NotNull
-    private MemberIntroResponse getMemberIntroResponse(Long memberId, MemberMatching memberMatching, boolean isInvitationCard) {
-        MemberIntroResponse introResponse = getHomeMatch(memberId);
-        if (introResponse == MemberIntroResponse.empty()) {
-            throw new BaseException(MemberMatchingExceptionType.VALID_MATCHING_INFO);
-        }
-        updateCurrentMatchedInfo(memberMatching, introResponse.getMemberId(), introResponse.getMemberBookId());
-        memberMatching.updateInvitationCard(isInvitationCard);
-        return introResponse;
     }
 
     private MemberIntroResponse buildMemberIntroResponse(MatchedInfo matchedInfo, MemberMatching memberMatching) {
