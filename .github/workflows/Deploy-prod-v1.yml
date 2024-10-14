@@ -1,0 +1,267 @@
+# 필요한 Repo Secret 설정
+#### CI
+# ${{ secrets.SUBMODULE_ACCESS_TOKEN }} : 깃허브 액세스 토큰
+
+#### CD
+# ${{ secrets.DOCKER_ID }} : 도커허브 id
+# ${{ secrets.DOCKER_PASSWORD }} : 도커허브 pw
+# ${{ secrets.REMOTE_HOST_PROD_V1 }} : 배포 서버 HOSTNAME
+# ${{ secrets.REMOTE_PORT_PROD_V1 }} : 배포 서버 PORT
+# ${{ secrets.REMOTE_USERNAME_PROD_V1 }} : 배포 서버 USERNAME
+# ${{ secrets.REMOTE_SSH_KEY_PROD_V1 }} : 배포 서버 연결을 위한 SSH KEY
+
+name: Backend CI & CD (prod_v1)
+
+# PR 요청에 대해
+on:
+  pull_request:
+    # 특정 브랜치만
+    branches: [main]
+  #    # pr이 생성 되었을 때, 담당 유저가 등록되었을 때, PR에 코드가 머지되었을 때, 라벨이 달렸을 때 동작
+  #    types: [opened, assigned, synchronize, labeled, reopened]
+  push:
+    branches: [main]
+
+env:
+  CONTAINER_NAME: americano_prod
+
+jobs:
+  ###### 본문 내용과 관련 없는 Job, 빌드 테스트
+  Continuous-Integration:
+    env:
+      # KEY - VALUE
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+    # CI 실행 (환경은 github 제공)
+    runs-on: ubuntu-20.04
+    # 각 단계
+    steps:
+
+      # 소스코드 체크아웃
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.ACTION_TOKEN }}
+          ref: ${{ github.head_ref }}
+
+      - name: Make an Application.yml
+        run: echo "${{ secrets.AMERICANO_PROD_V1 }}" | base64 --decode > ./src/main/resources/application-prod-v1.yml
+
+      - name: Install JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'zulu'
+          cache: 'gradle'
+
+      # Google play console JSON 생성
+      - name: Create Json File
+        id: create-json
+        uses: jsdaniell/create-json@1.1.2
+        with:
+          name: "bookbla-google-play-console.json"
+          json: ${{ secrets.BOOKBLA_GOOGLE_PLAY_CONSOLE }}
+
+      # JSON 파일 이동 및 확인
+      - name: Move and Verify Json File
+        run: |
+          mv bookbla-google-play-console.json ./src/main/resources/
+          ls -l ./src/main/resources/
+          cat ./src/main/resources/bookbla-google-play-console.json
+
+      # Gradle Package Caching
+      - name: Caching Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+
+      - name: Grant execute permission for gradle
+        run: chmod +x ./gradlew
+
+      - name: Build (With Test)
+        run: ./gradlew clean build -i --no-daemon -Dspring.profiles.active=prod-v1
+
+      # push 할 경우 CD job 에 jar file 업로드
+      - name: (Push & Main) Archive production artifacts
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: build/libs/*.jar
+
+      - name: Send Failure Message
+        if: ${{ failure() }}
+        uses: Ilshidur/action-discord@0.3.2
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.PROD_WEBHOOK_URL }}
+          DISCORD_USERNAME: 운영서버 v1 배포봇
+          DISCORD_AVATAR: https://cdn.imweb.me/thumbnail/20240606/39684ae3c2783.png
+          DISCORD_EMBEDS: |
+            [
+              {
+                "author": {
+                  "name": "${{ github.event.pull_request.user.login }}",
+                  "url": "https://github.com/boookbla/americano",
+                  "icon_url": "${{ github.event.pull_request.user.avatar_url }}"
+                },
+                "title": "🚨운영서버 빌드/테스트 실패하였습니다.🚨 \n#${{ github.event.pull_request.number }} : ${{ github.event.pull_request.title }}",
+                "color": 13458524,
+                "description": "${{ github.event.pull_request.html_url }}",
+                "fields": [
+                  {
+                    "name": "Base Branch",
+                    "value": "${{ github.base_ref }}",
+                    "inline": true
+                  },
+                  {
+                    "name": "Compare Branch",
+                    "value": "${{ github.head_ref }}",
+                    "inline": true
+                  }
+                ]
+              }
+            ]
+
+
+  Continuous-Deploy:
+    # push 하는 경우에만 배포 JOB 실행
+    if: github.event_name == 'push'
+    needs: Continuous-Integration
+    runs-on: ubuntu-latest
+    steps:
+
+      # 소스코드 가져오기
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      # 이전 Job에서 업로드한 Jar file 다운로드
+      - name : Download a built Jar File
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: build/libs
+
+      # Docker Buildx Setting
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Docker Login
+      - name: Docker Login
+        uses: docker/login-action@v2.1.0
+        with:
+          # Username used to log against the Docker registry
+          username: ${{ secrets.DOCKER_ID }}
+          # Password or personal access token used to log against the Docker registry
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Docker Build & Push
+      - name: Docker Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile-prod
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}:${{github.run_number}}
+            ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}:latest
+          cache-from: type=gha    # gha=Github Action Cache
+          cache-to: type=gha,mode=max
+
+      - name: Create and execute deploy script
+        run: |
+          echo '#!/bin/bash' > deploy.sh
+          echo 'sudo docker rm -f ${{ env.CONTAINER_NAME }}' >> deploy.sh
+          echo 'sudo docker rmi ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}' >> deploy.sh
+          echo 'sudo docker pull ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}' >> deploy.sh
+          echo 'sudo docker run -d -p 8080:8080 --add-host host.docker.internal:host-gateway --restart=unless-stopped --log-opt max-size=10m --log-opt max-file=3 --name ${{ env.CONTAINER_NAME }} ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}' >> deploy.sh
+
+      - name: Transfer Deploy Script use SCP
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST_PROD_V1 }}
+          port: ${{ secrets.REMOTE_PORT_PROD_V1 }}
+          username: ${{ secrets.REMOTE_USERNAME_PROD_V1 }}
+          key: ${{ secrets.REMOTE_SSH_KEY_PROD_V1 }}
+          source: deploy.sh
+          target: /home/${{ secrets.REMOTE_USERNAME_PROD_V1 }}/deploy
+
+      # SSH Connect
+      - name: Execute Server Init Script
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST_PROD_V1 }}
+          port: ${{ secrets.REMOTE_PORT_PROD_V1 }}
+          username: ${{ secrets.REMOTE_USERNAME_PROD_V1 }}
+          key: ${{ secrets.REMOTE_SSH_KEY_PROD_V1 }}
+          script_stop: true
+          script: |
+            chmod +x /home/${{ secrets.REMOTE_USERNAME_PROD_V1 }}/deploy/deploy.sh && sh /home/${{ secrets.REMOTE_USERNAME_PROD_V1 }}/deploy/deploy.sh
+
+      - name: Send Success Message
+        if: ${{ success() }}
+        uses: Ilshidur/action-discord@0.3.2
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.PROD_WEBHOOK_URL }}
+          DISCORD_USERNAME: 운영서버 v1 배포봇
+          DISCORD_AVATAR: https://cdn.imweb.me/thumbnail/20240606/39684ae3c2783.png
+          DISCORD_EMBEDS: |
+            [
+              {
+                "author": {
+                  "name": "${{ github.event.pull_request.user.login }}",
+                  "url": "https://github.com/boookbla/americano",
+                  "icon_url": "${{ github.event.pull_request.user.avatar_url }}"
+                },
+                "title": "운영서버 배포에 성공하였습니다🫡 \n#${{ github.event.pull_request.number }} : ${{ github.event.pull_request.title }}",
+                "color": 10478271,
+                "description": "${{ github.event.pull_request.html_url }}",
+                "fields": [
+                  {
+                    "name": "Base Branch",
+                    "value": "${{ github.base_ref }}",
+                    "inline": true
+                  },
+                  {
+                    "name": "Compare Branch",
+                    "value": "${{ github.head_ref }}",
+                    "inline": true
+                  }
+                ]
+              }
+            ]
+      - name: Send Failure Message
+        if: ${{ failure() }}
+        uses: Ilshidur/action-discord@0.3.2
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.PROD_WEBHOOK_URL }}
+          DISCORD_USERNAME: 운영서버 v1 배포봇
+          DISCORD_AVATAR: https://cdn.imweb.me/thumbnail/20240606/39684ae3c2783.png
+          DISCORD_EMBEDS: |
+            [
+              {
+                "author": {
+                  "name": "${{ github.event.pull_request.user.login }}",
+                  "url": "https://github.com/boookbla/americano",
+                  "icon_url": "${{ github.event.pull_request.user.avatar_url }}"
+                },
+                "title": "🚨운영서버 배포에 실패하였습니다. 한결쨩 출동🚨 \n#${{ github.event.pull_request.number }} : ${{ github.event.pull_request.title }}",
+                "color": 13458524,
+                "description": "${{ github.event.pull_request.html_url }}",
+                "fields": [
+                  {
+                    "name": "Base Branch",
+                    "value": "${{ github.base_ref }}",
+                    "inline": true
+                  },
+                  {
+                    "name": "Compare Branch",
+                    "value": "${{ github.head_ref }}",
+                    "inline": true
+                  }
+                ]
+              }
+            ]
