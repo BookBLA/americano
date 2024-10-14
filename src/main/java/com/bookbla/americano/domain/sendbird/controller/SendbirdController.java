@@ -2,8 +2,8 @@ package com.bookbla.americano.domain.sendbird.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
-import com.bookbla.americano.domain.sendbird.controller.dto.EntryRequest;
-import com.bookbla.americano.domain.sendbird.controller.dto.SendbirdResponse;
+import com.bookbla.americano.domain.sendbird.controller.dto.request.EntryRequest;
+import com.bookbla.americano.domain.sendbird.controller.dto.response.SendbirdResponse;
 import com.bookbla.americano.domain.sendbird.service.ChatService;
 import com.bookbla.americano.domain.sendbird.service.SendbirdService;
 import io.swagger.v3.oas.annotations.Operation;

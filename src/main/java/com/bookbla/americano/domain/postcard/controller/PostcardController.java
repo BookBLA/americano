@@ -10,6 +10,8 @@ import com.bookbla.americano.domain.postcard.service.PostcardService;
 import com.bookbla.americano.domain.postcard.service.dto.request.SendPostcardRequest;
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardTypeResponse;
 import com.bookbla.americano.domain.postcard.service.dto.response.SendPostcardResponse;
+import com.bookbla.americano.domain.sendbird.controller.dto.request.ChannelRequest;
+import com.bookbla.americano.domain.sendbird.service.SendbirdService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ import java.util.List;
 public class PostcardController {
 
     private final PostcardService postcardService;
+    private final SendbirdService sendbirdService;
 
     @Operation(summary = "보낸 엽서 조회", description = "사용자가 보낸 엽서 조회")
     @GetMapping("/from")
@@ -48,8 +51,10 @@ public class PostcardController {
     @Operation(summary = "엽서 읽기", description = "받은 엽서 조회를 위한 엽서 사용 및 엽서 상태 (READ)로 변경")
     @PostMapping("/read/{postcardId}")
     public ResponseEntity<PostcardReadResponse> usePostcard(@Parameter(hidden = true) @User LoginUser loginUser,
-                                            @PathVariable Long postcardId) {
+                                            @PathVariable Long postcardId, @RequestBody @Valid ChannelRequest channelRequest) {
         PostcardReadResponse postcardReadResponse = postcardService.readMemberPostcard(loginUser.getMemberId(), postcardId);
+        sendbirdService.createSendbirdGroupChannel(channelRequest);
+        sendbirdService.createSendbirdMetadata(channelRequest);
         return ResponseEntity.ok(postcardReadResponse);
     }
 
