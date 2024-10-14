@@ -9,5 +9,6 @@ import lombok.RequiredArgsConstructor;
 @Builder
 @RequiredArgsConstructor
 public class SendPostcardResponse {
+
     private final Boolean isSendSuccess;
 }
