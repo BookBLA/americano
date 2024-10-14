@@ -7,17 +7,21 @@ import org.openapitools.client.model.*;
 import org.sendbird.client.ApiClient;
 import org.sendbird.client.ApiException;
 import org.sendbird.client.Configuration;
+import org.sendbird.client.api.GroupChannelApi;
 import org.sendbird.client.api.UserApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
 public class SendbirdService {
 
     private final UserApi userApi;
+    private final GroupChannelApi groupChannelApi;
     private final String apiToken;
     private final MemberRepository memberRepository;
 
@@ -28,6 +32,7 @@ public class SendbirdService {
         defaultClient.setBasePath("https://api-" + appId + ".sendbird.com");
 
         this.userApi = new UserApi(defaultClient);
+        this.groupChannelApi = new GroupChannelApi(defaultClient);
         this.apiToken = apiToken;
         this.memberRepository = memberRepository;
     }
@@ -135,5 +140,26 @@ public class SendbirdService {
                     .execute();
             // 조회가 성공하면 유저가 존재함
             return true;
-}
+    }
+
+    public void createSendbirdGroupChannel(String sendMemberId, String receiveMemberId) {
+        GcCreateChannelData channelData = new GcCreateChannelData();
+
+        List<String> userIds = new ArrayList<>();
+        userIds.add(sendMemberId);
+        userIds.add(receiveMemberId);
+
+        channelData.setUserIds(userIds);
+        channelData.setIsDistinct(true);
+        channelData.setIsPublic(false);
+
+        try {
+            groupChannelApi.gcCreateChannel()
+                    .apiToken(apiToken)
+                    .gcCreateChannelData(channelData)
+                    .execute();
+        } catch (Exception e) {
+            throw new RuntimeException("Unexpected error while creating Sendbird GroupChannel", e);
+        }
+    }
 }
