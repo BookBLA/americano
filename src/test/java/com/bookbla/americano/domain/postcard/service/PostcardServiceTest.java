@@ -91,7 +91,6 @@ class PostcardServiceTest {
         bookmarkRepository.save(memberBookmark);
         SendPostcardRequest request = new SendPostcardRequest(
                 postcardType.getId(),
-                sendMember.getId(),
                 receiveMember.getId(),
                 receiveMemberBook.getId(),
                 "memberReply");
@@ -122,7 +121,6 @@ class PostcardServiceTest {
                 .build());
         SendPostcardRequest request = new SendPostcardRequest(
                 postcardType.getId(),
-                sendMember.getId(),
                 receiveMember.getId(),
                 receiveMemberBook.getId(),
                 "memberReply");
@@ -151,7 +149,6 @@ class PostcardServiceTest {
         bookmarkRepository.save(memberBookmark);
         SendPostcardRequest request = new SendPostcardRequest(
                 postcardType.getId(),
-                sendMember.getId(),
                 receiveMember.getId(),
                 receiveMemberBook.getId(),
                 "memberReply");

@@ -13,6 +13,8 @@ public class PostcardReadResponse {
 
     private Long sendMemberId;
 
+    private String sendMemberName;
+
     private Long receiveMemberId;
 
     private Long receiveMemberBookId;
@@ -22,6 +24,7 @@ public class PostcardReadResponse {
     public static PostcardReadResponse of(Postcard postcard) {
         return new PostcardReadResponse(
                 postcard.getSendMember().getId(),
+                postcard.getSendMember().getMemberProfile().getName(),
                 postcard.getReceiveMember().getId(),
                 postcard.getReceiveMemberBook().getId(),
                 postcard.getMessage());
