@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(indexes = @Index(name = "UK_ehpdfjpu1jm3hijhj4mm0hx9h", columnList = "isbn", unique = true))
+@Table(uniqueConstraints = {@UniqueConstraint(name = "UK_Isbn", columnNames = "isbn")})
 public class Book extends BaseEntity {
 
     @Id
@@ -34,7 +34,7 @@ public class Book extends BaseEntity {
     @Builder.Default
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "book_authors", joinColumns = @JoinColumn(name = "book_id"),
-            indexes = @Index(name = "FKs4xm7q8i3uxvaiswj1c35nnxw", columnList = "authors"))
+            indexes = @Index(name = "FK_Authors", columnList = "authors"))
     @Column(name = "authors")
     private List<String> authors = new ArrayList<>();
 

@@ -25,10 +25,10 @@ import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.*;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(indexes = {
-        @Index(name = "FK110aaukm6icyrede4nnhtmqb9", columnList = "receive_member_id"),
-        @Index(name = "FKe5pcc9m365ciq2hqrc4sb2ykj", columnList = "send_member_id"),
-        @Index(name = "FKnn1dvepdrg3dg9i7f7s9nanig", columnList = "postcard_type_id"),
-        @Index(name = "FKq0q02u96fi32bjwk7xuavaxxx", columnList = "receive_member_book_id")
+        @Index(name = "FK_SendMember", columnList = "send_member_id"),
+        @Index(name = "FK_ReceiveMember", columnList = "receive_member_id"),
+        @Index(name = "FK_ReceiveMemberBook", columnList = "receive_member_book_id"),
+        @Index(name = "FK_PostcardType", columnList = "postcard_type_id")
 })
 public class Postcard extends BaseEntity {
 

@@ -29,8 +29,8 @@ import org.hibernate.annotations.Where;
         @NamedSubgraph(name = "authors", attributeNodes = @NamedAttributeNode("authors"))
 })
 @Table(indexes = {
-        @Index(name = "FKradqd08nxk8cbt0rs225wo5rj", columnList = "member_id"),
-        @Index(name = "FKsdljqqg3eydn5mjd7wbrdra5i", columnList = "book_id")
+        @Index(name = "FK_Member", columnList = "member_id"),
+        @Index(name = "FK_Book", columnList = "book_id")
 })
 public class MemberBook extends BaseEntity {
 

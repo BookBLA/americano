@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(indexes = @Index(name = "FKfxx7lm7redw32wmc2cgep87hw", columnList = "member_id"))
+@Table(indexes = @Index(name = "FK_Member_Bookmark", columnList = "member_id"))
 public class MemberBookmark extends BaseEntity {
 
     @Id

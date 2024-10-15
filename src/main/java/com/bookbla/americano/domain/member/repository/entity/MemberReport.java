@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(indexes = {
-        @Index(name = "FK973oqd6um5es0fm85rh16n09o", columnList = "reported_member_id"),
-        @Index(name = "FKhxunhj4h8both5qmum3ahu5a0", columnList = "reporter_member_id")
+        @Index(name = "FK_ReporterMember", columnList = "reporter_member_id"),
+        @Index(name = "FK_ReportedMember", columnList = "reported_member_id")
 })
 public class MemberReport {
 

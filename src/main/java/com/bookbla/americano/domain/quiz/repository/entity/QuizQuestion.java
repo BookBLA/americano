@@ -14,7 +14,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(indexes = @Index(name = "FKgtfj8o46xx37l4dhd42gf119j", columnList = "member_book_id"))
+@Table(indexes = @Index(name = "FK_MemberBook", columnList = "member_book_id"))
 public class QuizQuestion extends BaseEntity {
 
     @Id

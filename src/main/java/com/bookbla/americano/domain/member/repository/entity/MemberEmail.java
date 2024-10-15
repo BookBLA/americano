@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(indexes = @Index(name = "FKpyxcc3tyk2lpmrpmisx6larbl", columnList = "member_id"))
+@Table(indexes = @Index(name = "FK_Member_Email", columnList = "member_id"))
 public class MemberEmail extends BaseEntity {
 
     @Id

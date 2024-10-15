@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(indexes = {
-        @Index(name = "FK4xkll2ajl8tth6adcxpsc0v22", columnList = "blocker_member_id"),
-        @Index(name = "FKd1lffv8jq5qpswx890s4vww7k", columnList = "blocked_member_id")
+        @Index(name = "FK_BlockerMember", columnList = "blocker_member_id"),
+        @Index(name = "FK_BlockedMember", columnList = "blocked_member_id")
 })
 public class MemberBlock {
 

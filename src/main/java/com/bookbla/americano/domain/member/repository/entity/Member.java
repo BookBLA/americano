@@ -31,10 +31,11 @@ import static com.bookbla.americano.domain.member.enums.StudentIdImageStatus.DON
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(indexes = {
-        @Index(name = "unique_name", columnList = "name", unique = true),
-        @Index(name = "fk_member_school_id", columnList = "school_id"),
-        @Index(name = "FKjduo6f8429v8a2wuot3reysdb", columnList = "profile_image_type_id")
-})
+        @Index(name = "FK_MemberSchool", columnList = "school_id"),
+        @Index(name = "FK_ProfileImageType", columnList = "profile_image_type_id")},
+        uniqueConstraints = {
+                @UniqueConstraint(name = "UK_Name", columnNames = { "name" }),
+                @UniqueConstraint(name = "UK_SchoolEmail", columnNames = { "school_email" })})
 public class Member extends BaseEntity {
 
     @Id

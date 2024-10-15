@@ -20,7 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Builder
 @Entity
 @Getter
-@Table(indexes = @Index(name = "UK_hawikyhwwfvbnog5byokutpff", columnList = "userId", unique = true))
+@Table(uniqueConstraints = {@UniqueConstraint(name = "UK_UserId", columnNames = "user_id")})
 public class Admin extends BaseEntity {
 
     private static final int MAX_FAIL_COUNT = 5;

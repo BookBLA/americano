@@ -10,8 +10,8 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @Table(indexes = {
-        @Index(name = "unique_member_matched", columnList = "memberId, matchedMemberId, matchedMemberBookId", unique = true),
-        @Index(name = "FKoswu6ams89x3mriyep1h3bul2", columnList = "member_matching_id")
+        @Index(name = "UK_MemberMatched", columnList = "memberId, matchedMemberId, matchedMemberBookId", unique = true),
+        @Index(name = "FK_MemberMatching_MatchedInfo", columnList = "member_matching_id")
 })
 
 public class MatchedInfo {
