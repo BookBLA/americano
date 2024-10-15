@@ -4,11 +4,9 @@ package com.bookbla.americano.domain.admin.repository.entity;
 import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.admin.excpetion.AdminExceptionType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+
+import javax.persistence.*;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Builder
 @Entity
 @Getter
+@Table(uniqueConstraints = {@UniqueConstraint(name = "UK_UserId", columnNames = "user_id")})
 public class Admin extends BaseEntity {
 
     private static final int MAX_FAIL_COUNT = 5;
@@ -30,7 +29,7 @@ public class Admin extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, name = "user_id")
     private String userId;
 
     private String password;
