@@ -60,7 +60,7 @@ public class MemberModal {
         this.libraryOnboarding = Boolean.TRUE;
     }
 
-    public boolean isInvitedRewardNotGiven() {
+    public boolean isFemaleInvitedRewardNotGiven() {
         return femaleInvitedRewardStatus == InvitationStatus.BOOKMARK;
     }
 
@@ -105,5 +105,9 @@ public class MemberModal {
 
     public void updateFestivalInvitationToExists() {
         this.hasFestivalInvitationReward = Boolean.TRUE;
+    }
+
+    public boolean isMaleInvitedRewardNotGiven() {
+        return maleInvitedRewardStatus == InvitationStatus.BOOKMARK;
     }
 }

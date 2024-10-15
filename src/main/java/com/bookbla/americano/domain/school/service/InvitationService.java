@@ -165,9 +165,14 @@ public class InvitationService {
 
         String invitedRewardStatus = "NONE";
 
-        if (modal.isInvitedRewardNotGiven()) {
+        if (modal.isFemaleInvitedRewardNotGiven()) {
             modal.updateFemaleInvitedRewardStatusToComplete();
-            invitedRewardStatus = "MEMBER";
+            invitedRewardStatus = "FEMALE";
+        }
+
+        if (modal.isMaleInvitedRewardNotGiven()) {
+            modal.updateMaleInvitedRewardStatusToComplete();
+            invitedRewardStatus = "MALE";
         }
 
         if (modal.hasFestivalInvitationReward()) {
