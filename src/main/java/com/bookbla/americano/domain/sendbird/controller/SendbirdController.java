@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.sendbird.client.ApiException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,7 +31,7 @@ public class SendbirdController {
 
     @Operation(summary = "Sendbird 유저 생성 및 유저 토큰 생성/저장 or 유저 조회")
     @PostMapping
-    public ResponseEntity<SendbirdResponse> sendbird(@Parameter(hidden = true) @User LoginUser loginUser) throws ApiException {
+    public ResponseEntity<SendbirdResponse> sendbird(@Parameter(hidden = true) @User LoginUser loginUser) {
         SendbirdResponse sendbirdResponse = sendbirdService.createOrView(loginUser.getMemberId());
         return ResponseEntity.ok(sendbirdResponse);
     }

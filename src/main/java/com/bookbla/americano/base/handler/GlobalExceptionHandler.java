@@ -1,16 +1,12 @@
 package com.bookbla.americano.base.handler;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.stream.Collectors;
-
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.base.exception.BaseExceptionType;
 import com.bookbla.americano.base.exception.ExceptionType;
 import com.bookbla.americano.base.log.LogLevel;
 import com.bookbla.americano.base.log.discord.DiscordAlarm;
 import com.bookbla.americano.base.response.ExceptionResponse;
-import javax.servlet.http.HttpServletRequest;
+import com.bookbla.americano.domain.sendbird.exception.SendbirdException;
 import lombok.extern.slf4j.Slf4j;
 import org.sendbird.client.ApiException;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +19,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -72,14 +73,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(new ExceptionResponse(BaseExceptionType.ARGUMENT_NOT_VALID, message));
     }
 
-    // TODO: 코드 추가 수정하기
+
+    @DiscordAlarm(level = LogLevel.WARN)
     @ExceptionHandler(ApiException.class)
-    public ResponseEntity<String> handleApiException(ApiException e) {
-        String errorMessage = "SendBird API 오류: " + e.getMessage();
-        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+    public ResponseEntity<SendbirdException> handleSendbirdApiException(HttpServletRequest request, ApiException e) {
 
-        log.error("SendBird API 오류", e);
+        int errorCode = e.getCode();
+        String errorMessage = e.getMessage();
+        String responseBody = e.getResponseBody();
 
-        return ResponseEntity.status(status).body(errorMessage);
+        log.warn("Sendbird API 에러 - code: {} message: {} responseBody: {} URI: {}", errorCode, errorMessage, responseBody, request.getRequestURI());
+
+        SendbirdException sendbirdException = new SendbirdException(e);
+
+        return ResponseEntity.badRequest().body(sendbirdException);
     }
 }

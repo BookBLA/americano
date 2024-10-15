@@ -8,6 +8,7 @@ import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardReadResponse;
 import com.bookbla.americano.domain.sendbird.controller.dto.response.SendbirdResponse;
+import com.bookbla.americano.domain.sendbird.exception.SendbirdException;
 import org.openapitools.client.model.*;
 import org.sendbird.client.ApiClient;
 import org.sendbird.client.ApiException;
@@ -28,8 +29,11 @@ import java.util.Map;
 @Transactional
 public class SendbirdService {
 
+    private static final int USER_NOT_FOUND = 400201;
+    private static final int RESOURCE_NOT_FOUND = 400301;
     private static final String CHANNEL_TYPE = "group_channels";
     private static final String ACCEPT_STATUS = "yet";
+    private static final String MESSAGE_TYPE= "MESG";
 
 
     private final UserApi userApi;
@@ -57,7 +61,7 @@ public class SendbirdService {
         this.memberBookRepository = memberBookRepository;
     }
 
-    public SendbirdResponse createOrView(Long memberId) throws ApiException {
+    public SendbirdResponse createOrView(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         String userId = member.getId().toString();
 
@@ -72,19 +76,18 @@ public class SendbirdService {
                     .apiToken(apiToken)
                     .execute();
         } catch (ApiException e) {
-            // USER_NOT_FOUND 에러코드 400301
-            if (e.getCode() == 400301 || e.getCode() == 400201) {
+            if (e.getCode() == RESOURCE_NOT_FOUND || e.getCode() == USER_NOT_FOUND) {
                 createUser(member);
                 return createUserToken(member);
             } else {
-                throw e;
+                throw new SendbirdException(e);
             }
         }
 
         return createUserToken(member);
     }
 
-    private void createUser(Member member) throws ApiException {
+    private void createUser(Member member) {
         String userId = member.getId().toString();
         String imageUrl = member.getMemberStyle().getProfileImageType().getImageUrl();
         CreateUserData createUserData = new CreateUserData()
@@ -92,23 +95,30 @@ public class SendbirdService {
                 .nickname(member.getMemberProfile().getName()) // 필수
                 .profileUrl(imageUrl);
 
-        userApi.createUser()
-                .apiToken(apiToken)
-                .createUserData(createUserData)
-                .execute();
+        try {
+            userApi.createUser()
+                    .apiToken(apiToken)
+                    .createUserData(createUserData)
+                    .execute();
+        } catch (ApiException e) {
+            throw new SendbirdException(e);
+        }
     }
 
-    private SendbirdResponse createUserToken(Member member) throws ApiException {
+    private SendbirdResponse createUserToken(Member member) {
         String userId = member.getId().toString();
         CreateUserTokenData createUserTokenData = new CreateUserTokenData();
-        CreateUserTokenResponse response = userApi.createUserToken(userId)
-                .apiToken(apiToken)
-                .createUserTokenData(createUserTokenData)
-                .execute();
 
-        // Sendbird에서 생성된 토큰을 해당 사용자의 Member 엔티티에 저장
-        member.updateSendbirdToken(response.getToken());
-        return SendbirdResponse.of(member, response.getToken());
+        try {
+            CreateUserTokenResponse response = userApi.createUserToken(userId)
+                    .apiToken(apiToken)
+                    .createUserTokenData(createUserTokenData)
+                    .execute();
+            member.updateSendbirdToken(response.getToken());
+            return SendbirdResponse.of(member, response.getToken());
+        } catch (ApiException e) {
+            throw new SendbirdException(e);
+        }
     }
 
     public void updateSendbirdNickname(Long memberId, String newNickname) {
@@ -220,12 +230,12 @@ public class SendbirdService {
         SendMessageData bookTitleMessage = new SendMessageData()
                 .userId(userId)
                 .message("《" + book.getTitle() + "》")
-                .messageType("MESG");   // 일반 메시지
+                .messageType(MESSAGE_TYPE);   // 일반 메시지
 
         SendMessageData replyMessage = new SendMessageData()
                 .userId(userId)
                 .message(postcardReadResponse.getMemberReply())
-                .messageType("MESG");
+                .messageType(MESSAGE_TYPE);
 
         try {
             messageApi.sendMessage(CHANNEL_TYPE, channelUrl)
