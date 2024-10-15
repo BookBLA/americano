@@ -284,4 +284,13 @@ public class Member extends BaseEntity {
         }
         this.initialRewardBookmarkCount--;
     }
+
+    public boolean canNotSendPushAlarm() {
+        return !canSendPushAlarm();
+    }
+
+    public boolean canSendPushAlarm() {
+        return pushToken != null && pushAlarmEnabled;
+    }
+
 }
