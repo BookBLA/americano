@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -165,9 +164,9 @@ public class SendbirdService {
     public String createSendbirdGroupChannel(PostcardReadResponse postcardReadResponse) {
         GcCreateChannelData channelData = new GcCreateChannelData();
 
-        List<String> userIds = new ArrayList<>();
-        userIds.add(postcardReadResponse.getSendMemberId().toString());
-        userIds.add(postcardReadResponse.getReceiveMemberId().toString());
+        List<String> userIds = List.of(
+                postcardReadResponse.getSendMemberId().toString(),
+                postcardReadResponse.getReceiveMemberId().toString());
 
         channelData.setUserIds(userIds);
         channelData.setIsDistinct(true);
