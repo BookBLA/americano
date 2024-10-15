@@ -5,22 +5,22 @@
 #### CD
 # ${{ secrets.DOCKER_ID }} : 도커허브 id
 # ${{ secrets.DOCKER_PASSWORD }} : 도커허브 pw
-# ${{ secrets.REMOTE_HOST_PROD }} : 배포 서버 HOSTNAME
-# ${{ secrets.REMOTE_PORT_PROD }} : 배포 서버 PORT
-# ${{ secrets.REMOTE_USERNAME_PROD }} : 배포 서버 USERNAME
-# ${{ secrets.REMOTE_SSH_KEY_PROD }} : 배포 서버 연결을 위한 SSH KEY
+# ${{ secrets.REMOTE_HOST_PROD_V1 }} : 배포 서버 HOSTNAME
+# ${{ secrets.REMOTE_PORT_PROD_V1 }} : 배포 서버 PORT
+# ${{ secrets.REMOTE_USERNAME_PROD_V1 }} : 배포 서버 USERNAME
+# ${{ secrets.REMOTE_SSH_KEY_PROD_V1 }} : 배포 서버 연결을 위한 SSH KEY
 
-name: Backend CI & CD (prod)
+name: Backend CI & CD (prod_v1)
 
 # PR 요청에 대해
 on:
   pull_request:
     # 특정 브랜치만
-    branches: [main]
+    branches: [gcp]
   #    # pr이 생성 되었을 때, 담당 유저가 등록되었을 때, PR에 코드가 머지되었을 때, 라벨이 달렸을 때 동작
   #    types: [opened, assigned, synchronize, labeled, reopened]
   push:
-    branches: [main]
+    branches: [gcp]
 
 env:
   CONTAINER_NAME: americano_prod
@@ -45,7 +45,7 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Make an Application.yml
-        run: echo "${{ secrets.AMERICANO_PROD }}" | base64 --decode > ./src/main/resources/application-prod.yml
+        run: echo "${{ secrets.AMERICANO_PROD_V1 }}" | base64 --decode > ./src/main/resources/application-prod-v1.yml
 
       - name: Install JDK 11
         uses: actions/setup-java@v4
@@ -82,7 +82,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build (With Test)
-        run: ./gradlew clean build -i --no-daemon -Dspring.profiles.active=prod
+        run: ./gradlew clean build -i --no-daemon -Dspring.profiles.active=prod-v1
 
       # push 할 경우 CD job 에 jar file 업로드
       - name: (Push & Main) Archive production artifacts
@@ -97,7 +97,7 @@ jobs:
         uses: Ilshidur/action-discord@0.3.2
         env:
           DISCORD_WEBHOOK: ${{ secrets.PROD_WEBHOOK_URL }}
-          DISCORD_USERNAME: 운영서버 배포봇
+          DISCORD_USERNAME: 운영서버 v1 배포봇
           DISCORD_AVATAR: https://cdn.imweb.me/thumbnail/20240606/39684ae3c2783.png
           DISCORD_EMBEDS: |
             [
@@ -162,7 +162,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile-prod
+          file: ./Dockerfile-prod-v1
           platforms: linux/amd64
           push: true
           tags: |
@@ -176,64 +176,37 @@ jobs:
           echo '#!/bin/bash' > deploy.sh
           echo 'sudo docker rm -f ${{ env.CONTAINER_NAME }}' >> deploy.sh
           echo 'sudo docker rmi ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}' >> deploy.sh
-          echo 'sudo docker pull ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}:${{github.run_number}}' >> deploy.sh
-          echo 'sudo docker run -d -p 8080:8080 --add-host host.docker.internal:host-gateway --restart=unless-stopped --log-opt max-size=10m --log-opt max-file=3 --name ${{ env.CONTAINER_NAME }} ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}:${{github.run_number}}' >> deploy.sh
-
-      - name: Get Public IP
-        id: ip
-        uses: haythem/public-ip@v1.3
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: 'ap-northeast-2'
-
-      - name: Add GitHub Actions IP
-        run: |
-          aws ec2 authorize-security-group-ingress \
-              --group-id ${{ secrets.SECURITY_GROUP_ID }} \
-              --protocol tcp \
-              --port 22 \
-              --cidr ${{ steps.ip.outputs.ipv4 }}/32
+          echo 'sudo docker pull ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}' >> deploy.sh
+          echo 'sudo docker run -d -p 8080:8080 --add-host host.docker.internal:host-gateway --restart=unless-stopped --log-opt max-size=10m --log-opt max-file=3 --name ${{ env.CONTAINER_NAME }} ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}' >> deploy.sh
 
       - name: Transfer Deploy Script use SCP
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.REMOTE_HOST_PROD }}
-          port: ${{ secrets.REMOTE_PORT_PROD }}
-          username: ${{ secrets.REMOTE_USERNAME_PROD }}
-          key: ${{ secrets.REMOTE_SSH_KEY_PROD }}
+          host: ${{ secrets.REMOTE_HOST_PROD_V1 }}
+          port: ${{ secrets.REMOTE_PORT_PROD_V1 }}
+          username: ${{ secrets.REMOTE_USERNAME_PROD_V1 }}
+          key: ${{ secrets.REMOTE_SSH_KEY_PROD_V1 }}
           source: deploy.sh
-          target: /home/${{ secrets.REMOTE_USERNAME_PROD }}/deploy
+          target: /home/${{ secrets.REMOTE_USERNAME_PROD_V1 }}/deploy
 
       # SSH Connect
       - name: Execute Server Init Script
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.REMOTE_HOST_PROD }}
-          port: ${{ secrets.REMOTE_PORT_PROD }}
-          username: ${{ secrets.REMOTE_USERNAME_PROD }}
-          key: ${{ secrets.REMOTE_SSH_KEY_PROD }}
+          host: ${{ secrets.REMOTE_HOST_PROD_V1 }}
+          port: ${{ secrets.REMOTE_PORT_PROD_V1 }}
+          username: ${{ secrets.REMOTE_USERNAME_PROD_V1 }}
+          key: ${{ secrets.REMOTE_SSH_KEY_PROD_V1 }}
           script_stop: true
           script: |
-            chmod +x /home/${{ secrets.REMOTE_USERNAME_PROD }}/deploy/deploy.sh && sh /home/${{ secrets.REMOTE_USERNAME_PROD }}/deploy/deploy.sh
-
-      - name: Remove GitHub Actions IP
-        run: |
-          aws ec2 revoke-security-group-ingress \
-              --group-id ${{ secrets.SECURITY_GROUP_ID }} \
-              --protocol tcp \
-              --port 22 \
-              --cidr ${{ steps.ip.outputs.ipv4 }}/32
+            chmod +x /home/${{ secrets.REMOTE_USERNAME_PROD_V1 }}/deploy/deploy.sh && sh /home/${{ secrets.REMOTE_USERNAME_PROD_V1 }}/deploy/deploy.sh
 
       - name: Send Success Message
         if: ${{ success() }}
         uses: Ilshidur/action-discord@0.3.2
         env:
           DISCORD_WEBHOOK: ${{ secrets.PROD_WEBHOOK_URL }}
-          DISCORD_USERNAME: 운영서버 배포봇
+          DISCORD_USERNAME: 운영서버 v1 배포봇
           DISCORD_AVATAR: https://cdn.imweb.me/thumbnail/20240606/39684ae3c2783.png
           DISCORD_EMBEDS: |
             [
@@ -265,7 +238,7 @@ jobs:
         uses: Ilshidur/action-discord@0.3.2
         env:
           DISCORD_WEBHOOK: ${{ secrets.PROD_WEBHOOK_URL }}
-          DISCORD_USERNAME: 운영서버 배포봇
+          DISCORD_USERNAME: 운영서버 v1 배포봇
           DISCORD_AVATAR: https://cdn.imweb.me/thumbnail/20240606/39684ae3c2783.png
           DISCORD_EMBEDS: |
             [

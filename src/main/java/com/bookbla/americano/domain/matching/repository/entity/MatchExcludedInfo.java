@@ -9,6 +9,7 @@ import javax.persistence.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(indexes = @Index(name = "FK_MemberMatching_ExcludedInfo", columnList = "member_matching_id"))
 public class MatchExcludedInfo {
 
     @Id

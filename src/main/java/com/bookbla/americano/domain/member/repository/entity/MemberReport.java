@@ -1,14 +1,7 @@
 package com.bookbla.americano.domain.member.repository.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +13,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(indexes = {
+        @Index(name = "FK_ReporterMember", columnList = "reporter_member_id"),
+        @Index(name = "FK_ReportedMember", columnList = "reported_member_id")
+})
 public class MemberReport {
 
     @Id
