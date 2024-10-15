@@ -41,9 +41,16 @@ public class AdminVerificationService {
         updateVerification(dto, status, memberVerify, member, memberProfile);
 
         memberProfile.updateStudentIdImageStatus(status);
+
+//        checkInitialMemberApprove(member);
         memberRepository.save(member);
 
-        checkInitialMemberApprove(member);
+        if (member.getMemberStatus().equals(MemberStatus.COMPLETED)) {
+            MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(member.getId())
+                    .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
+            memberBookmark.addStudentIdCertificationReward();
+            memberBookmarkRepository.save(memberBookmark);
+        }
     }
 
     private void updateVerification(
@@ -53,11 +60,8 @@ public class AdminVerificationService {
         if (status.isDone()) {
             memberProfile.updateStudentIdImageUrl(memberVerify.getContents());
             memberVerify.success(dto.getReason());
-            memberVerifyRepository.save(memberVerify);
-            MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(member.getId())
-                    .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
-            memberBookmark.addStudentIdCertificationReward();
-            memberBookmarkRepository.save(memberBookmark);
+            member.updateMemberStatus(MemberStatus.COMPLETED, LocalDateTime.now());
+            alarmService.sendPushAlarm(member, PushAlarmForm.ADMIN_VERIFICATION_ACCEPT);
             return;
         }
         if (status.isPending()) {
@@ -65,14 +69,12 @@ public class AdminVerificationService {
         }
         memberVerify.fail(dto.getReason());
         member.updateMemberStatus(MemberStatus.REJECTED, LocalDateTime.now());
-        memberRepository.save(member);
         alarmService.sendPushAlarm(member, PushAlarmForm.ADMIN_STUDENT_ID_IMAGE_REJECT);
     }
 
     private void checkInitialMemberApprove(Member member) {
         if (member.getMemberStatus().equals(MemberStatus.APPROVAL)) {
             member.updateMemberStatus(MemberStatus.COMPLETED, LocalDateTime.now());
-            memberRepository.save(member);
             alarmService.sendPushAlarm(member, PushAlarmForm.ADMIN_VERIFICATION_ACCEPT);
         }
     }
