@@ -95,7 +95,6 @@ public class PostcardService {
                 .message(request.getMemberReply())
                 .postcardType(postCardType)
                 .imageUrl(postCardType.getImageUrl())
-                .channelUrl(request.getChannelUrl())
                 .build();
         postcardRepository.save(postcard);
 
@@ -169,7 +168,7 @@ public class PostcardService {
         memberBookmark.readPostcard();
         updatePostcardStatus(memberId, postcardId, PostcardStatus.READ);
 
-        return PostcardReadResponse.from(postcard.getChannelUrl());
+        return PostcardReadResponse.of(postcard);
     }
 
     public PostcardStatus getPostcardStatus(Long postcardId) {
