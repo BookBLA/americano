@@ -9,7 +9,7 @@ import lombok.Getter;
 public class MemberInvitationRewardResponse {
 
     private Boolean invitingRewardStatus;
-    private String invitedRewardStatus; // 초대코드 입력 안함 -> NONE, 다른 회원 초대코드 입력 -> MEMBER, 축제 코드 입력 -> FESTIVAL
+    private String invitedRewardStatus; // 초대코드 입력 안함 -> NONE, 다른 회원 초대코드 입력 -> FEMALE, MALE, 축제 코드 입력 -> FESTIVAL
     private String invitedMembersGender;
 
     public static MemberInvitationRewardResponse fromInvitingRewardNotGiven(String invitedRewardStatus) {
