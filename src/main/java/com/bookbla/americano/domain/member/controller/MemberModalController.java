@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.member.controller;
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberOnboardingStatusRequest;
+import com.bookbla.americano.domain.member.controller.dto.request.UpdateInvitationRewardRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberInvitationRewardResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberOnboardingStatusResponse;
 import com.bookbla.americano.domain.member.service.MemberModalService;
@@ -55,8 +56,9 @@ public class MemberModalController {
                     + "memberOnboardingStatus : [NONE, BOOKMARK, COMPLETED]")
     @PostMapping("/invitation-reward")
     public ResponseEntity<MemberInvitationRewardResponse> updateInvitationRewardStatus(
-            @Parameter(hidden = true) @User LoginUser loginUser
+            @Parameter(hidden = true) @User LoginUser loginUser,
+            @RequestBody @Valid UpdateInvitationRewardRequest request
     ) {
-        return ResponseEntity.ok(invitationService.updateInvitationRewardStatus(loginUser.getMemberId()));
+        return ResponseEntity.ok(invitationService.updateInvitationRewardStatus(loginUser.getMemberId(), request));
     }
 }

@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.school.service;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.admin.event.AdminNotificationEventListener;
+import com.bookbla.americano.domain.member.controller.dto.request.UpdateInvitationRewardRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberInvitationResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberInvitationRewardResponse;
 import com.bookbla.americano.domain.member.exception.MemberBookmarkExceptionType;
@@ -176,10 +177,15 @@ public class InvitationService {
         return MemberInvitationRewardResponse.fromInvitingRewardNotGiven(invitedRewardStatus);
     }
 
-    public MemberInvitationRewardResponse updateInvitationRewardStatus(Long memberId) {
+    public MemberInvitationRewardResponse updateInvitationRewardStatus(Long memberId, UpdateInvitationRewardRequest request) {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
-        member.getMemberModal().updateFemaleInvitedRewardStatusToComplete();
+        if (request.getInvitedRewardStatus().equals("MALE")) {
+            member.getMemberModal().updateMaleInvitedRewardStatusToComplete();
+        }
+        if (request.getInvitedRewardStatus().equals("FEMALE")) {
+            member.getMemberModal().updateFemaleInvitedRewardStatusToComplete();
+        }
 
         return getInvitationRewardStatus(memberId);
     }
