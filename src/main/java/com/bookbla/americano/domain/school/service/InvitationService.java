@@ -70,7 +70,12 @@ public class InvitationService {
                 .orElseThrow(() -> new BaseException(MemberExceptionType.INVITATION_CODE_NOT_FOUND));
         Member invitedMember = memberRepository.getByIdOrThrow(invitedMemberId);
 
-        invitedMember.getMemberModal().updateMemberInvitedRewardStatusToBookmark();
+        if (invitedMember.isWoman()) {
+            invitedMember.getMemberModal().updateFemaleInvitedRewardStatusToBookmark();
+        } else {
+            invitedMember.getMemberModal().updateMaleInvitedRewardStatusToBookmark();
+        }
+
         invitingMember.getMemberModal().getInvitingRewardStatus().put(invitedMemberId, Boolean.FALSE);
 
         Invitation invitation = invitationRepository.findByInvitedMemberId(invitedMemberId)
@@ -161,7 +166,7 @@ public class InvitationService {
         String invitedRewardStatus = "NONE";
 
         if (modal.isInvitedRewardNotGiven()) {
-            modal.updateMemberInvitedRewardStatusToComplete();
+            modal.updateFemaleInvitedRewardStatusToComplete();
             invitedRewardStatus = "MEMBER";
         }
 
@@ -184,7 +189,7 @@ public class InvitationService {
     public MemberInvitationRewardResponse updateInvitationRewardStatus(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
-        member.getMemberModal().updateMemberInvitedRewardStatusToComplete();
+        member.getMemberModal().updateFemaleInvitedRewardStatusToComplete();
 
         return getInvitationRewardStatus(memberId);
     }

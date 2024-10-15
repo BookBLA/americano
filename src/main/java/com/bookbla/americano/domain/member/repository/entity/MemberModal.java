@@ -46,7 +46,11 @@ public class MemberModal {
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    private InvitationStatus invitedRewardStatus = InvitationStatus.NONE;
+    private InvitationStatus femaleInvitedRewardStatus = InvitationStatus.NONE;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private InvitationStatus maleInvitedRewardStatus = InvitationStatus.NONE;
 
     public void updateMemberHomeOnboarding() {
         this.homeOnboarding = Boolean.TRUE;
@@ -57,19 +61,27 @@ public class MemberModal {
     }
 
     public boolean isInvitedRewardNotGiven() {
-        return invitedRewardStatus == InvitationStatus.BOOKMARK;
+        return femaleInvitedRewardStatus == InvitationStatus.BOOKMARK;
     }
 
     public boolean isInvitingRewardNotGiven() {
         return invitingRewardStatus.entrySet().stream().anyMatch(entry -> entry.getValue().equals(Boolean.FALSE));
     }
 
-    public void updateMemberInvitedRewardStatusToBookmark() {
-        this.invitedRewardStatus = InvitationStatus.BOOKMARK;
+    public void updateFemaleInvitedRewardStatusToBookmark() {
+        this.femaleInvitedRewardStatus = InvitationStatus.BOOKMARK;
     }
 
-    public void updateMemberInvitedRewardStatusToComplete() {
-        this.invitedRewardStatus = InvitationStatus.COMPLETED;
+    public void updateFemaleInvitedRewardStatusToComplete() {
+        this.femaleInvitedRewardStatus = InvitationStatus.COMPLETED;
+    }
+
+    public void updateMaleInvitedRewardStatusToBookmark() {
+        this.maleInvitedRewardStatus = InvitationStatus.BOOKMARK;
+    }
+
+    public void updateMaleInvitedRewardStatusToComplete() {
+        this.maleInvitedRewardStatus = InvitationStatus.COMPLETED;
     }
 
     public Long getInvitedMemberId() {
