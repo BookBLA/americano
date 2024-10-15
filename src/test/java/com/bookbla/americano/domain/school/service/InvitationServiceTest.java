@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.school.service;
 
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.admin.event.AdminNotificationEventListener;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberInvitationRewardResponse;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -10,7 +11,6 @@ import com.bookbla.americano.domain.school.controller.dto.request.InvitationCode
 import com.bookbla.americano.domain.school.exception.InvitationExceptionType;
 import com.bookbla.americano.domain.school.repository.InvitationRepository;
 import com.bookbla.americano.domain.school.repository.entity.Invitation;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -21,16 +21,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.bookbla.americano.domain.school.repository.entity.InvitationStatus.BOOKMARK;
-import static com.bookbla.americano.domain.school.repository.entity.InvitationStatus.COMPLETED;
-import static com.bookbla.americano.domain.school.repository.entity.InvitationType.FESTIVAL;
-import static com.bookbla.americano.domain.school.repository.entity.InvitationType.MAN;
-import static com.bookbla.americano.domain.school.repository.entity.InvitationType.WOMAN;
-import static com.bookbla.americano.fixture.Fixture.스타일_등록_완료_남성_고도리;
-import static com.bookbla.americano.fixture.Fixture.프로필_등록_완료_남성_리준희;
-import static com.bookbla.americano.fixture.Fixture.프로필_등록_완료_여성_김밤비;
+import static com.bookbla.americano.domain.school.repository.entity.InvitationType.*;
+import static com.bookbla.americano.fixture.Fixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @SuppressWarnings("NonAsciiCharacters")
@@ -110,7 +106,7 @@ class InvitationServiceTest {
                     () -> assertThat(invitation.getInvitedMemberId()).isEqualTo(man2.getId()),
                     () -> assertThat(invitation.getInvitingMemberId()).isEqualTo(man1.getId()),
                     () -> assertThat(invitation.getInvitationStatus()).isEqualTo(BOOKMARK),
-                    () -> assertThat(invitation.getInvitationType()).isEqualTo(MAN)
+                    () -> assertThat(invitation.getInvitationType()).isEqualTo(MALE)
             );
         }
 
@@ -153,7 +149,7 @@ class InvitationServiceTest {
                     () -> assertThat(invitation.getInvitedMemberId()).isEqualTo(woman.getId()),
                     () -> assertThat(invitation.getInvitingMemberId()).isEqualTo(man.getId()),
                     () -> assertThat(invitation.getInvitationStatus()).isEqualTo(BOOKMARK),
-                    () -> assertThat(invitation.getInvitationType()).isEqualTo(WOMAN)
+                    () -> assertThat(invitation.getInvitationType()).isEqualTo(FEMALE)
             );
         }
 
@@ -212,10 +208,72 @@ class InvitationServiceTest {
         }
     }
 
-    @AfterEach
-    void tearDown() {
-        memberBookmarkRepository.deleteAllInBatch();
-        memberRepository.deleteAllInBatch();
-        invitationRepository.deleteAllInBatch();
+    @Nested
+    class 초대보상_모달 {
+
+        @Test
+        void 초대하지_않았다면_초대보상을_받을_수_없다() {
+            // given
+            Member member = memberRepository.save(Member.builder().build());
+
+            // when
+            MemberInvitationRewardResponse response = sut.getInvitationRewardStatus(member.getId());
+
+            // then
+            assertThat(response.getInvitingRewardStatus()).isFalse();
+            assertThat(response.getInvitedRewardStatus()).isEqualTo("NONE");
+        }
+
+        @Test
+        void 초대되었다면_초대보상을_받을_수_있다() {
+            // given
+            Member man1 = memberRepository.save(스타일_등록_완료_남성_고도리);
+            Member man2 = memberRepository.save(프로필_등록_완료_남성_리준희);
+            MemberBookmark man1MemberBookmark = memberBookmarkRepository.save(MemberBookmark.builder().member(man1).build());
+            MemberBookmark man2MemberBookmark = memberBookmarkRepository.save(MemberBookmark.builder().member(man2).build());
+
+            // when
+            sut.entryInvitationCode(man2.getId(), new InvitationCodeEntryRequest("고도리초대코드"));
+            MemberInvitationRewardResponse response = sut.getInvitationRewardStatus(man2.getId());
+
+            // then
+            assertThat(response.getInvitingRewardStatus()).isFalse();
+            assertThat(response.getInvitedRewardStatus()).isEqualTo("MEMBER");
+            assertThat(response.getInvitedMembersGender()).isNull();
+        }
+
+        @Test
+        void 초대했다면_초대보상을_받을_수_있다() {
+            // given
+            Member man1 = memberRepository.save(프로필_등록_완료_여성_김밤비);
+            Member man2 = memberRepository.save(프로필_등록_완료_남성_리준희);
+            MemberBookmark man1MemberBookmark = memberBookmarkRepository.save(MemberBookmark.builder().member(man1).build());
+            MemberBookmark man2MemberBookmark = memberBookmarkRepository.save(MemberBookmark.builder().member(man2).build());
+
+            // when
+            sut.entryInvitationCode(man2.getId(), new InvitationCodeEntryRequest("김밤비초대코드"));
+            MemberInvitationRewardResponse response = sut.getInvitationRewardStatus(man1.getId());
+
+            // then
+            assertThat(response.getInvitingRewardStatus()).isTrue();
+            assertThat(response.getInvitedRewardStatus()).isEqualTo("NONE");
+            assertThat(response.getInvitedMembersGender()).isEqualTo(man2.getMemberProfile().getGender().name());
+        }
+
+        @Test
+        void 축제_초대코드를_입력했다면_invitingRewardStatus는_festival이다() {
+            // given
+            Member man = memberRepository.save(프로필_등록_완료_여성_김밤비);
+            memberBookmarkRepository.save(MemberBookmark.builder().member(man).build());
+            sut.entryInvitationCode(man.getId(), new InvitationCodeEntryRequest("JUST4YOU"));
+
+            // when
+            MemberInvitationRewardResponse response = sut.getInvitationRewardStatus(man.getId());
+
+            // then
+            assertThat(response.getInvitingRewardStatus()).isFalse();
+            assertThat(response.getInvitedRewardStatus()).isEqualTo("FESTIVAL");
+        }
     }
 }
+

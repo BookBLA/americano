@@ -4,11 +4,7 @@ import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.postcard.controller.dto.request.PostcardSendValidationRequest;
 import com.bookbla.americano.domain.postcard.controller.dto.request.PostcardStatusUpdateRequest;
-import com.bookbla.americano.domain.postcard.controller.dto.response.ContactInfoResponse;
-import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardFromResponse;
-import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardToResponse;
-import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
-import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardStatusResponse;
+import com.bookbla.americano.domain.postcard.controller.dto.response.*;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.service.PostcardService;
 import com.bookbla.americano.domain.postcard.service.dto.request.SendPostcardRequest;
@@ -51,17 +47,17 @@ public class PostcardController {
 
     @Operation(summary = "엽서 읽기", description = "받은 엽서 조회를 위한 엽서 사용 및 엽서 상태 (READ)로 변경")
     @PostMapping("/read/{postcardId}")
-    public void usePostcard(@Parameter(hidden = true) @User LoginUser loginUser,
-                            @PathVariable Long postcardId) {
-        postcardService.readMemberPostcard(loginUser.getMemberId(), postcardId);
+    public ResponseEntity<PostcardReadResponse> usePostcard(@Parameter(hidden = true) @User LoginUser loginUser,
+                                            @PathVariable Long postcardId) {
+        PostcardReadResponse postcardReadResponse = postcardService.readMemberPostcard(loginUser.getMemberId(), postcardId);
+        return ResponseEntity.ok(postcardReadResponse);
     }
 
     @Operation(summary = "Postcard 상태 업데이트", description = "Body의 postcardId를 가진 엽서의 상태 업데이트. Body의 status 값으로 해당 엽서의 상태(PostcardStatus)를 변경함.")
     @PostMapping("/status")
     public void updatePostcardStatus(@Parameter(hidden = true) @User LoginUser loginUser,
                                      @RequestBody @Valid PostcardStatusUpdateRequest request) {
-        postcardService.updatePostcardStatus(loginUser.getMemberId(), request.getPostcardId(),
-                PostcardStatus.from(request.getStatus()));
+        postcardService.updatePostcardStatus(loginUser.getMemberId(), request.getPostcardId(), PostcardStatus.from(request.getStatus()));
     }
 
     @Operation(summary = "Postcard 상태 조회", description = "postcardId를 이용하여 엽서 상태를 반환")

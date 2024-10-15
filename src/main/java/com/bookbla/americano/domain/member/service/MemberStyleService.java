@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.member.service;
 
 import java.time.LocalDateTime;
 
+import com.bookbla.americano.domain.sendbird.service.SendbirdService;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStyleUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberStyleResponse;
@@ -28,6 +29,7 @@ public class MemberStyleService {
     private final ProfileImageTypeRepository profileImageTypeRepository;
     private final MemberRepository memberRepository;
     private final MemberStatusLogRepository memberStatusLogRepository;
+    private final SendbirdService sendbirdService;
 
     @Transactional(readOnly = true)
     public MemberStyleResponse readMemberStyle(Long memberId) {
@@ -84,5 +86,8 @@ public class MemberStyleService {
                 .mbti(memberStyle.getMbti())
                 .smokeType(memberStyle.getSmokeType())
                 .build());
+
+        String newImageUrl = profileImageType.getImageUrl();
+        sendbirdService.updateSendbirdProfileUrl(memberId, newImageUrl);
     }
 }

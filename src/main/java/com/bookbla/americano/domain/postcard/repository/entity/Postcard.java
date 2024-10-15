@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.postcard.repository.entity;
 import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
 import javax.persistence.Entity;
@@ -44,6 +45,10 @@ public class Postcard extends BaseEntity {
     private Member receiveMember;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receive_member_book_id")
+    private MemberBook receiveMemberBook;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "postcard_type_id")
     private PostcardType postcardType;
 
@@ -55,6 +60,8 @@ public class Postcard extends BaseEntity {
     private PostcardStatus postcardStatus;
 
     private LocalDateTime postcardStatusRefusedAt;
+
+    private String channelUrl;
 
     public void validateSendPostcard() {
         if (postcardStatus == READ) {

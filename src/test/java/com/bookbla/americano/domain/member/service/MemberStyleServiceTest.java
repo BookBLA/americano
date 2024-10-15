@@ -57,7 +57,7 @@ class MemberStyleServiceTest {
                 .oauthEmail("bookbla@bookbla.com")
                 .build());
         MemberStyleCreateRequest memberStyleCreateRequest = new MemberStyleCreateRequest(
-                "infj", "가끔", 160, 1L
+                "infj", "가끔", 160, profileImageType.getId()
         );
 
         // when
@@ -71,7 +71,7 @@ class MemberStyleServiceTest {
                 () -> assertThat(memberStyleResponse.getMbti()).isEqualToIgnoringCase(INFJ.name()),
                 () -> assertThat(memberStyleResponse.getSmokeType()).isEqualTo(SmokeType.SOMETIMES.getDetailValue()),
                 () -> assertThat(memberStyleResponse.getHeight()).isEqualTo(160),
-                () -> assertThat(memberStyleResponse.getProfileImageTypeId()).isEqualTo(1L)
+                () -> assertThat(memberStyleResponse.getProfileImageTypeId()).isEqualTo(profileImageType.getId())
         );
     }
 
@@ -146,7 +146,7 @@ class MemberStyleServiceTest {
                                 .build()
                 ).build());
         MemberStyleUpdateRequest memberStyleUpdateRequest = new MemberStyleUpdateRequest(
-                "infj", "가끔", 160, 1L
+                "infj", "가끔", 160, profileImageType.getId()
         );
 
         // when
@@ -158,7 +158,7 @@ class MemberStyleServiceTest {
                 () -> assertThat(memberStyle.getMbti()).isEqualTo(INFJ),
                 () -> assertThat(memberStyle.getSmokeType()).isEqualTo(SOMETIMES),
                 () -> assertThat(memberStyle.getHeight()).isEqualTo(160),
-                () -> assertThat(memberStyle.getProfileImageType().getId()).isEqualTo(1L)
+                () -> assertThat(memberStyle.getProfileImageType().getId()).isEqualTo(profileImageType.getId())
         );
     }
 
@@ -198,5 +198,6 @@ class MemberStyleServiceTest {
     @AfterEach
     void tearDown() {
         memberRepository.deleteAll();
+        profileImageTypeRepository.deleteAllInBatch();
     }
 }

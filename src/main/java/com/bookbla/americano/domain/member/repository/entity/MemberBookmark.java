@@ -46,6 +46,15 @@ public class MemberBookmark extends BaseEntity {
         bookmarkCount = bookmarkCount - 5;
     }
 
+    public void acceptChat() {
+        validateAcceptChat();
+        bookmarkCount = bookmarkCount - 30;
+    }
+
+    public void rejectChat() {
+        bookmarkCount = bookmarkCount + 30;
+    }
+
     public void validateSendPostcard() {
         if (bookmarkCount < 35) {
             throw new BaseException(MemberBookmarkExceptionType.INVALID_BOOKMARK_COUNTS);
@@ -57,12 +66,21 @@ public class MemberBookmark extends BaseEntity {
             throw new BaseException(MemberBookmarkExceptionType.INVALID_BOOKMARK_COUNTS);
         }
     }
+    public void validateAcceptChat() {
+        if (bookmarkCount < 30) {
+            throw new BaseException(MemberBookmarkExceptionType.INVALID_BOOKMARK_COUNTS);
+        }
+    }
 
     public void addWomanInvitationBookmark() {
         bookmarkCount += 70;
     }
 
     public void addManInvitationBookmark() {
+        bookmarkCount += 35;
+    }
+
+    public void addStudentIdCertificationReward() {
         bookmarkCount += 35;
     }
 
@@ -77,19 +95,9 @@ public class MemberBookmark extends BaseEntity {
         this.bookmarkCount -= count;
     }
 
-    public void updateBookmarksByInitialBook(int memberBooks) {
-        if (memberBooks >= 4) {
-            this.bookmarkCount += 60;
-            return;
-        }
-
-        int counts = memberBooks * 15;
-        this.bookmarkCount += counts;
-    }
-
     public void watchAdmob(AdmobType admobType) {
         if (admobType == AdmobType.FREE_BOOKMARK) {
-            watchBookmarkAdmob();
+            watchFreeBookmarkAdmob();
             return;
         }
         if (admobType == AdmobType.NEW_PERSON) {
@@ -97,9 +105,9 @@ public class MemberBookmark extends BaseEntity {
         }
     }
 
-    private void watchBookmarkAdmob() {
+    private void watchFreeBookmarkAdmob() {
         this.member.watchBookmarkAdmob();
-        this.bookmarkCount += 10;
+        this.bookmarkCount += 2;
     }
 
     public int getFreeBookmarkAdmobCount() {
@@ -108,5 +116,10 @@ public class MemberBookmark extends BaseEntity {
 
     public int getNewPersonAdmobCount() {
         return member.getNewPersonAdmobCount();
+    }
+
+    public void addInitialAddBookRewards() {
+        this.member.useInitialAddBookBookmarkCount();
+        this.bookmarkCount += 15;
     }
 }

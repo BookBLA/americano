@@ -3,6 +3,7 @@ package com.bookbla.americano.domain.member.repository.entity;
 import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.notification.exception.PushAlarmExceptionType;
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -38,7 +39,7 @@ public class MemberPushAlarm extends BaseEntity {
     private String body;
 
     public void validateOwner(Long memberId) {
-        if (member.getId() != memberId) {
+        if (!Objects.equals(member.getId(), memberId)) {
             throw new BaseException(PushAlarmExceptionType.INVALID_OWNER);
         }
     }

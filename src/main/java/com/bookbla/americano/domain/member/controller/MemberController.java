@@ -5,7 +5,6 @@ import com.bookbla.americano.base.resolver.User;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberAdmobRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberBookProfileRequestDto;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberInformationUpdateRequest;
-import com.bookbla.americano.domain.member.controller.dto.request.MemberOnboardingStatusRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStatusUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.*;
 import com.bookbla.americano.domain.member.service.MemberBookmarkService;
@@ -52,25 +51,6 @@ public class MemberController {
     ) {
         MemberStatusResponse memberStatusResponse = memberService.updateStatus(loginUser.getMemberId(), request);
         return ResponseEntity.ok(memberStatusResponse);
-    }
-
-    @Operation(summary = "사용자 온모딩 모달 상태 조회 API")
-    @GetMapping("/onboarding")
-    public ResponseEntity<MemberOnboardingStatusResponse> getOnboardingStatus(
-            @Parameter(hidden = true) @User LoginUser loginUser
-    ) {
-        return ResponseEntity.ok(memberService.getMemberOnboarding(loginUser.getMemberId()));
-    }
-
-    @Operation(summary = "사용자 온보딩 모달 상태 업데이트 API",
-            description = "사용자의 온보딩 상태를 업데이트<br>"
-                   + "memberOnboardingStatus : [HOME, LIBRARY]")
-    @PostMapping("/onboarding")
-    public ResponseEntity<MemberOnboardingStatusResponse> updateOnboardingStatus(
-            @Parameter(hidden = true) @User LoginUser loginUser,
-            @RequestBody @Valid MemberOnboardingStatusRequest memberOnboardingStatusRequest
-    ) {
-        return ResponseEntity.ok(memberService.updateMemberOnboarding(loginUser.getMemberId(), memberOnboardingStatusRequest.getOnboarding()));
     }
 
     @Operation(summary = "사용자 계정 탈퇴 API",

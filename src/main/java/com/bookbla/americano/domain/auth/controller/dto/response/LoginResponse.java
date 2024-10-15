@@ -14,6 +14,7 @@ public class LoginResponse {
     private final String accessToken;
     private final Long memberId;
     private final String memberStatus;
+    private final String sendbirdToken;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String deletedAt;
@@ -23,7 +24,8 @@ public class LoginResponse {
         LoginResponse.LoginResponseBuilder builder = LoginResponse.builder()
             .accessToken(accessToken)
             .memberId(member.getId())
-            .memberStatus(member.getMemberStatus().name());
+            .memberStatus(member.getMemberStatus().name())
+            .sendbirdToken(member.getSendbirdToken());
 
         if ("DELETED".equals(member.getMemberStatus().name())) {
             builder.deletedAt(member.getDeleteAt().toString());

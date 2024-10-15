@@ -14,6 +14,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 import static com.bookbla.americano.domain.school.repository.entity.SchoolStatus.CLOSED;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -51,5 +53,18 @@ public class School extends BaseEntity {
 
     public int getOpenStandard() {
         return OPEN_STANDARD;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        School school = (School) o;
+        return Objects.equals(id, school.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

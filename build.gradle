@@ -35,7 +35,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
@@ -101,8 +101,16 @@ dependencies {
 
     // apple appstore
     implementation 'com.apple.itunes.storekit:app-store-server-library:3.1.0'
+
+    // sendbird
+    implementation "org.sendbird:sendbird-platform-sdk:1.0.23"
 }
 
+allprojects {
+    repositories {
+        maven { url "https://repo.sendbird.com/public/maven" }
+    }
+}
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"

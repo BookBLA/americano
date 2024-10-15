@@ -14,10 +14,13 @@ import com.bookbla.americano.domain.member.controller.dto.response.MemberBookCre
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
+import com.bookbla.americano.domain.member.exception.MemberBookmarkExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
+import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
+import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.quiz.exception.QuizQuestionExceptionType;
 import com.bookbla.americano.domain.quiz.repository.QuizQuestionRepository;
 import com.bookbla.americano.domain.quiz.repository.entity.QuizQuestion;
@@ -37,6 +40,7 @@ public class MemberBookService {
     private final MemberRepository memberRepository;
     private final MemberBookRepository memberBookRepository;
     private final QuizQuestionRepository quizQuestionRepository;
+    private final MemberBookmarkRepository memberBookmarkRepository;
 
     public MemberBookCreateResponse addMemberBook(Long memberId, MemberBookCreateRequest request) {
         Member member = memberRepository.getByIdOrThrow(memberId);
@@ -50,6 +54,12 @@ public class MemberBookService {
 
         MemberBook savedMemberBook = memberBookRepository.save(request.toMemberBook(book, member));
         QuizQuestion savedQuizQuestion = quizQuestionRepository.save(request.toQuizQuestion(savedMemberBook));
+
+        if (member.canGiveInitialBookmarkReward()) {
+            MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(memberId)
+                    .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.ADMOB_TYPE_NOT_FOUND));
+            memberBookmark.addInitialAddBookRewards();
+        }
 
         return MemberBookCreateResponse.from(savedMemberBook, savedQuizQuestion);
     }

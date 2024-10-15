@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.book.repository.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.bookbla.americano.base.entity.BaseEntity;
 import javax.persistence.Column;
@@ -34,12 +35,25 @@ public class Book extends BaseEntity {
     private String title;
 
     @Builder.Default
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> authors = new ArrayList<>();
 
     private String imageUrl;
 
     public void updateImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Book book = (Book) o;
+        return Objects.equals(isbn, book.isbn);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(isbn);
     }
 }

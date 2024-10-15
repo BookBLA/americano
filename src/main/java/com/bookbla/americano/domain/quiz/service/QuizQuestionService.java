@@ -1,6 +1,11 @@
 package com.bookbla.americano.domain.quiz.service;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
+import com.bookbla.americano.domain.matching.repository.MatchExcludedRepository;
+import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
+import com.bookbla.americano.domain.matching.repository.entity.MatchExcludedInfo;
+import com.bookbla.americano.domain.matching.repository.entity.MemberMatching;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -24,6 +29,8 @@ public class QuizQuestionService {
     private final QuizQuestionRepository quizQuestionRepository;
     private final MemberRepository memberRepository;
     private final MemberBookRepository memberBookRepository;
+    private final MatchExcludedRepository matchExcludedRepository;
+    private final MemberMatchingRepository memberMatchingRepository;
 
     @Transactional(readOnly = true)
     public QuizQuestionReadResponse getQuizQuestion(Long memberId, Long memberBookId) {
@@ -39,13 +46,23 @@ public class QuizQuestionService {
         return QuizQuestionReadResponse.from(quizQuestion, memberBook);
     }
 
-    public QuizQuestionVerifyResponse verifyQuizQuestion(QuizQuestionVerifyRequest request) {
+    public QuizQuestionVerifyResponse verifyQuizQuestion(Long memberId, QuizQuestionVerifyRequest request) {
         QuizQuestion quizQuestion = quizQuestionRepository.findById(request.getQuizId())
                 .orElseThrow(() -> new BaseException(QuizQuestionExceptionType.MEMBER_QUIZ_QUESTION_NOT_FOUND));
 
-        Boolean isCorrect = quizQuestion.solve(request.getQuizAnswer()) == CorrectStatus.CORRECT;
-        return QuizQuestionVerifyResponse.builder()
-                .isCorrect(isCorrect)
-                .build();
+        CorrectStatus status = quizQuestion.solve(request.getQuizAnswer());
+        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
+
+        boolean isCorrect = true;
+
+        if (status == CorrectStatus.WRONG) {
+            matchExcludedRepository.findByMemberIdAndExcludedMemberId(request.getQuizMakerId(), memberId)
+                    .orElseGet(() -> matchExcludedRepository.save(MatchExcludedInfo.of(memberId, request.getQuizMakerId())));
+            memberMatching.updateInvitationCard(true);
+            isCorrect = false;
+        }
+
+        return QuizQuestionVerifyResponse.of(isCorrect);
     }
 }

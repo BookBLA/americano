@@ -6,6 +6,11 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
+import com.bookbla.americano.domain.matching.repository.MatchExcludedRepository;
+import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
+import com.bookbla.americano.domain.matching.repository.entity.MatchExcludedInfo;
+import com.bookbla.americano.domain.matching.repository.entity.MemberMatching;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberReportCreateRequest;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberReportCreateResponse;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberReportDeleteResponse;
@@ -34,6 +39,9 @@ public class MemberReportService {
     private final MemberReportRepository memberReportRepository;
     private final MemberStatusLogRepository memberStatusLogRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final MatchExcludedRepository matchExcludedRepository;
+    private final MemberMatchingRepository memberMatchingRepository;
+
 
     @Transactional
     public MemberReportCreateResponse addMemberReport(Long memberId,
@@ -76,7 +84,14 @@ public class MemberReportService {
         memberReportRepository.save(memberReport);
         applicationEventPublisher.publishEvent(new AdminNotificationEvent("새 신고가 접수되었습니다", "신고당한 회원 id : " + reportedMember.getId().toString()));
 
-        // 신고당한 횟수 늘리기
+        MemberMatching memberMatching = memberMatchingRepository.findByMember(reporterMember)
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
+        memberMatching.updateInvitationCard(true);
+
+        // 신고 당한 회원 매칭 제외
+        updateMemberMatchingExcluded(reporterMember, reportedMember);
+
+        // 신고 당한 횟수 늘리기
         reportedMember.updateReportedCountUp();
         memberRepository.save(reportedMember);
 
@@ -96,6 +111,14 @@ public class MemberReportService {
             memberRepository.save(reportedMember);
         }
         return MemberReportCreateResponse.from(memberReport);
+    }
+
+    private void updateMemberMatchingExcluded(Member sendMember, Member receiveMember) {
+        matchExcludedRepository.findByMemberIdAndExcludedMemberId(sendMember.getId(), receiveMember.getId())
+                .orElseGet(() -> matchExcludedRepository.save(MatchExcludedInfo.of(sendMember.getId(), receiveMember.getId())));
+
+        matchExcludedRepository.findByMemberIdAndExcludedMemberId(receiveMember.getId(), sendMember.getId())
+                .orElseGet(() -> matchExcludedRepository.save(MatchExcludedInfo.of(receiveMember.getId(), sendMember.getId())));
     }
 
     @Transactional(readOnly = true)

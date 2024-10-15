@@ -1,28 +1,40 @@
 package com.bookbla.americano.domain.member.service;
 
+import java.time.LocalDateTime;
+
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberInformationUpdateRequest;
 import com.bookbla.americano.domain.member.controller.dto.request.MemberStatusUpdateRequest;
-import com.bookbla.americano.domain.member.controller.dto.response.*;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberDeleteResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberInformationReadResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberResponse;
+import com.bookbla.americano.domain.member.controller.dto.response.MemberStatusResponse;
 import com.bookbla.americano.domain.member.enums.Mbti;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.SmokeType;
-import com.bookbla.americano.domain.member.exception.MemberBookmarkExceptionType;
+import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.exception.MemberProfileExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberStatusLogRepository;
-import com.bookbla.americano.domain.member.repository.entity.*;
+import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
+import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
+import com.bookbla.americano.domain.member.repository.entity.MemberStatusLog;
+import com.bookbla.americano.domain.member.repository.entity.MemberStyle;
 import com.bookbla.americano.domain.school.repository.entity.School;
+import com.bookbla.americano.domain.sendbird.service.SendbirdService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
+import static com.bookbla.americano.domain.member.enums.MemberStatus.APPROVAL;
+import static com.bookbla.americano.domain.member.enums.MemberStatus.COMPLETED;
 import static com.bookbla.americano.domain.member.enums.MemberStatus.MATCHING_DISABLED;
+import static com.bookbla.americano.domain.member.enums.MemberStatus.REJECTED;
+import static com.bookbla.americano.domain.member.enums.MemberVerifyType.STUDENT_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -31,10 +43,8 @@ public class MemberService {
     private final MemberBookRepository memberBookRepository;
     private final MemberRepository memberRepository;
     private final MemberStatusLogRepository memberStatusLogRepository;
-    private final MemberBookmarkRepository memberBookmarkRepository;
-
-    private final static String HOME_ONBOARDING = "HOME";
-    private final static String LIBRARY_ONBOARDING = "LIBRARY";
+    private final MemberVerifyRepository memberVerifyRepository;
+    private final SendbirdService sendbirdService;
 
     @Transactional(readOnly = true)
     public MemberResponse readMember(Long memberId) {
@@ -77,49 +87,45 @@ public class MemberService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberStatus afterStatus = request.getMemberStatus();
 
-        if (member.canChangeToComplete(afterStatus)) {
-            int memberBooks = (int) memberBookRepository.countByMember(member);
-            MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(member.getId())
-                    .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
-
-            memberBookmark.updateBookmarksByInitialBook(memberBooks);
+        if (member.canChangeToApproval(afterStatus)) {
+            validateMemberBookExists(member);
         }
 
         MemberStatusLog.MemberStatusLogBuilder memberStatusLogBuilder = MemberStatusLog.builder()
                 .memberId(memberId)
-                .beforeStatus(member.getMemberStatus())
-                .afterStatus(afterStatus);
+                .beforeStatus(member.getMemberStatus());
 
         if (afterStatus == MATCHING_DISABLED) {
             memberStatusLogBuilder.description(request.getReason());
         }
 
-        memberStatusLogRepository.save(memberStatusLogBuilder.build());
+        if (afterStatus == COMPLETED) {
+            afterStatus = findSuitableMemberStatus(memberId, afterStatus);
+        }
+
+        memberStatusLogRepository.save(memberStatusLogBuilder.afterStatus(afterStatus).build());
 
         member.updateMemberStatus(afterStatus, LocalDateTime.now());
         School school = member.getSchool();
         return MemberStatusResponse.from(member, school);
     }
 
-    @Transactional(readOnly = true)
-    public MemberOnboardingStatusResponse getMemberOnboarding(Long memberId) {
-        Member member = memberRepository.getByIdOrThrow(memberId);
-
-        return MemberOnboardingStatusResponse.from(member.getMemberHomeOnboarding(), member.getMemberLibraryOnboarding());
+    private void validateMemberBookExists(Member member) {
+        long memberBookmarkCount = memberBookRepository.countByMember(member);
+        if (memberBookmarkCount < 1) {
+            throw new BaseException(MemberBookExceptionType.MEMBER_BOOK_EMPTY);
+        }
     }
 
-    @Transactional
-    public MemberOnboardingStatusResponse updateMemberOnboarding(Long memberId, String memberOnboarding) {
-        Member member = memberRepository.getByIdOrThrow(memberId);
-
-        if (memberOnboarding.equals(HOME_ONBOARDING)) {
-            member.updateMemberHomeOnboarding();
-        } else if (memberOnboarding.equals(LIBRARY_ONBOARDING)) {
-            member.updateMemberLibraryOnboarding();
-        } else {
-            throw new BaseException(MemberExceptionType.ONBOARDING_NOT_VALID);
-        }
-        return MemberOnboardingStatusResponse.from(member.getMemberHomeOnboarding(), member.getMemberLibraryOnboarding());
+    private MemberStatus findSuitableMemberStatus(Long memberId, MemberStatus afterStatus) {
+        return memberVerifyRepository.findFirstByVerifyTypeAndMemberIdOrderByCreatedAtDesc(STUDENT_ID, memberId)
+                .stream()
+                .findFirst()
+                .map(verification -> {
+                    if (verification.isFail()) return REJECTED;
+                    if (verification.isPending()) return APPROVAL;
+                    return afterStatus; // 기본값 유지
+                }).orElse(afterStatus);
     }
 
     @Transactional
@@ -138,6 +144,8 @@ public class MemberService {
                 .smokeType(SmokeType.from(request.getSmokeType()))
                 .height(request.getHeight())
                 .build());
+
+        sendbirdService.updateSendbirdNickname(memberId, request.getName());
     }
 
     private void validateName(Member member, String name) {

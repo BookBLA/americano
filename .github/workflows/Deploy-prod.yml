@@ -16,11 +16,11 @@ name: Backend CI & CD (prod)
 on:
   pull_request:
     # 특정 브랜치만
-    branches: [master]
+    branches: [main]
   #    # pr이 생성 되었을 때, 담당 유저가 등록되었을 때, PR에 코드가 머지되었을 때, 라벨이 달렸을 때 동작
   #    types: [opened, assigned, synchronize, labeled, reopened]
   push:
-    branches: [master]
+    branches: [main]
 
 env:
   CONTAINER_NAME: americano_prod
@@ -92,6 +92,40 @@ jobs:
           name: build
           path: build/libs/*.jar
 
+      - name: Send Failure Message
+        if: ${{ failure() }}
+        uses: Ilshidur/action-discord@0.3.2
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.PROD_WEBHOOK_URL }}
+          DISCORD_USERNAME: 운영서버 배포봇
+          DISCORD_AVATAR: https://cdn.imweb.me/thumbnail/20240606/39684ae3c2783.png
+          DISCORD_EMBEDS: |
+            [
+              {
+                "author": {
+                  "name": "${{ github.event.pull_request.user.login }}",
+                  "url": "https://github.com/boookbla/americano",
+                  "icon_url": "${{ github.event.pull_request.user.avatar_url }}"
+                },
+                "title": "🚨운영서버 빌드/테스트 실패하였습니다.🚨 \n#${{ github.event.pull_request.number }} : ${{ github.event.pull_request.title }}",
+                "color": 13458524,
+                "description": "${{ github.event.pull_request.html_url }}",
+                "fields": [
+                  {
+                    "name": "Base Branch",
+                    "value": "${{ github.base_ref }}",
+                    "inline": true
+                  },
+                  {
+                    "name": "Compare Branch",
+                    "value": "${{ github.head_ref }}",
+                    "inline": true
+                  }
+                ]
+              }
+            ]
+
+
   Continuous-Deploy:
     # push 하는 경우에만 배포 JOB 실행
     if: github.event_name == 'push'
@@ -142,8 +176,27 @@ jobs:
           echo '#!/bin/bash' > deploy.sh
           echo 'sudo docker rm -f ${{ env.CONTAINER_NAME }}' >> deploy.sh
           echo 'sudo docker rmi ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}' >> deploy.sh
-          echo 'sudo docker pull ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}' >> deploy.sh
-          echo 'sudo docker run -d -p 8080:8080 --add-host host.docker.internal:host-gateway --restart=unless-stopped --log-opt max-size=10m --log-opt max-file=3 --name ${{ env.CONTAINER_NAME }} ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}' >> deploy.sh
+          echo 'sudo docker pull ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}:${{github.run_number}}' >> deploy.sh
+          echo 'sudo docker run -d -p 8080:8080 --add-host host.docker.internal:host-gateway --restart=unless-stopped --log-opt max-size=10m --log-opt max-file=3 --name ${{ env.CONTAINER_NAME }} ${{ secrets.DOCKER_ID }}/${{ env.CONTAINER_NAME }}:${{github.run_number}}' >> deploy.sh
+
+      - name: Get Public IP
+        id: ip
+        uses: haythem/public-ip@v1.3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'ap-northeast-2'
+
+      - name: Add GitHub Actions IP
+        run: |
+          aws ec2 authorize-security-group-ingress \
+              --group-id ${{ secrets.SECURITY_GROUP_ID }} \
+              --protocol tcp \
+              --port 22 \
+              --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
       - name: Transfer Deploy Script use SCP
         uses: appleboy/scp-action@master
@@ -166,6 +219,14 @@ jobs:
           script_stop: true
           script: |
             chmod +x /home/${{ secrets.REMOTE_USERNAME_PROD }}/deploy/deploy.sh && sh /home/${{ secrets.REMOTE_USERNAME_PROD }}/deploy/deploy.sh
+
+      - name: Remove GitHub Actions IP
+        run: |
+          aws ec2 revoke-security-group-ingress \
+              --group-id ${{ secrets.SECURITY_GROUP_ID }} \
+              --protocol tcp \
+              --port 22 \
+              --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
       - name: Send Success Message
         if: ${{ success() }}

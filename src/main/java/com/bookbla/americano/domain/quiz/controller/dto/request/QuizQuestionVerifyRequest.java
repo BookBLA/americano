@@ -12,6 +12,9 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class QuizQuestionVerifyRequest {
 
+    @NotNull(message = "퀴즈 출제자의 아이디가 입력되지 않았습니다.")
+    private Long quizMakerId;
+
     @NotNull(message = "퀴즈 아이디가 입력되지 않았습니다.")
     private Long quizId;
 

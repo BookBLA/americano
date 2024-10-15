@@ -3,9 +3,11 @@ package com.bookbla.americano.domain.admin.service;
 import com.bookbla.americano.domain.admin.service.dto.StatusUpdateDto;
 import com.bookbla.americano.domain.member.enums.MemberVerifyStatus;
 import com.bookbla.americano.domain.member.enums.StudentIdImageStatus;
+import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.MemberVerifyRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
 import com.bookbla.americano.domain.notification.service.AlarmService;
@@ -34,6 +36,9 @@ class AdminVerificationServiceTest {
 
     @Autowired
     private MemberVerifyRepository memberVerifyRepository;
+
+    @Autowired
+    private MemberBookmarkRepository memberBookmarkRepository;
 
     @MockBean
     private AlarmService alarmService;
@@ -73,8 +78,47 @@ class AdminVerificationServiceTest {
         );
     }
 
+    @Test
+    void 회원의_학생증_인증_성공시_재화_보상_지급한다() {
+        // given
+        Member member = memberRepository.save(Member.builder()
+                .memberType(ADMIN)
+                .oauthEmail("bookbla@bookbla.com")
+                .memberProfile(MemberProfile.builder().studentIdImageStatus(StudentIdImageStatus.PENDING).build())
+                .memberStatus(APPROVAL)
+                .pushAlarmEnabled(Boolean.TRUE)
+                .build());
+        MemberVerify memberVerify = memberVerifyRepository.save(MemberVerify.builder()
+                .memberId(member.getId())
+                .verifyStatus(PENDING)
+                .verifyType(STUDENT_ID)
+                .contents("학생증 링크~")
+                .description("이름: 고도현, 학과: 관광경영학과, 학번: 201900001")
+                .build());
+        memberBookmarkRepository.save(MemberBookmark.builder()
+                .member(member)
+                .build());
+
+        StatusUpdateDto statusUpdateDto = new StatusUpdateDto(memberVerify.getId(), "done", "사진이 잘나오셨네요~");
+
+        // when
+        sut.updateMemberStudentIdStatus(statusUpdateDto);
+
+        // then
+        MemberProfile memberProfile = memberRepository.getByIdOrThrow(member.getId()).getMemberProfile();
+        MemberVerify findMemberVerify = memberVerifyRepository.getByIdOrThrow(memberVerify.getId());
+        MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(member.getId()).orElseThrow();
+        assertAll(
+                () -> assertThat(memberBookmark.getBookmarkCount()).isEqualTo(35),
+                () -> assertThat(memberProfile.getStudentIdImageStatus()).isEqualTo(StudentIdImageStatus.DONE),
+                () -> assertThat(findMemberVerify.getVerifyStatus()).isEqualTo(MemberVerifyStatus.SUCCESS),
+                () -> assertThat(findMemberVerify.getDescription()).isEqualTo("사진이 잘나오셨네요~")
+        );
+    }
+
     @AfterEach
     void tearDown() {
+        memberBookmarkRepository.deleteAllInBatch();
         memberRepository.deleteAllInBatch();
         memberVerifyRepository.deleteAllInBatch();
     }

@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.member.repository.entity;
 
 import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
 import com.bookbla.americano.domain.member.enums.Gender;
 import com.bookbla.americano.domain.member.enums.MemberStatus;
 import com.bookbla.americano.domain.member.enums.MemberType;
@@ -21,6 +22,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.bookbla.americano.domain.member.enums.StudentIdImageStatus.DONE;
+
 @Entity
 @Getter
 @Builder
@@ -33,6 +36,8 @@ public class Member extends BaseEntity {
     @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String sendbirdToken;
 
     private String oauthEmail;
 
@@ -57,22 +62,16 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MemberStatus memberStatus = MemberStatus.PROFILE;
 
-    @Builder.Default
-    @Column(length = 1)
-    @Convert(converter = BooleanToYNConverter.class)
-    private Boolean memberHomeOnboarding = Boolean.FALSE;
-
-    @Builder.Default
-    @Column(length = 1)
-    @Convert(converter = BooleanToYNConverter.class)
-    private Boolean memberLibraryOnboarding = Boolean.FALSE;
-
     private LocalDateTime deleteAt;
 
     private LocalDateTime statusModifiedAt;
 
     @LastModifiedDate
     private LocalDateTime lastUsedAt;
+
+    @Embedded
+    @Getter(AccessLevel.NONE)
+    private MemberModal memberModal;
 
     @Embedded
     @Getter(AccessLevel.NONE)
@@ -103,19 +102,23 @@ public class Member extends BaseEntity {
     private Set<MemberReport> reportedMembers = new HashSet<>();
 
     @Builder.Default
-    @ElementCollection(fetch = FetchType.LAZY)
-    private Set<Long> memberMatchIgnores = new HashSet<>();
-
-    @Builder.Default
     private Integer reportedCount = 0; // 신고당한 횟수
 
     @Column
     @Builder.Default
-    private Integer newPersonAdmobCount = 2;
+    private Integer newPersonAdmobCount = 4;
 
     @Column
     @Builder.Default
     private Integer freeBookmarkAdmobCount = 2;
+
+    @Column
+    @Builder.Default
+    private Integer initialRewardBookmarkCount = 4;
+
+    public void updateSendbirdToken(String sendbirdToken) {
+        this.sendbirdToken = sendbirdToken;
+    }
 
     public Member updatePushToken(String pushToken) {
         this.pushToken = pushToken;
@@ -130,16 +133,6 @@ public class Member extends BaseEntity {
     public Member updateMemberStatus(MemberStatus memberStatus, LocalDateTime statusModifiedAt) {
         this.memberStatus = memberStatus;
         this.statusModifiedAt = statusModifiedAt;
-        return this;
-    }
-
-    public Member updateMemberHomeOnboarding() {
-        this.memberHomeOnboarding = Boolean.TRUE;
-        return this;
-    }
-
-    public Member updateMemberLibraryOnboarding() {
-        this.memberLibraryOnboarding = Boolean.TRUE;
         return this;
     }
 
@@ -189,12 +182,15 @@ public class Member extends BaseEntity {
         return this;
     }
 
-    public void updateMemberMatchIgnores(Member member) {
-        this.memberMatchIgnores.add(member.getId());
-    }
-
     public boolean hasProfile() {
         return memberProfile != null;
+    }
+
+    public MemberModal getMemberModal() {
+        if (memberModal == null) {
+            memberModal = MemberModal.builder().build();
+        }
+        return memberModal;
     }
 
     public MemberProfile getMemberProfile() {
@@ -221,6 +217,12 @@ public class Member extends BaseEntity {
     public void validateStyleRegistered() {
         if (this.memberStyle != null) {
             throw new BaseException(MemberExceptionType.STYLE_ALREADY_REGISTERED);
+        }
+    }
+
+    public void validateStudentIdStatusRegistered() {
+        if (this.memberProfile.getStudentIdImageStatus() != DONE) {
+            throw new BaseException(MemberProfileExceptionType.STUDENT_ID_NOT_VALID);
         }
     }
 
@@ -254,7 +256,7 @@ public class Member extends BaseEntity {
         return !isWoman();
     }
 
-    public boolean canChangeToComplete(MemberStatus afterStatus) {
+    public boolean canChangeToApproval(MemberStatus afterStatus) {
         return memberStatus == MemberStatus.BOOK && afterStatus == MemberStatus.APPROVAL;
     }
 
@@ -267,8 +269,19 @@ public class Member extends BaseEntity {
 
     public void watchNewPersonAdmob() {
         if (newPersonAdmobCount <= 0) {
-            throw new BaseException(MemberBookmarkExceptionType.ADMOB_COUNT_NOT_VALID);
+            throw new BaseException(MemberMatchingExceptionType.EXCEED_MAX_RECOMMENDATION);
         }
         this.newPersonAdmobCount--;
+    }
+
+    public boolean canGiveInitialBookmarkReward() {
+        return this.initialRewardBookmarkCount > 0;
+    }
+
+    public void useInitialAddBookBookmarkCount() {
+        if (initialRewardBookmarkCount <= 0) {
+            throw new BaseException(MemberBookmarkExceptionType.INVALID_BOOKMARK_REWARD_COUNT);
+        }
+        this.initialRewardBookmarkCount--;
     }
 }

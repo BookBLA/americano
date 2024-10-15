@@ -2,9 +2,12 @@ package com.bookbla.americano.domain.postcard.service;
 
 
 import com.bookbla.americano.base.exception.BaseException;
-import com.bookbla.americano.domain.chat.repository.MemberChatRoomRepository;
-import com.bookbla.americano.domain.chat.repository.entity.MemberChatRoom;
-import com.bookbla.americano.domain.chat.service.ChatRoomService;
+import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
+import com.bookbla.americano.domain.matching.repository.MatchExcludedRepository;
+import com.bookbla.americano.domain.matching.repository.MatchedInfoRepository;
+import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
+import com.bookbla.americano.domain.matching.repository.entity.MatchExcludedInfo;
+import com.bookbla.americano.domain.matching.repository.entity.MemberMatching;
 import com.bookbla.americano.domain.member.controller.dto.response.MemberBookReadResponses;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBlockRepository;
@@ -17,10 +20,7 @@ import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.member.service.MemberBookService;
 import com.bookbla.americano.domain.notification.event.PostcardAlarmEvent;
 import com.bookbla.americano.domain.notification.event.PushAlarmEventHandler;
-import com.bookbla.americano.domain.postcard.controller.dto.response.ContactInfoResponse;
-import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardFromResponse;
-import com.bookbla.americano.domain.postcard.controller.dto.response.MemberPostcardToResponse;
-import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardSendValidateResponse;
+import com.bookbla.americano.domain.postcard.controller.dto.response.*;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
 import com.bookbla.americano.domain.postcard.repository.PostcardRepository;
@@ -54,10 +54,15 @@ public class PostcardService {
     private final MemberBlockRepository memberBlockRepository;
     private final MemberBookService memberBookService;
     private final PushAlarmEventHandler postcardPushAlarmEventListener;
-    private final ChatRoomService chatRoomService;
-    private final MemberChatRoomRepository memberChatRoomRepository;
+    private final MatchExcludedRepository matchExcludedRepository;
+    private final MemberMatchingRepository memberMatchingRepository;
+    private final MatchedInfoRepository matchedInfoRepository;
 
     public SendPostcardResponse send(Long memberId, SendPostcardRequest request) {
+        // 엽서 보내는 회원의 학생증 상태 검증
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        member.validateStudentIdStatusRegistered();
+
         MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
                         memberId)
                 .orElseThrow(
@@ -73,15 +78,19 @@ public class PostcardService {
         sentPostcards.forEach(Postcard::validateSendPostcard);
         PostcardStatus status = PostcardStatus.PENDING;
 
-        Member member = memberRepository.getByIdOrThrow(memberId);
         Member targetMember = memberRepository.getByIdOrThrow(request.getReceiveMemberId());
+        MemberBook targetMemberBook = memberBookRepository.getByIdOrThrow(request.getReceiveMemberBookId());
+        targetMemberBook.validateOwner(targetMember);
         memberBookmark.sendPostcard();
+
+        updateMemberMatchingExcluded(member, targetMember);
 
         PostcardType postCardType = postcardTypeRepository.getByIdOrThrow(
                 request.getPostcardTypeId());
         Postcard postcard = Postcard.builder()
                 .sendMember(member)
                 .receiveMember(targetMember)
+                .receiveMemberBook(targetMemberBook)
                 .postcardStatus(status)
                 .message(request.getMemberReply())
                 .postcardType(postCardType)
@@ -89,8 +98,9 @@ public class PostcardService {
                 .build();
         postcardRepository.save(postcard);
 
-        // 채팅방 생성
-        chatRoomService.createChatRoom(List.of(member, targetMember), postcard);
+        MemberMatching memberMatching = memberMatchingRepository.findByMember(member)
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
+        memberMatching.updateInvitationCard(true);
 
         postcardPushAlarmEventListener.sendPostcard(new PostcardAlarmEvent(member, targetMember));
 
@@ -136,9 +146,13 @@ public class PostcardService {
                 .collect(Collectors.toList());
     }
 
-    public void readMemberPostcard(Long memberId, Long postcardId) {
-        Postcard postcard = postcardRepository.findById(postcardId)
+    public PostcardReadResponse readMemberPostcard(Long memberId, Long postcardId) {
+        Member member = memberRepository.getByIdOrThrow(memberId);
+        member.validateStudentIdStatusRegistered();
+
+        Postcard postcard = postcardRepository.findByIdWithMembers(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
+
         if (!Objects.equals(postcard.getReceiveMember().getId(), memberId)) {
             throw new BaseException(PostcardExceptionType.ACCESS_DENIED_TO_POSTCARD);
         } else if (!postcard.getPostcardStatus().equals(PostcardStatus.PENDING)) {
@@ -148,16 +162,17 @@ public class PostcardService {
                 throw new BaseException(PostcardExceptionType.READ_POSTCARD_ALREADY);
             }
         }
-        MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
-                        memberId)
-                .orElseThrow(
-                        () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
+        MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(memberId)
+                .orElseThrow(() -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
+
         memberBookmark.readPostcard();
         updatePostcardStatus(memberId, postcardId, PostcardStatus.READ);
+
+        return PostcardReadResponse.of(postcard);
     }
 
     public PostcardStatus getPostcardStatus(Long postcardId) {
-        Postcard postcard = postcardRepository.findById(postcardId)
+        Postcard postcard = postcardRepository.findByIdWithMembers(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
 
         return postcard.getPostcardStatus();
@@ -165,7 +180,7 @@ public class PostcardService {
 
     public void updatePostcardStatus(Long memberId, Long postcardId,
                                      PostcardStatus postcardStatus) {
-        Postcard postcard = postcardRepository.findById(postcardId)
+        Postcard postcard = postcardRepository.findByIdWithMembers(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
         Member member = memberRepository.getByIdOrThrow(memberId);
         if (!member.equals(postcard.getSendMember()) && !member.equals(
@@ -179,28 +194,30 @@ public class PostcardService {
         Member sendMember = postcard.getSendMember();
         Member receiveMember = postcard.getReceiveMember();
 
-        if (postcardStatus.isAccept()) {
-            sendMember.updateMemberMatchIgnores(receiveMember);
-            receiveMember.updateMemberMatchIgnores(sendMember);
+        MemberBookmark sendMemberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(sendMember.getId())
+                .orElseThrow(() -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
 
+        if (postcardStatus.isAccept()) {
+            updateMemberMatchingExcluded(sendMember, receiveMember);
             postcardPushAlarmEventListener.acceptPostcard(new PostcardAlarmEvent(sendMember, receiveMember));
+
         } else if (postcardStatus.isPending()) {
-            sendMember.updateMemberMatchIgnores(receiveMember);
-            receiveMember.updateMemberMatchIgnores(sendMember);
+            updateMemberMatchingExcluded(sendMember, receiveMember);
+
         } else if (postcardStatus.isRefused()) { // 거절 시 환불
             postcard.updatePostcardStatusRefusedAt();
-
-            MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(
-                            postcard.getSendMember().getId())
-                    .orElseThrow(
-                            () -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
-            memberBookmark.addBookmark(35);
-            // 해당 엽서로 생성된 채팅방을 모두 나가게 함
-            // 실제로는 1개만 삭제
-            List<MemberChatRoom> memberChatRooms = memberChatRoomRepository.findByMemberIdAndPostcardId(
-                    postcard.getReceiveMember().getId(), postcard.getId());
-            memberChatRoomRepository.deleteAll(memberChatRooms);
+            sendMemberBookmark.addBookmark(35);
         }
+    }
+
+    private void updateMemberMatchingExcluded(Member sendMember, Member receiveMember) {
+        matchExcludedRepository.findByMemberIdAndExcludedMemberId(sendMember.getId(), receiveMember.getId())
+                        .orElseGet(() -> matchExcludedRepository.save(MatchExcludedInfo.of(sendMember.getId(), receiveMember.getId())));
+
+        matchExcludedRepository.findByMemberIdAndExcludedMemberId(receiveMember.getId(), sendMember.getId())
+                        .orElseGet(() -> matchExcludedRepository.save(MatchExcludedInfo.of(receiveMember.getId(), sendMember.getId())));
+
+        matchedInfoRepository.deleteByMemberIdAndMatchedMemberId(sendMember.getId(), receiveMember.getId());
     }
 
     @Transactional(readOnly = true)
@@ -219,7 +236,7 @@ public class PostcardService {
     }
 
     public ContactInfoResponse getContactInfo(Long memberId, Long postcardId) {
-        Postcard postcard = postcardRepository.findById(postcardId)
+        Postcard postcard = postcardRepository.findByIdWithMembers(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
 
         if (!Objects.equals(postcard.getReceiveMember().getId(), memberId) && !Objects.equals(postcard.getSendMember().getId(), memberId))

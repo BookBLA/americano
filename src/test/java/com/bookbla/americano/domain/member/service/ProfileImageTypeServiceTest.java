@@ -4,11 +4,13 @@ import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.ProfileImageTypeRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.ProfileImageType;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.bookbla.americano.domain.member.enums.Gender.FEMALE;
 import static com.bookbla.americano.domain.member.enums.Gender.MALE;
@@ -40,21 +42,27 @@ class ProfileImageTypeServiceTest {
     @Autowired
     private MemberRepository memberRepository;
 
-//    @Test
-//    void 동일한_성별의_프로필_사진을_찾을_수_있다() {
-//        // given
-//        profileImageTypeRepository.save(FEMALE_DEFAULT);
-//        profileImageTypeRepository.save(MALE_DEFAULT);
-//        Member male = memberRepository.save(스타일_등록_완료_남성_고도리);
-//
-//        // when
-//        var response = sut.readMemberGenderProfileImageTypes(male.getId());
-//
-//        // then
-//        assertThat(response.getProfileImageResponseTypes())
-//                        .hasSize(1)
-//                        .extracting("gender", "profileImageUrl")
-//                        .containsExactly(tuple("MALE", "남자사진"));
-//
-//    }
+    @Test
+    void 동일한_성별의_프로필_사진을_찾을_수_있다() {
+        // given
+        profileImageTypeRepository.save(FEMALE_DEFAULT);
+        profileImageTypeRepository.save(MALE_DEFAULT);
+        Member male = memberRepository.save(스타일_등록_완료_남성_고도리);
+
+        // when
+        var response = sut.readMemberGenderProfileImageTypes(male.getId());
+
+        // then
+        assertThat(response.getProfileImageResponseTypes())
+                .hasSize(1)
+                .extracting("gender", "profileImageUrl")
+                .containsExactly(tuple("MALE", "남자사진"));
+
+    }
+
+    @AfterEach
+    void tearDown() {
+        memberRepository.deleteAllInBatch();
+        profileImageTypeRepository.deleteAllInBatch();
+    }
 }

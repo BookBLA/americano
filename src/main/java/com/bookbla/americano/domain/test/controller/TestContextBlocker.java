@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Profile;
 
 @Aspect
 @Configuration
-@Profile("prod")
+@Profile("!dev & !local")
 public class TestContextBlocker {
 
     @Before("execution(* com.bookbla.americano.domain.test.controller.TestController.*(..))")

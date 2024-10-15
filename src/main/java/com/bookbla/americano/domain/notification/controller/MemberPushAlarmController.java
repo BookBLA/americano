@@ -2,14 +2,17 @@ package com.bookbla.americano.domain.notification.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
+import com.bookbla.americano.domain.notification.controller.dto.response.MemberPushAlarmReadResponses;
 import com.bookbla.americano.domain.notification.controller.dto.response.PushAlarmSettingResponse;
 import com.bookbla.americano.domain.notification.controller.dto.request.PushAlarmSettingCreateRequest;
-import com.bookbla.americano.domain.notification.controller.dto.response.MemberPushAlarmReadResponse;
+import com.bookbla.americano.domain.notification.controller.dto.response.MemberPushAlarmResponse;
 import com.bookbla.americano.domain.notification.service.MemberPushAlarmService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,11 +31,13 @@ public class MemberPushAlarmController {
 
     @Operation(summary = "해당 회원의 푸시 알림 조회 API")
     @GetMapping
-    public ResponseEntity<MemberPushAlarmReadResponse> readPushAlarm(
-        @Parameter(hidden = true) @User LoginUser loginUser) {
-        MemberPushAlarmReadResponse memberPushAlarmReadResponse = memberPushAlarmService.readPushAlarm(
-            loginUser.getMemberId());
-        return ResponseEntity.ok(memberPushAlarmReadResponse);
+    public ResponseEntity<MemberPushAlarmReadResponses> readPushAlarmPageable(
+        @Parameter(hidden = true) @User LoginUser loginUser,
+        Pageable pageable) {
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
+        MemberPushAlarmReadResponses readResponses = memberPushAlarmService.readPushAlarms(
+            loginUser.getMemberId(), pageRequest);
+        return ResponseEntity.ok(readResponses);
     }
 
     @Operation(summary = "해당 회원의 푸시 알림 1개 삭제 API")
