@@ -163,22 +163,7 @@ public class InvitationService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         MemberModal modal = member.getMemberModal();
 
-        String invitedRewardStatus = "NONE";
-
-        if (modal.isFemaleInvitedRewardNotGiven()) {
-            modal.updateFemaleInvitedRewardStatusToComplete();
-            invitedRewardStatus = "FEMALE";
-        }
-
-        if (modal.isMaleInvitedRewardNotGiven()) {
-            modal.updateMaleInvitedRewardStatusToComplete();
-            invitedRewardStatus = "MALE";
-        }
-
-        if (modal.hasFestivalInvitationReward()) {
-            modal.completeFestivalInvitationModal();
-            invitedRewardStatus = "FESTIVAL";
-        }
+        String invitedRewardStatus = modal.getMemberInvitedRewardStatus();
 
         if (modal.isInvitingRewardNotGiven()) {
             Long invitedMemberId = modal.getInvitedMemberId();

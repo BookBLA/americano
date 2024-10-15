@@ -110,4 +110,23 @@ public class MemberModal {
     public boolean isMaleInvitedRewardNotGiven() {
         return maleInvitedRewardStatus == InvitationStatus.BOOKMARK;
     }
+
+    public String getMemberInvitedRewardStatus() {
+        if (isFemaleInvitedRewardNotGiven()) {
+            updateFemaleInvitedRewardStatusToComplete();
+            return "FEMALE";
+        }
+
+        if (isMaleInvitedRewardNotGiven()) {
+            updateMaleInvitedRewardStatusToComplete();
+            return "MALE";
+        }
+
+        if (hasFestivalInvitationReward()) {
+            completeFestivalInvitationModal();
+            return "FESTIVAL";
+        }
+
+        return "NONE";
+    }
 }
