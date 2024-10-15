@@ -43,6 +43,14 @@ public class AdminVerificationService {
         memberProfile.updateStudentIdImageStatus(status);
 
 //        checkInitialMemberApprove(member);
+        memberRepository.save(member);
+
+        if (member.getMemberStatus().equals(MemberStatus.COMPLETED)) {
+            MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(member.getId())
+                    .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
+            memberBookmark.addStudentIdCertificationReward();
+            memberBookmarkRepository.save(memberBookmark);
+        }
     }
 
     private void updateVerification(
@@ -52,10 +60,6 @@ public class AdminVerificationService {
         if (status.isDone()) {
             memberProfile.updateStudentIdImageUrl(memberVerify.getContents());
             memberVerify.success(dto.getReason());
-//            MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(member.getId())
-//                    .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
-//            memberBookmark.addStudentIdCertificationReward();
-
             member.updateMemberStatus(MemberStatus.COMPLETED, LocalDateTime.now());
             alarmService.sendPushAlarm(member, PushAlarmForm.ADMIN_VERIFICATION_ACCEPT);
             return;
