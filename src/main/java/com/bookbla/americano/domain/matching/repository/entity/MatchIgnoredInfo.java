@@ -10,6 +10,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Table(indexes = @Index(name = "FKccqmgfg95qj23bq2pqnkqvgi6", columnList = "member_matching_id"))
 public class MatchIgnoredInfo extends BaseEntity {
 
     @Id

@@ -30,6 +30,11 @@ import static com.bookbla.americano.domain.member.enums.StudentIdImageStatus.DON
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(indexes = {
+        @Index(name = "unique_name", columnList = "name", unique = true),
+        @Index(name = "fk_member_school_id", columnList = "school_id"),
+        @Index(name = "FKjduo6f8429v8a2wuot3reysdb", columnList = "profile_image_type_id")
+})
 public class Member extends BaseEntity {
 
     @Id

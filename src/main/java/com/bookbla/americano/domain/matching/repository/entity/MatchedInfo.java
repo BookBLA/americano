@@ -9,6 +9,11 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Table(indexes = {
+        @Index(name = "unique_member_matched", columnList = "memberId, matchedMemberId, matchedMemberBookId", unique = true),
+        @Index(name = "FKoswu6ams89x3mriyep1h3bul2", columnList = "member_matching_id")
+})
+
 public class MatchedInfo {
 
     @Id

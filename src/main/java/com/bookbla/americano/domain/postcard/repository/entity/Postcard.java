@@ -6,15 +6,9 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.postcard.exception.PostcardExceptionType;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+
+import javax.persistence.*;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,6 +24,12 @@ import static com.bookbla.americano.domain.postcard.enums.PostcardStatus.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(indexes = {
+        @Index(name = "FK110aaukm6icyrede4nnhtmqb9", columnList = "receive_member_id"),
+        @Index(name = "FKe5pcc9m365ciq2hqrc4sb2ykj", columnList = "send_member_id"),
+        @Index(name = "FKnn1dvepdrg3dg9i7f7s9nanig", columnList = "postcard_type_id"),
+        @Index(name = "FKq0q02u96fi32bjwk7xuavaxxx", columnList = "receive_member_book_id")
+})
 public class Postcard extends BaseEntity {
 
     @Id

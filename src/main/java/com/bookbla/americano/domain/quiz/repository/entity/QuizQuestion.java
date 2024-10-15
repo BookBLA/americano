@@ -4,14 +4,8 @@ import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import com.bookbla.americano.domain.quiz.enums.AnswerChoice;
 import com.bookbla.americano.domain.quiz.enums.CorrectStatus;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+
+import javax.persistence.*;
 
 import lombok.*;
 
@@ -20,6 +14,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(indexes = @Index(name = "FKgtfj8o46xx37l4dhd42gf119j", columnList = "member_book_id"))
 public class QuizQuestion extends BaseEntity {
 
     @Id

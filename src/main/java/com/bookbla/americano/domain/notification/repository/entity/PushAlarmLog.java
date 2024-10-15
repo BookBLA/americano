@@ -3,12 +3,9 @@ package com.bookbla.americano.domain.notification.repository.entity;
 import com.bookbla.americano.base.entity.BaseEntity;
 import com.bookbla.americano.domain.notification.enums.PushAlarmStatus;
 import com.bookbla.americano.domain.notification.enums.PushAlarmType;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+
+import javax.persistence.*;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(indexes = @Index(name = "FK1tvgwfdnfpl6u9wwmft5v38mr", columnList = "memberId"))
 public class PushAlarmLog extends BaseEntity {
 
     @Id
