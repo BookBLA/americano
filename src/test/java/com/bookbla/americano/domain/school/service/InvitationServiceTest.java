@@ -225,12 +225,46 @@ class InvitationServiceTest {
         }
 
         @Test
-        void 초대되었다면_초대보상을_받을_수_있다() {
+        void 남성_회원이_초대됐다면_초대된_회원_보상_남성으로_반환한다() {
             // given
             Member man1 = memberRepository.save(스타일_등록_완료_남성_고도리);
             Member man2 = memberRepository.save(프로필_등록_완료_남성_리준희);
-            MemberBookmark man1MemberBookmark = memberBookmarkRepository.save(MemberBookmark.builder().member(man1).build());
-            MemberBookmark man2MemberBookmark = memberBookmarkRepository.save(MemberBookmark.builder().member(man2).build());
+            memberBookmarkRepository.save(MemberBookmark.builder().member(man1).build());
+            memberBookmarkRepository.save(MemberBookmark.builder().member(man2).build());
+
+            sut.entryInvitationCode(man2.getId(), new InvitationCodeEntryRequest("고도리초대코드"));
+
+            // when
+            var response = sut.getInvitationRewardStatus(man2.getId());
+
+            // then
+            assertThat(response.getInvitedRewardStatus()).isEqualTo("MALE");
+        }
+
+        @Test
+        void 여성_회원이_초대됐다면_초대된_회원_보상_여성으로_반환한다() {
+            // given
+            Member invitingMember = memberRepository.save(스타일_등록_완료_남성_고도리);
+            Member invitedFemaleMember = memberRepository.save(프로필_등록_완료_여성_김밤비);
+            memberBookmarkRepository.save(MemberBookmark.builder().member(invitingMember).build());
+            memberBookmarkRepository.save(MemberBookmark.builder().member(invitedFemaleMember).build());
+
+            sut.entryInvitationCode(invitedFemaleMember.getId(), new InvitationCodeEntryRequest("고도리초대코드"));
+
+            // when
+            var response = sut.getInvitationRewardStatus(invitedFemaleMember.getId());
+
+            // then
+            assertThat(response.getInvitedRewardStatus()).isEqualTo("FEMALE");
+        }
+
+        @Test
+        void 여성_회원이_초대됐다면_여성_초대_보상을_받을_수_있다() {
+            // given
+            Member invitingManMember = memberRepository.save(스타일_등록_완료_남성_고도리);
+            Member man2 = memberRepository.save(프로필_등록_완료_남성_리준희);
+            memberBookmarkRepository.save(MemberBookmark.builder().member(invitingManMember).build());
+            memberBookmarkRepository.save(MemberBookmark.builder().member(man2).build());
 
             // when
             sut.entryInvitationCode(man2.getId(), new InvitationCodeEntryRequest("고도리초대코드"));
@@ -238,7 +272,7 @@ class InvitationServiceTest {
 
             // then
             assertThat(response.getInvitingRewardStatus()).isFalse();
-            assertThat(response.getInvitedRewardStatus()).isEqualTo("MEMBER");
+            assertThat(response.getInvitedRewardStatus()).isEqualTo("MALE");
             assertThat(response.getInvitedMembersGender()).isNull();
         }
 
