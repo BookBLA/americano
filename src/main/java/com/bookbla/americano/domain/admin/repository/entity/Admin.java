@@ -29,7 +29,7 @@ public class Admin extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, name = "user_id")
     private String userId;
 
     private String password;
