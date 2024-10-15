@@ -32,6 +32,7 @@ import com.bookbla.americano.domain.postcard.service.dto.response.PostcardFromRe
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardToResponse;
 import com.bookbla.americano.domain.postcard.service.dto.response.PostcardTypeResponse;
 import com.bookbla.americano.domain.postcard.service.dto.response.SendPostcardResponse;
+import com.bookbla.americano.domain.sendbird.service.SendbirdService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +46,8 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 public class PostcardService {
+
+    private final SendbirdService sendbirdService;
 
     private final PostcardRepository postcardRepository;
     private final MemberRepository memberRepository;
@@ -164,6 +167,10 @@ public class PostcardService {
         }
         MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(memberId)
                 .orElseThrow(() -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
+
+        String channelUrl = sendbirdService.createSendbirdGroupChannel(PostcardReadResponse.of(postcard));
+        sendbirdService.createSendbirdMetadata(PostcardReadResponse.of(postcard), channelUrl);
+        sendbirdService.sendEntryMessage(PostcardReadResponse.of(postcard), channelUrl);
 
         memberBookmark.readPostcard();
         updatePostcardStatus(memberId, postcardId, PostcardStatus.READ);

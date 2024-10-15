@@ -26,7 +26,6 @@ import java.util.List;
 public class PostcardController {
 
     private final PostcardService postcardService;
-    private final SendbirdService sendbirdService;
 
     @Operation(summary = "보낸 엽서 조회", description = "사용자가 보낸 엽서 조회")
     @GetMapping("/from")
@@ -47,9 +46,6 @@ public class PostcardController {
     public ResponseEntity<PostcardReadResponse> usePostcard(@Parameter(hidden = true) @User LoginUser loginUser,
                                             @PathVariable Long postcardId) {
         PostcardReadResponse postcardReadResponse = postcardService.readMemberPostcard(loginUser.getMemberId(), postcardId);
-        String channelUrl = sendbirdService.createSendbirdGroupChannel(postcardReadResponse);
-        sendbirdService.createSendbirdMetadata(postcardReadResponse, channelUrl);
-        sendbirdService.sendEntryMessage(postcardReadResponse, channelUrl);
         return ResponseEntity.ok(postcardReadResponse);
     }
 
