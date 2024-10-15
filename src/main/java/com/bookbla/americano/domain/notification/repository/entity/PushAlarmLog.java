@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(indexes = @Index(name = "FK_Member_PushAlarmLog", columnList = "memberId"))
 public class PushAlarmLog extends BaseEntity {
 
     @Id
