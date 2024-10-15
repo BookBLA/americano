@@ -218,12 +218,12 @@ public class SendbirdService {
 
         String userId = postcardReadResponse.getSendMemberId().toString();
 
-        SendMessageData sendMessageData1 = new SendMessageData()
+        SendMessageData bookTitleMessage = new SendMessageData()
                 .userId(userId)
                 .message("《" + book.getTitle() + "》")
                 .messageType("MESG");   // 일반 메시지
 
-        SendMessageData sendMessageData2 = new SendMessageData()
+        SendMessageData replyMessage = new SendMessageData()
                 .userId(userId)
                 .message(postcardReadResponse.getMemberReply())
                 .messageType("MESG");
@@ -231,12 +231,12 @@ public class SendbirdService {
         try {
             messageApi.sendMessage(CHANNEL_TYPE, channelUrl)
                     .apiToken(apiToken)
-                    .sendMessageData(sendMessageData1)
+                    .sendMessageData(bookTitleMessage)
                     .execute();
 
             messageApi.sendMessage(CHANNEL_TYPE, channelUrl)
                     .apiToken(apiToken)
-                    .sendMessageData(sendMessageData2)
+                    .sendMessageData(replyMessage)
                     .execute();
         } catch (ApiException e) {
             deleteSendbirdGroupChannel(channelUrl);
