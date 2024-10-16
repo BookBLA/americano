@@ -16,7 +16,6 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBook;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -50,9 +49,12 @@ public class MemberMatchingService {
                 .orElseGet(() -> memberMatchingRepository.save(MemberMatching.of(member)));
 
         if (memberMatching.hasCurrentMatchedInfo()) {
+            if(memberMatching.getIsInvitationCard()){
+                return MemberIntroResponse.showInvitationCard();
+            }
             MatchedInfo matchedInfo = getMatchedInfo(memberId, memberMatching);
 
-            return buildMemberIntroResponse(matchedInfo, memberMatching);
+            return buildMemberIntroResponseWithMatchedInfo(matchedInfo, memberMatching);
         }
 
         saveRecommendationMatches(memberId);
@@ -66,7 +68,7 @@ public class MemberMatchingService {
             memberMatching.updateInvitationCard(true);
             return MemberIntroResponse.showInvitationCard();
         }
-        MemberIntroResponse memberIntroResponse = buildMemberIntroResponse(matchedInfo, memberMatching);
+        MemberIntroResponse memberIntroResponse = buildMemberIntroResponseWithMatchedInfo(matchedInfo, memberMatching);
         updateCurrentMatchedInfo(memberMatching, memberIntroResponse.getMemberId(), memberIntroResponse.getMemberBookId());
         return memberIntroResponse;
     }
@@ -85,7 +87,9 @@ public class MemberMatchingService {
             return getHomeMatch(memberId);
         }
         if (!memberMatching.hasCurrentMatchedInfo()) {
-            return getHomeMatch(memberId);
+            MemberIntroResponse introResponse = getHomeMatch(memberId);
+            memberMatching.updateInvitationCard(false);
+            return buildMemberIntroResponseWithMemberIntroResponse(introResponse, memberMatching);
         }
 
         Long refreshMemberId = memberMatching.getCurrentMatchedMemberId();
@@ -105,14 +109,27 @@ public class MemberMatchingService {
         updateCurrentMatchedInfo(memberMatching, matchedInfo.getMatchedMemberId(), matchedInfo.getMatchedMemberBookId());
         memberMatching.updateInvitationCard(false);
 
-        return buildMemberIntroResponse(matchedInfo, memberMatching);
+        return buildMemberIntroResponseWithMatchedInfo(matchedInfo, memberMatching);
     }
 
-    private MemberIntroResponse buildMemberIntroResponse(MatchedInfo matchedInfo, MemberMatching memberMatching) {
+    private MemberIntroResponse buildMemberIntroResponseWithMatchedInfo(MatchedInfo matchedInfo, MemberMatching memberMatching) {
         if (matchedInfo == null) return MemberIntroResponse.empty();
 
         Member matchedMember = memberRepository.getByIdOrThrow(matchedInfo.getMatchedMemberId());
         MemberBook matchedMemberBook = memberBookRepository.getByIdOrThrow(matchedInfo.getMatchedMemberBookId());
+
+        if (matchedMember == null || matchedMemberBook == null) {
+            throw new BaseException(MemberMatchingExceptionType.VALID_MATCHING_INFO);
+        }
+
+        return MemberIntroResponse.from(matchedMember, matchedMemberBook, memberMatching);
+    }
+
+    private MemberIntroResponse buildMemberIntroResponseWithMemberIntroResponse(MemberIntroResponse introResponse, MemberMatching memberMatching) {
+        if (introResponse == null) return MemberIntroResponse.empty();
+
+        Member matchedMember = memberRepository.getByIdOrThrow(introResponse.getMemberId());
+        MemberBook matchedMemberBook = memberBookRepository.getByIdOrThrow(introResponse.getMemberBookId());
 
         if (matchedMember == null || matchedMemberBook == null) {
             throw new BaseException(MemberMatchingExceptionType.VALID_MATCHING_INFO);
