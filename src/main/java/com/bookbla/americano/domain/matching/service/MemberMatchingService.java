@@ -66,6 +66,7 @@ public class MemberMatchingService {
             memberMatching.updateInvitationCard(true);
             return MemberIntroResponse.showInvitationCard();
         }
+        memberMatching.updateInvitationCard(false);
         MemberIntroResponse memberIntroResponse = buildMemberIntroResponse(matchedInfo, memberMatching);
         updateCurrentMatchedInfo(memberMatching, memberIntroResponse.getMemberId(), memberIntroResponse.getMemberBookId());
         return memberIntroResponse;
