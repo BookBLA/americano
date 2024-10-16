@@ -27,8 +27,7 @@ import java.util.Map;
 public class SendbirdService {
 
     // TODO: SendbirdService는 센드버드에 관련된 역할만 하도록 변경
-    private static final int USER_NOT_FOUND = 400201;
-    private static final int RESOURCE_NOT_FOUND = 400301;
+    private static final int USER_NOT_FOUND = 400;
     private static final String CHANNEL_TYPE = "group_channels";
     private static final String ACCEPT_STATUS = "yet";
     private static final String MESSAGE_TYPE= "MESG";
@@ -75,16 +74,15 @@ public class SendbirdService {
             sendbirdUserApi.viewUserById(userId)
                     .apiToken(apiToken)
                     .execute();
+            return createSendbirdUserToken(member);
         } catch (ApiException e) {
-            if (e.getCode() == RESOURCE_NOT_FOUND || e.getCode() == USER_NOT_FOUND) {
+            if (e.getCode() == USER_NOT_FOUND) {
                 createSendbirdUser(member);
                 return createSendbirdUserToken(member);
             } else {
                 throw new SendbirdException(e);
             }
         }
-
-        return createSendbirdUserToken(member);
     }
 
     private void createSendbirdUser(Member member) {
