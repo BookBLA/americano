@@ -29,6 +29,7 @@ import java.util.Map;
 @Transactional
 public class SendbirdService {
 
+    // TODO: SendbirdService는 센드버드에 관련된 역할만 하도록 변경
     private static final int USER_NOT_FOUND = 400201;
     private static final int RESOURCE_NOT_FOUND = 400301;
     private static final String CHANNEL_TYPE = "group_channels";
@@ -36,7 +37,7 @@ public class SendbirdService {
     private static final String MESSAGE_TYPE= "MESG";
 
 
-    private final UserApi userApi;
+    private final UserApi sendbirdUserApi;
     private final String apiToken;
     private final GroupChannelApi groupChannelApi;
     private final MetadataApi metadataApi;
@@ -53,7 +54,7 @@ public class SendbirdService {
         defaultClient.setBasePath("https://api-" + appId + ".sendbird.com");
 
         this.apiToken = apiToken;
-        this.userApi = new UserApi(defaultClient);
+        this.sendbirdUserApi = new UserApi(defaultClient);
         this.groupChannelApi = new GroupChannelApi(defaultClient);
         this.metadataApi = new MetadataApi(defaultClient);
         this.messageApi = new MessageApi(defaultClient);
@@ -72,22 +73,22 @@ public class SendbirdService {
         }
 
         try {
-            userApi.viewUserById(userId)
+            sendbirdUserApi.viewUserById(userId)
                     .apiToken(apiToken)
                     .execute();
         } catch (ApiException e) {
             if (e.getCode() == RESOURCE_NOT_FOUND || e.getCode() == USER_NOT_FOUND) {
-                createUser(member);
-                return createUserToken(member);
+                createSendbirdUser(member);
+                return createSendbirdUserToken(member);
             } else {
                 throw new SendbirdException(e);
             }
         }
 
-        return createUserToken(member);
+        return createSendbirdUserToken(member);
     }
 
-    private void createUser(Member member) {
+    private void createSendbirdUser(Member member) {
         String userId = member.getId().toString();
         String imageUrl = member.getMemberStyle().getProfileImageType().getImageUrl();
         CreateUserData createUserData = new CreateUserData()
@@ -96,7 +97,7 @@ public class SendbirdService {
                 .profileUrl(imageUrl);
 
         try {
-            userApi.createUser()
+            sendbirdUserApi.createUser()
                     .apiToken(apiToken)
                     .createUserData(createUserData)
                     .execute();
@@ -105,12 +106,12 @@ public class SendbirdService {
         }
     }
 
-    private SendbirdResponse createUserToken(Member member) {
+    private SendbirdResponse createSendbirdUserToken(Member member) {
         String userId = member.getId().toString();
         CreateUserTokenData createUserTokenData = new CreateUserTokenData();
 
         try {
-            CreateUserTokenResponse response = userApi.createUserToken(userId)
+            CreateUserTokenResponse response = sendbirdUserApi.createUserToken(userId)
                     .apiToken(apiToken)
                     .createUserTokenData(createUserTokenData)
                     .execute();
@@ -129,7 +130,7 @@ public class SendbirdService {
             UpdateUserByIdData updateUserByIdData = new UpdateUserByIdData()
                     .nickname(newNickname);
 
-            userApi.updateUserById(userId)
+            sendbirdUserApi.updateUserById(userId)
                     .apiToken(apiToken)
                     .updateUserByIdData(updateUserByIdData)
                     .execute();
@@ -149,7 +150,7 @@ public class SendbirdService {
             UpdateUserByIdData updateUserByIdData = new UpdateUserByIdData()
                     .profileUrl(newProfileUrl);
 
-            userApi.updateUserById(userId)
+            sendbirdUserApi.updateUserById(userId)
                     .apiToken(apiToken)
                     .updateUserByIdData(updateUserByIdData)
                     .execute();
@@ -164,7 +165,7 @@ public class SendbirdService {
         String userId = memberId.toString();  // memberId를 userId로 사용
 
         // Sendbird에서 해당 userId로 유저 조회
-        userApi.viewUserById(userId)
+        sendbirdUserApi.viewUserById(userId)
                 .apiToken(apiToken)
                 .execute();
         // 조회가 성공하면 유저가 존재함
