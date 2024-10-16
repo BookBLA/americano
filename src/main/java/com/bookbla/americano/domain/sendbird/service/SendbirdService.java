@@ -1,38 +1,68 @@
 package com.bookbla.americano.domain.sendbird.service;
 
-import com.bookbla.americano.domain.sendbird.controller.dto.SendbirdResponse;
+import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.book.repository.entity.Book;
+import com.bookbla.americano.domain.member.exception.MemberBookExceptionType;
+import com.bookbla.americano.domain.member.repository.MemberBookRepository;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardReadResponse;
+import com.bookbla.americano.domain.sendbird.controller.dto.response.SendbirdResponse;
+import com.bookbla.americano.domain.sendbird.exception.SendbirdException;
 import org.openapitools.client.model.*;
 import org.sendbird.client.ApiClient;
 import org.sendbird.client.ApiException;
 import org.sendbird.client.Configuration;
+import org.sendbird.client.api.GroupChannelApi;
+import org.sendbird.client.api.MessageApi;
+import org.sendbird.client.api.MetadataApi;
 import org.sendbird.client.api.UserApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
 public class SendbirdService {
 
-    private final UserApi userApi;
+    // TODO: SendbirdService는 센드버드에 관련된 역할만 하도록 변경
+    private static final int USER_NOT_FOUND = 400201;
+    private static final int RESOURCE_NOT_FOUND = 400301;
+    private static final String CHANNEL_TYPE = "group_channels";
+    private static final String ACCEPT_STATUS = "yet";
+    private static final String MESSAGE_TYPE= "MESG";
+
+
+    private final UserApi sendbirdUserApi;
     private final String apiToken;
+    private final GroupChannelApi groupChannelApi;
+    private final MetadataApi metadataApi;
+    private final MessageApi messageApi;
     private final MemberRepository memberRepository;
+    private final MemberBookRepository memberBookRepository;
+
 
     public SendbirdService(@Value("${sendbird.app.id}") String appId,
                            @Value("${sendbird.api.token}") String apiToken,
-                           MemberRepository memberRepository) {
+                           MemberRepository memberRepository,
+                           MemberBookRepository memberBookRepository) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("https://api-" + appId + ".sendbird.com");
 
-        this.userApi = new UserApi(defaultClient);
         this.apiToken = apiToken;
+        this.sendbirdUserApi = new UserApi(defaultClient);
+        this.groupChannelApi = new GroupChannelApi(defaultClient);
+        this.metadataApi = new MetadataApi(defaultClient);
+        this.messageApi = new MessageApi(defaultClient);
         this.memberRepository = memberRepository;
+        this.memberBookRepository = memberBookRepository;
     }
 
-    public SendbirdResponse createOrView(Long memberId) throws ApiException {
+    public SendbirdResponse createOrView(Long memberId) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         String userId = member.getId().toString();
 
@@ -43,48 +73,53 @@ public class SendbirdService {
         }
 
         try {
-            userApi.viewUserById(userId)
+            sendbirdUserApi.viewUserById(userId)
                     .apiToken(apiToken)
                     .execute();
         } catch (ApiException e) {
-            // USER_NOT_FOUND 에러코드 400301
-            if (e.getCode() == 400301) {
-                createUser(member);
-                return createUserToken(member);
+            if (e.getCode() == RESOURCE_NOT_FOUND || e.getCode() == USER_NOT_FOUND) {
+                createSendbirdUser(member);
+                return createSendbirdUserToken(member);
             } else {
-                throw e;
+                throw new SendbirdException(e);
             }
         }
 
-        return createUserToken(member);
+        return createSendbirdUserToken(member);
     }
 
-    private void createUser(Member member) throws ApiException {
+    private void createSendbirdUser(Member member) {
         String userId = member.getId().toString();
         String imageUrl = member.getMemberStyle().getProfileImageType().getImageUrl();
         CreateUserData createUserData = new CreateUserData()
                 .userId(userId) //필수
                 .nickname(member.getMemberProfile().getName()) // 필수
-                .profileUrl(imageUrl)
-                ;
+                .profileUrl(imageUrl);
 
-        userApi.createUser()
-                .apiToken(apiToken)
-                .createUserData(createUserData)
-                .execute();
+        try {
+            sendbirdUserApi.createUser()
+                    .apiToken(apiToken)
+                    .createUserData(createUserData)
+                    .execute();
+        } catch (ApiException e) {
+            throw new SendbirdException(e);
+        }
     }
 
-    private SendbirdResponse createUserToken(Member member) throws ApiException {
+    private SendbirdResponse createSendbirdUserToken(Member member) {
         String userId = member.getId().toString();
         CreateUserTokenData createUserTokenData = new CreateUserTokenData();
-        CreateUserTokenResponse response = userApi.createUserToken(userId)
-                .apiToken(apiToken)
-                .createUserTokenData(createUserTokenData)
-                .execute();
 
-        // Sendbird에서 생성된 토큰을 해당 사용자의 Member 엔티티에 저장
-        member.updateSendbirdToken(response.getToken());
-        return SendbirdResponse.of(member ,response.getToken());
+        try {
+            CreateUserTokenResponse response = sendbirdUserApi.createUserToken(userId)
+                    .apiToken(apiToken)
+                    .createUserTokenData(createUserTokenData)
+                    .execute();
+            member.updateSendbirdToken(response.getToken());
+            return SendbirdResponse.of(member, response.getToken());
+        } catch (ApiException e) {
+            throw new SendbirdException(e);
+        }
     }
 
     public void updateSendbirdNickname(Long memberId, String newNickname) {
@@ -95,14 +130,12 @@ public class SendbirdService {
             UpdateUserByIdData updateUserByIdData = new UpdateUserByIdData()
                     .nickname(newNickname);
 
-            userApi.updateUserById(userId)
+            sendbirdUserApi.updateUserById(userId)
                     .apiToken(apiToken)
                     .updateUserByIdData(updateUserByIdData)
                     .execute();
         } catch (ApiException e) {
-            throw new RuntimeException("Sendbird 유저 닉네임 업데이트 실패: " + e.getMessage(), e);
-        } catch (Exception e) {
-            throw new RuntimeException("Unexpected error while updating Sendbird user", e);
+            throw new SendbirdException(e);
         }
     }
 
@@ -115,25 +148,111 @@ public class SendbirdService {
             UpdateUserByIdData updateUserByIdData = new UpdateUserByIdData()
                     .profileUrl(newProfileUrl);
 
-            userApi.updateUserById(userId)
+            sendbirdUserApi.updateUserById(userId)
                     .apiToken(apiToken)
                     .updateUserByIdData(updateUserByIdData)
                     .execute();
         } catch (ApiException e) {
-            throw new RuntimeException("Sendbird 유저 프로필 사진 업데이트 실패: " + e.getMessage(), e);
-        } catch (Exception e) {
-            throw new RuntimeException("Unexpected error while updating Sendbird user", e);
+            throw new SendbirdException(e);
         }
     }
 
     public boolean isUserExists(Long memberId) throws ApiException {
         String userId = memberId.toString();  // memberId를 userId로 사용
 
-            // Sendbird에서 해당 userId로 유저 조회
-            userApi.viewUserById(userId)
+        // Sendbird에서 해당 userId로 유저 조회
+        sendbirdUserApi.viewUserById(userId)
+                .apiToken(apiToken)
+                .execute();
+        // 조회가 성공하면 유저가 존재함
+        return true;
+    }
+
+    public String createSendbirdGroupChannel(PostcardReadResponse postcardReadResponse) {
+        GcCreateChannelData channelData = new GcCreateChannelData();
+
+        List<String> userIds = List.of(
+                postcardReadResponse.getSendMemberId().toString(),
+                postcardReadResponse.getReceiveMemberId().toString());
+
+        channelData.setUserIds(userIds);
+        channelData.setIsDistinct(true);
+        channelData.setIsPublic(false);
+
+        try {
+            SendBirdGroupChannel groupChannel = groupChannelApi.gcCreateChannel()
+                    .apiToken(apiToken)
+                    .gcCreateChannelData(channelData)
+                    .execute();
+            return groupChannel.getChannelUrl();
+        } catch (ApiException e) {
+            throw new SendbirdException(e);
+        }
+    }
+
+    public void createSendbirdMetadata(PostcardReadResponse postcardReadResponse, String channelUrl){
+
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("sendMemberId", postcardReadResponse.getSendMemberId().toString());
+        metadata.put("sendMemberName", postcardReadResponse.getSendMemberName());
+        metadata.put("targetMemberId", postcardReadResponse.getReceiveMemberId().toString());
+        metadata.put("targetMemberBookId", postcardReadResponse.getReceiveMemberBookId().toString());
+        metadata.put("acceptStatus", ACCEPT_STATUS);
+
+        CreateChannelMetadataData createChannelMetadataData = new CreateChannelMetadataData()
+                .metadata(metadata);
+
+        try {
+            metadataApi.createChannelMetadata(CHANNEL_TYPE, channelUrl)
+                    .apiToken(apiToken)
+                    .createChannelMetadataData(createChannelMetadataData)
+                    .execute();
+        } catch (ApiException e) {
+            deleteSendbirdGroupChannel(channelUrl);
+            throw new SendbirdException(e);
+        }
+    }
+
+    public void sendEntryMessage(PostcardReadResponse postcardReadResponse, String channelUrl) {
+        Book book = memberBookRepository.findBookById(postcardReadResponse.getReceiveMemberBookId())
+                .orElseThrow(() -> new BaseException(MemberBookExceptionType.BOOK_NOT_FOUND));
+
+        String userId = postcardReadResponse.getSendMemberId().toString();
+
+        SendMessageData bookTitleMessage = new SendMessageData()
+                .userId(userId)
+                .message("《" + book.getTitle() + "》")
+                .messageType(MESSAGE_TYPE);
+
+        SendMessageData replyMessage = new SendMessageData()
+                .userId(userId)
+                .message(postcardReadResponse.getMemberReply())
+                .messageType(MESSAGE_TYPE);
+
+        try {
+            messageApi.sendMessage(CHANNEL_TYPE, channelUrl)
+                    .apiToken(apiToken)
+                    .sendMessageData(bookTitleMessage)
+                    .execute();
+
+            messageApi.sendMessage(CHANNEL_TYPE, channelUrl)
+                    .apiToken(apiToken)
+                    .sendMessageData(replyMessage)
+                    .execute();
+        } catch (ApiException e) {
+            deleteSendbirdGroupChannel(channelUrl);
+            throw new SendbirdException(e);
+        }
+    }
+
+    public void deleteSendbirdGroupChannel(String channelUrl) {
+        try {
+            groupChannelApi.gcDeleteChannelByUrl(channelUrl)
                     .apiToken(apiToken)
                     .execute();
-            // 조회가 성공하면 유저가 존재함
-            return true;
-}
+        } catch (ApiException e) {
+            throw new SendbirdException(e);
+
+        }
+    }
 }
