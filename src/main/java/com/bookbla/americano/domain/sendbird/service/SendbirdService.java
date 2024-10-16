@@ -258,6 +258,21 @@ public class SendbirdService {
         }
     }
 
+    public void unFreezeSendbirdGroupChannel(String channelUrl) {
+        GcFreezeChannelData unFreezeChannelData = new GcFreezeChannelData();
+        unFreezeChannelData.freeze(false);
+        unFreezeChannelData.channelUrl(channelUrl);
+
+        try {
+            moderationApi.gcFreezeChannel(channelUrl)
+                    .apiToken(apiToken)
+                    .gcFreezeChannelData(unFreezeChannelData)
+                    .execute();
+        } catch (ApiException e) {
+            throw new SendbirdException(e);
+        }
+    }
+
     public void deleteSendbirdGroupChannel(String channelUrl) {
         try {
             groupChannelApi.gcDeleteChannelByUrl(channelUrl)
