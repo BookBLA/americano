@@ -49,10 +49,6 @@ public class MemberMatchingService {
         MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
                 .orElseGet(() -> memberMatchingRepository.save(MemberMatching.of(member)));
 
-        if (memberMatching.getIsInvitationCard()) {
-            return MemberIntroResponse.empty();
-        }
-
         if (memberMatching.hasCurrentMatchedInfo()) {
             MatchedInfo matchedInfo = getMatchedInfo(memberId, memberMatching);
 
@@ -68,7 +64,7 @@ public class MemberMatchingService {
         }
         if (memberMatching.mealInvitationCard()) {
             memberMatching.updateInvitationCard(true);
-            return MemberIntroResponse.isCardStatus(memberMatching.getIsInvitationCard());
+            return MemberIntroResponse.showInvitationCard();
         }
         MemberIntroResponse memberIntroResponse = buildMemberIntroResponse(matchedInfo, memberMatching);
         updateCurrentMatchedInfo(memberMatching, memberIntroResponse.getMemberId(), memberIntroResponse.getMemberBookId());
@@ -85,10 +81,10 @@ public class MemberMatchingService {
         MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
 
-        if (!memberMatching.hasCurrentMatchedInfo()) {
+        if (memberMatching.mealInvitationCard()) {
             return getHomeMatch(memberId);
         }
-        if (memberMatching.mealInvitationCard()) {
+        if (!memberMatching.hasCurrentMatchedInfo()) {
             return getHomeMatch(memberId);
         }
 
