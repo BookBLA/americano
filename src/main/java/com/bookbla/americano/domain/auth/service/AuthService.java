@@ -1,12 +1,14 @@
 package com.bookbla.americano.domain.auth.service;
 
 import com.bookbla.americano.base.jwt.JwtProvider;
+import com.bookbla.americano.domain.admin.event.AdminNotificationEventListener;
 import com.bookbla.americano.domain.auth.controller.dto.request.LoginRequest;
 import com.bookbla.americano.domain.auth.controller.dto.response.LoginResponse;
 import com.bookbla.americano.domain.auth.service.dto.OAuth2MemberResponse;
 import com.bookbla.americano.domain.member.enums.MemberType;
 import com.bookbla.americano.domain.member.repository.MemberRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
+import com.bookbla.americano.domain.member.service.dto.event.AdminNotificationEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -19,6 +21,7 @@ public class AuthService {
     private final OAuth2Providers oAuth2Providers;
     private final JwtProvider jwtProvider;
     private final TransactionTemplate transactionTemplate;
+    private final AdminNotificationEventListener adminNotificationEventListener;
 
     public LoginResponse login(LoginRequest loginRequest, String oAuthType) {
         MemberType memberType = MemberType.from(oAuthType);
@@ -33,6 +36,8 @@ public class AuthService {
     }
 
     private Member signUp(OAuth2MemberResponse oAuth2MemberResponse) {
-        return transactionTemplate.execute(action -> memberRepository.save(oAuth2MemberResponse.toMember()));
+        Member member = transactionTemplate.execute(action -> memberRepository.save(oAuth2MemberResponse.toMember()));
+        adminNotificationEventListener.sendMessage(new AdminNotificationEvent("신규 회원이 가입했습니다🎉", "memberId: " + member.getId().toString()));
+        return member;
     }
 }

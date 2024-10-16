@@ -1,10 +1,9 @@
-package com.bookbla.americano.domain.sendbird.controller.dto;
+package com.bookbla.americano.domain.sendbird.controller.dto.response;
 
 import com.bookbla.americano.domain.member.repository.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import org.openapitools.client.model.CreateUserTokenResponse;
 
 @Getter
 @AllArgsConstructor
