@@ -135,9 +135,7 @@ public class SendbirdService {
                     .updateUserByIdData(updateUserByIdData)
                     .execute();
         } catch (ApiException e) {
-            throw new RuntimeException("Sendbird 유저 닉네임 업데이트 실패: " + e.getMessage(), e);
-        } catch (Exception e) {
-            throw new RuntimeException("Unexpected error while updating Sendbird user", e);
+            throw new SendbirdException(e);
         }
     }
 
@@ -155,9 +153,7 @@ public class SendbirdService {
                     .updateUserByIdData(updateUserByIdData)
                     .execute();
         } catch (ApiException e) {
-            throw new RuntimeException("Sendbird 유저 프로필 사진 업데이트 실패: " + e.getMessage(), e);
-        } catch (Exception e) {
-            throw new RuntimeException("Unexpected error while updating Sendbird user", e);
+            throw new SendbirdException(e);
         }
     }
 
@@ -190,9 +186,7 @@ public class SendbirdService {
                     .execute();
             return groupChannel.getChannelUrl();
         } catch (ApiException e) {
-            throw new RuntimeException("Sendbird 그룹 채널 생성 에러: " + e.getMessage(), e);
-        } catch (Exception e) {
-            throw new RuntimeException("Unexpected error while creating Sendbird GroupChannel", e);
+            throw new SendbirdException(e);
         }
     }
 
@@ -215,10 +209,7 @@ public class SendbirdService {
                     .execute();
         } catch (ApiException e) {
             deleteSendbirdGroupChannel(channelUrl);
-            throw new RuntimeException("Sendbird 메타데이터 생성 에러: " + e.getMessage(), e);
-        } catch (Exception e) {
-            deleteSendbirdGroupChannel(channelUrl);
-            throw new RuntimeException("Unexpected error while creating Sendbird Metadata", e);
+            throw new SendbirdException(e);
         }
     }
 
@@ -231,7 +222,7 @@ public class SendbirdService {
         SendMessageData bookTitleMessage = new SendMessageData()
                 .userId(userId)
                 .message("《" + book.getTitle() + "》")
-                .messageType(MESSAGE_TYPE);   // 일반 메시지
+                .messageType(MESSAGE_TYPE);
 
         SendMessageData replyMessage = new SendMessageData()
                 .userId(userId)
@@ -250,10 +241,7 @@ public class SendbirdService {
                     .execute();
         } catch (ApiException e) {
             deleteSendbirdGroupChannel(channelUrl);
-            throw new RuntimeException("Sendbird 엽서 인사말 보내기 실패: "+ e.getMessage(), e);
-        } catch (Exception e) {
-            deleteSendbirdGroupChannel(channelUrl);
-            throw new RuntimeException("Unexpected error while sending Sendbird Message", e);
+            throw new SendbirdException(e);
         }
     }
 
@@ -263,9 +251,8 @@ public class SendbirdService {
                     .apiToken(apiToken)
                     .execute();
         } catch (ApiException e) {
-            throw new RuntimeException("Sendbird 그룹 채널 삭제 에러: " + e.getMessage(), e);
-        } catch (Exception e) {
-            throw new RuntimeException("Unexpected error while delete Sendbird GroupChannel", e);
+            throw new SendbirdException(e);
+
         }
     }
 }

@@ -8,7 +8,6 @@ import com.bookbla.americano.base.log.discord.DiscordAlarm;
 import com.bookbla.americano.base.response.ExceptionResponse;
 import com.bookbla.americano.domain.sendbird.exception.SendbirdException;
 import lombok.extern.slf4j.Slf4j;
-import org.sendbird.client.ApiException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +22,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import javax.servlet.http.HttpServletRequest;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -75,17 +76,34 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 
     @DiscordAlarm(level = LogLevel.WARN)
-    @ExceptionHandler(ApiException.class)
-    public ResponseEntity<SendbirdException> handleSendbirdApiException(HttpServletRequest request, ApiException e) {
+    @ExceptionHandler(SendbirdException.class)
+    public ResponseEntity<Map<String, Object>> handleSendbirdApiException(HttpServletRequest request, SendbirdException e) {
 
-        int errorCode = e.getCode();
-        String errorMessage = e.getMessage();
-        String responseBody = e.getResponseBody();
+        Map<String, Object> errorDetails = new HashMap<>();
+        errorDetails.put("isSuccess", false);
+        errorDetails.put("message", e.getMessage());
+        log.warn("Sendbird API 에러 - code: {}, message: {},  URI: {}", e.getCode(), e.getMessage(), request.getRequestURI());
 
-        log.warn("Sendbird API 에러 - code: {} message: {} responseBody: {} URI: {}", errorCode, errorMessage, responseBody, request.getRequestURI());
+        HttpStatus status = responseStatus(e.getCode());
 
-        SendbirdException sendbirdException = new SendbirdException(e);
+        return ResponseEntity.status(status).body(errorDetails);
+    }
 
-        return ResponseEntity.badRequest().body(sendbirdException);
+    // https://sendbird.com/docs/chat/platform-api/v3/error-codes
+    private HttpStatus responseStatus(int code) {
+        switch (code) {
+            case 400:
+                return HttpStatus.BAD_REQUEST;
+            case 403:
+                return HttpStatus.FORBIDDEN;
+            case 429:
+                return HttpStatus.TOO_MANY_REQUESTS;
+            case 500:
+                return HttpStatus.INTERNAL_SERVER_ERROR;
+            case 503:
+                return HttpStatus.SERVICE_UNAVAILABLE;
+            default:
+                return HttpStatus.INTERNAL_SERVER_ERROR;
+        }
     }
 }

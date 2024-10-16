@@ -6,7 +6,11 @@ import org.sendbird.client.ApiException;
 @Getter
 public class SendbirdException extends RuntimeException {
 
-    public SendbirdException(ApiException apiException) {
-        super(apiException.getMessage(), apiException);
+    private final int code;
+    private final String message;
+
+    public SendbirdException(ApiException e) {
+        this.code = e.getCode();
+        this.message = e.getMessage();
     }
 }
