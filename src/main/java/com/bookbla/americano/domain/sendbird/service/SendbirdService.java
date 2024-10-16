@@ -13,10 +13,7 @@ import org.openapitools.client.model.*;
 import org.sendbird.client.ApiClient;
 import org.sendbird.client.ApiException;
 import org.sendbird.client.Configuration;
-import org.sendbird.client.api.GroupChannelApi;
-import org.sendbird.client.api.MessageApi;
-import org.sendbird.client.api.MetadataApi;
-import org.sendbird.client.api.UserApi;
+import org.sendbird.client.api.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +39,7 @@ public class SendbirdService {
     private final GroupChannelApi groupChannelApi;
     private final MetadataApi metadataApi;
     private final MessageApi messageApi;
+    private final ModerationApi moderationApi;
     private final MemberRepository memberRepository;
     private final MemberBookRepository memberBookRepository;
 
@@ -58,6 +56,7 @@ public class SendbirdService {
         this.groupChannelApi = new GroupChannelApi(defaultClient);
         this.metadataApi = new MetadataApi(defaultClient);
         this.messageApi = new MessageApi(defaultClient);
+        this.moderationApi = new ModerationApi(defaultClient);
         this.memberRepository = memberRepository;
         this.memberBookRepository = memberBookRepository;
     }
@@ -238,6 +237,22 @@ public class SendbirdService {
             messageApi.sendMessage(CHANNEL_TYPE, channelUrl)
                     .apiToken(apiToken)
                     .sendMessageData(replyMessage)
+                    .execute();
+        } catch (ApiException e) {
+            deleteSendbirdGroupChannel(channelUrl);
+            throw new SendbirdException(e);
+        }
+    }
+
+    public void freezeSendbirdGroupChannel(String channelUrl) {
+        GcFreezeChannelData freezeChannelData = new GcFreezeChannelData();
+        freezeChannelData.freeze(true);
+        freezeChannelData.channelUrl(channelUrl);
+
+        try {
+            moderationApi.gcFreezeChannel(channelUrl)
+                    .apiToken(apiToken)
+                    .gcFreezeChannelData(freezeChannelData)
                     .execute();
         } catch (ApiException e) {
             deleteSendbirdGroupChannel(channelUrl);

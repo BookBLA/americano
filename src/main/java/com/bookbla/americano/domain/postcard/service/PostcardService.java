@@ -171,6 +171,7 @@ public class PostcardService {
         String channelUrl = sendbirdService.createSendbirdGroupChannel(PostcardReadResponse.of(postcard));
         sendbirdService.createSendbirdMetadata(PostcardReadResponse.of(postcard), channelUrl);
         sendbirdService.sendEntryMessage(PostcardReadResponse.of(postcard), channelUrl);
+        sendbirdService.freezeSendbirdGroupChannel(channelUrl);
 
         memberBookmark.readPostcard();
         updatePostcardStatus(memberId, postcardId, PostcardStatus.READ);
