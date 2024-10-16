@@ -41,16 +41,11 @@ public class AdminVerificationService {
         updateVerification(dto, status, memberVerify, member, memberProfile);
 
         memberProfile.updateStudentIdImageStatus(status);
-
-//        checkInitialMemberApprove(member);
         memberRepository.save(member);
 
-        if (member.getMemberStatus().equals(MemberStatus.COMPLETED)) {
-            MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(member.getId())
-                    .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
-            memberBookmark.addStudentIdCertificationReward();
-            memberBookmarkRepository.save(memberBookmark);
-        }
+        MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(member.getId())
+            .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
+        addCompletedMemberReward(member, memberBookmark);
     }
 
     private void updateVerification(
@@ -72,10 +67,10 @@ public class AdminVerificationService {
         alarmService.sendPushAlarm(member, PushAlarmForm.ADMIN_STUDENT_ID_IMAGE_REJECT);
     }
 
-    private void checkInitialMemberApprove(Member member) {
-        if (member.getMemberStatus().equals(MemberStatus.APPROVAL)) {
-            member.updateMemberStatus(MemberStatus.COMPLETED, LocalDateTime.now());
-            alarmService.sendPushAlarm(member, PushAlarmForm.ADMIN_VERIFICATION_ACCEPT);
+    private void addCompletedMemberReward(Member member, MemberBookmark memberBookmark) {
+        if (member.getMemberStatus().equals(MemberStatus.COMPLETED)) {
+            memberBookmark.addStudentIdCertificationReward();
+            memberBookmarkRepository.save(memberBookmark);
         }
     }
 }
