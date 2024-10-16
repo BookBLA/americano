@@ -49,6 +49,9 @@ public class MemberMatchingService {
                 .orElseGet(() -> memberMatchingRepository.save(MemberMatching.of(member)));
 
         if (memberMatching.hasCurrentMatchedInfo()) {
+            if(memberMatching.getIsInvitationCard()){
+                return MemberIntroResponse.showInvitationCard();
+            }
             MatchedInfo matchedInfo = getMatchedInfo(memberId, memberMatching);
 
             return buildMemberIntroResponseWithMatchedInfo(matchedInfo, memberMatching);
