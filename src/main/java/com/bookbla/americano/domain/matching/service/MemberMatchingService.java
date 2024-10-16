@@ -81,10 +81,10 @@ public class MemberMatchingService {
         MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
 
-        if (!memberMatching.hasCurrentMatchedInfo()) {
+        if (memberMatching.mealInvitationCard()) {
             return getHomeMatch(memberId);
         }
-        if (memberMatching.mealInvitationCard()) {
+        if (!memberMatching.hasCurrentMatchedInfo()) {
             return getHomeMatch(memberId);
         }
 
