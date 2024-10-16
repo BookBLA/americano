@@ -14,4 +14,6 @@ public class EntryRequest {
 
     @NotNull(message = "채팅 수락/거절시 책갈피 처리할 회원이 입력 되지 않았습니다")
     private Long targetMemberId;
+
+    private String channelUrl;
 }
