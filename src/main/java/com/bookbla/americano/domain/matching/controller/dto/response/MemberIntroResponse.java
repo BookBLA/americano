@@ -51,13 +51,12 @@ public class MemberIntroResponse {
     }
 
     public static MemberIntroResponse empty() {
-        return MemberIntroResponse.builder()
-                .isInvitationCard(true).build();
+        return MemberIntroResponse.builder().build();
     }
 
-    public static MemberIntroResponse isCardStatus(boolean status) {
+    public static MemberIntroResponse showInvitationCard() {
         return MemberIntroResponse.builder()
-                .isInvitationCard(status)
+                .isInvitationCard(true)
                 .build();
     }
 }
