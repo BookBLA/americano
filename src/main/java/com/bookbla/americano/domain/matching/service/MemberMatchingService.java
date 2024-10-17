@@ -67,25 +67,26 @@ public class MemberMatchingService {
             memberMatching.updateInvitationCard(true);
             return MemberIntroResponse.showInvitationCard();
         }
-        MemberIntroResponse memberIntroResponse = buildMemberIntroResponseWithMatchedInfo(matchedInfo, memberMatching);
-        updateCurrentMatchedInfo(memberMatching, memberIntroResponse.getMemberId(), memberIntroResponse.getMemberBookId());
-        return memberIntroResponse;
+        return buildMemberIntroResponseWithMatchedInfo(matchedInfo, memberMatching);
     }
 
     private MatchedInfo getMatchedInfo(Long memberId, MemberMatching memberMatching) {
-        return matchedInfoRepository.findByMemberIdAndMatchedMemberIdAndMatchedMemberBookId(memberId, memberMatching.getCurrentMatchedMemberId(), memberMatching.getCurrentMatchedMemberBookId()).orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MATCHING_INFO_DOESNT_EXIST));
+        return matchedInfoRepository.findByMemberIdAndMatchedMemberIdAndMatchedMemberBookId(memberId, memberMatching.getCurrentMatchedMemberId(), memberMatching.getCurrentMatchedMemberBookId())
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MATCHING_INFO_DOESNT_EXIST));
     }
 
     public MemberIntroResponse refreshMemberMatching(Long memberId) {
-        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId).orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
+        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
 
         if (memberMatching.mealInvitationCard()) {
             return getHomeMatch(memberId);
         }
-        if (memberMatching.hasCurrentMatchedInfo() && memberMatching.getIsInvitationCard()) {
-            MemberIntroResponse introResponse = getHomeMatch(memberId);
+        if (!memberMatching.hasCurrentMatchedInfo() && memberMatching.getIsInvitationCard()) {
+            MemberIntroResponse memberIntroResponse = getHomeMatch(memberId);
+            updateCurrentMatchedInfo(memberMatching, memberIntroResponse.getMemberId(), memberIntroResponse.getMemberBookId());
             memberMatching.updateInvitationCard(false);
-            return buildMemberIntroResponseWithMemberIntroResponse(introResponse, memberMatching);
+            return buildMemberIntroResponseWithMemberIntroResponse(memberIntroResponse, memberMatching);
         }
 
         Long refreshMemberId = memberMatching.getCurrentMatchedMemberId();
