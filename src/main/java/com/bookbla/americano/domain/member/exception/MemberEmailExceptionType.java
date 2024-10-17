@@ -20,6 +20,7 @@ public enum MemberEmailExceptionType implements ExceptionType {
     EMAIL_NOT_REGISTERED(HttpStatus.BAD_REQUEST, "member_email_009", "이메일이 등록되지 않은 멤버입니다."),
     STILL_PENDING(HttpStatus.BAD_REQUEST, "member_email_010", "아직 이메일 인증 대기 상태입니다."),
     EMAIL_DOMAIN_NOT_EQUAL(HttpStatus.BAD_REQUEST, "member_email_011", "학교 이메일의 도메인 URL이 해당 학교와 맞지 않습니다. "),
+    IMPOSSIBLE_EMAIL(HttpStatus.BAD_REQUEST, "member_email_012", "다른 사용자가 사용중인 이메일입니다"),
     ;
 
     private final HttpStatus httpStatus;

@@ -48,6 +48,12 @@ public class MemberEmailService {
         String schoolEmail = memberEmailSendRequest.getSchoolEmail();
         String schoolName = memberEmailSendRequest.getSchoolName();
 
+        memberRepository.findByMemberProfileSchoolEmail(schoolEmail)
+                .ifPresent(it ->
+                    new BaseException(MemberEmailExceptionType.SEND_EMAIL_FAIL)
+                );
+
+
         School requestSchool = schoolRepository.findByName(schoolName);
 
         checkSchoolDomainUrl(requestSchool, schoolEmail);
