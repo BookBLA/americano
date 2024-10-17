@@ -49,7 +49,7 @@ public class MemberMatchingService {
                 .orElseGet(() -> memberMatchingRepository.save(MemberMatching.of(member)));
 
         if (memberMatching.hasCurrentMatchedInfo()) {
-            if(memberMatching.getIsInvitationCard()){
+            if (memberMatching.getIsInvitationCard()) {
                 return MemberIntroResponse.showInvitationCard();
             }
             MatchedInfo matchedInfo = getMatchedInfo(memberId, memberMatching);
@@ -96,7 +96,16 @@ public class MemberMatchingService {
         Long refreshMemberBookId = memberMatching.getCurrentMatchedMemberBookId();
 
         matchIgnoredRepository.findByMemberIdAndIgnoredMemberIdAndIgnoredMemberBookId(memberId, refreshMemberId, refreshMemberBookId)
-                .orElseGet(() -> matchIgnoredRepository.save(MatchIgnoredInfo.from(memberId, refreshMemberId, refreshMemberBookId)));
+                .ifPresentOrElse(
+                        ignoredInfo -> {
+                            ignoredInfo.updateIgnoredAt();
+                        },
+                        () -> {
+                            MatchIgnoredInfo newIgnoredInfo = MatchIgnoredInfo.from(memberId, refreshMemberId, refreshMemberBookId);
+                            newIgnoredInfo.updateIgnoredAt();
+                            matchIgnoredRepository.save(newIgnoredInfo);
+                        }
+                );
 
         MatchedInfo matchedInfo = popMostPriorityMatched(memberMatching.getId(), memberId, refreshMemberId, refreshMemberBookId);
 
