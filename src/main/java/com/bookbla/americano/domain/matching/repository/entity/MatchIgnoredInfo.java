@@ -34,6 +34,7 @@ public class MatchIgnoredInfo {
                 .memberId(memberId)
                 .ignoredMemberId(ignoredMemberId)
                 .ignoredMemberBookId(ignoredMemberBookId)
+                .ignoredAt(LocalDateTime.now())
                 .build();
     }
 

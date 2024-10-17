@@ -45,8 +45,7 @@ public class MemberMatchingService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         member.updateLastUsedAt();
 
-        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
-                .orElseGet(() -> memberMatchingRepository.save(MemberMatching.of(member)));
+        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId).orElseGet(() -> memberMatchingRepository.save(MemberMatching.of(member)));
 
         if (memberMatching.hasCurrentMatchedInfo()) {
             if (memberMatching.getIsInvitationCard()) {
@@ -74,14 +73,11 @@ public class MemberMatchingService {
     }
 
     private MatchedInfo getMatchedInfo(Long memberId, MemberMatching memberMatching) {
-        return matchedInfoRepository.findByMemberIdAndMatchedMemberIdAndMatchedMemberBookId(memberId,
-                        memberMatching.getCurrentMatchedMemberId(), memberMatching.getCurrentMatchedMemberBookId())
-                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MATCHING_INFO_DOESNT_EXIST));
+        return matchedInfoRepository.findByMemberIdAndMatchedMemberIdAndMatchedMemberBookId(memberId, memberMatching.getCurrentMatchedMemberId(), memberMatching.getCurrentMatchedMemberBookId()).orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MATCHING_INFO_DOESNT_EXIST));
     }
 
     public MemberIntroResponse refreshMemberMatching(Long memberId) {
-        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
+        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId).orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
 
         if (memberMatching.mealInvitationCard()) {
             return getHomeMatch(memberId);
@@ -96,16 +92,11 @@ public class MemberMatchingService {
         Long refreshMemberBookId = memberMatching.getCurrentMatchedMemberBookId();
 
         matchIgnoredRepository.findByMemberIdAndIgnoredMemberIdAndIgnoredMemberBookId(memberId, refreshMemberId, refreshMemberBookId)
-                .ifPresentOrElse(
-                        ignoredInfo -> {
-                            ignoredInfo.updateIgnoredAt();
-                        },
-                        () -> {
-                            MatchIgnoredInfo newIgnoredInfo = MatchIgnoredInfo.from(memberId, refreshMemberId, refreshMemberBookId);
-                            newIgnoredInfo.updateIgnoredAt();
-                            matchIgnoredRepository.save(newIgnoredInfo);
-                        }
-                );
+                .ifPresentOrElse(ignoredInfo -> {
+                    ignoredInfo.updateIgnoredAt();
+                }, () -> {
+                    matchIgnoredRepository.save(MatchIgnoredInfo.from(memberId, refreshMemberId, refreshMemberBookId));
+                });
 
         MatchedInfo matchedInfo = popMostPriorityMatched(memberMatching.getId(), memberId, refreshMemberId, refreshMemberBookId);
 
@@ -163,8 +154,7 @@ public class MemberMatchingService {
         log.info("알고리즘 매칭 시작 ⬇️⬇️⬇️");
         Member member = memberRepository.getByIdOrThrow(memberId);
 
-        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
+        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId).orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
 
         MemberRecommendationDto memberRecommendationDto = MemberRecommendationDto.from(member, memberMatching);
 
@@ -188,10 +178,7 @@ public class MemberMatchingService {
     }
 
     private void saveAllRecommendedMatches(List<MatchedInfo> recommendedMatches) {
-        String sql = "INSERT INTO matched_info (member_id, matched_member_id, matched_member_book_id, member_matching_id, similarity_weight) " +
-                "VALUES (?, ?, ?, ?, ?) " +
-                "ON DUPLICATE KEY UPDATE " +
-                "similarity_weight = VALUES(similarity_weight)";
+        String sql = "INSERT INTO matched_info (member_id, matched_member_id, matched_member_book_id, member_matching_id, similarity_weight) " + "VALUES (?, ?, ?, ?, ?) " + "ON DUPLICATE KEY UPDATE " + "similarity_weight = VALUES(similarity_weight)";
 
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
