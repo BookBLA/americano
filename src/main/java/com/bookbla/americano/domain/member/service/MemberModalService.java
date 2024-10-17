@@ -23,10 +23,7 @@ public class MemberModalService {
 
         MemberModal modal = member.getMemberModal();
 
-        return MemberOnboardingStatusResponse.builder()
-                .homeOnboardingStatus(modal.getHomeOnboarding())
-                .libraryOnboardingStatus(modal.getLibraryOnboarding())
-                .build();
+        return MemberOnboardingStatusResponse.from(modal.getHomeOnboarding(), modal.getLibraryOnboarding());
     }
 
     @Transactional

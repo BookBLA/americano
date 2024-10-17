@@ -10,14 +10,12 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.member.repository.entity.MemberBookmark;
 import com.bookbla.americano.domain.member.repository.entity.MemberProfile;
 import com.bookbla.americano.domain.member.repository.entity.MemberVerify;
-import com.bookbla.americano.domain.notification.service.AlarmService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static com.bookbla.americano.domain.member.enums.MemberStatus.APPROVAL;
 import static com.bookbla.americano.domain.member.enums.MemberType.ADMIN;
@@ -39,9 +37,6 @@ class AdminVerificationServiceTest {
 
     @Autowired
     private MemberBookmarkRepository memberBookmarkRepository;
-
-    @MockBean
-    private AlarmService alarmService;
 
     @Autowired
     private AdminVerificationService sut;

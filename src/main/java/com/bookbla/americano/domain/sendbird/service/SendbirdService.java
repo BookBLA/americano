@@ -74,6 +74,8 @@ public class SendbirdService {
             sendbirdUserApi.viewUserById(userId)
                     .apiToken(apiToken)
                     .execute();
+            updateSendbirdNickname(memberId,member.getMemberProfile().getName());
+            updateSendbirdProfileUrl(memberId, member.getMemberStyle().getProfileImageType().getImageUrl());
             return createSendbirdUserToken(member);
         } catch (ApiException e) {
             if (e.getCode() == USER_NOT_FOUND) {

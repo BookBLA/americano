@@ -1,9 +1,9 @@
 package com.bookbla.americano.domain.matching.repository.entity;
 
-import com.bookbla.americano.base.entity.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -11,7 +11,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @Table(indexes = @Index(name = "FK_MemberMatching_MatchIgnored", columnList = "member_matching_id"))
-public class MatchIgnoredInfo extends BaseEntity {
+public class MatchIgnoredInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +23,8 @@ public class MatchIgnoredInfo extends BaseEntity {
 
     private Long ignoredMemberBookId;
 
+    private LocalDateTime ignoredAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_matching_id")
     private MemberMatching memberMatching;
@@ -32,6 +34,11 @@ public class MatchIgnoredInfo extends BaseEntity {
                 .memberId(memberId)
                 .ignoredMemberId(ignoredMemberId)
                 .ignoredMemberBookId(ignoredMemberBookId)
+                .ignoredAt(LocalDateTime.now())
                 .build();
+    }
+
+    public void updateIgnoredAt() {
+        this.ignoredAt = LocalDateTime.now();
     }
 }
