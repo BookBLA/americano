@@ -123,11 +123,28 @@ public class PushAlarmEventHandler {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
-    public void sendByAdmin(Member member, PushAlarmForm pushAlarmForm) {
-        notificationClient.send(
+    public void sendStudentIdSuccess(Member member) {
+        PushAlarmForm pushAlarmForm = PushAlarmForm.ADMIN_VERIFICATION_ACCEPT;
+        notificationClient.sendWithForm(
                 member.getPushToken(),
-                pushAlarmForm.getTitle(),
-                pushAlarmForm.getBody()
+                pushAlarmForm
+        );
+
+        MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()
+                .member(member)
+                .title(pushAlarmForm.getTitle())
+                .body(pushAlarmForm.getBody())
+                .build();
+        txTemplate.executeWithoutResult(it -> memberPushAlarmRepository.save(memberPushAlarm));
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Async
+    public void sendStudentIdFail(Member member) {
+        PushAlarmForm pushAlarmForm = PushAlarmForm.ADMIN_STUDENT_ID_IMAGE_REJECT;
+        notificationClient.sendWithForm(
+                member.getPushToken(),
+                PushAlarmForm.ADMIN_STUDENT_ID_IMAGE_REJECT
         );
 
         MemberPushAlarm memberPushAlarm = MemberPushAlarm.builder()

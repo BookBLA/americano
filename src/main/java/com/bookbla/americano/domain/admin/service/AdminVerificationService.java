@@ -62,13 +62,13 @@ public class AdminVerificationService {
         memberVerify.fail(dto.getReason());
         member.updateMemberStatus(MemberStatus.REJECTED, LocalDateTime.now());
 
-        pushAlarmEventHandler.sendByAdmin(member, PushAlarmForm.ADMIN_STUDENT_ID_IMAGE_REJECT);
+        pushAlarmEventHandler.sendStudentIdFail(member);
     }
 
     private void checkInitialMemberApprove(Member member) {
         if (member.getMemberStatus().equals(MemberStatus.APPROVAL)) {
             member.updateMemberStatus(MemberStatus.COMPLETED, LocalDateTime.now());
-            pushAlarmEventHandler.sendByAdmin(member, PushAlarmForm.ADMIN_STUDENT_ID_IMAGE_REJECT);
+            pushAlarmEventHandler.sendStudentIdSuccess(member);
         }
     }
 }
