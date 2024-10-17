@@ -39,8 +39,8 @@ public class SendbirdController {
     @Operation(summary = "채팅 수락")
     @PostMapping("/entry/accept")
     public ResponseEntity<Void> accept(@RequestBody @Valid EntryRequest entryRequest){
-        sendbirdService.unFreezeSendbirdGroupChannel(entryRequest.getChannelUrl());
         chatService.chatAccept(entryRequest.getTargetMemberId());
+        sendbirdService.unFreezeSendbirdGroupChannel(entryRequest.getChannelUrl());
         return ResponseEntity.ok().build();
     }
 
