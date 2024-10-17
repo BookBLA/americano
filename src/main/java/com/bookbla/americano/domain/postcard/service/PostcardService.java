@@ -207,7 +207,7 @@ public class PostcardService {
 
         if (postcardStatus.isAccept()) {
             updateMemberMatchingExcluded(sendMember, receiveMember);
-            postcardPushAlarmEventListener.acceptPostcard(new PostcardAlarmEvent(sendMember, receiveMember));
+            postcardPushAlarmEventListener.acceptPostcard(new PostcardAlarmEvent(receiveMember, sendMember));
 
         } else if (postcardStatus.isPending()) {
             updateMemberMatchingExcluded(sendMember, receiveMember);

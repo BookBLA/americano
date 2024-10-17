@@ -34,7 +34,7 @@ public class PushAlarmEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
     public void sendPostcard(PostcardAlarmEvent postcardAlarmEvent) {
-        Member targetMember = postcardAlarmEvent.getPostcardAcceptMember();
+        Member targetMember = postcardAlarmEvent.getPushAlarmTargetMember();
         if (targetMember.canNotSendPushAlarm()) {
             return;
         }
@@ -44,7 +44,12 @@ public class PushAlarmEventHandler {
             throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
         }
 
-        notificationClient.sendWithForm(targetMember.getPushToken(), PushAlarmForm.POSTCARD_SEND);
+        String sendMemberName = postcardAlarmEvent.getPushAlarmSendMember().getMemberProfile().getName();
+
+        String title = PushAlarmForm.POSTCARD_SEND.getTitle();
+        String body = String.format(PushAlarmForm.POSTCARD_SEND.getBody(), sendMemberName);
+
+        notificationClient.send(targetMember.getPushToken(), title, body);
 
         txTemplate.executeWithoutResult(it -> memberPushAlarmRepository.save(
                 MemberPushAlarm.fromPushAlarmForm(targetMember, PushAlarmForm.POSTCARD_SEND))
@@ -54,7 +59,7 @@ public class PushAlarmEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
     public void acceptPostcard(PostcardAlarmEvent postcardAlarmEvent) {
-        Member targetMember = postcardAlarmEvent.getTargetMember();
+        Member targetMember = postcardAlarmEvent.getPushAlarmTargetMember();
         if (targetMember.canNotSendPushAlarm()) {
             return;
         }
@@ -65,11 +70,10 @@ public class PushAlarmEventHandler {
             throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
         }
 
+        Member pushAlarmSendMember = postcardAlarmEvent.getPushAlarmSendMember();
+
         String title = POSTCARD_ACCEPT.getTitle();
-        String body = PushAlarmForm.getBodyWithFormat(
-                postcardAlarmEvent.getPostcardAcceptMember().getMemberProfile().getName(),
-                POSTCARD_ACCEPT
-        );
+        String body = String.format(POSTCARD_ACCEPT.getBody(), pushAlarmSendMember);
 
         notificationClient.send(targetMember.getPushToken(), title, body);
 
