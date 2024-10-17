@@ -24,19 +24,11 @@ public class MemberPushAlarmService {
     private final MemberPushAlarmRepository memberPushAlarmRepository;
 
     @Transactional(readOnly = true)
-    public MemberPushAlarmResponse readPushAlarm(Long memberId) {
-        Member member = memberRepository.getByIdOrThrow(memberId);
-        List<MemberPushAlarm> memberPushAlarms = memberPushAlarmRepository.findByMemberOrderByCreatedAtDesc(member);
-        return MemberPushAlarmResponse.from(member, memberPushAlarms);
-    }
-
-    @Transactional(readOnly = true)
     public MemberPushAlarmReadResponses readPushAlarms(Long memberId, Pageable pageable) {
         Member member = memberRepository.getByIdOrThrow(memberId);
         Page<MemberPushAlarm> memberPushAlarmPaging = memberPushAlarmRepository.findByMemberOrderByCreatedAtDesc(member, pageable);
         List<MemberPushAlarm> memberPushAlarms = memberPushAlarmPaging.getContent();
-        long count = memberPushAlarms.size();
-        return MemberPushAlarmReadResponses.from(count, memberPushAlarms);
+        return MemberPushAlarmReadResponses.from(memberPushAlarms);
     }
 
     @Transactional
