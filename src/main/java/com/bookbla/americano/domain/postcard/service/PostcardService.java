@@ -226,6 +226,7 @@ public class PostcardService {
                         .orElseGet(() -> matchExcludedRepository.save(MatchExcludedInfo.of(receiveMember.getId(), sendMember.getId())));
 
         matchedInfoRepository.deleteByMemberIdAndMatchedMemberId(sendMember.getId(), receiveMember.getId());
+        matchedInfoRepository.deleteByMemberIdAndMatchedMemberId(receiveMember.getId(), sendMember.getId());
     }
 
     @Transactional(readOnly = true)
