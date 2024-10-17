@@ -27,7 +27,7 @@ public class MatchedInfo {
     private Long matchedMemberBookId;
 
     @Builder.Default
-    private Double similarityWeight = 0.0;
+    private Double similarityWeight = 1.0;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_matching_id")
