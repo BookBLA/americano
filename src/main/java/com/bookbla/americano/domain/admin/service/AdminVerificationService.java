@@ -32,7 +32,6 @@ public class AdminVerificationService {
     private final MemberVerifyRepository memberVerifyRepository;
     private final AlarmService alarmService;
 
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void updateMemberStudentIdStatus(StatusUpdateDto dto) {
         MemberVerify memberVerify = memberVerifyRepository.getByIdOrThrow(dto.getMemberVerifyId());
         Member member = memberRepository.getByIdOrThrow(memberVerify.getMemberId());
@@ -40,9 +39,13 @@ public class AdminVerificationService {
         StudentIdImageStatus status = StudentIdImageStatus.from(dto.getStatus());
 
         updateVerification(dto, status, memberVerify, member, memberProfile);
-        memberProfile.updateStudentIdImageStatus(status);
 
-        checkInitialMemberApprove(member);
+        memberProfile.updateStudentIdImageStatus(status);
+        memberRepository.save(member);
+
+        MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(member.getId())
+            .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
+        addCompletedMemberReward(member, memberBookmark);
     }
 
     private void updateVerification(
@@ -52,9 +55,8 @@ public class AdminVerificationService {
         if (status.isDone()) {
             memberProfile.updateStudentIdImageUrl(memberVerify.getContents());
             memberVerify.success(dto.getReason());
-            MemberBookmark memberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(member.getId())
-                    .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
-            memberBookmark.addStudentIdCertificationReward();
+            member.updateMemberStatus(MemberStatus.COMPLETED, LocalDateTime.now());
+            alarmService.sendPushAlarm(member, PushAlarmForm.ADMIN_VERIFICATION_ACCEPT);
             return;
         }
         if (status.isPending()) {
@@ -65,10 +67,10 @@ public class AdminVerificationService {
         alarmService.sendPushAlarm(member, PushAlarmForm.ADMIN_STUDENT_ID_IMAGE_REJECT);
     }
 
-    private void checkInitialMemberApprove(Member member) {
-        if (member.getMemberStatus().equals(MemberStatus.APPROVAL)) {
-            member.updateMemberStatus(MemberStatus.COMPLETED, LocalDateTime.now());
-            alarmService.sendPushAlarm(member, PushAlarmForm.ADMIN_VERIFICATION_ACCEPT);
+    private void addCompletedMemberReward(Member member, MemberBookmark memberBookmark) {
+        if (member.getMemberStatus().equals(MemberStatus.COMPLETED)) {
+            memberBookmark.addStudentIdCertificationReward();
+            memberBookmarkRepository.save(memberBookmark);
         }
     }
 }

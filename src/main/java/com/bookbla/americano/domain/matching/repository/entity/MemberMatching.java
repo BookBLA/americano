@@ -12,6 +12,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(indexes = @Index(name = "FK_Member_Matching", columnList = "member_id"))
 public class MemberMatching {
 
     @Id

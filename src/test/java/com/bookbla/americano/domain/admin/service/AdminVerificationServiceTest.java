@@ -63,6 +63,9 @@ class AdminVerificationServiceTest {
                 .contents("학생증 링크~")
                 .description("이름: 고도현, 학과: 관광경영학과, 학번: 201900001")
                 .build());
+        memberBookmarkRepository.save(MemberBookmark.builder()
+            .member(member)
+            .build());
         StatusUpdateDto statusUpdateDto = new StatusUpdateDto(memberVerify.getId(), "denial", "흐릿해요");
 
         // when

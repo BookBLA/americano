@@ -28,6 +28,10 @@ import org.hibernate.annotations.Where;
 }, subgraphs = {
         @NamedSubgraph(name = "authors", attributeNodes = @NamedAttributeNode("authors"))
 })
+@Table(indexes = {
+        @Index(name = "FK_Member", columnList = "member_id"),
+        @Index(name = "FK_Book", columnList = "book_id")
+})
 public class MemberBook extends BaseEntity {
 
     public static final int MEMBER_BOOK_REMOVABLE_COUNT = 2;

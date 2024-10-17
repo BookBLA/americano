@@ -5,13 +5,9 @@ import java.util.List;
 import java.util.Objects;
 
 import com.bookbla.americano.base.entity.BaseEntity;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+
+import javax.persistence.*;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(uniqueConstraints = {@UniqueConstraint(name = "UK_Isbn", columnNames = "isbn")})
 public class Book extends BaseEntity {
 
     @Id
@@ -36,6 +33,9 @@ public class Book extends BaseEntity {
 
     @Builder.Default
     @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "book_authors", joinColumns = @JoinColumn(name = "book_id"),
+            indexes = @Index(name = "FK_Authors", columnList = "authors"))
+    @Column(name = "authors")
     private List<String> authors = new ArrayList<>();
 
     private String imageUrl;

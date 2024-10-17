@@ -33,7 +33,7 @@ public class MatchIgnoredRepositoryImpl implements MatchIgnoredRepositoryCustom 
                 .leftJoin(matchIgnoredInfo).on(member.id.eq(matchIgnoredInfo.ignoredMemberId)
                         .and(memberBook.id.eq(matchIgnoredInfo.ignoredMemberBookId)))
                 .where(matchIgnoredInfo.memberId.eq(memberRecommendationDto.getMemberId()),
-                        matchIgnoredInfo.createdAt.after(ignoredFilterAt))
+                        matchIgnoredInfo.ignoredAt.after(ignoredFilterAt))
                 .fetch()
                 .stream()
                 .map(tuple -> MatchedInfo.from(memberRecommendationDto.getMemberId(), tuple.get(member.id), tuple.get(memberBook.id), memberRecommendationDto.getMemberMatching()))
