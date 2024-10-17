@@ -82,7 +82,7 @@ public class MemberMatchingService {
         if (memberMatching.mealInvitationCard()) {
             return getHomeMatch(memberId);
         }
-        if (!memberMatching.hasCurrentMatchedInfo()) {
+        if (memberMatching.hasCurrentMatchedInfo() && memberMatching.getIsInvitationCard()) {
             MemberIntroResponse introResponse = getHomeMatch(memberId);
             memberMatching.updateInvitationCard(false);
             return buildMemberIntroResponseWithMemberIntroResponse(introResponse, memberMatching);
