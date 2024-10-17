@@ -23,6 +23,6 @@ public class SendPostcardRequest {
     private Long receiveMemberBookId;
 
     @NotNull(message = "memberReply가 입력되지 않았습니다.")
-    @Size(max = 150)
+    @Size(max = 200)
     private String memberReply;
 }
