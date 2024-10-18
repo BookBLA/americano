@@ -217,6 +217,18 @@ public class SendbirdService {
         return metadata;
     }
 
+    public Long getSendbirdMetadata(String channelUrl){
+        try {
+            Map<String, String> postcardId = metadataApi.viewChannelMetadataByKey(CHANNEL_TYPE, channelUrl, "postcardId")
+                    .apiToken(apiToken)
+                    .execute();
+            return Long.valueOf(postcardId.get("postcardId"));
+        } catch (ApiException e) {
+            throw new SendbirdException(e);
+        }
+    }
+
+
     public void sendEntryMessage(PostcardReadResponse postcardReadResponse, String channelUrl) {
         Book book = memberBookRepository.findBookById(postcardReadResponse.getReceiveMemberBookId())
                 .orElseThrow(() -> new BaseException(MemberBookExceptionType.BOOK_NOT_FOUND));
