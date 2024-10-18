@@ -1,6 +1,7 @@
 package com.bookbla.americano.domain.sendbird.service;
 
 import com.bookbla.americano.base.exception.BaseException;
+import com.bookbla.americano.domain.matching.repository.MatchExcludedRepository;
 import com.bookbla.americano.domain.member.exception.MemberExceptionType;
 import com.bookbla.americano.domain.member.repository.MemberBookmarkRepository;
 import com.bookbla.americano.domain.member.repository.entity.Member;
@@ -25,6 +26,7 @@ public class ChatService {
     private final MemberBookmarkRepository memberBookmarkRepository;
     private final PostcardRepository postcardRepository;
     private final PushAlarmEventHandler postcardPushAlarmEventListener;
+    private final MatchExcludedRepository matchExcludedRepository;
 
     public void updatePostcardStatusByChat(EntryRequest entryRequest, PostcardStatus postcardStatus, Long postcardId) {
         Postcard postcard = postcardRepository.findByIdWithMembers(postcardId)
@@ -39,8 +41,9 @@ public class ChatService {
             updateBookmarkOnChatAccept(entryRequest.getTargetMemberId());
             postcardPushAlarmEventListener.acceptPostcard(new PostcardAlarmEvent(sendMember, receiveMember));
         } else if (postcardStatus.isRefused()) {
+            postcardRepository.save(postcard.updatePostcardStatusRefusedAt());
             updateBookmarkOnChatReject(entryRequest.getTargetMemberId());
-            postcard.updatePostcardStatusRefusedAt();
+            deleteMemberMatchingExcluded(sendMember, receiveMember);
         }
     }
 
@@ -56,5 +59,10 @@ public class ChatService {
                 .orElseThrow(() -> new BaseException(MemberExceptionType.EMPTY_MEMBER_BOOKMARK_INFO));
 
         memberBookmark.rejectChat();
+    }
+
+    private void deleteMemberMatchingExcluded(Member sendMember, Member receiveMember) {
+        matchExcludedRepository.deleteByMemberIdAndExcludedMemberId(sendMember.getId(), receiveMember.getId());
+        matchExcludedRepository.deleteByMemberIdAndExcludedMemberId(receiveMember.getId(), sendMember.getId());
     }
 }
