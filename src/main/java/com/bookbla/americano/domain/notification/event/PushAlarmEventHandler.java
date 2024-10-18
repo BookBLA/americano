@@ -34,7 +34,7 @@ public class PushAlarmEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
     public void sendPostcard(PostcardAlarmEvent postcardAlarmEvent) {
-        Member targetMember = postcardAlarmEvent.getPushAlarmTargetMember();
+        Member targetMember = postcardAlarmEvent.getTargetMember();
         if (targetMember.canNotSendPushAlarm()) {
             return;
         }
@@ -44,10 +44,8 @@ public class PushAlarmEventHandler {
             throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
         }
 
-        String sendMemberName = postcardAlarmEvent.getPushAlarmSendMember().getMemberProfile().getName();
-
         String title = PushAlarmForm.POSTCARD_SEND.getTitle();
-        String body = String.format(PushAlarmForm.POSTCARD_SEND.getBody(), sendMemberName);
+        String body = String.format(PushAlarmForm.POSTCARD_SEND.getBody(), postcardAlarmEvent.getMessageBodyElement());
 
         notificationClient.send(targetMember.getPushToken(), title, body);
 
@@ -59,7 +57,7 @@ public class PushAlarmEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
     public void acceptPostcard(PostcardAlarmEvent postcardAlarmEvent) {
-        Member targetMember = postcardAlarmEvent.getPushAlarmTargetMember();
+        Member targetMember = postcardAlarmEvent.getTargetMember();
         if (targetMember.canNotSendPushAlarm()) {
             return;
         }
@@ -70,10 +68,8 @@ public class PushAlarmEventHandler {
             throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
         }
 
-        String sendMemberName = postcardAlarmEvent.getPushAlarmSendMember().getMemberProfile().getName();
-
         String title = POSTCARD_ACCEPT.getTitle();
-        String body = String.format(POSTCARD_ACCEPT.getBody(), sendMemberName);
+        String body = String.format(POSTCARD_ACCEPT.getBody(), postcardAlarmEvent.getMessageBodyElement());
 
         notificationClient.send(targetMember.getPushToken(), title, body);
 

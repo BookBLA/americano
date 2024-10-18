@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class PostcardAlarmEvent {
 
-    private final Member pushAlarmSendMember;
-    private final Member pushAlarmTargetMember;
+    private final String messageBodyElement;
+    private final Member targetMember;
 
 }
