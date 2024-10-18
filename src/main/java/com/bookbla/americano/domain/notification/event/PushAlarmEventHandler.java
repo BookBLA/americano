@@ -50,7 +50,12 @@ public class PushAlarmEventHandler {
         notificationClient.send(targetMember.getPushToken(), title, body);
 
         txTemplate.executeWithoutResult(it -> memberPushAlarmRepository.save(
-                MemberPushAlarm.fromPushAlarmForm(targetMember, PushAlarmForm.POSTCARD_SEND))
+                MemberPushAlarm.builder()
+                        .member(targetMember)
+                        .title(title)
+                        .body(body)
+                        .build()
+                )
         );
     }
 
