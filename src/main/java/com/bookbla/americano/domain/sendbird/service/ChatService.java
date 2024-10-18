@@ -41,7 +41,9 @@ public class ChatService {
             updateBookmarkOnChatAccept(entryRequest.getTargetMemberId());
             postcardPushAlarmEventListener.acceptPostcard(new PostcardAlarmEvent(sendMember, receiveMember));
         } else if (postcardStatus.isRefused()) {
-            postcardRepository.save(postcard.updatePostcardStatusRefusedAt());
+            Postcard updatePostcard = postcardRepository.findById(postcardId)
+                    .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
+            postcardRepository.save(updatePostcard.updatePostcardStatusRefusedAt());
             updateBookmarkOnChatReject(entryRequest.getTargetMemberId());
             deleteMemberMatchingExcluded(sendMember, receiveMember);
         }
