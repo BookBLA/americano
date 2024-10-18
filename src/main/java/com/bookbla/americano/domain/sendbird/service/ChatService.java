@@ -26,8 +26,8 @@ public class ChatService {
     private final PostcardRepository postcardRepository;
     private final PushAlarmEventHandler postcardPushAlarmEventListener;
 
-    public void updatePostcardStatusByChat(EntryRequest entryRequest, PostcardStatus postcardStatus) {
-        Postcard postcard = postcardRepository.findByIdWithMembers(entryRequest.getPostcardId())
+    public void updatePostcardStatusByChat(EntryRequest entryRequest, PostcardStatus postcardStatus, Long postcardId) {
+        Postcard postcard = postcardRepository.findByIdWithMembers(postcardId)
                 .orElseThrow(() -> new BaseException(PostcardExceptionType.INVALID_POSTCARD));
 
         postcardRepository.updatePostcardStatus(postcardStatus, postcard.getId());

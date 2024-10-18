@@ -40,7 +40,8 @@ public class SendbirdController {
     @Operation(summary = "채팅 수락")
     @PostMapping("/entry/accept")
     public ResponseEntity<Void> accept(@RequestBody @Valid EntryRequest entryRequest){
-        chatService.updatePostcardStatusByChat(entryRequest, PostcardStatus.ACCEPT);
+        Long postcardId = sendbirdService.getSendbirdMetadata(entryRequest.getChannelUrl());
+        chatService.updatePostcardStatusByChat(entryRequest, PostcardStatus.ACCEPT, postcardId);
         sendbirdService.unFreezeSendbirdGroupChannel(entryRequest.getChannelUrl());
         return ResponseEntity.ok().build();
     }
@@ -48,7 +49,8 @@ public class SendbirdController {
     @Operation(summary = "채팅 거절")
     @PostMapping("/entry/reject")
     public ResponseEntity<Void> reject(@RequestBody @Valid EntryRequest entryRequest){
-        chatService.updatePostcardStatusByChat(entryRequest, PostcardStatus.REFUSED);
+        Long postcardId = sendbirdService.getSendbirdMetadata(entryRequest.getChannelUrl());
+        chatService.updatePostcardStatusByChat(entryRequest, PostcardStatus.REFUSED, postcardId);
 //        추후 채팅방을 삭제해야 한다면 주석 해제
 //        sendbirdService.deleteSendbirdGroupChannel(entryRequest.getChannelUrl());
         return ResponseEntity.ok().build();
