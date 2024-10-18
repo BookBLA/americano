@@ -70,10 +70,10 @@ public class PushAlarmEventHandler {
             throw new BaseException(PushAlarmExceptionType.INVALID_MEMBER_STATUS);
         }
 
-        Member pushAlarmSendMember = postcardAlarmEvent.getPushAlarmSendMember();
+        String sendMemberName = postcardAlarmEvent.getPushAlarmSendMember().getMemberProfile().getName();
 
         String title = POSTCARD_ACCEPT.getTitle();
-        String body = String.format(POSTCARD_ACCEPT.getBody(), pushAlarmSendMember);
+        String body = String.format(POSTCARD_ACCEPT.getBody(), sendMemberName);
 
         notificationClient.send(targetMember.getPushToken(), title, body);
 

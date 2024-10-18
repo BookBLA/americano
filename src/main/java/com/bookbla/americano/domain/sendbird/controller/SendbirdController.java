@@ -2,6 +2,7 @@ package com.bookbla.americano.domain.sendbird.controller;
 
 import com.bookbla.americano.base.resolver.LoginUser;
 import com.bookbla.americano.base.resolver.User;
+import com.bookbla.americano.domain.postcard.enums.PostcardStatus;
 import com.bookbla.americano.domain.sendbird.controller.dto.request.EntryRequest;
 import com.bookbla.americano.domain.sendbird.controller.dto.response.SendbirdResponse;
 import com.bookbla.americano.domain.sendbird.service.ChatService;
@@ -39,7 +40,8 @@ public class SendbirdController {
     @Operation(summary = "채팅 수락")
     @PostMapping("/entry/accept")
     public ResponseEntity<Void> accept(@RequestBody @Valid EntryRequest entryRequest){
-        chatService.chatAccept(entryRequest.getTargetMemberId());
+        Long postcardId = sendbirdService.getSendbirdMetadata(entryRequest.getChannelUrl());
+        chatService.updatePostcardStatusByChat(entryRequest, PostcardStatus.ACCEPT, postcardId);
         sendbirdService.unFreezeSendbirdGroupChannel(entryRequest.getChannelUrl());
         return ResponseEntity.ok().build();
     }
@@ -47,7 +49,8 @@ public class SendbirdController {
     @Operation(summary = "채팅 거절")
     @PostMapping("/entry/reject")
     public ResponseEntity<Void> reject(@RequestBody @Valid EntryRequest entryRequest){
-        chatService.chatReject(entryRequest.getTargetMemberId());
+        Long postcardId = sendbirdService.getSendbirdMetadata(entryRequest.getChannelUrl());
+        chatService.updatePostcardStatusByChat(entryRequest, PostcardStatus.REFUSED, postcardId);
 //        추후 채팅방을 삭제해야 한다면 주석 해제
 //        sendbirdService.deleteSendbirdGroupChannel(entryRequest.getChannelUrl());
         return ResponseEntity.ok().build();

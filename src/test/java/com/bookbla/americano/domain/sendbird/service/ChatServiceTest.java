@@ -35,7 +35,7 @@ class ChatServiceTest {
         MemberBookmark womanMemberBookmark = memberBookmarkRepository.save(MemberBookmark.builder().member(member).bookmarkCount(40).build());
 
         //when
-        sut.chatAccept(member.getId());
+        sut.updateBookmarkOnChatAccept(member.getId());
 
         //then
         MemberBookmark targetMemberBookmark = memberBookmarkRepository.findById(womanMemberBookmark.getId())
@@ -49,7 +49,7 @@ class ChatServiceTest {
         memberBookmarkRepository.save(MemberBookmark.builder().member(targetmember).bookmarkCount(10).build());
 
         // when & then
-        assertThatThrownBy(() -> sut.chatAccept(targetmember.getId()))
+        assertThatThrownBy(() -> sut.updateBookmarkOnChatAccept(targetmember.getId()))
                 .isInstanceOf(BaseException.class)
                 .hasMessageContaining("책갈피 개수가 부족합니다.");
     }
@@ -61,7 +61,7 @@ class ChatServiceTest {
         MemberBookmark womanMemberBookmark = memberBookmarkRepository.save(MemberBookmark.builder().member(member).bookmarkCount(40).build());
 
         //when
-        sut.chatReject(member.getId());
+        sut.updateBookmarkOnChatReject(member.getId());
 
         //then
         MemberBookmark targetMemberBookmark = memberBookmarkRepository.findById(womanMemberBookmark.getId())

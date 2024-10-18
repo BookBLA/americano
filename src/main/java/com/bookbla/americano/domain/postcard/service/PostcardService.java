@@ -174,7 +174,7 @@ public class PostcardService {
         sendbirdService.freezeSendbirdGroupChannel(channelUrl);
 
         memberBookmark.readPostcard();
-        updatePostcardStatus(memberId, postcardId, PostcardStatus.READ);
+        postcardRepository.updatePostcardStatus(PostcardStatus.READ, postcardId);
 
         return PostcardReadResponse.of(postcard);
     }
@@ -186,6 +186,7 @@ public class PostcardService {
         return postcard.getPostcardStatus();
     }
 
+    @Deprecated
     public void updatePostcardStatus(Long memberId, Long postcardId,
                                      PostcardStatus postcardStatus) {
         Postcard postcard = postcardRepository.findByIdWithMembers(postcardId)

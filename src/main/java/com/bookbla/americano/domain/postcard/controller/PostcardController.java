@@ -49,6 +49,7 @@ public class PostcardController {
         return ResponseEntity.ok(postcardReadResponse);
     }
 
+    @Deprecated
     @Operation(summary = "Postcard 상태 업데이트", description = "Body의 postcardId를 가진 엽서의 상태 업데이트. Body의 status 값으로 해당 엽서의 상태(PostcardStatus)를 변경함.")
     @PostMapping("/status")
     public void updatePostcardStatus(@Parameter(hidden = true) @User LoginUser loginUser,
