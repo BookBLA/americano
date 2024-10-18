@@ -8,6 +8,7 @@ import java.util.Optional;
 import com.bookbla.americano.base.exception.BaseException;
 import com.bookbla.americano.domain.matching.exception.MemberMatchingExceptionType;
 import com.bookbla.americano.domain.matching.repository.MatchExcludedRepository;
+import com.bookbla.americano.domain.matching.repository.MatchedInfoRepository;
 import com.bookbla.americano.domain.matching.repository.MemberMatchingRepository;
 import com.bookbla.americano.domain.matching.repository.entity.MatchExcludedInfo;
 import com.bookbla.americano.domain.matching.repository.entity.MemberMatching;
@@ -41,6 +42,7 @@ public class MemberReportService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final MatchExcludedRepository matchExcludedRepository;
     private final MemberMatchingRepository memberMatchingRepository;
+    private final MatchedInfoRepository matchedInfoRepository;
 
 
     @Transactional
@@ -119,6 +121,9 @@ public class MemberReportService {
 
         matchExcludedRepository.findByMemberIdAndExcludedMemberId(receiveMember.getId(), sendMember.getId())
                 .orElseGet(() -> matchExcludedRepository.save(MatchExcludedInfo.of(receiveMember.getId(), sendMember.getId())));
+
+        matchedInfoRepository.deleteByMemberIdAndMatchedMemberId(sendMember.getId(), receiveMember.getId());
+        matchedInfoRepository.deleteByMemberIdAndMatchedMemberId(receiveMember.getId(), sendMember.getId());
     }
 
     @Transactional(readOnly = true)

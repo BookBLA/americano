@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PostcardReadResponse {
 
+    private Long postcardId;
+
     private Long sendMemberId;
 
     private String sendMemberName;
@@ -23,6 +25,7 @@ public class PostcardReadResponse {
 
     public static PostcardReadResponse of(Postcard postcard) {
         return new PostcardReadResponse(
+                postcard.getId(),
                 postcard.getSendMember().getId(),
                 postcard.getSendMember().getMemberProfile().getName(),
                 postcard.getReceiveMember().getId(),

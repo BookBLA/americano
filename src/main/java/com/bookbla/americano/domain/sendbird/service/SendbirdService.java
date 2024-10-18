@@ -9,6 +9,7 @@ import com.bookbla.americano.domain.member.repository.entity.Member;
 import com.bookbla.americano.domain.postcard.controller.dto.response.PostcardReadResponse;
 import com.bookbla.americano.domain.sendbird.controller.dto.response.SendbirdResponse;
 import com.bookbla.americano.domain.sendbird.exception.SendbirdException;
+import org.jetbrains.annotations.NotNull;
 import org.openapitools.client.model.*;
 import org.sendbird.client.ApiClient;
 import org.sendbird.client.ApiException;
@@ -30,7 +31,7 @@ public class SendbirdService {
     private static final int USER_NOT_FOUND = 400;
     private static final String CHANNEL_TYPE = "group_channels";
     private static final String ACCEPT_STATUS = "yet";
-    private static final String MESSAGE_TYPE= "MESG";
+    private static final String MESSAGE_TYPE = "MESG";
 
 
     private final UserApi sendbirdUserApi;
@@ -74,7 +75,7 @@ public class SendbirdService {
             sendbirdUserApi.viewUserById(userId)
                     .apiToken(apiToken)
                     .execute();
-            updateSendbirdNickname(memberId,member.getMemberProfile().getName());
+            updateSendbirdNickname(memberId, member.getMemberProfile().getName());
             updateSendbirdProfileUrl(memberId, member.getMemberStyle().getProfileImageType().getImageUrl());
             return createSendbirdUserToken(member);
         } catch (ApiException e) {
@@ -189,17 +190,10 @@ public class SendbirdService {
         }
     }
 
-    public void createSendbirdMetadata(PostcardReadResponse postcardReadResponse, String channelUrl){
+    public void createSendbirdMetadata(PostcardReadResponse postcardReadResponse, String channelUrl) {
 
-        Map<String, String> metadata = new HashMap<>();
-        metadata.put("sendMemberId", postcardReadResponse.getSendMemberId().toString());
-        metadata.put("sendMemberName", postcardReadResponse.getSendMemberName());
-        metadata.put("targetMemberId", postcardReadResponse.getReceiveMemberId().toString());
-        metadata.put("targetMemberBookId", postcardReadResponse.getReceiveMemberBookId().toString());
-        metadata.put("acceptStatus", ACCEPT_STATUS);
-
-        CreateChannelMetadataData createChannelMetadataData = new CreateChannelMetadataData()
-                .metadata(metadata);
+        Map<String, String> sendbirdMetadata = createMetadata(postcardReadResponse);
+        CreateChannelMetadataData createChannelMetadataData = new CreateChannelMetadataData().metadata(sendbirdMetadata);
 
         try {
             metadataApi.createChannelMetadata(CHANNEL_TYPE, channelUrl)
@@ -211,6 +205,29 @@ public class SendbirdService {
             throw new SendbirdException(e);
         }
     }
+
+    @NotNull
+    private Map<String, String> createMetadata(PostcardReadResponse postcardReadResponse) {
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("postcardId", postcardReadResponse.getPostcardId().toString());
+        metadata.put("sendMemberId", postcardReadResponse.getSendMemberId().toString());
+        metadata.put("sendMemberName", postcardReadResponse.getSendMemberName());
+        metadata.put("targetMemberId", postcardReadResponse.getReceiveMemberId().toString());
+        metadata.put("acceptStatus", ACCEPT_STATUS);
+        return metadata;
+    }
+
+    public Long getSendbirdMetadata(String channelUrl){
+        try {
+            Map<String, String> postcardId = metadataApi.viewChannelMetadataByKey(CHANNEL_TYPE, channelUrl, "postcardId")
+                    .apiToken(apiToken)
+                    .execute();
+            return Long.valueOf(postcardId.get("postcardId"));
+        } catch (ApiException e) {
+            throw new SendbirdException(e);
+        }
+    }
+
 
     public void sendEntryMessage(PostcardReadResponse postcardReadResponse, String channelUrl) {
         Book book = memberBookRepository.findBookById(postcardReadResponse.getReceiveMemberBookId())
