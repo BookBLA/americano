@@ -275,5 +275,57 @@ class InvitationServiceTest {
             assertThat(response.getInvitedRewardStatus()).isEqualTo("FESTIVAL");
         }
     }
+    @Nested
+    class 이벤트_초대코드 {
+
+        @Test
+        void 이벤트_초대코드를_입력하면_이벤트_초대가_생성된다() {
+            Long eventInvitingMemberId = 0L;
+            Member member = memberRepository.save(스타일_등록_완료_남성_고도리);
+            memberBookmarkRepository.save(MemberBookmark.builder().member(member).build());
+            var request = new InvitationCodeEntryRequest("early6bird");
+
+            // when
+            sut.entryInvitationCode(member.getId(), request);
+
+            // then
+            Invitation invitation = invitationRepository.findByInvitedMemberId(member.getId()).orElseThrow();
+            assertAll(
+                    () -> assertThat(invitation).isNotNull(),
+                    () -> assertThat(invitation.getInvitedMemberId()).isEqualTo(member.getId()),
+                    () -> assertThat(invitation.getInvitingMemberId()).isEqualTo(eventInvitingMemberId),
+                    () -> assertThat(invitation.getInvitationStatus()).isEqualTo(BOOKMARK),
+                    () -> assertThat(invitation.getInvitationType()).isEqualTo(EVENT)
+            );
+        }
+
+        @Test
+        void 이벤트_초대코드를_입력하면_책갈피를_지급한다() {
+            Member member = memberRepository.save(스타일_등록_완료_남성_고도리);
+            MemberBookmark memberBookmark = memberBookmarkRepository.save(MemberBookmark.builder().member(member).build());
+            var request = new InvitationCodeEntryRequest("early6bird");
+
+            // when
+            sut.entryInvitationCode(member.getId(), request);
+
+            // then
+            assertThat(memberBookmark.getBookmarkCount()).isEqualTo(200);
+        }
+
+        @Test
+        void 이벤트_초대코드를_입력했다면_invitedRewardStatus는_EVENT이다() {
+            // given
+            Member man = memberRepository.save(프로필_등록_완료_여성_김밤비);
+            memberBookmarkRepository.save(MemberBookmark.builder().member(man).build());
+            sut.entryInvitationCode(man.getId(), new InvitationCodeEntryRequest("early6bird"));
+
+            // when
+            MemberInvitationRewardResponse response = sut.getInvitationRewardStatus(man.getId());
+
+            // then
+            assertThat(response.getInvitingRewardStatus()).isFalse();
+            assertThat(response.getInvitedRewardStatus()).isEqualTo("EVENT");
+        }
+    }
 }
 
