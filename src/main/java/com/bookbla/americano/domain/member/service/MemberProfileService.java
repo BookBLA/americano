@@ -56,8 +56,7 @@ public class MemberProfileService {
                         () -> new BaseException(MemberEmailExceptionType.EMAIL_NOT_REGISTERED));
         memberEmail.validatePending();
         validateDuplicateName(memberProfileDto.getName());
-
-//        saveKakaoRoomVerify(member, memberProfileDto.getOpenKakaoRoomUrl());
+        validateDuplicateSchoolEmail(memberProfileDto.getSchoolEmail());
 
         MemberStatus beforeStatus = member.getMemberStatus();
 
@@ -93,6 +92,13 @@ public class MemberProfileService {
                 .ifPresent(profile -> {
                     throw new BaseException(MemberProfileExceptionType.ALREADY_EXISTS_NICKNAME);
                 });
+    }
+
+    private void validateDuplicateSchoolEmail(String schoolEmail) {
+        memberRepository.findByMemberProfileSchoolEmail(schoolEmail)
+            .ifPresent(profile -> {
+                throw new BaseException(MemberEmailExceptionType.ALREADY_EXIST);
+            });
     }
 
     private void saveStudentIdVerify(Member member,
