@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.bookbla.americano.domain.school.repository.entity.InvitationType.FEMALE;
 import static com.bookbla.americano.domain.school.repository.entity.InvitationType.MALE;
+import static com.bookbla.americano.domain.school.service.dto.InvitationConstants.*;
 
 
 /*
@@ -36,8 +37,6 @@ import static com.bookbla.americano.domain.school.repository.entity.InvitationTy
 @Transactional
 @Service
 public class InvitationService {
-
-    private static final String FESTIVAL_TEMPORARY_INVITATION_CODE = "JUST4YOU";
 
     private final MemberRepository memberRepository;
     private final InvitationRepository invitationRepository;
@@ -62,6 +61,17 @@ public class InvitationService {
 
             MemberModal modal = member.getMemberModal();
             modal.updateFestivalInvitationToExists();
+
+            return InvitationResponse.from(invitation);
+        }
+
+        if (EARLY_BIRD_INVITATION_CODE.equals(request.getInvitationCode())) {
+            Invitation invitation = createEventInvitation(invitedMemberId);
+            invitation.bookmark();
+            Member member = memberRepository.getByIdOrThrow(invitedMemberId);
+
+            MemberModal modal = member.getMemberModal();
+            modal.updateEventInvitationToExists();
 
             return InvitationResponse.from(invitation);
         }
@@ -95,11 +105,21 @@ public class InvitationService {
     private @NotNull Invitation createFestivalInvitation(Long invitedMemberId) {
         MemberBookmark invitedMemberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(invitedMemberId)
                 .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
-        invitedMemberBookmark.addBookmark(105);
+        invitedMemberBookmark.addBookmark(FESTIVAL_INVITATION_BOOKMARK);
 
         adminNotificationEventListener.sendMessage(new AdminNotificationEvent("축제 코드 입력 +1", "memberId " + invitedMemberId));
 
         return invitationRepository.save(Invitation.fromTempFestival(invitedMemberId));
+    }
+
+    private @NotNull Invitation createEventInvitation(Long invitedMemberId) {
+        MemberBookmark invitedMemberBookmark = memberBookmarkRepository.findMemberBookmarkByMemberId(invitedMemberId)
+                .orElseThrow(() -> new BaseException(MemberBookmarkExceptionType.MEMBER_ID_NOT_EXISTS));
+        invitedMemberBookmark.addBookmark(EARLY_BIRD_INVITATION_BOOKMARK);
+
+        adminNotificationEventListener.sendMessage(new AdminNotificationEvent("이벤트 코드 입력 +1", "memberId " + invitedMemberId));
+
+        return invitationRepository.save(Invitation.fromTempEvent(invitedMemberId));
     }
 
     private Invitation createInvitation(
@@ -168,6 +188,11 @@ public class InvitationService {
         if (modal.hasFestivalInvitationReward()) {
             modal.completeFestivalInvitationModal();
             invitedRewardStatus = "FESTIVAL";
+        }
+
+        if (modal.hasEventInvitationReward()) {
+            modal.completeEventInvitationModal();
+            invitedRewardStatus = "EVENT";
         }
 
         if (modal.isInvitingRewardNotGiven()) {
