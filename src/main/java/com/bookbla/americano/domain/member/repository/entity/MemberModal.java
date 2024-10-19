@@ -45,6 +45,11 @@ public class MemberModal {
     private Boolean hasFestivalInvitationReward = Boolean.FALSE;
 
     @Builder.Default
+    @Column(length = 1)
+    @Convert(converter = BooleanToYNConverter.class)
+    private Boolean hasEventInvitationReward = Boolean.FALSE;
+
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private InvitationStatus invitedRewardStatus = InvitationStatus.NONE;
 
@@ -93,5 +98,16 @@ public class MemberModal {
 
     public void updateFestivalInvitationToExists() {
         this.hasFestivalInvitationReward = Boolean.TRUE;
+    }
+
+    public boolean hasEventInvitationReward() {
+        return hasEventInvitationReward == Boolean.TRUE;
+    }
+    public void completeEventInvitationModal() {
+        this.hasEventInvitationReward = Boolean.FALSE;
+    }
+
+    public void updateEventInvitationToExists() {
+        this.hasEventInvitationReward = Boolean.TRUE;
     }
 }

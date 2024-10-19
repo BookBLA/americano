@@ -5,6 +5,7 @@ public enum InvitationType {
     MALE,
     FEMALE,
     FESTIVAL,
+    EVENT
     ;
 
 }
