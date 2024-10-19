@@ -45,7 +45,8 @@ public class MemberMatchingService {
         Member member = memberRepository.getByIdOrThrow(memberId);
         member.updateLastUsedAt();
 
-        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId).orElseGet(() -> memberMatchingRepository.save(MemberMatching.of(member)));
+        MemberMatching memberMatching = memberMatchingRepository.findByMemberId(memberId)
+                .orElseGet(() -> memberMatchingRepository.save(MemberMatching.of(member)));
 
         if (memberMatching.hasCurrentMatchedInfo()) {
             if (memberMatching.getIsInvitationCard()) {
@@ -61,7 +62,12 @@ public class MemberMatchingService {
         // 새로고침할때 로직
         MatchedInfo matchedInfo = getMostPriorityMatched(matchedInfoRepository.getAllByDesc(memberMatching.getId()));
         if (matchedInfo == null) {
-            return MemberIntroResponse.empty();
+            if(memberMatching.getIsInvitationCard()) {
+                memberMatching.updateInvitationCard(false);
+                return MemberIntroResponse.showInvitationCard();
+            } else {
+                return MemberIntroResponse.empty();
+            }
         }
         if (memberMatching.mealInvitationCard()) {
             memberMatching.updateInvitationCard(true);
