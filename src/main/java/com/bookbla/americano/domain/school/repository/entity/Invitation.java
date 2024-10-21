@@ -23,6 +23,7 @@ import static com.bookbla.americano.domain.school.repository.entity.InvitationSt
 public class Invitation extends BaseEntity {
 
     public static final long FESTIVAL_TEMPORARY_INVITING_MEMBER_ID = 0L;
+    public static final long EVENT_TEMPORARY_INVITING_MEMBER_ID = 0L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +45,13 @@ public class Invitation extends BaseEntity {
                 .invitedMemberId(invitedMemberId)
                 .invitingMemberId(FESTIVAL_TEMPORARY_INVITING_MEMBER_ID)
                 .invitationType(InvitationType.FESTIVAL)
+                .build();
+    }
+    public static Invitation fromTempEvent(Long invitedMemberId) {
+        return Invitation.builder()
+                .invitedMemberId(invitedMemberId)
+                .invitingMemberId(EVENT_TEMPORARY_INVITING_MEMBER_ID)
+                .invitationType(InvitationType.EVENT)
                 .build();
     }
 

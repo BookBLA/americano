@@ -17,7 +17,6 @@ import com.bookbla.americano.domain.school.exception.SchoolExceptionType;
 import com.bookbla.americano.domain.school.repository.SchoolRepository;
 import com.bookbla.americano.domain.school.repository.entity.School;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -33,7 +32,6 @@ import java.util.Random;
 @Service
 @Transactional
 @RequiredArgsConstructor
-@Slf4j
 public class MemberEmailService {
 
     private final MemberRepository memberRepository;
@@ -48,17 +46,10 @@ public class MemberEmailService {
         String schoolEmail = memberEmailSendRequest.getSchoolEmail();
         String schoolName = memberEmailSendRequest.getSchoolName();
 
-        memberRepository.findByMemberProfileSchoolEmail(schoolEmail)
-                .ifPresent(it ->
-                    new BaseException(MemberEmailExceptionType.SEND_EMAIL_FAIL)
-                );
-
-
         School requestSchool = schoolRepository.findByName(schoolName);
 
         checkSchoolDomainUrl(requestSchool, schoolEmail);
-
-//        checkDuplicatedEmail(schoolEmail);
+        checkDuplicatedEmail(schoolEmail);
 
         String verifyCode = createVerifyCode();
         sendEmailMessage(schoolEmail, verifyCode);
@@ -66,19 +57,18 @@ public class MemberEmailService {
         Member member = memberRepository.getByIdOrThrow(memberId);
 
         MemberEmail memberEmail = memberEmailRepository.findByMember(member)
-                .orElseGet(() -> MemberEmail.builder()
+            .map(existingEmail -> existingEmail.updateSchoolEmail(schoolEmail)
+                .updateVerifyCode(verifyCode)
+                .updateEmailVerifyPending())
+            .orElseGet(() -> MemberEmail.builder()
                         .member(member)
                         .schoolEmail(schoolEmail)
                         .verifyCode(verifyCode)
                         .emailVerifyStatus(EmailVerifyStatus.PENDING)
                         .build());
 
-        memberEmail.updateSchoolEmail(schoolEmail)
-                .updateVerifyCode(verifyCode)
-                .updateEmailVerifyPending();
 
         memberEmailRepository.save(memberEmail);
-
         return EmailResponse.from(memberEmail);
     }
 
@@ -145,7 +135,9 @@ public class MemberEmailService {
 
     private void checkDuplicatedEmail(String schoolEmail) {
         memberRepository.findByMemberProfileSchoolEmail(schoolEmail)
-                .ifPresent(action -> new BaseException(MemberEmailExceptionType.ALREADY_EXIST));
+            .ifPresent(profile -> {
+                throw new BaseException(MemberEmailExceptionType.ALREADY_EXIST);
+            });
     }
 
     private String createVerifyCode() {
