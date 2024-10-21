@@ -17,9 +17,7 @@ public class GooglePaymentPurchaseResponse {
     private String purchaseTimeMillis;
     private int purchaseState;
     private int consumptionState;
-    private String developerPayload;
     private String orderId;
-    private int purchaseType;
     private int acknowledgementState;
     private String purchaseToken;
     private String productId;
@@ -30,9 +28,7 @@ public class GooglePaymentPurchaseResponse {
             .purchaseTimeMillis(purchase.getPurchaseTimeMillis().toString())
             .purchaseState(purchase.getPurchaseState())
             .consumptionState(purchase.getConsumptionState())
-            .developerPayload(purchase.getDeveloperPayload())
             .orderId(purchase.getOrderId())
-            .purchaseType(purchase.getPurchaseType())
             .acknowledgementState(purchase.getAcknowledgementState())
             .purchaseToken(purchase.getPurchaseToken())
             .productId(purchase.getProductId())
