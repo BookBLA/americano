@@ -91,6 +91,7 @@ public class MemberMatchingService {
         if (!memberMatching.hasCurrentMatchedInfo() && memberMatching.getIsInvitationCard()) {
             MemberIntroResponse memberIntroResponse = getHomeMatch(memberId);
             if(Objects.equals(memberIntroResponse, MemberIntroResponse.showInvitationCard())){
+                memberMatching.updateInvitationCard(false);
                 return MemberIntroResponse.empty();
             }
             updateCurrentMatchedInfo(memberMatching, memberIntroResponse.getMemberId(), memberIntroResponse.getMemberBookId());
