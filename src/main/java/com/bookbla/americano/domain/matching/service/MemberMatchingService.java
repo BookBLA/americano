@@ -90,10 +90,12 @@ public class MemberMatchingService {
         }
         if (!memberMatching.hasCurrentMatchedInfo() && memberMatching.getIsInvitationCard()) {
             MemberIntroResponse memberIntroResponse = getHomeMatch(memberId);
-            if(Objects.equals(memberIntroResponse, MemberIntroResponse.showInvitationCard())){
+
+            if(memberIntroResponse.equals(MemberIntroResponse.showInvitationCard())){
                 memberMatching.updateInvitationCard(false);
                 return MemberIntroResponse.empty();
             }
+
             updateCurrentMatchedInfo(memberMatching, memberIntroResponse.getMemberId(), memberIntroResponse.getMemberBookId());
             memberMatching.updateInvitationCard(false);
             return buildMemberIntroResponseWithMemberIntroResponse(memberIntroResponse, memberMatching);
