@@ -62,8 +62,6 @@ public class MemberMatchingService {
             if (matchedInfo == null) {
                 return MemberIntroResponse.empty();
             }
-            updateCurrentMatchedInfo(memberMatching, matchedInfo.getMatchedMemberId(), matchedInfo.getMatchedMemberBookId());
-            memberMatching.updateInvitationCard(false);
             return buildMemberIntroResponseWithMatchedInfo(matchedInfo, memberMatching);
         }
 
@@ -106,12 +104,14 @@ public class MemberMatchingService {
         if (!memberMatching.hasCurrentMatchedInfo() && memberMatching.getIsInvitationCard()) {
             MemberIntroResponse memberIntroResponse = getHomeMatch(memberId);
 
-            if (memberIntroResponse.equals(MemberIntroResponse.showInvitationCard())) { // null null true + matched_info 없음
+            if (memberIntroResponse.equalsShowInvitationCard(MemberIntroResponse.showInvitationCard())) { // null null true + matched_info 없음
                 memberMatching.updateInvitationCard(false);
                 return MemberIntroResponse.empty();
             }
             // null null true + matched_info 존재
-            return memberIntroResponse;
+            updateCurrentMatchedInfo(memberMatching, memberIntroResponse.getMemberId(), memberIntroResponse.getMemberBookId());
+            memberMatching.updateInvitationCard(false);
+            return buildMemberIntroResponseWithMemberIntroResponse(memberIntroResponse, memberMatching);
         }
 
         // value value false + matched_info 존재 & value value false + matched_info 없음

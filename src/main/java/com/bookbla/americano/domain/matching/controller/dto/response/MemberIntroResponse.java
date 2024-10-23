@@ -61,12 +61,12 @@ public class MemberIntroResponse {
                 .build();
     }
 
-    @Override
-    public boolean equals(Object o) {
+    public boolean equalsShowInvitationCard(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MemberIntroResponse that = (MemberIntroResponse) o;
 
-        return Objects.equals(isInvitationCard, that.isInvitationCard);
+        return Objects.equals(isInvitationCard, that.isInvitationCard)
+                && Objects.equals(memberId, that.memberId);
     }
 }
