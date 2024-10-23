@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Transactional
@@ -50,9 +49,6 @@ public class MemberMatchingService {
                 .orElseGet(() -> memberMatchingRepository.save(MemberMatching.of(member)));
 
         if (memberMatching.hasCurrentMatchedInfo()) {
-            if (memberMatching.getIsInvitationCard()) {
-                return MemberIntroResponse.showInvitationCard();
-            }
             MatchedInfo matchedInfo = getMatchedInfo(memberId, memberMatching);
 
             return buildMemberIntroResponseWithMatchedInfo(matchedInfo, memberMatching);
