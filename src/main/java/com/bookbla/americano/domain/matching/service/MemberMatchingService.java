@@ -63,7 +63,6 @@ public class MemberMatchingService {
         MatchedInfo matchedInfo = getMostPriorityMatched(matchedInfoRepository.getAllByDesc(memberMatching.getId()));
         if (matchedInfo == null) {
             if(memberMatching.getIsInvitationCard()) {
-                memberMatching.updateInvitationCard(false);
                 return MemberIntroResponse.showInvitationCard();
             } else {
                 return MemberIntroResponse.empty();
