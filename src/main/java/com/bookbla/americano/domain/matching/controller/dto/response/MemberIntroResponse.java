@@ -10,6 +10,7 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Builder
@@ -58,5 +59,14 @@ public class MemberIntroResponse {
         return MemberIntroResponse.builder()
                 .isInvitationCard(true)
                 .build();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MemberIntroResponse that = (MemberIntroResponse) o;
+
+        return Objects.equals(isInvitationCard, that.isInvitationCard);
     }
 }
