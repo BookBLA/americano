@@ -59,7 +59,7 @@ public class QuizQuestionService {
         if (status == CorrectStatus.WRONG) {
             matchExcludedRepository.findByMemberIdAndExcludedMemberId(request.getQuizMakerId(), memberId)
                     .orElseGet(() -> matchExcludedRepository.save(MatchExcludedInfo.of(memberId, request.getQuizMakerId())));
-            memberMatching.updateInvitationCard(true);
+            memberMatching.matchingReset();
             isCorrect = false;
         }
 

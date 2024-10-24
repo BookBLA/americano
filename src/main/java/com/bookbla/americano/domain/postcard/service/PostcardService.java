@@ -103,7 +103,7 @@ public class PostcardService {
 
         MemberMatching memberMatching = memberMatchingRepository.findByMember(member)
                 .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
-        memberMatching.updateInvitationCard(true);
+        memberMatching.matchingReset();
 
         String postcardSendMemberName = member.getMemberProfile().getName();
         postcardPushAlarmEventListener.sendPostcard(new PostcardAlarmEvent(postcardSendMemberName, targetMember));
