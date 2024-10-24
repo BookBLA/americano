@@ -69,4 +69,10 @@ public class MemberMatching {
     public boolean getIsInvitationCard() {
         return isInvitationCard;
     }
+
+    public void matchingReset(){
+        this.currentMatchedMemberId = null;
+        this.currentMatchedMemberBookId = null;
+        this.isInvitationCard = true;
+    }
 }

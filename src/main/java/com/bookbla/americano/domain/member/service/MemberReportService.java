@@ -88,7 +88,7 @@ public class MemberReportService {
 
         MemberMatching memberMatching = memberMatchingRepository.findByMember(reporterMember)
                 .orElseThrow(() -> new BaseException(MemberMatchingExceptionType.MEMBER_MATCHING_NOT_FOUND));
-        memberMatching.updateInvitationCard(true);
+        memberMatching.matchingReset();
 
         // 신고 당한 회원 매칭 제외
         updateMemberMatchingExcluded(reporterMember, reportedMember);
